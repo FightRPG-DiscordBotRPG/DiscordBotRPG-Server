@@ -34,6 +34,7 @@ class Commandes {
         let tGuildId = 0;
         let firstMention;
         let err;
+        let apPage;
 
         if (command !== undefined && !message.author.bot) {
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
@@ -231,6 +232,15 @@ class Commandes {
 
                     break;
 
+                case "guilds":
+                    apPage = parseInt(messageArray[1], 10);
+                    if (!apPage || !Number.isInteger(apPage)) {
+                        apPage = 1;
+                    }
+                    msg = this.appliancesManager.getGuilds(apPage);
+                    message.channel.send(msg);
+                    break;
+
                                     /*
                 case "gadd":
                     firstMention = mentions.first();
@@ -317,7 +327,7 @@ class Commandes {
                     break;
 
                 case "areaplayers":
-                    let apPage = parseInt(messageArray[1], 10);
+                    apPage = parseInt(messageArray[1], 10);
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
@@ -762,6 +772,7 @@ class Commandes {
             "::travel <idZone> : Permet de voyager à la zone idZone.\n"
             + "[Guildes]\n" +
             "::guild : Affiche les informations de la guilde dans laquelle vous êtes.\n" +
+            "::guilds <page> : Affiche les guildes.\n" +
             "::gcreate <name> : Permet de créer une guilde.\n" +
             "::gdisband : Permet de dissoudre la guilde (GM only) \n" +
             "::gapply <idGuild> : Permet de demander à rejoindre une guilde. \n" +
