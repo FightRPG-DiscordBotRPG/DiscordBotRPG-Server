@@ -124,7 +124,6 @@ class AppliancesManager {
     }
 
     getGuildAppliances(idGuild, page) {
-
         page = page <= 0 ? 1 : page;
         let idCharacterMaxLength = 10;
         let userNameMaxLength = 35;
@@ -133,7 +132,6 @@ class AppliancesManager {
         let idCharacterLength;
         let userNameLength;
         let actualLevelLength;
-
 
         let res = conn.query("SELECT guildsappliances.idCharacter, users.userName, levels.actualLevel FROM guildsappliances " +
                     "INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter " +

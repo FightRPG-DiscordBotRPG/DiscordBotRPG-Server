@@ -175,9 +175,13 @@ class Commandes {
                     break;
 
                 case "gapplies":
+                    apPage = parseInt(messageArray[1], 10);
+                    if (!apPage || !Number.isInteger(apPage)) {
+                        apPage = 1;
+                    }
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
-                        msg = this.appliancesManager.getGuildAppliances(tGuildId);
+                        msg = this.appliancesManager.getGuildAppliances(tGuildId, apPage);
                     } else {
                         msg = this.appliancesManager.getAppliances(this.connectedUsers[authorIdentifier].character.id);
                     }
