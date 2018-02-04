@@ -93,11 +93,7 @@ class Area {
         let maxPage = Math.ceil(this.nbrPLayers/10);
 
         page = page > maxPage || page <= 0 ? 1 : page;
-          
-        /*let res = conn.query( "SELECT users.idCharacter, users.userName, levels.actualLevel FROM users " +
-            "INNER JOIN characters ON characters.idCharacter = users.idCharacter " +
-            "INNER JOIN levels ON levels.idCharacter = users.idCharacter " +
-            "WHERE characters.idArea = " + this.id + " ORDER BY users.userName ASC LIMIT 10 OFFSET " + ((page - 1)*10));*/
+
         let res = conn.query("SELECT users.idUser FROM users " +
             "INNER JOIN characters ON characters.idCharacter = users.idCharacter " +
             "WHERE characters.idArea = " + this.id + " ORDER BY users.userName ASC LIMIT 10 OFFSET " + ((page - 1) * 10));
@@ -109,11 +105,7 @@ class Area {
                         + "Nom : " + connectedUsers[res[i].idUser].username + " | "
                         + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n"; 
                 }
-                /*
-                str += "ID : " + res[i].idCharacter + " | "
-                    + "Nom : " + res[i].userName + " | "
-                    + "Level : " + res[i].actualLevel + "\n";
-                */
+
             }
         } else {
             str += "Cette page ne contient rien";

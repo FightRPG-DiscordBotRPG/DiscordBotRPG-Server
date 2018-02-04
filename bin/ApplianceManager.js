@@ -87,10 +87,32 @@ class AppliancesManager {
             "INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild " +
             "WHERE idCharacter = " + idCharacter);
         let str = "```";
+        let idMaxLength = 10;
+        let nameMaxLength = 35;
+        let levelMaxLength = 11;
+
+        let idLength;
+        let nameLength;
+        let levelLength;
+
+
+
 
         if (res.length > 0) {
-            for (let i in res) {
-                str += res[i].idGuild + " | " + res[i].nom + " | " + res[i].level + "\n";
+            str += "|" + "    id    " + "|" + "                nom                " + "|" + "   level   " + "|" + "\n";
+            for (let i of res) {
+                idLength = i.idGuild.toString().length;
+                idLength = (idMaxLength - idLength) / 2;
+
+                nameLength = i.nom.length;
+                nameLength = (nameMaxLength - nameLength) / 2;
+
+                levelLength = i.level.toString().length;
+                levelLength = (levelMaxLength - levelLength) / 2;
+
+                str += "|" + " ".repeat(Math.floor(idLength)) + i.idGuild + " ".repeat(Math.ceil(idLength)) + "|"
+                    + " ".repeat(Math.floor(usernameLength)) + i.nom + " ".repeat(Math.ceil(usernameLength)) + "|"
+                    + " ".repeat(Math.floor(levelLength)) + i.level + " ".repeat(Math.ceil(levelLength)) + "|\n"
             }
         } else {
             str += "Vous ne postulez pas pour rejoindre une guilde.";
@@ -101,17 +123,42 @@ class AppliancesManager {
         return str;
     }
 
-    getGuildAppliances(idGuild) {
+    getGuildAppliances(idGuild, page) {
+
+        page = page <= 0 ? 1 : page;
+        let idCharacterMaxLength = 10;
+        let userNameMaxLength = 35;
+        let actualLevelMaxLength = 11;
+
+        let idCharacterLength;
+        let userNameLength;
+        let actualLevelLength;
+
+
         let res = conn.query("SELECT guildsappliances.idCharacter, users.userName, levels.actualLevel FROM guildsappliances " +
                     "INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter " +
                     "INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter " +
-                    "WHERE guildsappliances.idGuild = " + idGuild);
+                    "WHERE guildsappliances.idGuild = " + idGuild +       
+                    " ORDER BY users.userName ASC LIMIT 10 OFFSET " + ((page - 1) * 10));
 
         let str = "```";
 
         if (res.length > 0) {
-            for (let i in res) {
-                str += res[i].idCharacter + " | " + res[i].userName + " | " + res[i].actualLevel + "\n";
+            str += "|" + "    id    " + "|" + "                nom                " + "|" + "   level   " + "|" + "\n";
+            for (let i of res) {
+                idCharacterLength = i.idCharacter.toString().length;
+                idCharacterLength = (idCharacterMaxLength - idCharacterLength) / 2;
+
+                userNameLength = i.userName.length;
+                userNameLength = (userNameMaxLength - userNameLength) / 2;
+
+                actualLevelLength = i.actualLevel.toString().length;
+                actualLevelLength = (actualLevelMaxLength - actualLevelLength) / 2;
+
+
+                str += "|" + " ".repeat(Math.floor(idLength)) + i.idCharacter + " ".repeat(Math.ceil(idLength)) + "|"
+                    + " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|"
+                    + " ".repeat(Math.floor(levelLength)) + i.actualLevel + " ".repeat(Math.ceil(levelLength)) + "|\n"
             }
         } else {
             str += "Personne n'a demandé à rejoindre votre guilde.";
