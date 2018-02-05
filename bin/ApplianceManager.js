@@ -155,7 +155,7 @@ class AppliancesManager {
 
 
                 str += "|" + " ".repeat(Math.floor(idCharacterLength)) + i.idCharacter + " ".repeat(Math.ceil(idCharacterLength)) + "|"
-                    + " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|"
+                    + " ".repeat(Math.floor(userNameLength)) + i.userName + " ".repeat(Math.ceil(userNameLength)) + "|"
                     + " ".repeat(Math.floor(actualLevelLength)) + i.actualLevel + " ".repeat(Math.ceil(actualLevelLength)) + "|\n"
             }
         } else {
