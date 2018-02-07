@@ -33,7 +33,7 @@ class Commandes {
         let uIDGuild;
         let tGuildId = 0;
         let firstMention;
-        let err;
+        let err = [];
         let apPage;
 
         if (command !== undefined && !message.author.bot) {
@@ -84,7 +84,7 @@ class Commandes {
                     } else {
                         msg = "Vous n'avez pas de guilde.";
                     }
-                    message.reply(msg);
+                    message.channel.send(msg);
                     break;
 
                 case "gcreate":
@@ -245,38 +245,6 @@ class Commandes {
                     message.channel.send(msg);
                     break;
 
-                                    /*
-                case "gadd":
-                    firstMention = mentions.first();
-                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    if (firstMention) {
-                        if (tGuildId) {
-                            if (this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank >= 2) {
-                                if (this.connectedUsers[firstMention.id]) {
-                                    if (this.connectedUsers[firstMention.id].character.idGuild == 0) {
-                                        this.connectedGuilds[tGuildId].addMember(this.connectedUsers[firstMention.id]);
-                                        this.connectedUsers[firstMention.id].character.idGuild = tGuildId;
-                                        msg = "Vous avez bien ajouté la personne à votre guilde.";
-                                    } else {
-                                        msg = "La personne que vous souhaitez inviter est déjà dans une guilde.";
-                                    }
-                                } else {
-                                    msg = "Cette personne doit être connectée.";
-                                }
-
-                            } else {
-                                msg = "Vous devez être au minimum un officier pour pouvoir inviter dans votre guilde.";
-                            }
-                        } else {
-                            msg = "Vous devez être dans une guilde pour pouvoir inviter quelqu'un.";
-                        }
-                    } else {
-                        msg = "Vous devez mentionner quelqu'un pour pouvor l'inviter.";
-                    }
-                    message.reply(msg);
-                    break;
-                    */
-
                 case "gremove":
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
@@ -315,6 +283,86 @@ class Commandes {
                         msg = "Le rang de ce membre à bien été modifié.";
                     }
                     message.reply(msg);
+                    break;
+
+
+                case "gmessage":
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (tGuildId > 0) {
+                        err = this.connectedGuilds[tGuildId].setMessage(this.connectedUsers[authorIdentifier].character.id, this.getArgsString(messageArray));
+                    } else {
+                        err.push("Vous devez être dans une guilde pour faire cela.");
+                    }
+
+                    if (err.length > 0) {
+                        msg = err[0];
+                    } else {
+                        msg = "Vous avez bien modifié le message de guilde.";
+                    }
+
+                    message.channel.send(msg);
+                    break;
+
+                case "gaddmoney":
+                    messageArray[1] = parseInt(messageArray[1], 10);
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (messageArray[1] || Number.isInteger(messageArray[1])) {
+                        if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(messageArray[1])) {
+                            if (!this.connectedGuilds[tGuildId].addMoney(messageArray[1])) {
+                                err.push("Vous ne pouvez pas donner cette somme à la guilde.");
+                            } else {
+                                //Si tout est ok
+                                this.connectedUsers[authorIdentifier].character.removeMoney(messageArray[1]);
+                            }
+                        } else {
+                            err.push("Vous n'avez pas cette somme.");
+                        }
+
+                    } else {
+                        err.push("Vous devez choisir la somme à donner à votre guilde.");
+                    }
+
+                    if (err.length > 0) {
+                        msg = err[0];
+                    } else {
+                        msg = "Vous avez bien donné " + messageArray[1] + "G à votre guilde.";
+                    }
+
+                    message.channel.send(msg);
+                    break;
+
+                case "gremovemoney":
+                    messageArray[1] = parseInt(messageArray[1], 10);
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (messageArray[1] || Number.isInteger(messageArray[1])) {
+                        err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                    } else {
+                        err.push("Vous devez choisir la somme à donner à votre guilde.");
+                    }
+
+                    if (err.length > 0) {
+                        msg = err[0];
+                    } else {
+                        msg = "Vous avez retiré " + messageArray[1] + "G de votre guilde.";
+                        this.connectedUsers[authorIdentifier].character.addMoney(messageArray[1]);
+                    }
+
+                    message.channel.send(msg);
+                    break;
+
+
+                case "glevelup":
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id);
+
+
+                    if (err.length > 0) {
+                        msg = err[0];
+                    } else {
+                        msg = "Votre guilde est bien monté de niveau, elle passe niveau : " + this.connectedGuilds[tGuildId].level;
+                    }
+
+                    message.channel.send(msg);
                     break;
 
                 /*
@@ -640,7 +688,8 @@ class Commandes {
                     break;
 
                 case "area":
-                    message.channel.send(this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area));
+                    msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area);
+                    message.channel.send(msg);
                     break;
 
                 case "areas":
@@ -787,6 +836,16 @@ class Commandes {
             +"```";
 
 
+
+        return str;
+    }
+
+    //Temp Solution
+    getArgsString(arrayString) {
+        let str = "";
+        for (let i = 1; i < arrayString.length; i++) {
+            str += arrayString[i] + " ";
+        }
 
         return str;
     }
