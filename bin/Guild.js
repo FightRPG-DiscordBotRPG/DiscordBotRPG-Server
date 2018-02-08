@@ -29,14 +29,14 @@ class Guild {
         }
 
         // Verification si nom déjà pris
-        res = conn.query("SELECT idGuild FROM Guilds WHERE nom = '" + guildName + "';");
+        res = conn.query("SELECT idGuild FROM Guilds WHERE nom = '?';", [guildName]);
         if (res.length > 0) {
             err.push("Ce nom de guilde est déjà pris.");
             return err;
         }
 
         // Create guild
-        res = conn.query("INSERT INTO Guilds VALUES(NULL, '" + guildName + "', '', 1, 0);")["insertId"];
+        res = conn.query("INSERT INTO Guilds VALUES(NULL, '?', '', 1, 0);", [guildName])["insertId"];
 
         // Insert guild master
         conn.query("INSERT INTO GuildsMembers VALUES(" + idCharacter + ", " + res + " , 3)")
@@ -195,7 +195,7 @@ class Guild {
             .setAuthor(this.name, "https://upload.wikimedia.org/wikipedia/commons/b/b4/Guild-logo-01_.png")
             .addField("Message de guilde", (this.message ? this.message : "Pas de message de guilde"))
             .addField("Membres " + this.nbrMembers + "/" + (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level)), membersStr)
-            .addField("Level : " + this.level + "/" + Globals.guilds.maxLevel, "Argent pour monter de niveau : " + (Globals.guilds.basePriceLevel * this.level) + "G", true)
+            .addField("Level : " + this.level + "/" + Globals.guilds.maxLevel, "Argent pour monter de niveau : " + this.getNextLevelPrice() + "G", true)
             .addField("Money", this.money + "G", true);
 
         return embed;
@@ -280,11 +280,11 @@ class Guild {
         let err = [];
 
         if (this.members[idCharacter].rank >= 2) {
-            if (this.removeMoney(Globals.guilds.basePriceLevel * this.level)) {
+            if (this.removeMoney(this.getNextLevelPrice())) {
                 this.level += 1;
                 this.saveLevel();
             } else {
-                err.push("Votre guilde n'a pas assez d'argent pour monter de niveau.");
+                err.push("Votre guilde n'a pas assez d'argent pour monter de niveau. Il vous manque : " + this.getNextLevelPrice() + "G");
             }
         
         } else {
@@ -293,6 +293,10 @@ class Guild {
 
 
         return err;
+    }
+
+    getNextLevelPrice() {
+        return Globals.guilds.basePriceLevel * this.level * Globals.guilds.multBasePricePerLevel;
     }
 
 

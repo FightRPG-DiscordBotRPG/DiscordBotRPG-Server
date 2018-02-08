@@ -4,7 +4,7 @@ const User = require("./User.js");
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const LootSystem = require("./LootSystem.js");
-const AreasManager = require("./AreasManager.js");
+const AreasManager = require("./Areas/AreasManager.js");
 const sizeof = require('object-sizeof');
 const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
@@ -75,7 +75,27 @@ class Commandes {
             // Detec Commands
             switch (command) {
                 /*
-                * GUILDS
+                *   CONQUEST
+                */
+
+                case "claim":
+                    if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
+                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character.idGuild)
+                    } else {
+                        err.push("Vous devez être dans uen guilde.");
+                    }
+
+                    if (err[0]) {
+                        msg = err[0];
+                    } else {
+                        msg = "Vous avez claim cette zone.";
+                    }
+
+                    message.channel.send(msg);
+                    break;
+
+                /*
+                *   GUILDS
                 */
 
                 case "guild":
@@ -91,16 +111,22 @@ class Commandes {
                     if (messageArray[1]) {
                         // Si le joueur n'a pas de guilde
                         if (this.connectedUsers[authorIdentifier].character.idGuild == 0) {
-                            let tGuild = new Guild();
-                            let err = tGuild.createGuild(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
-                            if (err.length == 0) {
-                                this.connectedGuilds[tGuild.id] = tGuild;
-                                this.connectedUsers[authorIdentifier].character.idGuild = tGuild.id;
-                                this.appliancesManager.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
-                                msg = "La guilde : " + tGuild.name + " à bien été créée !";
+                            if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(Globals.guilds.basePriceLevel)) {
+                                let tGuild = new Guild();
+                                let err = tGuild.createGuild(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                                if (err.length == 0) {
+                                    this.connectedGuilds[tGuild.id] = tGuild;
+                                    this.connectedUsers[authorIdentifier].character.idGuild = tGuild.id;
+                                    this.appliancesManager.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
+                                    this.connectedUsers[authorIdentifier].character.removeMoney(Globals.guilds.basePriceLevel);
+                                    msg = "La guilde : " + tGuild.name + " à bien été créée !";
+                                } else {
+                                    msg = err[0];
+                                }
                             } else {
-                                msg = err[0];
+                                msg = "Vous n'avez pas suffisamment d'argent pour créer une guilde (Il vous faut : " + Globals.guilds.basePriceLevel + "G).";
                             }
+
                         } else {
                             msg = "Vous êtes déjà dans une guilde !";
                         }
@@ -831,8 +857,12 @@ class Commandes {
             "::gapply <idGuild> : Permet de demander à rejoindre une guilde. \n" +
             "::gaccept <idCharacter> : Permet d'accepter quelqu'un dans votre guilde \n" +
             "::gapplies : Afficher les candidatures \n" +
-            "::gapplyremove <idApply> : Permet de supprimer la candidature voullue. \n" +
-            "::gappliesremove : Supprime toutes les candidatures en cours. \n"
+            "::gapplyremove <idApply> : Permet de supprimer la candidature voulue. \n" +
+            "::gappliesremove : Supprime toutes les candidatures en cours. \n" +
+            "::gmessage <message> : Permet de changer le message de guilde. \n" +
+            "::gaddmoney <amount> : Donne de l'argent à la guilde. \n" +
+            "::gremovemoney <amount> : Permet de retirer de l'argent de la guilde. \n" +
+            "::glevelup : Permet de faire monter de niveau la guilde. \n"
             +"```";
 
 

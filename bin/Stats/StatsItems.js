@@ -1,22 +1,12 @@
 'use strict';
-const conn = require("../conf/mysql.js");
-const Globals = require("./Globals.js");
+const conn = require("../../conf/mysql.js");
+const Stats = require("./Stats.js");
+const Globals = require("../Globals.js");
 
-class StatsItems {
+class StatsItems extends Stats{
 
     constructor(id) {
-        // recherche base de donn�e
-        this.id = id;
-        this.force = 0;
-        this.intelligence = 0;
-        this.constitution = 0;
-        this.defense = 0;
-        this.dexterite = 0;
-        this.charisme = 0;
-        this.sagesse = 0;
-        this.volonte = 0;
-        this.perception = 0;
-        this.luck = 0;
+        super(id, id);
         this.loadStats();
     }
 

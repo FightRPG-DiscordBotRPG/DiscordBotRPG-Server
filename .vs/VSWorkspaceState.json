@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\bin",
+    "\\bin\\Areas",
     "\\conf"
   ],
-  "SelectedNode": "\\main.js",
+  "SelectedNode": "\\bin\\Commandes.js",
   "PreviewInSolutionExplorer": false
 }

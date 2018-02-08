@@ -1,6 +1,6 @@
 ﻿'use strict';
 const conn = require("../conf/mysql.js");
-const ItemsStats = require("./StatsItems.js");
+const ItemsStats = require("./Stats/StatsItems.js");
 const Globals = require("./Globals.js");
 
 

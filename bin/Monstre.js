@@ -1,6 +1,6 @@
 'use strict';
 const conn = require("../conf/mysql.js");
-const StatsMonstres = require("./StatsMonstres");
+const StatsMonstres = require("./Stats/StatsMonstres");
 const Globals = require("./Globals.js");
 
 class Monstre {

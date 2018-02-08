@@ -1,5 +1,5 @@
 ﻿'use strict';
-const conn = require("../conf/mysql.js");
+const conn = require("../../conf/mysql.js");
 
 class Area {
 
@@ -11,8 +11,11 @@ class Area {
         this.levels = "";
         this.areaType = "";
         this.nbrPLayers = 0;
+        this.owner = 0;
+        this.fightPossible = false;
         this.resources = [];
         this.loadArea(id);
+        this.timeBeforeNextClaim = 0;
     }
 
     loadArea(id) {
@@ -32,6 +35,12 @@ class Area {
             "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity WHERE idArea = " + this.id);
         for (let i in res) {
             this.resources.push(res[i]);
+        }
+
+        // Load owner
+        res = conn.query("SELECT idGuild FROM AreasOwners WHERE idArea = " + this.id);
+        if (res.length > 0) {
+            this.owner = res[0].idGuild;
         }
     }
 
@@ -118,6 +127,39 @@ class Area {
     getResource(indexResource) {
         //console.log(this.resources[indexResource]);
         return this.resources[indexResource - 1] ? this.resources[indexResource - 1] : null;
+    }
+
+    canIFightHere() {
+        return this.fightPossible;
+    }
+
+    /**
+     * Return owner name if exist or "None";
+     */
+    getOwner() {
+        if (this.owner > 0) {
+            return conn.query("SELECT nom FROM guilds WHERE idGuild = " + this.owner)[0].nom;
+        }
+        return "None";
+    }
+
+    saveOwner() {
+        let res = conn.query("DELETE FROM AreasOwners WHERE idArea = " + this.id);
+        conn.query("INSERT INTO AreasOwners VALUES(" + this.id + ", " + this.owner + ")");
+    }
+
+    /*
+    *   CONQUEST
+    */
+    claim(idGuild) {
+        let err = [];
+        if (this.owner == 0) {
+            this.owner = idGuild;
+            this.saveOwner();
+        } else {
+            err.push("Vous ne pouvez pas claim");
+        }
+        return err;
     }
 
 }

@@ -62,6 +62,7 @@ var Globals = {
     "guilds": {
         "maxLevel": 10,
         "basePriceLevel": 100000,
+        "multBasePricePerLevel" : 1.5,
         "baseMembers": 4,
         "membersPerLevels": 2,
         "maxApplies" : 5,

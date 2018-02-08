@@ -1,6 +1,6 @@
 'use strict';
 const conn = require("../conf/mysql.js");
-const Stats = require("./Stats.js");
+const StatsPlayer = require("./Stats/StatsPlayer.js");
 const LevelSystem = require("./LevelSystem.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
@@ -10,7 +10,7 @@ class Character {
 
     constructor(id) {
         this.id = id;
-        this.stats = new Stats();
+        this.stats = new StatsPlayer();
         this.inv = new CharacterInventory();
         this.equipement = new CharacterEquipement();
         this.maxHP = 0;
