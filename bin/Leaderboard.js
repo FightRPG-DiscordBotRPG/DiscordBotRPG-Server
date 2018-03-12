@@ -4,11 +4,7 @@ const Discord = require("discord.js");
 
 class Leaderboard {
 
-    constructor() {
-        this.id = "__LeaderBoard";
-    }
-
-    toStr(id) {
+    static playerLeaderboardToStr(id) {
         let str = "```";
         let usernameMaxLength = 34;
         let honorMaxLength = 13;
@@ -21,11 +17,11 @@ class Leaderboard {
         let levelLength;
 
 
-        str += "|  id  |             username             |    honor    |    level    |\n" + 
-               "|______|__________________________________|_____________|_____________|\n";
+        str += "|  id  |             username             |    honor    |    level    |\n" +
+            "|______|__________________________________|_____________|_____________|\n";
         let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, levels.actualLevel " +
             "FROM charactershonor " +
-            "INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter "+
+            "INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter " +
             "INNER JOIN users ON users.idCharacter = charactershonor.idCharacter " +
             "WHERE charactershonor.idCharacter = " + id + " OR charactershonor.idCharacter > " + id + " OR charactershonor.idCharacter < " + id + " " +
             "ORDER BY Honor DESC LIMIT 0, 11");
@@ -51,7 +47,7 @@ class Leaderboard {
         return str;
     }
 
-    idOf(idCharacter) {
+    static idOf(idCharacter) {
         let res = conn.query("SELECT users.idUser FROM users WHERE users.idCharacter = " + idCharacter + ";");
         if (res.length > 0) {
             return res[0]["idUser"];

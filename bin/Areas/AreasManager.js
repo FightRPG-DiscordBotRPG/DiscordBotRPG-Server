@@ -134,6 +134,14 @@ class AreasManager {
         return this.areas.get(idArea).claim(idGuild);
     }
 
+    unclaim(idGuild) {
+        for (let [key, value] of this.areas) {
+            if (this.areas.get(key).owner == idGuild) {
+                this.areas.get(key).unclaim();
+            }
+        }
+    }
+
 
 }
 

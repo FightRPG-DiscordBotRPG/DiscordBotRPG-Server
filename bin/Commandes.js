@@ -8,15 +8,12 @@ const AreasManager = require("./Areas/AreasManager.js");
 const sizeof = require('object-sizeof');
 const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
-const AppiancesManager = require("./ApplianceManager.js");
 
 class Commandes {
     constructor(prefix) {
         this.prefix = prefix != undefined ? prefix : "::";
         this.authorizedAttributes = ["force", "intelligence", "constitution", "dexterite", "intelligence", "charisme", "volonte", "luck", "sagesse"];
         this.areasManager = new AreasManager();
-        this.leaderboard = new Leaderboard();
-        this.appliancesManager = new AppiancesManager();
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -72,7 +69,7 @@ class Commandes {
 
             }
 
-            // Detec Commands
+            // Detect Commands
             switch (command) {
                 /*
                 *   CONQUEST
@@ -117,8 +114,12 @@ class Commandes {
                                 if (err.length == 0) {
                                     this.connectedGuilds[tGuild.id] = tGuild;
                                     this.connectedUsers[authorIdentifier].character.idGuild = tGuild.id;
-                                    this.appliancesManager.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
+
+                                    // Static delete
+                                    Guild.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
+
                                     this.connectedUsers[authorIdentifier].character.removeMoney(Globals.guilds.basePriceLevel);
+
                                     msg = "La guilde : " + tGuild.name + " à bien été créée !";
                                 } else {
                                     msg = err[0];
@@ -142,6 +143,7 @@ class Commandes {
                     if (tGuildId > 0
                         && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         this.connectedGuilds[tGuildId].disband(this.connectedUsers);
+                        this.areasManager.unclaimAll(tGuildId);
                         delete this.connectedGuilds[tGuildId];
                         msg = "Vous avez bien dissous la guilde !";
                         console.log(this.connectedGuilds);
@@ -157,7 +159,7 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (Number.isInteger(messageArray[1])) {
                         if (tGuildId == 0) {
-                            err = this.appliancesManager.applyTo(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                            err = Guild.applyTo(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
@@ -179,14 +181,14 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
 
                     if (Number.isInteger(messageArray[1])) {
-                        if (this.appliancesManager.haveAlreadyApplied(tGuildId, messageArray[1])) {
+                        if (Guild.haveAlreadyApplied(tGuildId, messageArray[1])) {
                             err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
                                 msg = "Le personnage à bien été accepté dans la guilde.";
                                 uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
-                                this.appliancesManager.deleteUsersAppliances(messageArray[1]);
+                                Guild.deleteUsersAppliances(messageArray[1]);
                                 if (this.connectedUsers[uIDGuild]) {
                                     this.connectedUsers[uIDGuild].character.idGuild = tGuildId;
                                 }
@@ -207,9 +209,9 @@ class Commandes {
                     }
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
-                        msg = this.appliancesManager.getGuildAppliances(tGuildId, apPage);
+                        msg = this.connectedGuilds[tGuildId].getGuildAppliances(apPage);
                     } else {
-                        msg = this.appliancesManager.getAppliances(this.connectedUsers[authorIdentifier].character.id);
+                        msg = Guild.getAppliances(this.connectedUsers[authorIdentifier].character.id);
                     }
                     message.channel.send(msg);
                     break;
@@ -221,7 +223,7 @@ class Commandes {
                     if (tGuildId > 0) {
                         if (Number.isInteger(messageArray[1])) {
                             if (this.connectedGuilds[tGuildId].canCancelApplies(this.connectedUsers[authorIdentifier].character.id)) {
-                                this.appliancesManager.deleteUserForThisGuildAppliance(messageArray[1], tGuildId);
+                                Guild.deleteUserForThisGuildAppliance(messageArray[1], tGuildId);
                                 msg = "Vous avez bien refusé l'candidatures.";
                             } else {
                                 msg = "Vous n'avez pas le droit de faire cela.";
@@ -234,7 +236,7 @@ class Commandes {
 
                     } else {
                         if (Number.isInteger(messageArray[1])) {
-                            this.appliancesManager.deleteUserForThisGuildAppliance(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
+                            Guild.deleteUserForThisGuildAppliance(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
                             msg = "Vous avez bien annulé l'candidatures.";
                         } else {
                             msg = "Vous devez choisir l'identifiant de la guilde.";
@@ -248,13 +250,13 @@ class Commandes {
 
                     if (tGuildId > 0) {
                         if (this.connectedGuilds[tGuildId].canCancelApplies(this.connectedUsers[authorIdentifier].character.id)) {
-                            this.appliancesManager.deleteGuildAppliances(tGuildId);
+                            this.connectedGuilds[tGuildId].deleteGuildAppliances();
                             msg = "Vous avez bien refusé toutes les candidatures.";
                         } else {
                             msg = "Vous n'avez pas le droit de faire cela.";
                         }
                     } else {
-                        this.appliancesManager.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
+                        Guild.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
                         msg = "Vous avez bien annulé toutes vos candidatures.";
                     }
 
@@ -267,7 +269,7 @@ class Commandes {
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
-                    msg = this.appliancesManager.getGuilds(apPage);
+                    msg = Guild.getGuilds(apPage);
                     message.channel.send(msg);
                     break;
 
@@ -678,7 +680,7 @@ class Commandes {
                     break;
 
                 case "leaderboard":
-                    msg = this.leaderboard.toStr(this.connectedUsers[authorIdentifier].character.id);
+                    msg = Leaderboard.playerLeaderboardToStr(this.connectedUsers[authorIdentifier].character.id);
                     message.reply(msg);
                     break;
 
@@ -762,7 +764,7 @@ class Commandes {
                         } else if (messageArray[1]) {
                             idOtherPlayerCharacter = parseInt(messageArray[1], 10);
                             if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                                mId = this.leaderboard.idOf(idOtherPlayerCharacter);
+                                mId = Leaderboard.idOf(idOtherPlayerCharacter);
                             }
                         } else {
                             message.channel.send("Vous devez choisir votre adversaire !");

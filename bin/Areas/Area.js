@@ -162,6 +162,11 @@ class Area {
         return err;
     }
 
+    unclaim() {
+        this.owner = 0;
+        this.saveOwner();
+    }
+
 }
 
 module.exports = Area;
