@@ -161,25 +161,44 @@ api.post("/character/sellitem", (req, res) => {
     let sellIdItem = parseInt(res.locals.parameters.iditem, 10);
     let numberOfItemsToSell = parseInt(res.locals.parameters.number, 10);
     numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
-    let success;
-    let errors;
+    let error;
+    let itemValue = 0;
 
     if (areasManager.canISellToThisArea(connectedUsers[authorIdentifier].character.area)) {
         if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
             let itemValue = connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
-            if (itemValue > 0) {
-                success = "Vous avez vendu " + (numberOfItemsToSell > 1 ? "des" : "un") + " objet" + (numberOfItemsToSell > 1 ? "s" : "") + " pour " + itemValue + "G";
-            } else {
-                errors = "Vous ne possedez pas cet objet.";
+            if (itemValue <= 0) {
+                error = "Vous ne possedez pas cet objet.";
             }
         } else {
-            errors = "Vous devez entrez l'ID de l'item à vendre !";
+            error = "Vous devez entrez l'ID de l'item à vendre !";
         }
     } else {
-        errors = "Vous devez être dans une ville pour pouvoir vendre vos objets.";
+        error = "Vous devez être dans une ville pour pouvoir vendre vos objets.";
     }
-    msg["errors"] = errors;
-    msg["success"] = success;
+    msg["error"] = error;
+    msg["itemValue"] = itemValue;
+    res.json(msg);
+});
+
+api.post("/character/sellallitems", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    let msg = {};
+    let error;
+    let allSelled = 0;
+
+    if (areasManager.canISellToThisArea(connectedUsers[authorIdentifier].character.area)) {
+        allSelled = connectedUsers[authorIdentifier].character.sellAllInventory();
+        if (allSelled <= 0) {
+            error = "Le marchand n'accepte pas de vous acheter du vent...";
+        }
+    } else {
+        error = "Vous devez être dans une ville pour pouvoir vendre vos objets."
+    }
+
+
+    msg["error"] = error;
+    msg["itemValue"] = allSelled;
     res.json(msg);
 });
 
