@@ -33,10 +33,16 @@ class CharacterEquipement {
     }
 
     seeThisItem(type) {
-        let embed = new Discord.RichEmbed()
-            .setColor(this.objects[type].rarityColor)
-            .addField(this.objects[type].name + " | " + this.objects[type].typeName + " | " + this.objects[type].rarity + " | Lv : " + this.objects[type].level + " (Actuellement Equipé)", this.objects[type].desc)
-            .addField("Attributes : ", this.objects[type].stats.toStr());
+        let embed;
+        if (this.objects[type]) {
+            embed = new Discord.RichEmbed()
+                .setColor(this.objects[type].rarityColor)
+                .addField(this.objects[type].name + " | " + this.objects[type].typeName + " | " + this.objects[type].rarity + " | Lv : " + this.objects[type].level + " (Actuellement Equipé)", this.objects[type].desc)
+                .addField("Attributes : ", this.objects[type].stats.toStr());
+        } else {
+            embed = "``` Vous n'avez rien d'équipé dans cet emplacement ```";
+        }
+
 
         return embed;
     }

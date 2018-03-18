@@ -58,8 +58,9 @@ class Item {
         let count = 0;
         let strNum = "";
 
+        /*
         count = 8 - this.id.toString().length;
-        str += "|" + " ".repeat(Math.floor(count / 2)) + this.id + " ".repeat(Math.ceil(count / 2)) + "|";
+        str += "|" + " ".repeat(Math.floor(count / 2)) + this.id + " ".repeat(Math.ceil(count / 2)) + "|";*/
 
         // Nom | Si + 1 item on affiche le nombre
         count = 63 - this.name.length;

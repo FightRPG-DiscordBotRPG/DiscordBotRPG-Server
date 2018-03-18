@@ -79,8 +79,13 @@ class Area {
                 
             }
         }
-        str += strWoods + strStones + strHerbs + "```";
-        return str;
+        if (this.resources.length === 0) {
+            str += "Pas de ressources ici";
+        } else {
+            str += strWoods + strStones + strHerbs;
+        }
+         
+        return str + "```";
     }
 
     getMaxItemQuality() {
@@ -144,8 +149,12 @@ class Area {
     }
 
     saveOwner() {
-        let res = conn.query("DELETE FROM AreasOwners WHERE idArea = " + this.id);
-        conn.query("INSERT INTO AreasOwners VALUES(" + this.id + ", " + this.owner + ")");
+        if (this.owner === 0) {
+            conn.query("DELETE FROM AreasOwners WHERE idArea = " + this.id);
+        } else {
+            conn.query("INSERT INTO AreasOwners VALUES(" + this.id + ", " + this.owner + ")");
+        }
+        
     }
 
     /*

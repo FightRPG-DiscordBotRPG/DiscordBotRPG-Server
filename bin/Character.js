@@ -261,25 +261,25 @@ class Character {
 
     addHonorPoints(honorPoints) {
         this.honorPoints += honorPoints;
-        console.log("Add " + this.honorPoints);
+        //console.log("Add " + this.honorPoints);
         this.saveHonor();
     }
 
     removeHonorPoints(honorPoints) {
         this.honorPoints -= honorPoints;
         this.honorPoints = this.honorPoints < 0 ? 0 : this.honorPoints;
-        console.log("Remove " + this.honorPoints);
+        //console.log("Remove " + this.honorPoints);
         this.saveHonor();
     }
 
     // number : Nbr of items to sell
-    sellThisItem(itemId, number) {
+    sellThisItem(IdEmplacement, number) {
         number = number ? number : 1;
-        let value = this.inv.objects[itemId] ? this.inv.objects[itemId].getCost(number) : 0;
+        let value = this.inv.objects[IdEmplacement] ? this.inv.objects[IdEmplacement].getCost(number) : 0;
         // Si cost > 0 alors item existe et peut se vendre
         // On fait passer true pour deleteo bject puisque si on delete tout item on doit delete de la bdd
         if (value > 0) {
-            this.inv.removeSomeFromInventory(itemId, number, true);
+            this.inv.removeSomeFromInventory(IdEmplacement, number, true);
             this.addMoney(value);
         }
         return value;

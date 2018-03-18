@@ -142,8 +142,8 @@ class Commandes {
                     console.log(this.connectedGuilds);
                     if (tGuildId > 0
                         && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                         this.areasManager.unclaimAll(tGuildId);
+                        this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                         delete this.connectedGuilds[tGuildId];
                         msg = "Vous avez bien dissous la guilde !";
                         console.log(this.connectedGuilds);
@@ -460,24 +460,31 @@ class Commandes {
                     let idItemToSee = parseInt(messageArray[1], 10);
                     let doIHaveThisItem = false;
                     msg = "";
-                    if (idItemToSee && Number.isInteger(idItemToSee)) {
+                    if (idItemToSee !== undefined && Number.isInteger(idItemToSee)) {
                         //msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(invIdItem);
                         //msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage);
                         doIHaveThisItem = this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
                         if (doIHaveThisItem) {
                             msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee)
-                        } else {
+                        }/* else {
                             idItemToSee = this.connectedUsers[authorIdentifier].character.equipement.doIHaveThisItem(idItemToSee);
+                            
                             if (idItemToSee > 0) {
                                 msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee);
                             } else {
                                 msg = "```Vous n'avez pas cet objet```";
                             }
 
-                        }
+                        }*/
 
                     } else {
-                        msg = "```Vous devez entrer l'identifiant de l'item```";
+                        idItemToSee = this.getEquipableIDType(messageArray[1]);
+                        if (idItemToSee > 0) {
+                            msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee);
+                        } else {
+                            msg = "```Vous devez entrer l'id de l'emplacement d'inventaire ou bien choisir parmi head,chest,legs,weapon```";
+                        }
+
                     }
 
                     message.channel.send(msg);
@@ -502,10 +509,11 @@ class Commandes {
                 case "equip":
                     let toEquip = parseInt(messageArray[1], 10);
                     msg = "";
-                    if (toEquip && Number.isInteger(toEquip)) {
+                    //console.log((toEquip));
+                    if (toEquip !== undefined && Number.isInteger(toEquip)) {
                         if (this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(toEquip)) {
                             if (this.connectedUsers[authorIdentifier].character.inv.isEquipable(toEquip)) {
-                                let swapItem = this.connectedUsers[authorIdentifier].character.equipement.equip(toEquip);
+                                let swapItem = this.connectedUsers[authorIdentifier].character.equipement.equip(this.connectedUsers[authorIdentifier].character.inv.objects[toEquip].id);
                                 this.connectedUsers[authorIdentifier].character.inv.deleteFromInventory(toEquip);
                                 if (swapItem > 0) {
                                     this.connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
@@ -562,10 +570,10 @@ class Commandes {
                     let sellIdItem = parseInt(messageArray[1], 10);
                     let numberOfItemsToSell = parseInt(messageArray[2], 10)
                     numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
-                    console.log(numberOfItemsToSell);
+                    //console.log(numberOfItemsToSell);
                     msg = "";
                     if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.area)) {
-                        if (sellIdItem && Number.isInteger(sellIdItem)) {
+                        if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
                             let itemValue = this.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
                             if (itemValue > 0) {
                                 msg = "Vous avez vendu ce que vous vouliez pour " + itemValue + "G";
@@ -668,10 +676,10 @@ class Commandes {
                     break;
 
                 case "debug":
-                    this.debug(message);
+                    //this.debug(message);
 
-                    message.channel.send(msg);
-                    //message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.area));
+                    //message.channel.send(msg);
+                    message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.area));
                     //this.connectedUsers[authorIdentifier].character.inv.addToInventory(1);
                     //this.connectedUsers[authorIdentifier].character.equipement.totalStats();
                     //console.log(this.connectedUsers[authorIdentifier].character.equipement);
@@ -880,6 +888,26 @@ class Commandes {
         }
 
         return str;
+    }
+
+    // 
+    getEquipableIDType(string) {
+        let r = -1;
+        switch (string) {
+            case "weapon":
+                r = 1;
+                break;
+            case "chest":
+                r = 2;
+                break;
+            case "legs":
+                r = 3;
+                break;
+            case "head":
+                r = 4;
+                break;
+        }
+        return r;
     }
 }
 

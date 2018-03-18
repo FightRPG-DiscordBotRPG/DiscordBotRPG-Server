@@ -65,6 +65,7 @@
       "version": "1.0.2"
     },
     "discord.js": "^11.3.0",
+    "express": "^4.16.3",
     "get-port": {
       "integrity": "sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=",
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
@@ -124,6 +125,7 @@
       "version": "2.15.0"
     },
     "nodemon": "^1.14.11",
+    "object-sizeof": "^1.2.0",
     "pify": {
       "integrity": "sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=",
       "resolved": "https://registry.npmjs.org/pify/-/pify-3.0.0.tgz",

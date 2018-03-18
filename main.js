@@ -43,3 +43,14 @@ ChatReceiver.connectedGuilds = connectedGuilds;
 bot.on('message', (message) => {
     ChatReceiver.reactTo(message);
 });
+
+
+/* 
+ * API HERE
+*/
+
+const express = require("express"),
+    app = express(),
+    port = process.env.PORT || 8080;
+
+app.listen(port, () => console.log("Starting RESTful api server on: " + port));

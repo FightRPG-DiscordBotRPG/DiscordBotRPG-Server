@@ -75,7 +75,7 @@ class FightManager {
 
     fightPvEUpdate(message, userid) {
 
-        // TODO : based on stats and weapons
+        // TODO : based on stats and weapons - DONE
         //let damage = Math.floor(Math.random() * Math.floor(26));
         let damage = 0;
         let done = 0;
