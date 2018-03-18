@@ -10,7 +10,6 @@ class User {
     constructor(id, username) {
         this.id = id;
         this.character = new Character();
-        this.name = "Anonymous";
         this.avatar = "";
         this.username = username;
     }
@@ -18,7 +17,15 @@ class User {
     // Init for new user
     init() {
         this.character.init();
-        conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "');");
+
+        // Token for mobile / website use
+        let nToken = crypto.randomBytes(16).toString('hex');
+        let res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
+        while (res[0]) {
+            nToken = crypto.randomBytes(16).toString('hex');
+            res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
+        }
+        conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`, `token`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "');");
     }
 
     // Load user from DB
@@ -34,6 +41,18 @@ class User {
             this.username = res[0]["userName"];
         }
 
+    }
+
+    static getUserId(token) {
+        let res = conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
+        if (res[0]) {
+            return res[0]["idUser"];
+        }
+        return undefined;
+    }
+
+    getToken() {
+        return conn.query("SELECT token FROM users WHERE idUser = " + this.id + ";")[0]["token"];
     }
 
     saveUser() {

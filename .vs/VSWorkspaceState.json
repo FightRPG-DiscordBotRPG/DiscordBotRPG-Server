@@ -1,10 +1,12 @@
 {
   "ExpandedNodes": [
     "",
+    "\\api",
+    "\\api\\controllers",
+    "\\api\\routes",
     "\\bin",
     "\\bin\\Areas",
     "\\conf"
   ],
-  "SelectedNode": "\\package.json",
   "PreviewInSolutionExplorer": false
 }

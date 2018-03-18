@@ -13,7 +13,6 @@ class Commandes {
     constructor(prefix) {
         this.prefix = prefix != undefined ? prefix : "::";
         this.authorizedAttributes = ["force", "intelligence", "constitution", "dexterite", "intelligence", "charisme", "volonte", "luck", "sagesse"];
-        this.areasManager = new AreasManager();
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -568,7 +567,7 @@ class Commandes {
 
                 case "sell":
                     let sellIdItem = parseInt(messageArray[1], 10);
-                    let numberOfItemsToSell = parseInt(messageArray[2], 10)
+                    let numberOfItemsToSell = parseInt(messageArray[2], 10);
                     numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
                     //console.log(numberOfItemsToSell);
                     msg = "";
@@ -583,8 +582,8 @@ class Commandes {
                         } else {
                             msg = "Vous devez entrez l'ID de l'item à vendre !";
                         }
-                    } else {
-                        msg = "Vous devez être dans une ville pour pouvoir vendre vos objets."
+                    } else {;
+                        msg = "Vous devez être dans une ville pour pouvoir vendre vos objets.";
                     }
 
 
@@ -813,6 +812,11 @@ class Commandes {
                 case "emojiList" :
                     const emojiList = message.guild.emojis.map(e => e.toString()).join(" ");
                     message.channel.send(emojiList);
+                    break;
+
+                case "token":
+                    msg = "Hi, you have requested your unique token to use our Mobile/Web App.\n Do not share this token with anyone.\n Your token is : " + this.connectedUsers[authorIdentifier].getToken();
+                    message.author.send(msg);
                     break;
             }
         }

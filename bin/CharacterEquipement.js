@@ -170,6 +170,14 @@ class CharacterEquipement {
         return str;
     }
 
+    apiGetItem(type) {
+        let embed;
+        if (this.objects[type]) {
+            return this.objects[type];
+        }
+        return {};
+    }
+
 }
 
 module.exports = CharacterEquipement;

@@ -188,6 +188,36 @@ class CharacterInventory {
         return null;
     }
 
+    /*
+     *      API CALLS
+    */
+    apiGetInv(page) {
+        page = page ? page - 1 : 0;
+        let keys = Object.keys(this.objects);
+        let apiReturn = {
+            nbrPages: 0, inv: {}};
+        if (keys.length > 0) {
+            // Doing pagination
+            let paginated = keys.slice(page * 8, (page + 1) * 8);
+            if (paginated.length === 0) {
+                page = 0;
+                paginated = keys.slice(page * 8, (page + 1) * 8)
+            }
+
+            // Create string for each objects
+            for (let i of paginated) {
+                apiReturn.inv[i] = this.objects[i];
+            }
+        }
+        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : "1";
+        apiReturn.nbrPages = nbrOfPages;
+        apiReturn.page = page + 1;
+        return apiReturn;
+    }
+
+    apiGetItem(id) {
+        return this.objects[id];
+    }
 
 }
 

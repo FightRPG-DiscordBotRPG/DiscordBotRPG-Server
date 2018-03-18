@@ -6,6 +6,8 @@ const FightManager = require("./bin/FightManager");
 const User = require("./bin/User");
 const conn = require("./conf/mysql.js");
 const Globals = require("./bin/Globals.js");
+const crypto = require("crypto");
+const AreasManager = require("./bin/Areas/AreasManager.js");
 
 
 var bot = new Discord.Client();
@@ -27,16 +29,25 @@ bot.on("ready", () => {
 // Key Don't open
 bot.login(Key);
 
+
+// UNDER CONSTRUCTION SUBJECT TO CHANGE
 var connectedUsers = {};
 var connectedGuilds = {};
 
+Globals.connectedUsers = connectedUsers;
+Globals.connectedGuilds = connectedGuilds;
+Globals.areasManager = new AreasManager();
+
+
 var fightManager = new FightManager();
 var ChatReceiver = new Commandes(prefix);
+var areasManager = new AreasManager();
 ChatReceiver.bot = bot;
 ChatReceiver.fightManager = fightManager;
 ChatReceiver.connectedUsers = connectedUsers;
 ChatReceiver.nbrConnectedUsers = 0;
 ChatReceiver.connectedGuilds = connectedGuilds;
+ChatReceiver.areasManager = Globals.areasManager;
 
 
 
@@ -45,12 +56,7 @@ bot.on('message', (message) => {
 });
 
 
-/* 
- * API HERE
-*/
+// Load api after all 
+const ApiResponder = require("./api/ApiResponder.js");
 
-const express = require("express"),
-    app = express(),
-    port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log("Starting RESTful api server on: " + port));
