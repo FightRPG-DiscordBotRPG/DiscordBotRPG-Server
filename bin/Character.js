@@ -164,19 +164,15 @@ class Character {
                 // Principaux
                 case "force":
                     this.stats.force += nbr;
-                    this.stats.saveThisStat(stat);
                     break;
                 case "intelligence":
                     this.stats.intelligence += nbr;
-                    this.stats.saveThisStat(stat);
                     break;
                 case "constitution":
                     this.stats.constitution += nbr;
-                    this.stats.saveThisStat(stat);
                     break;
                 case "dexterite":
                     this.stats.dexterite += nbr;
-                    this.stats.saveThisStat(stat);
                     break;
 
                 /** Primaire non montable
@@ -204,7 +200,7 @@ class Character {
                     this.stats.luck += nbr;
                     break;
             }
-
+            this.stats.saveThisStat(stat);
             // Remove attributes points
 
             this.statPoints -= nbr;
@@ -230,7 +226,7 @@ class Character {
     }
 
     getResetStatsValue() {
-        return Math.round((this.getLevel() * Globals.resetStatsPricePerLevel));
+        return Math.round(((this.getLevel() - 1) * Globals.resetStatsPricePerLevel));
     }
 
     addExp(exp) {

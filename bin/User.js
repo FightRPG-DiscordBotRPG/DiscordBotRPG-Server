@@ -4,6 +4,7 @@ const Character = require("./Character.js");
 const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
+const Crypto = require("crypto");
 
 class User {
     // Discord User Info
@@ -19,10 +20,10 @@ class User {
         this.character.init();
 
         // Token for mobile / website use
-        let nToken = crypto.randomBytes(16).toString('hex');
+        let nToken = Crypto.randomBytes(16).toString('hex');
         let res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         while (res[0]) {
-            nToken = crypto.randomBytes(16).toString('hex');
+            nToken = Crypto.randomBytes(16).toString('hex');
             res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
         conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`, `token`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "');");

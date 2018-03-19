@@ -2,11 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\api",
-    "\\api\\controllers",
-    "\\api\\routes",
     "\\bin",
     "\\bin\\Areas",
+    "\\bin\\Stats",
     "\\conf"
   ],
+  "SelectedNode": "\\main.js",
   "PreviewInSolutionExplorer": false
 }

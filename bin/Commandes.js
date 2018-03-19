@@ -113,7 +113,6 @@ class Commandes {
                                 if (err.length == 0) {
                                     this.connectedGuilds[tGuild.id] = tGuild;
                                     this.connectedUsers[authorIdentifier].character.idGuild = tGuild.id;
-
                                     // Static delete
                                     Guild.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
 

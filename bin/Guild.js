@@ -29,14 +29,15 @@ class Guild {
         }
 
         // Verification si nom déjà pris
-        res = conn.query("SELECT idGuild FROM Guilds WHERE nom = '?';", [guildName]);
+        res = conn.query("SELECT idGuild FROM Guilds WHERE nom = ?;", [guildName]);
         if (res.length > 0) {
             err.push("Ce nom de guilde est déjà pris.");
             return err;
         }
 
         // Create guild
-        res = conn.query("INSERT INTO Guilds VALUES(NULL, '?', '', 1, 0);", [guildName])["insertId"];
+        res = conn.query("INSERT INTO Guilds VALUES(NULL, ?, '', 1, 0);", [guildName])["insertId"];
+        this.id = res;
 
         // Insert guild master
         conn.query("INSERT INTO GuildsMembers VALUES(" + idCharacter + ", " + res + " , 3)")
@@ -46,12 +47,11 @@ class Guild {
             "WHERE idCharacter = " + idCharacter + ";")[0];
         this.members[idCharacter] = {
             name: res["userName"],
-            rank: rank,
+            rank: 3,
             idUser: res["idUser"],
         }
         this.nbrMembers++;
 
-        this.id = res;
         this.name = guildName;
         // err.length = 0 => pas d'erreurs;
         return err;

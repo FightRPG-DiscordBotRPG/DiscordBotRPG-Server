@@ -93,7 +93,7 @@ api.use((req, res, next) => {
             res.locals.userid = id;
             next();
         } else {
-            res.status(401).send({ error: "Vous devez vous connecté en utilisant votre identifiant secret." });
+            res.status(401).send({ error: "UNKNOWN_USER" });
         }
 	}
 
@@ -111,6 +111,14 @@ api.use((req, res, next) => {
 
 	res.json(res.locals);
 });*/
+
+/*
+ *  Get test
+ */
+api.get("/", (req, res) => {
+    res.json({ exist : true });
+});
+
 
 /*
  *  INVENTORY
