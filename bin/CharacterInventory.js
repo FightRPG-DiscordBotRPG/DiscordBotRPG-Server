@@ -87,13 +87,22 @@ class CharacterInventory {
      */
     deleteAllFromInventory() {
         let empty = true;
+
+        // Update database inventory
+        conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id);
+
+        // Then delete all items
         for (let i in this.objects) {
-            conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id + " AND idItem = " + this.objects[i].id);
+            //conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id + " AND idItem = " + this.objects[i].id);
             this.objects[i].deleteItem();
             delete this.objects[i];
+
             empty = false;
         }
 
+
+
+        this.objects = this.objects.filter(val => val);
         if (empty) {
             return false;
         } else {
@@ -161,8 +170,8 @@ class CharacterInventory {
                 return true;
             }
         }
-        return false;*/
-        console.log(itemId);
+        return false;
+        console.log(itemId);*/
         if (this.objects[itemId]) {
             return true;
         }
@@ -206,12 +215,21 @@ class CharacterInventory {
 
             // Create string for each objects
             for (let i of paginated) {
-                apiReturn.inv[i] = this.objects[i];
+                apiReturn.inv[i] =
+                    {
+                        name: this.objects[i].name,
+                        desc: this.objects[i].desc,
+                        rarity: this.objects[i].rarity,
+                        rarityColor: this.objects[i].rarityColor,
+                        level: this.objects[i].level,
+                        typeName: this.objects[i].typeName,
+                        equipable: this.objects[i].equipable === 1 ? true : false,
+                        number: this.objects[i].number,
+                    };
             }
         }
         let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : "1";
         apiReturn.nbrPages = nbrOfPages;
-        apiReturn.page = page + 1;
         return apiReturn;
     }
 

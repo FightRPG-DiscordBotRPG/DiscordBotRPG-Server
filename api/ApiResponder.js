@@ -126,7 +126,7 @@ api.get("/", (req, res) => {
 
 api.get("/character/inventory", (req, res) => {
     let authorIdentifier = res.locals.userid;
-    let invPage = res.locals.parameters.page;
+    let invPage = parseInt(res.locals.parameters.page);
     let msg;
     if (invPage && Number.isInteger(invPage)) {
         //msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(invIdItem);

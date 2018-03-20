@@ -504,6 +504,7 @@ class Commandes {
 
                     break;
 
+                // Equip more than 1 item once
                 case "equip":
                     let toEquip = parseInt(messageArray[1], 10);
                     msg = "";
