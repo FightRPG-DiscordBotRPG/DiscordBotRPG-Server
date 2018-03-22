@@ -11,7 +11,7 @@ class Stats {
         this.force = 0;
         this.intelligence = 0;
         this.constitution = 0;
-        this.defense = 0;
+        this.armor = 0;
         this.dexterite = 0;
         this.charisme = 0;
         this.sagesse = 0;

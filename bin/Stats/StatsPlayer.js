@@ -21,7 +21,7 @@ class StatsPlayer extends Stats {
             let end = "";
             let beforeNumber = "";
             let statStr = "";
-            if (stat !== "defense") {
+            if (stat !== "armor") {
                 statStr = this[stat].toString() + "+" + otherStats[stat].toString();
             } else {
                 statStr = otherStats[stat].toString();

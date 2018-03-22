@@ -52,8 +52,24 @@ ChatReceiver.areasManager = Globals.areasManager;
 
 
 bot.on('message', (message) => {
-    ChatReceiver.reactTo(message);
+    try {
+        ChatReceiver.reactTo(message);
+    } catch (err) {
+        let msgError = "Oops something goes wrong, report the issue on (...) :\n";
+
+        let errorsLines = err.stack.split("\n");
+        let nameAndLine = errorsLines[1].split(" ");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split("\\");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split(")")[0];
+
+        msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
+
+        message.channel.send(msgError);
+    }
+    
+
 });
+
 
 
 // Load api after all 

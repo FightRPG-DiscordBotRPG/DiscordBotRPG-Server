@@ -68,6 +68,8 @@ class Commandes {
 
             }
 
+            console.log("User : " + message.author.username + " Attemp command : \"" + command + "\"")
+
             // Detect Commands
             switch (command) {
                 /*
@@ -464,7 +466,11 @@ class Commandes {
                         doIHaveThisItem = this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
                         if (doIHaveThisItem) {
                             msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee)
-                        }/* else {
+                        } else {
+                            msg = "```Vous n'avez pas cet objet```";
+                        }
+
+                        /*else {
                             idItemToSee = this.connectedUsers[authorIdentifier].character.equipement.doIHaveThisItem(idItemToSee);
                             
                             if (idItemToSee > 0) {

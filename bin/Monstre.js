@@ -47,7 +47,6 @@ class Monstre {
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.level, 2))) / 6 * bonus);
         this.money = Math.round((Math.random() * (this.level * 2 - this.level) + this.level) * bonus);
-        console.log(this.money);
     }
 
     updateStats() {
@@ -99,7 +98,7 @@ class Monstre {
 
     // percentage reduction
     damageDefenceReduction() {
-        let reduction = Math.round(this.stats.defense / ((8 * (this.level ^ 2)) / 7 + 5));
+        let reduction = Math.round(this.stats.armor / ((8 * (this.level ^ 2)) / 7 + 5));
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 

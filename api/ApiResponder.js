@@ -112,6 +112,14 @@ api.use((req, res, next) => {
 	res.json(res.locals);
 });*/
 
+api.get("/onlineplayers", (req, res) => {
+    let arr = [];
+    for (let i in connectedUsers) {
+        arr.push(connectedUsers[i].username);
+    }
+    res.json(arr);
+});
+
 /*
  *  Get test
  */
@@ -151,13 +159,15 @@ api.get("/character/item", (req, res) => {
         doIHaveThisItem = connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
         if (doIHaveThisItem) {
             msg = connectedUsers[authorIdentifier].character.inv.apiGetItem(idItemToSee)
+        } else {
+            msg = { error: "Vous n'avez pas cet objet." };
         }
     } else {
         idItemToSee = getEquipableIDType(raw);
         if (idItemToSee > 0) {
             msg = connectedUsers[authorIdentifier].character.equipement.apiGetItem(idItemToSee);
         } else {
-            msg = {};
+            msg = { error: "Cet emplacement n'existe pas." };
         }
     }
     res.json(msg);

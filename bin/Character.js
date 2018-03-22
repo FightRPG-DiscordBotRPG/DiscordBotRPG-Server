@@ -143,7 +143,7 @@ class Character {
 
     // percentage reduction
     damageDefenceReduction() {
-        let reduction = Math.round((this.stats.defense + this.equipement.stats.defense) / ((8 * (this.level ^ 2)) / 7 + 5));
+        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (this.level ^ 2)) / 7 + 5));
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 

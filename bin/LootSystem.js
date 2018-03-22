@@ -47,7 +47,7 @@ class LootSystem {
         // To Add Other types
 
 
-        console.log("Someone tried to loot this rarity : " + rarity + " He got : " + chance);
+        //console.log("Someone tried to loot this rarity : " + rarity + " He got : " + chance);
         return rarity;
     }
 
@@ -77,7 +77,7 @@ class LootSystem {
             //Une arme
             stats.force = Math.ceil(level * ratio * 2);
         } else {
-            stats.defense = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+            stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
         }
 
         while (alreadyDone > 0) {
@@ -88,7 +88,7 @@ class LootSystem {
                 r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
             }
 
-            if (r != "defense") {
+            if (r != "armor") {
                 stats[r] = Math.ceil(level * ratio * 2);
             } else {
                 stats[r] = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);

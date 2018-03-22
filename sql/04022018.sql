@@ -595,7 +595,7 @@ USE `discord_bot_rpg`;
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (1, 'force', NULL);
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (2, 'intelligence', NULL);
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (3, 'constitution', NULL);
-INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (4, 'defense', NULL);
+INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (4, 'armor', NULL);
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (5, 'dexterite', NULL);
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (6, 'sagesse', NULL);
 INSERT INTO `discord_bot_rpg`.`Stats` (`idStat`, `nom`, `desc`) VALUES (7, 'volonte', NULL);
