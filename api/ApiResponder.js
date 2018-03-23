@@ -160,7 +160,7 @@ api.get("/character/item", (req, res) => {
         if (doIHaveThisItem) {
             msg = connectedUsers[authorIdentifier].character.inv.apiGetItem(idItemToSee);
 
-            if(msg.equipable == true)
+            if (msg.equipable == true && connectedUsers[authorIdentifier].character.equipement.objects[getEquipableIDType(msg.typeName)])
                 msg["equippedItemStats"] = connectedUsers[authorIdentifier].character.equipement.objects[getEquipableIDType(msg.typeName)].stats;
         } else {
             msg = { error: "Vous n'avez pas cet objet." };
@@ -228,6 +228,73 @@ api.post("/character/sellallitems", (req, res) => {
         msg["error"] = error;
     } else {
         msg["itemValue"] = allSelled;
+    }
+    res.json(msg);
+});
+
+/*
+ * Equipement Related 
+ */
+
+api.post("/character/equip", (req, res) => {
+    let toEquip = parseInt(res.locals.parameters.iditem, 10);
+    let authorIdentifier = res.locals.userid;
+    let msg = {};
+    let error;
+    let typeName = "head";
+
+    if (toEquip !== undefined && Number.isInteger(toEquip)) {
+        if (connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(toEquip)) {
+            if (connectedUsers[authorIdentifier].character.inv.isEquipable(toEquip)) {
+                let swapItem = connectedUsers[authorIdentifier].character.equipement.equip(connectedUsers[authorIdentifier].character.inv.objects[toEquip].id);
+                typeName = connectedUsers[authorIdentifier].character.inv.objects[toEquip].typeName;
+                connectedUsers[authorIdentifier].character.inv.deleteFromInventory(toEquip);
+                if (swapItem > 0) {
+                    connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
+                }
+            } else {
+                error = "Vous ne pouvez pas équiper cet objet.";
+            }
+        } else {
+            error = "Vous n'avez pas cet objet !";
+        }
+    } else {
+        error = "Vous devez entrer l'identifiant de l'objet à équiper.";
+    }
+
+    if (error) {
+        msg["error"] = error;
+    } else {
+        msg["newItemId"] = typeName;
+    }
+
+    res.json(msg);
+
+    
+});
+
+api.post("/character/unequip", (req, res) => {
+    let toUnequip = getEquipableIDType(res.locals.parameters.iditem);
+    let authorIdentifier = res.locals.userid;
+    let error;
+    let idToSend = 0;
+    let msg = {};
+    if (toUnequip != -1 && Number.isInteger(toUnequip)) {
+        let itemToInventory = connectedUsers[authorIdentifier].character.equipement.unEquip(toUnequip);
+        if (itemToInventory > 0) {
+            connectedUsers[authorIdentifier].character.inv.addToInventory(itemToInventory);
+            idToSend = connectedUsers[authorIdentifier].character.inv.objects.length - 1;
+        } else {
+            error = "Vous n'avez pas d'objets d'équipé dans cet emplacement !";
+        }
+    } else {
+        error = "Vous devez choisir le type à retirer.";
+    }
+
+    if (error) {
+        msg["error"] = error;
+    } else {
+        msg["newItemId"] = idToSend;
     }
     res.json(msg);
 });

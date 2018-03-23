@@ -29,8 +29,7 @@ class StatsItems extends Stats{
         let count = 1;
         let totalSpaces = 30;
         let noStats = true;
-        compareStats = compareStats ? compareStats : {};
-        console.log(compareStats);
+        compareStats = compareStats != undefined ? compareStats : {};
         for (let stat in Globals.statsIds) {
             if (this[stat] > 0 || compareStats[stat]) {
                 let diff = compareStats[stat] >= 0 ? " -> " + (this[stat] - compareStats[stat]) : " -> 0";

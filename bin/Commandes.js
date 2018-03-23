@@ -466,7 +466,14 @@ class Commandes {
                         doIHaveThisItem = this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
                         if (doIHaveThisItem) {
                             let typeName = this.connectedUsers[authorIdentifier].character.inv.objects[idItemToSee].typeName;
-                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats);
+
+                            let oneEquipped = this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)] ? true : false;
+                            let equippedStats;
+
+                            if (oneEquipped)
+                                equippedStats = this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats;
+
+                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats);
                         } else {
                             msg = "```Vous n'avez pas cet objet```";
                         }
@@ -539,9 +546,9 @@ class Commandes {
                     break;
 
                 case "unequip":
-                    let toUnequip = parseInt(messageArray[1], 10);
+                    let toUnequip = this.getEquipableIDType(messageArray[1]);
                     msg = "";
-                    if (toUnequip && Number.isInteger(toUnequip)) {
+                    if (toUnequip != -1 && Number.isInteger(toUnequip)) {
                         //let swapItem = this.connectedUsers[authorIdentifier].character.equ
                         let itemToInventory = this.connectedUsers[authorIdentifier].character.equipement.unEquip(toUnequip);
                         if (itemToInventory > 0) {
