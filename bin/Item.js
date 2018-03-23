@@ -103,10 +103,11 @@ class Item {
             level: this.level,        
             typeName: this.typeName,
             equipable: this.equipable,
-            stats: this.stats,
             number: this.number,
             price: this.getCost()
         };
+        if (this.equipable == true)
+            toApiObject.stats = this.stats
         return toApiObject;
     }
 

@@ -158,8 +158,10 @@ api.get("/character/item", (req, res) => {
         //msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage);
         doIHaveThisItem = connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
         if (doIHaveThisItem) {
-            msg = connectedUsers[authorIdentifier].character.inv.apiGetItem(idItemToSee)
-            msg["equippedItemStats"] = connectedUsers[authorIdentifier].character.equipement.objects[getEquipableIDType(msg.typeName)].stats;
+            msg = connectedUsers[authorIdentifier].character.inv.apiGetItem(idItemToSee);
+
+            if(msg.equipable == true)
+                msg["equippedItemStats"] = connectedUsers[authorIdentifier].character.equipement.objects[getEquipableIDType(msg.typeName)].stats;
         } else {
             msg = { error: "Vous n'avez pas cet objet." };
         }
