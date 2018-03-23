@@ -60,7 +60,7 @@ class Monstre {
     }
 
     damageCalcul() {
-        let baseDamage = (this.stats.force + 1) * 2;
+        let baseDamage = (this.stats.strength + 1) * 2;
         return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
     }
 
@@ -70,7 +70,7 @@ class Monstre {
         // Maximum Stat for this level
         let max = this.getLevel() * 2 * 4;
         // Calcul of chance
-        let critique = this.stats.dexterite / max;
+        let critique = this.stats.dexterity / max;
 
         // Cap to 50%;
         critique = critique > .5 ? .5 : critique;
@@ -79,14 +79,14 @@ class Monstre {
 
     }
 
-    stun(advVolonte) {
+    stun(advWill) {
         // LAST NUMBER = NBR MAX ITEM
         // LIMIT 50%
         // Maximum Stat for this level
         let max = this.getLevel() * 2 * 4;
         // Calcul of chance
-        let stun = (this.stats.charisme) / max;
-        let otherResist = (advVolonte) / max;
+        let stun = (this.stats.charisma) / max;
+        let otherResist = (advWill) / max;
 
         // Cap to 50%;
         stun = stun > .5 ? .5 : stun;

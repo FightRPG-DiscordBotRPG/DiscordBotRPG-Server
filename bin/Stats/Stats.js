@@ -8,14 +8,14 @@ class Stats {
     // Used by All Player/Enemies
     constructor(id) {
         this.id = id;
-        this.force = 0;
-        this.intelligence = 0;
+        this.strength = 0;
+        this.intellect = 0;
         this.constitution = 0;
         this.armor = 0;
-        this.dexterite = 0;
-        this.charisme = 0;
-        this.sagesse = 0;
-        this.volonte = 0;
+        this.dexterity = 0;
+        this.charisma = 0;
+        this.wisdom = 0;
+        this.will = 0;
         this.perception = 0;
         this.luck = 0;
     }

@@ -95,7 +95,7 @@ class FightManager {
 
             // Calcul du stun si pas critique
             if (!critical) {
-                stun = this.fights[userid].user.character.stun(this.fights[userid].enemy.stats.volonte);
+                stun = this.fights[userid].user.character.stun(this.fights[userid].enemy.stats.will);
             }
 
 
@@ -119,7 +119,7 @@ class FightManager {
 
             // Stun
             if (!critical) {
-                stun = this.fights[userid].enemy.stun(this.fights[userid].user.character.stats.volonte + this.fights[userid].user.character.equipement.stats.volonte);
+                stun = this.fights[userid].enemy.stun(this.fights[userid].user.character.stats.will + this.fights[userid].user.character.equipement.stats.will);
             }
 
             this.fights[userid].user.character.actualHP -= damage;
@@ -148,7 +148,7 @@ class FightManager {
             money = Math.round(money);
             if (this.fights[userid].user.character.getLevel() < Globals.maxLevel) {
                 xp = this.fights[userid].enemy.xp * this.fights[userid].enemy.difficulty.value * this.calMultDiffLevel(this.fights[userid].enemy.getLevel(), this.fights[userid].user.character.getLevel());
-                xp = Math.round(xp * (1 + this.fights[userid].user.character.stats["sagesse"] / 2));
+                xp = Math.round(xp * (1 + this.fights[userid].user.character.stats["wisdom"] / 2));
                 this.fights[userid].user.character.addExp(xp);
             }
 
@@ -256,7 +256,7 @@ class FightManager {
             if (attacker.character.area == defender.character.area) {
                 attacker.character.updateStats();
                 defender.character.updateStats();
-                let init = (attacker.character.stats.intelligence + attacker.character.equipement.stats.intelligence) <= (defender.character.stats.intelligence + defender.character.equipement.stats.intelligence);
+                let init = (attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect);
                 init = init ? 1 : 0;
                 // Utilisation de "defenderHp" et "attackerHp"
                 // Puisqu'on le defender peut être entrain de combattre un montre
@@ -316,7 +316,7 @@ class FightManager {
 
             // Calcul du stun si pas critique
             if (!critical) {
-                stun = this.fights[userid].attacker.character.stun(this.fights[userid].defender.character.stats.volonte + this.fights[userid].defender.character.equipement.stats.volonte);
+                stun = this.fights[userid].attacker.character.stun(this.fights[userid].defender.character.stats.will + this.fights[userid].defender.character.equipement.stats.will);
             }
 
             this.fights[userid].defenderHP -= damage;
@@ -340,7 +340,7 @@ class FightManager {
 
             // Calcul du stun si pas critique
             if (!critical) {
-                stun = this.fights[userid].defender.character.stun(this.fights[userid].attacker.character.stats.volonte + this.fights[userid].attacker.character.equipement.stats.volonte);
+                stun = this.fights[userid].defender.character.stun(this.fights[userid].attacker.character.stats.will + this.fights[userid].attacker.character.equipement.stats.will);
             }
 
 

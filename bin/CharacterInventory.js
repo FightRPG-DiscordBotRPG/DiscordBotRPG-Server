@@ -152,17 +152,18 @@ class CharacterInventory {
      * Send string to show - supposing idEmplacement valid
      * @param {any} idEmplacement
      */
-    seeThisItem(idEmplacement) {
+    seeThisItem(idEmplacement, compareStats) {
         let embed = new Discord.RichEmbed()
             .setColor(this.objects[idEmplacement].rarityColor)
             .addField(this.objects[idEmplacement].name + " | " + this.objects[idEmplacement].typeName + " | " + this.objects[idEmplacement].rarity + " | Lv : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc)
-            .addField("Attributes : ", this.objects[idEmplacement].stats.toStr())
+            .addField("Attributes : ", this.objects[idEmplacement].stats.toStr(compareStats))
         return embed;
     }
 
     /**
      * To Know if this emplacement is used
      * @param {any} itemId
+     * @returns {boolean}
      */
     doIHaveThisItem(itemId) {
         /*for (let i in this.objects) {
@@ -234,7 +235,7 @@ class CharacterInventory {
     }
 
     apiGetItem(id) {
-        return this.objects[id];
+        return this.objects[id].toApi();
     }
 
 }

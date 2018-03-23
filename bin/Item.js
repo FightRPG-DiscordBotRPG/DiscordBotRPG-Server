@@ -90,6 +90,27 @@ class Item {
         return Math.round((this.level * (1 + this.idRarity * 2)) * (number <= this.number ? number : this.number));
     }
 
+    /* 
+     * API CALLS HERE
+     */
+
+    toApi() {
+        let toApiObject = {
+            name: this.name,
+            desc: this.desc,
+            rarity: this.rarity,
+            rarityColor: this.rarityColor,
+            level: this.level,        
+            typeName: this.typeName,
+            equipable: this.equipable,
+            stats: this.stats,
+            number: this.number,
+            price: this.getCost()
+        };
+        return toApiObject;
+    }
+
+
 }
 
 module.exports = Item;

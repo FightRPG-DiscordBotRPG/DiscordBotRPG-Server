@@ -24,18 +24,22 @@ class StatsItems extends Stats{
         conn.query("DELETE FROM itemsstats WHERE idItem = " + this.id + ";");
     }
 
-    toStr() {
+    toStr(compareStats) {
         let str = "```";
         let count = 1;
-        let totalSpaces = 25;
+        let totalSpaces = 30;
         let noStats = true;
+        compareStats = compareStats ? compareStats : {};
+        console.log(compareStats);
         for (let stat in Globals.statsIds) {
-            if (this[stat] > 0) {
+            if (this[stat] > 0 || compareStats[stat]) {
+                let diff = compareStats[stat] >= 0 ? " -> " + (this[stat] - compareStats[stat]) : " -> 0";
+                
                 noStats = false;
                 let end = "";
                 let beforeNumber = "";
                 let statStr = this[stat].toString();
-                let nbrChar = stat.length + 2;
+                let nbrChar = stat.length + 2 + diff.length;
                 let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                 beforeNumber += " ".repeat(lessSpaces);
                 if (count === 2) {
@@ -43,10 +47,10 @@ class StatsItems extends Stats{
                     count = 0;
                 } else {
 
-                    end += " ".repeat(3) + "|" + " ".repeat(3);
+                    end += " ".repeat(1) + "|" + " ".repeat(1);
                 }
                 count++;
-                str += "" + stat + beforeNumber + "[" + this[stat] + "]" + end;
+                str += "" + stat + beforeNumber + "[" + this[stat] + diff + "]" + end;
             }
 
         }

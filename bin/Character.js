@@ -104,7 +104,7 @@ class Character {
     }
 
     damageCalcul() {
-        let baseDamage = (this.stats.force + 1 + this.equipement.stats.force) * 2;
+        let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
         return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
     }
 
@@ -115,7 +115,7 @@ class Character {
         // Maximum Stat for this level
         let max = this.getLevel() * 2 * 4;
         // Calcul of chance
-        let critique = (this.stats.dexterite + this.equipement.stats.dexterite) / max;
+        let critique = (this.stats.dexterity + this.equipement.stats.dexterity) / max;
 
         // Cap to 50%;
         critique = critique > .5 ? .5 : critique;
@@ -124,14 +124,14 @@ class Character {
 
     }
 
-    stun(advVolonte) {
+    stun(advWill) {
         // LAST NUMBER = NBR MAX ITEM
         // LIMIT 50%
         // Maximum Stat for this level
         let max = this.getLevel() * 2 * 4;
         // Calcul of chance
-        let stun = (this.stats.charisme + this.equipement.stats.charisme) / max;
-        let otherResist = (advVolonte) / max;
+        let stun = (this.stats.charisma + this.equipement.stats.charisma) / max;
+        let otherResist = (advWill) / max;
 
         // Cap to 50%;
         stun        = stun > .5 ? .5 : stun;
@@ -162,17 +162,17 @@ class Character {
         if (nbr > 0 && nbr <= this.statPoints) {
             switch (stat) {
                 // Principaux
-                case "force":
-                    this.stats.force += nbr;
+                case "strength":
+                    this.stats.strength += nbr;
                     break;
-                case "intelligence":
-                    this.stats.intelligence += nbr;
+                case "intellect":
+                    this.stats.intellect += nbr;
                     break;
                 case "constitution":
                     this.stats.constitution += nbr;
                     break;
-                case "dexterite":
-                    this.stats.dexterite += nbr;
+                case "dexterity":
+                    this.stats.dexterity += nbr;
                     break;
 
                 /** Primaire non montable
@@ -184,14 +184,14 @@ class Character {
 
                 // Secondaires
 
-                case "charisme":
-                    this.stats.charisme += nbr;
+                case "charisma":
+                    this.stats.charisma += nbr;
                     break;
-                case "sagesse":
-                    this.stats.sagesse += nbr;
+                case "wisdom":
+                    this.stats.wisdom += nbr;
                     break;
-                case "volonte":
-                    this.stats.volonte += nbr;
+                case "will":
+                    this.stats.will += nbr;
                     break;
                 case "perception":
                     this.stats.perception += nbr;

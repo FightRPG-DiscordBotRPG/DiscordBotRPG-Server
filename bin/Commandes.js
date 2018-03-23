@@ -12,7 +12,7 @@ const Guild = require("./Guild.js");
 class Commandes {
     constructor(prefix) {
         this.prefix = prefix != undefined ? prefix : "::";
-        this.authorizedAttributes = ["force", "intelligence", "constitution", "dexterite", "intelligence", "charisme", "volonte", "luck", "sagesse"];
+        this.authorizedAttributes = ["strength", "intellect", "constitution", "dexterity", "charisma", "will", "luck", "wisdom"];
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -465,7 +465,8 @@ class Commandes {
                         //msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage);
                         doIHaveThisItem = this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
                         if (doIHaveThisItem) {
-                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee)
+                            let typeName = this.connectedUsers[authorIdentifier].character.inv.objects[idItemToSee].typeName;
+                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats);
                         } else {
                             msg = "```Vous n'avez pas cet objet```";
                         }

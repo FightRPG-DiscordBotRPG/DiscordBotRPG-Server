@@ -173,7 +173,7 @@ class CharacterEquipement {
     apiGetItem(type) {
         let embed;
         if (this.objects[type]) {
-            return this.objects[type];
+            return this.objects[type].toApi();
         }
         return {};
     }

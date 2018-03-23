@@ -75,7 +75,7 @@ class LootSystem {
 
         if (objectType === 1) {
             //Une arme
-            stats.force = Math.ceil(level * ratio * 2);
+            stats.strength = Math.ceil(level * ratio * 2);
         } else {
             stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
         }
