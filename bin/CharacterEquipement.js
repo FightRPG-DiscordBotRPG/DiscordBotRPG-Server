@@ -179,14 +179,12 @@ class CharacterEquipement {
     }
 
     apiGetAllImages() {
-        let toReturn = {};
-        for (let type in Globals.equipsPossible) {
-            if (this.objects[type]) {
-                toReturn[type] = Globals.addr + "images/items/" + this.objects[type].image + ".png";
-            } else {
-                toReturn[type] = Globals.addr + "images/items/noitem.png";
-            }
+        let toReturn = {head: "", chest: "", legs: "", weapon: ""};
+
+        for (let i in this.objects) {
+            toReturn[this.objects[i].typeName] = "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png";
         }
+
         return toReturn;
     }
 

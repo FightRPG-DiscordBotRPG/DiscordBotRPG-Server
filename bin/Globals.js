@@ -17,7 +17,10 @@ for (let i = 0; i < res.length; ++i) {
 res = conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
 for (let i = 0; i < res.length; i++) {
     equipsPossible.push(res[i]["idType"]);
+
 }
+
+
 
 
 let rarityChances = {

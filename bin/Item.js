@@ -33,7 +33,7 @@ class Item {
         let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = "+this.id+";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.name = res["nomItem"];
-        this.desc = res["desc"] !== undefined ? res["desc"] : "Aucune description pour cet objet.";
+        this.desc = res["descItem"] !== undefined ? res["descItem"] : "Aucune description pour cet objet.";
         this.level = res["level"];
         this.image = res["imageItem"];
 

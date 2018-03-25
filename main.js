@@ -55,7 +55,7 @@ bot.on('message', (message) => {
     try {
         ChatReceiver.reactTo(message);
     } catch (err) {
-        let msgError = "Oops something goes wrong, report the issue on (...) :\n";
+        let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
 
         let errorsLines = err.stack.split("\n");
         let nameAndLine = errorsLines[1].split(" ");

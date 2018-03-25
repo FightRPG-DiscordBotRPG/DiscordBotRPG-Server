@@ -305,7 +305,7 @@ api.post("/character/unequip", (req, res) => {
 
 api.get("/character/equipment", (req, res) => {
     let authorIdentifier = res.locals.userid;
-    msg = connectedUsers[authorIdentifier].character.equipement.apiGetAllImages();;
+    let msg = connectedUsers[authorIdentifier].character.equipement.apiGetAllImages();;
     res.json(msg);
 });
 
