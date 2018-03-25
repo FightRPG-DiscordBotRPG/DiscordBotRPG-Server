@@ -36,8 +36,9 @@ class CharacterEquipement {
         let embed;
         if (this.objects[type]) {
             embed = new Discord.RichEmbed()
+                .setAuthor(this.objects[type].name, Globals.addr + "images/items/" + this.objects[type].image + ".png")
                 .setColor(this.objects[type].rarityColor)
-                .addField(this.objects[type].name + " | " + this.objects[type].typeName + " | " + this.objects[type].rarity + " | Lv : " + this.objects[type].level + " (Actuellement Equipé)", this.objects[type].desc)
+                .addField(this.objects[type].typeName + " | " + this.objects[type].rarity + " | Lv : " + this.objects[type].level + " (Actuellement Equipé)", this.objects[type].desc)
                 .addField("Attributes : ", this.objects[type].stats.toStr());
         } else {
             embed = "``` Vous n'avez rien d'équipé dans cet emplacement ```";
@@ -171,11 +172,22 @@ class CharacterEquipement {
     }
 
     apiGetItem(type) {
-        let embed;
         if (this.objects[type]) {
             return this.objects[type].toApi();
         }
-        return {};
+        return null;
+    }
+
+    apiGetAllImages() {
+        let toReturn = {};
+        for (let type in Globals.equipsPossible) {
+            if (this.objects[type]) {
+                toReturn[type] = Globals.addr + "images/items/" + this.objects[type].image + ".png";
+            } else {
+                toReturn[type] = Globals.addr + "images/items/noitem.png";
+            }
+        }
+        return toReturn;
     }
 
 }

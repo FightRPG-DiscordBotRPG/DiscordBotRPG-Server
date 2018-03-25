@@ -154,8 +154,9 @@ class CharacterInventory {
      */
     seeThisItem(idEmplacement, compareStats) {
         let embed = new Discord.RichEmbed()
+            .setAuthor(this.objects[idEmplacement].name, Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
-            .addField(this.objects[idEmplacement].name + " | " + this.objects[idEmplacement].typeName + " | " + this.objects[idEmplacement].rarity + " | Lv : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc)
+            .addField(this.objects[idEmplacement].typeName + " | " + this.objects[idEmplacement].rarity + " | Lv : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc)
             .addField("Attributes : ", this.objects[idEmplacement].stats.toStr(compareStats))
         return embed;
     }
@@ -220,6 +221,7 @@ class CharacterInventory {
                     {
                         name: this.objects[i].name,
                         desc: this.objects[i].desc,
+                        image: "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png",
                         rarity: this.objects[i].rarity,
                         rarityColor: this.objects[i].rarityColor,
                         level: this.objects[i].level,

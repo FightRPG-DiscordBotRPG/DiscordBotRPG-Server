@@ -14,6 +14,7 @@ const express = require("express"),
     api = express.Router(),
     port = process.env.PORT || 8080,
     url = require('url');
+const path = require('path');
 
 
 /*
@@ -26,7 +27,10 @@ app.listen(port, () => console.log("Starting RESTful api server on: " + port));
 
 /*https.createServer(httpsOptions, app).listen(8443);*/
 
+app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', api);
+
+console.log(path.join(__dirname, '../public'));
 
 var connectedUsers = Globals.connectedUsers;
 var connectedGuilds = Globals.connectedGuilds;
@@ -296,6 +300,12 @@ api.post("/character/unequip", (req, res) => {
     } else {
         msg["newItemId"] = idToSend;
     }
+    res.json(msg);
+});
+
+api.get("/character/equipment", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    msg = connectedUsers[authorIdentifier].character.equipement.apiGetAllImages();;
     res.json(msg);
 });
 

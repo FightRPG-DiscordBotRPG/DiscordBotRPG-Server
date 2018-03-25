@@ -66,7 +66,8 @@ var Globals = {
         "baseMembers": 4,
         "membersPerLevels": 2,
         "maxApplies" : 5,
-    }
+    },
+    "addr": "http://azz-tech.no-ip.org:8080/",
 
 
 }

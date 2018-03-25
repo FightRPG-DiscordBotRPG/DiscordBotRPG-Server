@@ -11,6 +11,7 @@ class Item {
         this.idBaseItem = 0;
         this.name = "";
         this.desc = "";
+        this.image = "";
         this.rarity = "";
         this.rarityColor = "";
         this.idRarity = 0;
@@ -29,11 +30,12 @@ class Item {
 
     loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = "+this.id+";")[0];
+        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = "+this.id+";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.name = res["nomItem"];
         this.desc = res["desc"] !== undefined ? res["desc"] : "Aucune description pour cet objet.";
         this.level = res["level"];
+        this.image = res["imageItem"];
 
         this.rarity = res["nomRarity"];
         this.rarityColor = res["couleurRarity"];
@@ -104,7 +106,8 @@ class Item {
             typeName: this.typeName,
             equipable: this.equipable,
             number: this.number,
-            price: this.getCost()
+            price: this.getCost(),
+            image: "http://192.168.1.20:8080/" + "images/items/" + this.image + ".png",
         };
         if (this.equipable == true)
             toApiObject.stats = this.stats
