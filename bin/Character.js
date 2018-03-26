@@ -162,42 +162,44 @@ class Character {
         if (nbr > 0 && nbr <= this.statPoints) {
             switch (stat) {
                 // Principaux
-                case "strength":
+                case "str":
                     this.stats.strength += nbr;
+                    stat = "strength";
                     break;
-                case "intellect":
+                case "int":
                     this.stats.intellect += nbr;
+                    stat = "intellect";
                     break;
-                case "constitution":
+                case "con":
                     this.stats.constitution += nbr;
+                    stat = "constitution";
                     break;
-                case "dexterity":
+                case "dex":
                     this.stats.dexterity += nbr;
+                    stat = "dexterity";
                     break;
-
-                /** Primaire non montable
-                case "defense":
-                    this.stats.defense += nbr;
-                    this.stats.saveThisStat(stat);
-                    break;
-                    **/
 
                 // Secondaires
 
-                case "charisma":
+                case "cha":
                     this.stats.charisma += nbr;
+                    stat = "charisma";
                     break;
-                case "wisdom":
+                case "wis":
                     this.stats.wisdom += nbr;
+                    stat = "wisdom";
                     break;
                 case "will":
                     this.stats.will += nbr;
+                    stat = "will";
                     break;
-                case "perception":
+                case "per":
                     this.stats.perception += nbr;
+                    stat = "perception";
                     break;
                 case "luck":
                     this.stats.luck += nbr;
+                    stat = "luck";
                     break;
             }
             this.stats.saveThisStat(stat);
@@ -206,11 +208,10 @@ class Character {
             this.statPoints -= nbr;
             this.saveStatsPoints();
             this.updateStats();
-            return "L'attribut " + stat + " a été augmenté et passe désormais à " + this.stats[stat]
-                + ". Il vous reste " + this.statPoints + " point" + (this.statPoints > 1 ? "s" : "") + " à répartir.";
+            return true;
         }
 
-        return "Vous ne pouvez pas distribuer autant de points !";
+        return false;
     }
 
     // Call for reseting stats
@@ -220,6 +221,7 @@ class Character {
             this.removeMoney(resetValue);
             this.stats.reset();
             this.statPoints = this.levelSystem.actualLevel * 5;
+            this.saveStatsPoints();
             return true;
         }
         return false;

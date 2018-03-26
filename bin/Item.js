@@ -110,7 +110,8 @@ class Item {
             image: "http://192.168.1.20:8080/" + "images/items/" + this.image + ".png",
         };
         if (this.equipable == true)
-            toApiObject.stats = this.stats
+            toApiObject.stats = this.stats.toApi();
+
         return toApiObject;
     }
 

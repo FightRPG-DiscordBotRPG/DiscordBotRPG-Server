@@ -44,6 +44,15 @@ class Stats {
         return str;
     }
 
+    toApi() {
+        let r = {};
+        let statsPossible = Object.keys(Globals.statsIds);
+        for (let i in statsPossible) {
+            r[statsPossible[i]] = this[statsPossible[i]];
+        }
+        return r;
+    }
+
 }
 
 module.exports = Stats;

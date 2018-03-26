@@ -3,13 +3,14 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Item = require("./Item.js");
 const Discord = require("discord.js");
+const Stats = require("./Stats/Stats.js");
 
 class CharacterEquipement {
     // Discord User Info
     constructor(id) {
         this.id = id;
         this.objects = {};
-        this.stats = {};
+        this.stats = new Stats();
     }
 
     // Load equipement from DB
@@ -50,10 +51,6 @@ class CharacterEquipement {
 
     // A faire lors du chargement de la bdd
     loadStats() {
-        for (let s in Globals.statsIds) {
-            // Init stat
-            this.stats[s] = 0;
-        }
         // Pour chaque objets
         for (let i in this.objects) {
             // Pour chaque stats

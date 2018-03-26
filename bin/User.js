@@ -85,6 +85,26 @@ class User {
         return embed;
     }
 
+    // Info pannel API
+    apiInfoPanel() {
+        let infos = {
+            actualXp: this.character.levelSystem.actualXP,
+            xpNextLevel: this.character.levelSystem.expToNextLevel,
+            username: this.username,
+            avatar: this.avatar,
+            statPoints: this.character.statPoints,
+            resetValue: this.character.getResetStatsValue(),
+            stats: this.character.stats.toApi(),
+            level: this.character.getLevel(),
+            money: this.character.money,
+            honor: this.character.honorPoints,
+            maxLevel: Globals.maxLevel,
+            statsEquipment: this.character.equipement.stats.toApi(),
+
+        };
+        return infos;
+    }
+
 
 }
 

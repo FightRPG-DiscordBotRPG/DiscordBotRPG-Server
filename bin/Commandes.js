@@ -12,7 +12,7 @@ const Guild = require("./Guild.js");
 class Commandes {
     constructor(prefix) {
         this.prefix = prefix != undefined ? prefix : "::";
-        this.authorizedAttributes = ["strength", "intellect", "constitution", "dexterity", "charisma", "will", "luck", "wisdom"];
+        this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis"];
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -809,13 +809,19 @@ class Commandes {
                     break;
 
                 case "up":
-                    // TODO: Change after
                     if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
-                        let reply = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
-                        message.reply(reply);
+                        let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
+                        if (done) {
+                            msg = "L'attribut " + stat + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[messageArray[1]]
+                                + ". Il vous reste " + this.connectedUsers[authorIdentifier].character.statPoints + " point" + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ? "s" : "") + " à répartir."
+                        } else {
+                            msg = "Vous ne pouvez pas distribuer autant de points !";
+                        }
                     } else {
-                        message.reply("Cet Attrbiut n'existe pas");
+                        msg = "Cet Attrbiut n'existe pas";
                     }
+
+                    message.reply(msg);
                     break;
 
                 case "salty":

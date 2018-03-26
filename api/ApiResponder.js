@@ -131,6 +131,54 @@ api.get("/", (req, res) => {
     res.json({ exist : true });
 });
 
+/*
+ *  CHARACTER
+ */
+
+api.get("/character", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    res.json(connectedUsers[authorIdentifier].apiInfoPanel());
+});
+
+/*
+if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
+    let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
+    if (done) {
+        msg = "L'attribut " + stat + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[messageArray[1]]
+            + ". Il vous reste " + this.connectedUsers[authorIdentifier].character.statPoints + " point" + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ? "s" : "") + " à répartir."
+    } else {
+        msg = "Vous ne pouvez pas distribuer autant de points !";
+    }
+} else {
+    msg = "Cet Attrbiut n'existe pas";
+}
+
+message.reply(msg);*/
+
+api.post("/character/upstat", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    let stat = res.locals.parameters.stat;
+    let nbr = parseInt(res.locals.parameters.number, 10);
+    let msg = {};
+
+    let done = connectedUsers[authorIdentifier].character.upStat(stat, nbr);
+    if (!done) {
+        msg["error"] = "Vous ne pouvez pas faire cela.";
+    }
+
+    res.json(msg);
+});
+
+
+api.post("/character/reset", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    let msg = {};
+    if (!connectedUsers[authorIdentifier].character.resetStats()) {
+        msg["error"] = "Vous n'avez pas assez d'argent pour reset vos stats !";
+    }
+    res.json(msg);
+});
+
 
 /*
  *  INVENTORY
@@ -153,7 +201,7 @@ api.get("/character/inventory", (req, res) => {
 api.get("/character/item", (req, res) => {
     let authorIdentifier = res.locals.userid;
     let raw = res.locals.parameters.iditem;
-    let idItemToSee = parseInt(res.locals.parameters.iditem,10);
+    let idItemToSee = parseInt(res.locals.parameters.iditem, 10);
     let msg;
     let doIHaveThisItem = false;
 
