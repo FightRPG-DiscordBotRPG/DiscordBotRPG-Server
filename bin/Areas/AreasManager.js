@@ -16,10 +16,10 @@ class AreasManager {
         let res = conn.query("SELECT idArea, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType ORDER BY AreaLevels ASC");
         for (let i in res) {
             switch (res[i].NomAreaType) {
-                case "Wild":
+                case "wild":
                     this.areas.set(res[i].idArea, new WildArea(res[i].idArea));
                     break;
-                case "City":
+                case "city":
                     this.areas.set(res[i].idArea, new CityArea(res[i].idArea));
                     break;
             }
@@ -53,6 +53,14 @@ class AreasManager {
         return this.areas.get(idArea).toStr();
     }
 
+    addOnePlayer(idArea) {
+        this.areas.get(idArea).nbrPlayers++;
+    }
+
+    removeOnePlayer(idArea) {
+        this.areas.get(idArea).nbrPlayers--;
+    }
+
     seeAllAreas() {
         let str = "```";
 
@@ -73,10 +81,10 @@ class AreasManager {
         // Map
         for (let [key, value] of this.areas) {
             switch (this.areas.get(key).areaType) {
-                case "Wild":
+                case "wild":
                     str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
                     break;
-                case "City":
+                case "city":
                     str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
                     break;
             }
@@ -87,7 +95,7 @@ class AreasManager {
     }
 
     canISellToThisArea(idArea) {
-        if (this.areas.get(idArea).areaType == "City") {
+        if (this.areas.get(idArea).areaType == "city") {
             return true;
         }
         return false;
@@ -140,6 +148,28 @@ class AreasManager {
                 this.areas.get(key).unclaim();
             }
         }
+    }
+
+
+
+    /*
+     * API
+     */
+    toApi(actualArea) {
+        let areas = {};
+        for (let i in Globals.areasTypes) {
+            areas[Globals.areasTypes[i]] = [];
+        }
+
+        for (let [key, value] of this.areas) {
+            areas[this.areas.get(key).areaType].push(this.areas.get(key).toApiLight());
+            if (key == actualArea) {
+                areas[this.areas.get(key).areaType][areas[this.areas.get(key).areaType].length - 1].actual = true;
+            } else {
+                areas[this.areas.get(key).areaType][areas[this.areas.get(key).areaType].length - 1].actual = false;
+            }
+        }
+        return areas;
     }
 
 

@@ -84,6 +84,7 @@ api.use((req, res, next) => {
                 connectedUsers[id] = new User(id, "API_CALL_DEFAULT_USERNAME");
                 connectedUsers[id].loadUser();
                 console.log(sizeof(connectedUsers));
+                areasManager.addOnePlayer(connectedUsers[id].character.area);
             }
             // Load guild
             if (connectedUsers[id].character.isInGuild()) {
@@ -130,6 +131,16 @@ api.get("/onlineplayers", (req, res) => {
 api.get("/", (req, res) => {
     res.json({ exist : true });
 });
+
+/*
+ * Areas
+ */
+
+api.get("/areas", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    res.json(areasManager.toApi(connectedUsers[authorIdentifier].character.area));
+});
+
 
 /*
  *  CHARACTER

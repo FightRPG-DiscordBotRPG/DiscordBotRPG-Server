@@ -6,6 +6,7 @@ let maxLevel = conn.query("SELECT COUNT(*) FROM levelsrequire")[0]["COUNT(*)"];
 let maxStatsId = conn.query("SELECT COUNT(*) FROM stats")[0]["COUNT(*)"];
 let statsIds = {};
 let equipsPossible = [];
+let areasTypes = [];
 let res;
 
 // All Stats
@@ -17,7 +18,11 @@ for (let i = 0; i < res.length; ++i) {
 res = conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
 for (let i = 0; i < res.length; i++) {
     equipsPossible.push(res[i]["idType"]);
+}
 
+res = conn.query("SELECT NomAreaType FROM areastypes");
+for (let i = 0; i < res.length; i++) {
+    areasTypes.push(res[i]["NomAreaType"]);
 }
 
 
@@ -60,6 +65,7 @@ var Globals = {
     ],
     "equipsPossible": equipsPossible,
     "rarityChances": rarityChances,
+    "areasTypes": areasTypes,
     "chanceToFightTheMonsterYouWant": 0.63,
     "resetStatsPricePerLevel": 250,
     "guilds": {

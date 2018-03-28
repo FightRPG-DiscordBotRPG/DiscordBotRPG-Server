@@ -10,7 +10,7 @@ class Area {
         this.image = "";
         this.levels = "";
         this.areaType = "";
-        this.nbrPLayers = 0;
+        this.nbrPlayers = 0;
         this.owner = 0;
         this.fightPossible = false;
         this.resources = [];
@@ -27,7 +27,7 @@ class Area {
         this.image = res["AreaImage"];
         this.levels = res["AreaLevels"];
         this.areaType = res["NomAreaType"];
-        this.nbrPLayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
+        //this.nbrPlayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
 
         res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemsbase.nomItem, itemstypes.nomType, itemsrarities.nomRarity " +
             "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
@@ -104,7 +104,7 @@ class Area {
         page = page;
         let str = "```";
         str += "Liste des joueurs de la zone " + this.name + " :\n\n";
-        let maxPage = Math.ceil(this.nbrPLayers/10);
+        let maxPage = Math.ceil(this.nbrPlayers/10);
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
@@ -174,6 +174,24 @@ class Area {
     unclaim() {
         this.owner = 0;
         this.saveOwner();
+    }
+
+
+    /*
+     *  API
+     */
+    toApiLight() {
+        return {
+            id: this.id,
+            name: this.name,
+            image: this.image,
+            levels: this.levels,
+            nbrPlayers: this.nbrPlayers,
+        }
+    }
+
+    toApiFull() {
+
     }
 
 }

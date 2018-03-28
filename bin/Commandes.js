@@ -48,6 +48,9 @@ class Commandes {
                 this.connectedUsers[authorIdentifier].loadUser();
                  
                 this.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
+
+                this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.area);
+
                 this.nbrConnectedUsers++;
 
                 this.bot.user.setPresence({
@@ -68,7 +71,7 @@ class Commandes {
 
             }
 
-            console.log("User : " + message.author.username + " Attemp command : \"" + command + "\"")
+            console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
             // Detect Commands
             switch (command) {
@@ -812,7 +815,7 @@ class Commandes {
                     if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
                         let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
                         if (done) {
-                            msg = "L'attribut " + stat + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[messageArray[1]]
+                            msg = "L'attribut " + this.getToStrShort(messageArray[1]) + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[this.getToStrShort(messageArray[1])]
                                 + ". Il vous reste " + this.connectedUsers[authorIdentifier].character.statPoints + " point" + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ? "s" : "") + " à répartir."
                         } else {
                             msg = "Vous ne pouvez pas distribuer autant de points !";
@@ -932,6 +935,44 @@ class Commandes {
                 break;
         }
         return r;
+    }
+
+
+    getToStrShort(stat, lang) {
+        switch (stat) {
+            // Principaux
+            case "str":
+                stat = "strength";
+                break;
+            case "int":
+                stat = "intellect";
+                break;
+            case "con":
+                stat = "constitution";
+                break;
+            case "dex":
+                stat = "dexterity";
+                break;
+
+            // Secondaires
+
+            case "cha":
+                stat = "charisma";
+                break;
+            case "wis":
+                stat = "wisdom";
+                break;
+            case "will":
+                stat = "will";
+                break;
+            case "per":
+                stat = "perception";
+                break;
+            case "luck":
+                stat = "luck";
+                break;
+        }
+        return stat;
     }
 }
 
