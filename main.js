@@ -12,6 +12,9 @@ const AreasManager = require("./bin/Areas/AreasManager.js");
 
 var bot = new Discord.Client();
 var prefix = "::";
+
+process.on('unhandledRejection', up => { throw up });
+
 console.log("Bot Starting ...");
 
 console.log(Globals);

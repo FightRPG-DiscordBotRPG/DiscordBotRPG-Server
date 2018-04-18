@@ -111,6 +111,14 @@ class Monstre extends WorldEntity {
         return this.level;
     }
 
+    // Get Stat
+    getStat(statName) {
+        if (this.stats[statName]) {
+            return this.stats[statName];
+        }
+        return 0;
+    }
+
 }
 
 module.exports = Monstre;

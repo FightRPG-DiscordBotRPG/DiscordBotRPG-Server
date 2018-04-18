@@ -7,7 +7,7 @@ class StatsMonstres extends Stats {
     // Generic Stats Class
     // Used by All Player/Enemies
     constructor(id) {
-        // recherche base de donn�e
+        // recherche base de donnée
         super(id, id);
     }
 

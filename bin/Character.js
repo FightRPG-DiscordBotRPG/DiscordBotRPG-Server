@@ -5,8 +5,9 @@ const LevelSystem = require("./LevelSystem.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
 const CharacterEquipement = require("./CharacterEquipement.js");
+const WorldEntity = require("./WorldEntity.js");
 
-class Character {
+class Character extends WorldEntity {
 
     constructor(id) {
         super();
@@ -148,6 +149,14 @@ class Character {
     damageDefenceReduction() {
         let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (this.level ^ 2)) / 7 + 5));
         return reduction > 0.5 ? 0.5 : 1 - reduction;
+    }
+
+    // Get Stat
+    getStat(statName) {
+        if (this.stats[statName] && this.equipement.stats[statName]) {
+            return this.stats[statName] + this.equipement.stats[statName];
+        }
+        return 0;
     }
 
     updateStats() {

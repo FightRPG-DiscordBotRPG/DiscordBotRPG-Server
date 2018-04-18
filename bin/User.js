@@ -78,7 +78,7 @@ class User {
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.character.username, this.avatar)
+            .setAuthor(this.character.name, this.avatar)
             .addField("Attributes | " + this.character.statPoints + " point" + statPointsPlur + " à répartir (Prix du reset : " + this.character.getResetStatsValue() + "G)", this.character.getStatsStr())
             .addField("Level : " + this.character.getLevel() + "    |    " + xpOn, xpBar, true)
             .addField("Money", this.character.money + " G", true)
@@ -92,7 +92,7 @@ class User {
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
             xpNextLevel: this.character.levelSystem.expToNextLevel,
-            username: this.character.username,
+            username: this.character.name,
             avatar: this.avatar,
             statPoints: this.character.statPoints,
             resetValue: this.character.getResetStatsValue(),

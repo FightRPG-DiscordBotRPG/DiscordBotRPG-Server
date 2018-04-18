@@ -8,6 +8,8 @@ const AreasManager = require("./Areas/AreasManager.js");
 const sizeof = require('object-sizeof');
 const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
+const Fight = require("./Fight/Fight");
+const Monster = require("./Monstre");
 
 class Commandes {
     constructor(prefix) {
@@ -142,14 +144,12 @@ class Commandes {
 
                 case "gdisband":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    console.log(this.connectedGuilds);
                     if (tGuildId > 0
                         && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         this.areasManager.unclaimAll(tGuildId);
                         this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                         delete this.connectedGuilds[tGuildId];
                         msg = "Vous avez bien dissous la guilde !";
-                        console.log(this.connectedGuilds);
                     } else {
                         msg = "Vous devez être chef de guilde pour pouvoir la disband.";
                     }
@@ -695,12 +695,34 @@ class Commandes {
                     //this.debug(message);
 
                     //message.channel.send(msg);
-                    message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.area));
+                    //message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.area));
                     //this.connectedUsers[authorIdentifier].character.inv.addToInventory(1);
                     //this.connectedUsers[authorIdentifier].character.equipement.totalStats();
                     //console.log(this.connectedUsers[authorIdentifier].character.equipement);
                     //console.log(this.connectedUsers[authorIdentifier].character.canFightAt);
                     //console.log(this.connectedUsers[authorIdentifier].character.inv.getAllInventoryValue());
+                    if (Globals.admins.indexOf(authorIdentifier) > -1) {
+                        /*let monsters1 = [new Monster(20), new Monster(10), new Monster(12)];
+                        let monsters2 = [new Monster(19), new Monster(15), new Monster(11)];*/
+
+                        let monsters1 = [new Monster(20)];
+                        let monsters2 = [new Monster(20)];
+
+                        monsters1[0].stats.intellect = 0;
+                        //monsters1[1].stats.intellect = 4;
+                        //monsters1[2].stats.intellect = 2;
+
+                        monsters2[0].stats.intellect = 9;
+                        //monsters2[1].stats.intellect = 1;
+                        //monsters2[2].stats.intellect = 5;
+
+                        //console.log(monsters2[0].stats);
+
+
+
+                        let f = new Fight(monsters1, monsters2);
+                        console.log(f.summary);
+                    }
                     break;
 
                 case "leaderboard":
@@ -729,8 +751,8 @@ class Commandes {
                             } else {
                                 idEnemy = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             }
-
-                            this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
+                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster, true);
+                            //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
 
                         } else {
                             // Error Message

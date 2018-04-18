@@ -4,6 +4,7 @@ const Monstre = require("./Monstre.js");
 const ProgressBar = require("./ProgressBar");
 const Globals = require("./Globals");
 const LootSystem = require("./LootSystem.js");
+const FightPvE = require("./Fight/FightPvE");
 
 class FightManager {
     constructor() {
@@ -18,7 +19,7 @@ class FightManager {
         this.fights[userid].text[2] = text;
     }
 
-
+    
     calMultDiffLevel(lv1, lv2) {
         let diff = lv1 - lv2;
         let mult = 1;
@@ -35,6 +36,101 @@ class FightManager {
 
 
     // PveFight
+
+    _timeToFight(users) {
+        for (let i in users) {
+            if (users[i].canFightAt > Date.now()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    _loadMonsters(monsters) {
+        let arr = [];
+        for (let i in monsters) {
+            for (let j = 0; j < monsters[i].number; j++) {
+                arr.push(new Monstre(monsters[i].id));
+            }
+        }
+        return arr;
+    }
+
+    _fightPvE(users, monsters, message, canIFightTheMonster, discord = false) {
+        if (discord) {
+            let time = Date.now();
+            let userid = message.author.id;
+            let alreadyInBattle = this.fights[user.id] !== undefined;
+            let timeToFight = this._timeToFight(users);
+            if (timeToFight && !alreadyInBattle) {
+                let enemies = this._loadMonsters(monsters);
+                this.fights[message.author.id] = {
+                    text: ["", "", ""],
+                    fight: new FightPvE(users, enemies),
+                    leftName: users.length > 1 ? "Players" : users[0].name,
+                    rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
+                    summaryIndex: 0,
+                };
+                if (!canIFightTheMonster) {
+                    message.channel.send("Vous n'avez pas été assez discret, vous vous faites attaquer ! (Il vous faut plus de perception)");
+                    this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " se fait attaquer par : " + enemies[0].name + " !\n\n";
+                } else {
+                    this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " attaque un monstre : " + enemies[0].name + " !\n\n";
+                }
+                //console.log("Fight Initialized");
+                message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]))
+                    .then(
+                    msg => this._discordFightPvE(msg, userid));
+
+            } else {
+                // erreur
+                if (alreadyInBattle) {
+                    //console.log("Can't Initialize Fight : Already in battle");
+                    message.reply("Already in Battle : You can't fight");
+                } else if (!timeToFight) {
+                    //console.log("Can't Initialize Fight : Have To Wait");
+                    message.reply("You are exhausted you have to wait " + Math.ceil((users.character.canFightAt - time) / 1000) + " seconds before you can fight again !");
+                }
+
+            }
+        }
+    }
+
+    _discordFightPvE(message, userid) {
+        let ind = this.fights[userid].summaryIndex;
+        let summary = this.fights[userid].fight.summary;
+        if (ind < summary.rounds.length) {
+
+            if (summary.rounds[ind].roundType == "Character") {
+                this.swapArrayIndexes("<:user:403148210295537664> Le joueur : " + summary.rounds[ind].attackerName + " attaque le monstre " + summary.rounds[ind].defenderName +
+                    " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
+                    (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
+                    (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
+                    "\n\n", userid);
+            } else if (summary.rounds[ind].roundType == "Monster") {
+                this.swapArrayIndexes("<:monstre:403149357387350016> Le monstre : " + summary.rounds[ind].attackerName + " attaque le joueur " + summary.rounds[ind].defenderName +
+                    " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
+                    (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
+                    (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
+                    "\n\n", userid);
+            }
+
+
+
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]));
+            this.fights[userid].summaryIndex++;
+            setTimeout(() => {
+                this._discordFightPvE(message, userid);
+            }, 2000);
+
+        } else {
+            message.edit("Fin du combat <Under Construction>");
+        }
+
+
+        
+    }
+
     fightPvE(user, message, idEnemy, canIFightTheMonster) {
         let time = Date.now();
         let alreadyInBattle = this.fights[user.id] !== undefined;
@@ -55,7 +151,7 @@ class FightManager {
                 this.fights[user.id].text[2] = "<:user:403148210295537664> Le joueur " + user.username + " attaque un monstre : " + this.fights[user.id].enemy.name + " !\n\n";
             }
             //console.log("Fight Initialized");
-            
+
             message.channel.send(this.embedPvE(this.fights[user.id].user, this.fights[user.id].enemy, this.fights[user.id].text[0] + this.fights[user.id].text[1] + this.fights[user.id].text[2]))
                 .then(
                 msg => this.fightPvEUpdate(msg, user.id));
@@ -227,6 +323,56 @@ class FightManager {
 
     }
 
+    _embedPvE(userid, text) {
+        let healthBar = new ProgressBar();
+        let ind = this.fights[userid].summaryIndex;
+        let summary = this.fights[userid].fight.summary;
+        let monsterTitle = "";
+        let first, second, firstName, secondName, firstLevel, secondLevel, firstActualHP, secondActualHP, firstMaxHP, secondMaxHP;
+
+        if (summary.rounds[ind].roundEntitiesIndex == 0) {
+            first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
+            firstName = summary.rounds[ind].attackerName;
+            firstLevel = summary.rounds[ind].attackerLevel;
+            firstActualHP = summary.rounds[ind].attackerHP;
+            firstMaxHP = summary.rounds[ind].attackerMaxHP;
+
+            second = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
+            secondName = summary.rounds[ind].defenderName;
+            secondLevel = summary.rounds[ind].defenderLevel;
+            secondActualHP = summary.rounds[ind].defenderHP;
+            secondMaxHP = summary.rounds[ind].defenderMaxHP;
+
+        } else {
+            first = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
+            firstName = summary.rounds[ind].defenderName;
+            firstLevel = summary.rounds[ind].defenderLevel;
+            firstActualHP = summary.rounds[ind].defenderHP;
+            firstMaxHP = summary.rounds[ind].defenderMaxHP;
+
+            second = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
+            secondName = summary.rounds[ind].attackerName;
+            secondLevel = summary.rounds[ind].attackerLevel;
+            secondActualHP = summary.rounds[ind].attackerHP;
+            secondMaxHP = summary.rounds[ind].attackerMaxHP;
+        }
+
+
+        if (summary.rounds[ind].monsterType == "Normal") {
+            monsterTitle = summary.rounds[ind].monsterDifficultyName + " ";
+        } else {
+            monsterTitle = "<:elite:406090076511141888>";
+        }
+
+
+        let embed = new Discord.RichEmbed()
+            .setColor([255, 0, 0])
+            .addField("Combat Log", text)
+            .addField(firstName + " | Lv : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
+            .addField(monsterTitle + secondName + " | Lv : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);
+        return embed;
+    }
+
     embedPvE(character1, monster, text) {
         let healthBar = new ProgressBar();
         let first = healthBar.draw(character1.character.actualHP, character1.character.maxHP);
@@ -245,6 +391,8 @@ class FightManager {
             .addField(character1.username + " | Lv : " + character1.character.getLevel(), character1.character.actualHP + "/" + character1.character.maxHP + "\n" + first, true)
             .addField(monsterTitle + monster.name + " | Lv : " + monster.getLevel(), monster.actualHP + "/" + monster.maxHP + "\n" + second, true);
         return embed;
+
+
     }
 
     // PvP Fight
