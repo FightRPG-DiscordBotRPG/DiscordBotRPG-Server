@@ -18,6 +18,7 @@ class User {
     // Init for new user
     init() {
         this.character.init();
+        this.character.name = this.username;
 
         // Token for mobile / website use
         let nToken = Crypto.randomBytes(16).toString('hex');
@@ -40,6 +41,7 @@ class User {
             // Sinon on le load
             this.character.loadCharacter(res[0]["idCharacter"]);
             this.username = res[0]["userName"];
+            this.character.name = this.username;
         }
 
     }
@@ -76,7 +78,7 @@ class User {
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.username, this.avatar)
+            .setAuthor(this.character.username, this.avatar)
             .addField("Attributes | " + this.character.statPoints + " point" + statPointsPlur + " à répartir (Prix du reset : " + this.character.getResetStatsValue() + "G)", this.character.getStatsStr())
             .addField("Level : " + this.character.getLevel() + "    |    " + xpOn, xpBar, true)
             .addField("Money", this.character.money + " G", true)
@@ -90,7 +92,7 @@ class User {
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
             xpNextLevel: this.character.levelSystem.expToNextLevel,
-            username: this.username,
+            username: this.character.username,
             avatar: this.avatar,
             statPoints: this.character.statPoints,
             resetValue: this.character.getResetStatsValue(),

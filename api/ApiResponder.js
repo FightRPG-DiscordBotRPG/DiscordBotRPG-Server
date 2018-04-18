@@ -141,6 +141,56 @@ api.get("/areas", (req, res) => {
     res.json(areasManager.toApi(connectedUsers[authorIdentifier].character.area));
 });
 
+api.get("/area", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    res.json(areasManager.toApiThisAreaFull(connectedUsers[authorIdentifier].character.area));
+});
+
+api.post("/character/travel", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    let wantedAreaToTravel = parseInt(res.locals.parameters.area, 10);
+    let msg = {};
+    let error;
+    if (connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+        if (areasManager.exist(wantedAreaToTravel)) {
+            if (wantedAreaToTravel == connectedUsers[authorIdentifier].character.area) {
+                error = "Vous êtes déjà à cet endroit.";
+            } else {
+
+                // Update le compte de joueurs
+                areasManager.updateTravel(connectedUsers[authorIdentifier].character.area, wantedAreaToTravel);
+
+                // change de zone
+                connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel);
+
+                // Messages
+                /*"Vous avez bien voyagé vers la zone : " + areasManager.getNameOf(wantedAreaToTravel) + ".";
+                "\nVous êtes fatigué vous allez devoir attendre " + Math.ceil((connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes avant de pouvoir refaire une action.";*/
+            }
+
+        } else {
+            error = "Cette zone n'existe pas !";
+        }
+    } else {
+        error = "Vous êtes trop fatigué pour voyager vous devez encore attendre : " + Math.ceil((connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes.";
+    }
+
+    if (error) {
+        msg["error"] = error;
+    } else {
+        msg["success"] = "Vous avez bien voyagé vers la zone: " + areasManager.getNameOf(wantedAreaToTravel) + "." +
+        "\nVous êtes fatigué vous allez devoir attendre " + Math.ceil((connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes avant de pouvoir refaire une action.";
+    }
+
+    res.json(msg);
+});
+
+/*
+
+                    
+
+*/
+
 
 /*
  *  CHARACTER

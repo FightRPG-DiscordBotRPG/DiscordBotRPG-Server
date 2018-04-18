@@ -14,6 +14,8 @@ class Area {
         this.owner = 0;
         this.fightPossible = false;
         this.resources = [];
+        this.monsters = [];
+        this.maxItemRarity = "";
         this.loadArea(id);
         this.timeBeforeNextClaim = 0;
     }
@@ -42,13 +44,37 @@ class Area {
         if (res.length > 0) {
             this.owner = res[0].idGuild;
         }
+
+        // Load monsters
+        res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
+        for (let i in res) {
+            let monsterLight = {
+                id: res[i]["idMonstre"],
+                name: res[i]["name"],
+                avglevel: res[i]["avglevel"],
+                type: res[i]["nom"]
+            }
+            this.monsters.push(monsterLight);
+        }
+
+        // Load max rarity/quality item
+        res = conn.query(
+            "SELECT DISTINCT itemsrarities.nomRarity " +
+            "FROM itemsbase " +
+            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity " +
+            "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
+            "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
+        );
+        if (res[0]) {
+            this.maxItemRarity = res[0]["nomRarity"];
+        }
+        
     }
 
     getMonsters() {
-        let res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
         let str = "```";
-        for (let i in res) {
-            str += "ID : " + res[i]["idMonstre"] + " | " + res[i]["name"] + " | Lv : " + res[i]["avglevel"] + " | Type : " + res[i]["nom"] + "\n\n";
+        for (let i in this.monsters) {
+            str += "ID : " + i + " | " + this.monsters[i]["name"] + " | Lv : " + this.monsters[i]["avglevel"] + " | Type : " + this.monsters[i]["type"] + "\n\n";
         }
         str += "```";
         return str;
@@ -88,16 +114,26 @@ class Area {
         return str + "```";
     }
 
-    getMaxItemQuality() {
-        let res = conn.query(
-            "SELECT DISTINCT itemsrarities.nomRarity " +
-            "FROM itemsbase " +
-            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity " +
-            "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
-            "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
-        );
+    getMonsterId(idEmplacementMonstre) {
+        if (idEmplacementMonstre < this.monsters.length && idEmplacementMonstre >= 0) {
+            return this.monsters[idEmplacementMonstre].id;
+        } else {
+            return null;
+        }
+    }
 
-        return res[0]["nomRarity"];
+    getRandomMonster(notThisEnemy) {
+        let toReturn = this.monsters[Math.floor(Math.random() * this.monsters.length)].id;
+        if (this.monsters.length > 1) {
+            while (toReturn == notThisEnemy) {
+                toReturn = this.monsters[Math.floor(Math.random() * this.monsters.length)].id;
+            }
+        }
+        return toReturn;
+    }
+
+    getMaxItemQuality() {
+        return this.maxItemRarity;
     }
 
     getPlayers(page, connectedUsers) {
@@ -191,7 +227,7 @@ class Area {
     }
 
     toApiFull() {
-
+        return this;
     }
 
 }

@@ -684,7 +684,7 @@ class Commandes {
                 case "nameOf":
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
                         if (this.connectedUsers[messageArray[1]]) {
-                            message.reply(this.connectedUsers[messageArray[1]].username);
+                            message.reply(this.connectedUsers[messageArray[1]].character.name);
                         } else {
                             message.reply("Non Connecté");
                         }
@@ -721,11 +721,13 @@ class Commandes {
                     //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, messageArray[1]);
                     let idEnemy = parseInt(messageArray[1], 10);
                     if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
-                        if (idEnemy && Number.isInteger(idEnemy)) {
+                        if (idEnemy != undefined && Number.isInteger(idEnemy)) {
                             let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.area, idEnemy, this.connectedUsers[authorIdentifier].character.stats.perception);
 
                             if (!canIFightTheMonster) {
                                 idEnemy = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
+                            } else {
+                                idEnemy = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             }
 
                             this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);

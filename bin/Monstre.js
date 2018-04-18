@@ -2,10 +2,15 @@
 const conn = require("../conf/mysql.js");
 const StatsMonstres = require("./Stats/StatsMonstres");
 const Globals = require("./Globals.js");
+const WorldEntity = require("./WorldEntity.js");
 
-class Monstre {
+class Monstre extends WorldEntity {
 
     constructor(id) {
+        super()
+        this._type = "Monster";
+
+
         this.id = id;
         this.name = "";
         this.actualHP = 0;

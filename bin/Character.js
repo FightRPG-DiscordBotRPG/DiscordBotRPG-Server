@@ -9,6 +9,9 @@ const CharacterEquipement = require("./CharacterEquipement.js");
 class Character {
 
     constructor(id) {
+        super();
+        this._type = "Character";
+
         this.id = id;
         this.stats = new StatsPlayer();
         this.inv = new CharacterInventory();

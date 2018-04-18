@@ -28,8 +28,9 @@ class AreasManager {
     }
 
     canIFightThisMonster(idArea, idEnemy, perception) {
-        let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND idMonstre = " + idEnemy);
-        if (res.length > 0) {
+        //let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND idMonstre = " + idEnemy);
+        let monsterID = this.areas.get(idArea).getMonsterId(idEnemy);
+        if (monsterID) {
             let bonus = 1 + (perception / 100);
             let chance = Math.random();
             if (chance <= Globals.chanceToFightTheMonsterYouWant * bonus) {
@@ -40,12 +41,19 @@ class AreasManager {
         return false;
     }
 
+    // idEnemy doit être valide !!
     selectRandomMonsterIn(idArea, idEnemy) {
-        let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND NOT idMonstre = " + idEnemy + " ORDER BY RAND() LIMIT 1;");
+        /*let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND NOT idMonstre = " + idEnemy + " ORDER BY RAND() LIMIT 1;");
         if (res.length > 0) {
             return res[0]["idMonstre"];
         }
-        return 1;
+        return 1;*/
+        return this.areas.get(idArea).getRandomMonster(idEnemy);
+    }
+
+    // IdEnemy doit être valide !!
+    getMonsterIdIn(idArea, idEnemy) {
+        return this.areas.get(idArea).getMonsterId(idEnemy);
     }
 
     // Return string embed discord
@@ -170,6 +178,13 @@ class AreasManager {
             }
         }
         return areas;
+    }
+
+    toApiThisAreaFull(idArea) {
+        if (this.areas.get(idArea)) {
+            return this.areas.get(idArea).toApiFull();
+        }
+        return null;
     }
 
 
