@@ -14,7 +14,7 @@ const Monster = require("./Monstre");
 class Commandes {
     constructor(prefix) {
         this.prefix = prefix != undefined ? prefix : "::";
-        this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis"];
+        this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -744,14 +744,14 @@ class Commandes {
                     let idEnemy = parseInt(messageArray[1], 10);
                     if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
                         if (idEnemy != undefined && Number.isInteger(idEnemy)) {
-                            let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.area, idEnemy, this.connectedUsers[authorIdentifier].character.stats.perception);
+                            let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.area, idEnemy, this.connectedUsers[authorIdentifier].character.getStat("perception"));
 
                             if (!canIFightTheMonster) {
                                 idEnemy = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             } else {
                                 idEnemy = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             }
-                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster, true);
+                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster);
                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
 
                         } else {
@@ -898,7 +898,7 @@ class Commandes {
             "::unequip <idTypeEmplacement> : Déséquipe l'objet de l'emplacement choisi.\n"
             + "[Personnage]\n" +
             "::info : Affiche les informations sur votre personnage.\n" +
-            "::up <NomStat> <Nombre> : Ajoute à la caractéristique NomStat Nombre.\n" +
+            "::up <NomStat> <Nombre> : Ajoute à la caractéristique NomStat Nombre.(str,con,dex,will,cha,int,wis,per,luck)\n" +
             "::leaderboard : Affiche ton rang PvP.\n" +
             "::reset : Te permet de reset tes statistiques.\n"
             + "[Combats]\n" +

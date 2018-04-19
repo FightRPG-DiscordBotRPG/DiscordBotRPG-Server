@@ -40,11 +40,14 @@ var connectedGuilds = {};
 Globals.connectedUsers = connectedUsers;
 Globals.connectedGuilds = connectedGuilds;
 Globals.areasManager = new AreasManager();
+Globals.fightManager = new FightManager();
 
-
-var fightManager = new FightManager();
+var fightManager = Globals.fightManager;
 var ChatReceiver = new Commandes(prefix);
 var areasManager = new AreasManager();
+
+
+
 ChatReceiver.bot = bot;
 ChatReceiver.fightManager = fightManager;
 ChatReceiver.connectedUsers = connectedUsers;

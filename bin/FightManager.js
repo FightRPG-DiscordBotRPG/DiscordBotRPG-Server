@@ -38,12 +38,13 @@ class FightManager {
     // PveFight
 
     _timeToFight(users) {
+        let date = Date.now();
         for (let i in users) {
-            if (users[i].canFightAt > Date.now()) {
-                return false;
+            if (users[i].canFightAt > date) {
+                return users[i].canFightAt - date;
             }
         }
-        return true;
+        return -1;
     }
 
     _loadMonsters(monsters) {
@@ -56,44 +57,79 @@ class FightManager {
         return arr;
     }
 
-    _fightPvE(users, monsters, message, canIFightTheMonster, discord = false) {
-        if (discord) {
-            let time = Date.now();
-            let userid = message.author.id;
-            let alreadyInBattle = this.fights[user.id] !== undefined;
-            let timeToFight = this._timeToFight(users);
-            if (timeToFight && !alreadyInBattle) {
-                let enemies = this._loadMonsters(monsters);
-                this.fights[message.author.id] = {
-                    text: ["", "", ""],
-                    fight: new FightPvE(users, enemies),
-                    leftName: users.length > 1 ? "Players" : users[0].name,
-                    rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
-                    summaryIndex: 0,
-                };
-                if (!canIFightTheMonster) {
-                    message.channel.send("Vous n'avez pas été assez discret, vous vous faites attaquer ! (Il vous faut plus de perception)");
-                    this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " se fait attaquer par : " + enemies[0].name + " !\n\n";
-                } else {
-                    this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " attaque un monstre : " + enemies[0].name + " !\n\n";
-                }
-                //console.log("Fight Initialized");
-                message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]))
-                    .then(
-                    msg => this._discordFightPvE(msg, userid));
-
+    _fightPvE(users, monsters, message, canIFightTheMonster) {
+        let time = Date.now();
+        let userid = message.author.id;
+        let alreadyInBattle = this.fights[userid] !== undefined;
+        let timeToFight = this._timeToFight(users);
+        if (timeToFight < 0 && !alreadyInBattle) {
+            let enemies = this._loadMonsters(monsters);
+            this.fights[message.author.id] = {
+                text: ["", "", ""],
+                fight: new FightPvE(users, enemies),
+                leftName: users.length > 1 ? "Players" : users[0].name,
+                rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
+                summaryIndex: 0,
+            };
+            if (!canIFightTheMonster) {
+                message.channel.send("Vous n'avez pas été assez discret, vous vous faites attaquer ! (Il vous faut plus de perception)");
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " se fait attaquer par : " + enemies[0].name + " !\n\n";
             } else {
-                // erreur
-                if (alreadyInBattle) {
-                    //console.log("Can't Initialize Fight : Already in battle");
-                    message.reply("Already in Battle : You can't fight");
-                } else if (!timeToFight) {
-                    //console.log("Can't Initialize Fight : Have To Wait");
-                    message.reply("You are exhausted you have to wait " + Math.ceil((users.character.canFightAt - time) / 1000) + " seconds before you can fight again !");
-                }
-
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " attaque un monstre : " + enemies[0].name + " !\n\n";
             }
+            //console.log("Fight Initialized");
+            message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]))
+                .then(
+                msg => this._discordFightPvE(msg, userid));
+
+        } else {
+            // erreur
+            if (alreadyInBattle) {
+                //console.log("Can't Initialize Fight : Already in battle");
+                message.reply("Already in Battle : You can't fight");
+            } else if (timeToFight >= 0) {
+                //console.log("Can't Initialize Fight : Have To Wait");
+                message.reply("You are exhausted you have to wait " + Math.ceil(timeToFight / 1000) + " seconds before you can fight again !");
+            }
+
         }
+    }
+
+    _apiFightPvE(users, monsters, userid, canIFightTheMonster) {
+        let toApi = {
+            beingAttacked: false,
+        }
+        let time = Date.now();
+        let alreadyInBattle = this.fights[userid] !== undefined;
+        let timeToFight = this._timeToFight(users);
+        if (timeToFight < 0 && !alreadyInBattle) {
+            let enemies = this._loadMonsters(monsters);
+            this.fights[userid] = {
+                fight: new FightPvE(users, enemies),
+            };
+            toApi.summary = this.fights[userid].fight.summary;
+            if (!canIFightTheMonster) {
+                toApi.beingAttacked = true;
+            }
+
+            setTimeout(() => {
+                this._deleteFight(userid);
+            }, this.fights[userid].fight.summary.rounds.length * 2001);
+            
+
+        } else {
+            // erreur
+            if (alreadyInBattle) {
+                //console.log("Can't Initialize Fight : Already in battle");
+                toApi.error = "Already in Battle : You can't fight";
+            } else if (timeToFight >= 0) {
+                //console.log("Can't Initialize Fight : Have To Wait");
+                toApi.error = "You are exhausted you have to wait " + Math.ceil(timeToFight / 1000) + " seconds before you can fight again!";
+            }
+
+        }
+
+        return toApi;
     }
 
     _discordFightPvE(message, userid) {
@@ -102,13 +138,13 @@ class FightManager {
         if (ind < summary.rounds.length) {
 
             if (summary.rounds[ind].roundType == "Character") {
-                this.swapArrayIndexes("<:user:403148210295537664> Le joueur : " + summary.rounds[ind].attackerName + " attaque le monstre " + summary.rounds[ind].defenderName +
+                this.swapArrayIndexes("<:user:403148210295537664> " + summary.rounds[ind].attackerName + " attaque le monstre " + summary.rounds[ind].defenderName +
                     " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
                     (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
                     (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
                     "\n\n", userid);
             } else if (summary.rounds[ind].roundType == "Monster") {
-                this.swapArrayIndexes("<:monstre:403149357387350016> Le monstre : " + summary.rounds[ind].attackerName + " attaque le joueur " + summary.rounds[ind].defenderName +
+                this.swapArrayIndexes("<:monstre:403149357387350016> " + summary.rounds[ind].attackerName + " attaque le joueur " + summary.rounds[ind].defenderName +
                     " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
                     (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
                     (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
@@ -124,11 +160,46 @@ class FightManager {
             }, 2000);
 
         } else {
-            message.edit("Fin du combat <Under Construction>");
+            if (summary.winner == 0) {
+                this.swapArrayIndexes("<:win:403151177153249281> Vous avez gagné le combat !\n\n", userid);
+
+                if (this.fights[userid].fight.entities[0].length == 1) {
+                    if (summary.drops.length > 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + summary.drops[0].drop + ") ! Bravo !\n\n", userid);
+                    }
+                    if (summary.levelUpped.length > 0) {
+                        this.swapArrayIndexes("<:levelup:403456740139728906> Bravo ! Vous avez gagné : " + summary.levelUpped[0].levelGained + " niv. " + ".Vous êtes desormais niveau : " + summary.levelUpped[0].newLevel + " !\n", userid);
+                    }
+
+                    if (summary.xp === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.money + " Argent\n", userid);
+                    } else if (summary.money === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.xp + " XP\n", userid);
+                    } else if (summary.xp === 0 && summary.money === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous ne gagnez rien !\n", userid);
+                    } else {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.xp + " XP et " + summary.money + " Argent\n", userid);
+                    }
+
+                } else {
+                    // TODO For more people participating
+                    //this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + rarityName + ") ! Bravo !\n\n", userid);
+                }
+            } else {
+                this.swapArrayIndexes("<:loose:403153660756099073> Vous avez perdu le combat !\n", userid);
+            }
+
+
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2])).then(this._deleteFight(userid));
+
         }
 
 
         
+    }
+
+    _deleteFight(userid) {
+        delete this.fights[userid];
     }
 
     fightPvE(user, message, idEnemy, canIFightTheMonster) {
@@ -329,6 +400,8 @@ class FightManager {
         let summary = this.fights[userid].fight.summary;
         let monsterTitle = "";
         let first, second, firstName, secondName, firstLevel, secondLevel, firstActualHP, secondActualHP, firstMaxHP, secondMaxHP;
+
+        ind = this.fights[userid].summaryIndex < summary.rounds.length ? ind : ind - 1;
 
         if (summary.rounds[ind].roundEntitiesIndex == 0) {
             first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);

@@ -302,10 +302,11 @@ class Character extends WorldEntity {
         return value;
     }
 
-    waitForNextFight() {
+    // More = time in ms
+    waitForNextFight(more = 0) {
         let baseTimeToWait = (Globals.basicWaitTimeBeforeFight - Math.floor(this.stats.constitution / 10)) * 1000;
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + baseTimeToWait;
+        this.canFightAt = Date.now() + baseTimeToWait + more;
     }
 
     waitForNextResource() {

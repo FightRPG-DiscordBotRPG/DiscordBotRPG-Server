@@ -1,4 +1,7 @@
 ﻿'use strict';
+const Monster = require("../bin/Monstre");
+const Fight = require("../bin/Fight/Fight");
+const RateLimit = require('express-rate-limit');
 const User = require("../bin/User.js");
 const conn = require("../conf/mysql.js");
 const Globals = require("../bin/Globals.js");
@@ -25,6 +28,20 @@ const httpsOptions = {
 
 app.listen(port, () => console.log("Starting RESTful api server on: " + port));
 
+//app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
+
+var limiter = new RateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 30, // limit each IP to 100 requests per windowMs
+    delayMs: 0, // disable delaying - full speed until the max limit is reached
+    handler: (req, res) => {
+        res.json({error : "Vous avez fait trop d'actions, veuillez attendre un peu."})
+    },
+});
+
+//  apply to all requests
+app.use(limiter);
+
 /*https.createServer(httpsOptions, app).listen(8443);*/
 
 app.use(express.static(path.join(__dirname, '../public')));
@@ -32,9 +49,26 @@ app.use('/api', api);
 
 console.log(path.join(__dirname, '../public'));
 
+
+
+
+
+
+/*
+ * NON EXPRESS
+ */
+
+
+
+
+
+
+
+
 var connectedUsers = Globals.connectedUsers;
 var connectedGuilds = Globals.connectedGuilds;
 var areasManager = Globals.areasManager;
+var fightManager = Globals.fightManager;
 
 
 
@@ -185,11 +219,35 @@ api.post("/character/travel", (req, res) => {
     res.json(msg);
 });
 
+
 /*
+ * FIGHT
+ */
 
-                    
+api.post("/fightpve", (req, res) => {
+    let authorIdentifier = res.locals.userid;
+    let idEnemy = parseInt(res.locals.parameters.idEnemy, 10);
+    let toApi = {};
+    if (areasManager.canIFightInThisArea(connectedUsers[authorIdentifier].character.area)) {
+        if (idEnemy != undefined && Number.isInteger(idEnemy)) {
+            let canIFightTheMonster = areasManager.canIFightThisMonster(connectedUsers[authorIdentifier].character.area, idEnemy, connectedUsers[authorIdentifier].character.getStat("perception"));
 
-*/
+            if (!canIFightTheMonster) {
+                idEnemy = areasManager.selectRandomMonsterIn(connectedUsers[authorIdentifier].character.area, idEnemy);
+            } else {
+                idEnemy = areasManager.getMonsterIdIn(connectedUsers[authorIdentifier].character.area, idEnemy);
+            }
+            toApi = fightManager._apiFightPvE([connectedUsers[authorIdentifier].character], [{ id: idEnemy, number: 1 }], authorIdentifier, canIFightTheMonster)
+
+        } else {
+            // Error Message
+            toApi.error = "Vous devez entrer l'identifiant du monstre que vous voulez attaquer.";
+        }
+    } else {
+        toApi.error = "Vous ne pouvez pas vous battre en ville.";
+    }
+    res.json(toApi);
+});
 
 
 /*
@@ -200,21 +258,6 @@ api.get("/character", (req, res) => {
     let authorIdentifier = res.locals.userid;
     res.json(connectedUsers[authorIdentifier].apiInfoPanel());
 });
-
-/*
-if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
-    let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
-    if (done) {
-        msg = "L'attribut " + stat + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[messageArray[1]]
-            + ". Il vous reste " + this.connectedUsers[authorIdentifier].character.statPoints + " point" + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ? "s" : "") + " à répartir."
-    } else {
-        msg = "Vous ne pouvez pas distribuer autant de points !";
-    }
-} else {
-    msg = "Cet Attrbiut n'existe pas";
-}
-
-message.reply(msg);*/
 
 api.post("/character/upstat", (req, res) => {
     let authorIdentifier = res.locals.userid;

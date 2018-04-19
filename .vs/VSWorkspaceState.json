@@ -4,9 +4,10 @@
     "\\api",
     "\\bin",
     "\\bin\\Areas",
+    "\\bin\\Fight",
     "\\bin\\Stats",
     "\\conf"
   ],
-  "SelectedNode": "\\bin\\FightManager.js",
+  "SelectedNode": "\\api\\ApiResponder.js",
   "PreviewInSolutionExplorer": false
 }

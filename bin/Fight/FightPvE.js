@@ -118,7 +118,8 @@ class FightPvE extends Fight {
                     });
                 }
 
-                this.entities[0][i].waitForNextFight();
+                // 2 Seconds per round * 1000 => ms
+                this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2000);
 
             }
 

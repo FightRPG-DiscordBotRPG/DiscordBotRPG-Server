@@ -142,6 +142,7 @@ class Fight {
         }
 
         if (done) {
+            this.summary.winner = this.winnerGroup;
             this.endFight();
         }
 

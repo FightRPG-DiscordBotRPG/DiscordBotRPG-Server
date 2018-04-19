@@ -66,6 +66,7 @@
     },
     "discord.js": "^11.3.0",
     "express": "^4.16.3",
+    "express-rate-limit": "^2.11.0",
     "get-port": {
       "integrity": "sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=",
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
