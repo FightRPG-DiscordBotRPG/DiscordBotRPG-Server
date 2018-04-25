@@ -79,8 +79,7 @@ class FightManager {
             }
             //console.log("Fight Initialized");
             message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]))
-                .then(
-                msg => this._discordFightPvE(msg, userid));
+                .then(msg => this._discordFightPvE(msg, userid));
 
         } else {
             // erreur
@@ -190,7 +189,15 @@ class FightManager {
             }
 
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2])).then(this._deleteFight(userid));
+            // Color settings
+            let color;
+            if (summary.winner == 0) {
+                color = [0, 255, 0];
+            } else {
+                color = [255, 0, 0];
+            }
+
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color)).then(this._deleteFight(userid));
 
         }
 
@@ -394,7 +401,7 @@ class FightManager {
 
     }
 
-    _embedPvE(userid, text) {
+    _embedPvE(userid, text, color=[128,128,128]) {
         let healthBar = new ProgressBar();
         let ind = this.fights[userid].summaryIndex;
         let summary = this.fights[userid].fight.summary;
@@ -439,7 +446,7 @@ class FightManager {
 
 
         let embed = new Discord.RichEmbed()
-            .setColor([255, 0, 0])
+            .setColor(color)
             .addField("Combat Log", text)
             .addField(firstName + " | Lv : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
             .addField(monsterTitle + secondName + " | Lv : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);

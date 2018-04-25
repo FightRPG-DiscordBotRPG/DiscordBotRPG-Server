@@ -66,10 +66,13 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     xp = (rawXp / this.entities[0].length) * this.calMultDiffLevel(avgLevelEnemies, actualLevel);
                     xp = Math.round(xp * (1 + this.entities[0][i].getStat("wisdom") / 100));
+
+                    totalXp += xp;
+
                     this.entities[0][i].addExp(xp);
                 }
 
-                
+
 
                 //if level up
 
@@ -77,7 +80,7 @@ class FightPvE extends Fight {
                 let diffLevel = this.entities[0][i].getLevel() - actualLevel;
                 if (diffLevel > 0) {
                     /*let plur = diffLevel > 1 ? "x" : "";
-                    this.swapArrayIndexes("<:levelup:403456740139728906> Bravo ! Vous avez gagné : " + diffLevel + " niveau" + plur + ". Vous êtes desormais niveau : " + this.fights[userid].user.character.getLevel() + " !\n", userid);*/
+                    this.swapArrayIndexes("<:levelup:403456740139728906> Bravo ! Vous avez gagnÃ© : " + diffLevel + " niveau" + plur + ". Vous ï¿½tes desormais niveau : " + this.fights[userid].user.character.getLevel() + " !\n", userid);*/
                     // Add to sumary
                     this.summary.levelUpped.push({
                         name: this.entities[0][i].name,
@@ -102,13 +105,13 @@ class FightPvE extends Fight {
                             rarityName = "Rare";
                             break;
                         case 3:
-                            rarityName = "Supérieur";
+                            rarityName = "SupÃ©rieur";
                             break;
                         case 4:
                             rarityName = "Epique";
                             break;
                         case 5:
-                            rarityName = "Légendaire";
+                            rarityName = "LÃ©gendaire";
                             break;
                     }
 

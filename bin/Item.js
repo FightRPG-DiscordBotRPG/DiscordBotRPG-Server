@@ -104,14 +104,29 @@ class Item {
             rarityColor: this.rarityColor,
             level: this.level,        
             typeName: this.typeName,
-            equipable: this.equipable,
+            equipable: this.equipable === 1 ? true : false,
             number: this.number,
             price: this.getCost(),
-            image: "http://192.168.1.20:8080/" + "images/items/" + this.image + ".png",
+            image: Globals.addr + "images/items/" + this.image + ".png",
         };
         if (this.equipable == true)
             toApiObject.stats = this.stats.toApi();
 
+        return toApiObject;
+    }
+
+    toApiLight() {
+        let toApiObject = {
+            name: this.name,
+            desc: this.desc,
+            rarity: this.rarity,
+            rarityColor: this.rarityColor,
+            level: this.level,
+            typeName: this.typeName,
+            equipable: this.equipable === 1 ? true : false,
+            number: this.number,
+            image: Globals.addr + "images/items/" + this.image + ".png",
+        };
         return toApiObject;
     }
 

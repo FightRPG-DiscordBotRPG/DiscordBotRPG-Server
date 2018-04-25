@@ -298,7 +298,6 @@ api.get("/character/inventory", (req, res) => {
     } else {
         msg = connectedUsers[authorIdentifier].character.inv.apiGetInv();
     }
-
 	res.json(msg);
 });
 

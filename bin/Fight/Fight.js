@@ -1,8 +1,8 @@
 class Fight {
     /**
      * Classe de gestion d'un combat
-     * On suppose que le groupe numéro 1 attaque forcément le groupe numéro 2
-     * Ont doit absolument s'assurer que les paramètres soient bien des listes
+     * On suppose que le groupe numï¿½ro 1 attaque forcï¿½ment le groupe numï¿½ro 2
+     * Ont doit absolument s'assurer que les paramï¿½tres soient bien des listes
      * de worldEntities
      */
 
@@ -35,13 +35,22 @@ class Fight {
     initiativeUpdate() {
         this.initiativeIndex++;
 
-        this.initiativeIndex = this.initiativeIndex < this.initiatives.length ? this.initiativeIndex : 0;
+        if (this.initiativeIndex >= this.initiatives.length) {
+            this.initiativeIndex = 0;
+        }
+
+
         for (let i in this.entities) {
             let indexOf = this.entities[i].indexOf(this.initiatives[this.initiativeIndex]);
             if (indexOf > -1) {
-                if (this.entitiesStunned.indexOf(this.initiatives[this.initiativeIndex]) == -1) {
+                let indexOfStun = this.entitiesStunned.indexOf(this.initiatives[this.initiativeIndex]);
+                if (indexOfStun == -1) {
                     this.initiative = [i, indexOf];
                     return true;
+                } else {
+                    this.entitiesStunned.splice(indexOfStun, 1);
+                    this.initiativeUpdate();
+
                 }
             }
         }
@@ -116,7 +125,7 @@ class Fight {
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
         if (stun) {
-            if (this.entitiesStunned.indexOf(defender) > -1) {
+            if (this.entitiesStunned.indexOf(defender) == -1) {
                 this.entitiesStunned.push(defender);
             }
         }
@@ -196,7 +205,7 @@ class Fight {
         return 1;
     }
 
-    
+
 }
 
 module.exports = Fight

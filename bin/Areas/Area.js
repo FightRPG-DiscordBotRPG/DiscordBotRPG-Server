@@ -1,5 +1,6 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
+const Globals = require("../Globals");
 
 class Area {
 
@@ -16,8 +17,9 @@ class Area {
         this.resources = [];
         this.monsters = [];
         this.maxItemRarity = "";
-        this.loadArea(id);
         this.timeBeforeNextClaim = 0;
+        this.loadArea(id);
+
     }
 
     loadArea(id) {

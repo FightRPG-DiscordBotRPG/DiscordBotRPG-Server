@@ -217,8 +217,8 @@ class CharacterInventory {
 
             // Create string for each objects
             for (let i of paginated) {
-                apiReturn.inv[i] =
-                    {
+                apiReturn.inv[i] = this.objects[i].toApiLight();
+                    /*{
                         name: this.objects[i].name,
                         desc: this.objects[i].desc,
                         image: "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png",
@@ -228,10 +228,10 @@ class CharacterInventory {
                         typeName: this.objects[i].typeName,
                         equipable: this.objects[i].equipable === 1 ? true : false,
                         number: this.objects[i].number,
-                    };
+                    };*/
             }
         }
-        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : "1";
+        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : 1;
         apiReturn.nbrPages = nbrOfPages;
         return apiReturn;
     }

@@ -9,4 +9,3 @@ var connection = new MySql({
 });
 
 module.exports = connection;
-
