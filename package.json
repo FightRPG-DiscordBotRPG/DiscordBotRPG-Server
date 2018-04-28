@@ -72,6 +72,7 @@
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
       "version": "3.2.0"
     },
+    "get-routes": "^0.2.0",
     "graceful-fs": {
       "integrity": "sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=",
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
