@@ -23,7 +23,7 @@ class Area {
     }
 
     loadArea(id) {
-        let res = conn.query("SELECT AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM Areas " +
+        let res = conn.query("SELECT AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM areas " +
             "INNER JOIN areastypes ON areastypes.idAreaType = Areas.idAreaType " +
             "WHERE idArea = " + id)[0];
         this.name = res["AreaName"];
@@ -42,7 +42,7 @@ class Area {
         }
 
         // Load owner
-        res = conn.query("SELECT idGuild FROM AreasOwners WHERE idArea = " + this.id);
+        res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = " + this.id);
         if (res.length > 0) {
             this.owner = res[0].idGuild;
         }
@@ -188,9 +188,9 @@ class Area {
 
     saveOwner() {
         if (this.owner === 0) {
-            conn.query("DELETE FROM AreasOwners WHERE idArea = " + this.id);
+            conn.query("DELETE FROM areasowners WHERE idArea = " + this.id);
         } else {
-            conn.query("INSERT INTO AreasOwners VALUES(" + this.id + ", " + this.owner + ")");
+            conn.query("INSERT INTO areasowners VALUES(" + this.id + ", " + this.owner + ")");
         }
         
     }

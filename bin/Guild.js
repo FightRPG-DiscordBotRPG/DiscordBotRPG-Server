@@ -29,18 +29,18 @@ class Guild {
         }
 
         // Verification si nom déjà pris
-        res = conn.query("SELECT idGuild FROM Guilds WHERE nom = ?;", [guildName]);
+        res = conn.query("SELECT idGuild FROM guilds WHERE nom = ?;", [guildName]);
         if (res.length > 0) {
             err.push("Ce nom de guilde est déjà pris.");
             return err;
         }
 
         // Create guild
-        res = conn.query("INSERT INTO Guilds VALUES(NULL, ?, '', 1, 0);", [guildName])["insertId"];
+        res = conn.query("INSERT INTO guilds VALUES(NULL, ?, '', 1, 0);", [guildName])["insertId"];
         this.id = res;
 
         // Insert guild master
-        conn.query("INSERT INTO GuildsMembers VALUES(" + idCharacter + ", " + res + " , 3)")
+        conn.query("INSERT INTO guildsmembers VALUES(" + idCharacter + ", " + res + " , 3)")
 
         // Add To MemberList
         res = conn.query("SELECT users.userName, users.idUser FROM users " +
@@ -146,7 +146,7 @@ class Guild {
     // Guild Load
     loadGuild(id) {
         // Info guild
-        let res = conn.query("SELECT * FROM Guilds WHERE idGuild = " + id + ";")[0];
+        let res = conn.query("SELECT * FROM guilds WHERE idGuild = " + id + ";")[0];
         this.message = res["message"];
         this.name = res["nom"];
         this.id = id;
@@ -347,7 +347,7 @@ class Guild {
      * 
      */
     deleteGuildAppliances() {
-        conn.query("DELETE FROM GuildsAppliances WHERE idGuild = " + this.id);
+        conn.query("DELETE FROM guildsappliances WHERE idGuild = " + this.id);
     }
 
     /*
@@ -366,7 +366,7 @@ class Guild {
         if (this.isGuildExist(idGuild)) {
             if (!this.haveAlreadyApplied(idGuild, idCharacter)) {
                 if (!this.haveReachAppliesLimit(idCharacter)) {
-                    conn.query("INSERT INTO GuildsAppliances VALUES(" + idGuild + ", " + idCharacter + ")");
+                    conn.query("INSERT INTO guildsappliances VALUES(" + idGuild + ", " + idCharacter + ")");
                 } else {
                     err.push("Vous ne pouvez postuler que pour rejoindre " + Globals.guilds.maxApplies + " guildes maximum en même temps");
                 }
@@ -386,7 +386,7 @@ class Guild {
      * @param {Number} idGuild 
      */
     static isGuildExist(idGuild) {
-        let res = conn.query("SELECT idGuild FROM Guilds WHERE idGuild = " + idGuild);
+        let res = conn.query("SELECT idGuild FROM guilds WHERE idGuild = " + idGuild);
         if (res.length > 0) {
             return true;
         }
@@ -399,7 +399,7 @@ class Guild {
      * @param {Number} idCharacter
      */
     static haveAlreadyApplied(idGuild, idCharacter) {
-        let res = conn.query("SELECT idGuild FROM GuildsAppliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild + ";");
+        let res = conn.query("SELECT idGuild FROM guildsappliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild + ";");
         if (res.length > 0) {
             return true;
         }
@@ -420,7 +420,7 @@ class Guild {
      * @param {Number} idCharacter ID Character
      */
     static deleteUsersAppliances(idCharacter) {
-        conn.query("DELETE FROM GuildsAppliances WHERE idCharacter = " + idCharacter);
+        conn.query("DELETE FROM guildsappliances WHERE idCharacter = " + idCharacter);
     }
 
     /**
@@ -429,7 +429,7 @@ class Guild {
      * @param {any} idGuild
      */
     static deleteUserForThisGuildAppliance(idCharacter, idGuild) {
-        conn.query("DELETE FROM GuildsAppliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild);
+        conn.query("DELETE FROM guildsappliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild);
     }
 
     /**
