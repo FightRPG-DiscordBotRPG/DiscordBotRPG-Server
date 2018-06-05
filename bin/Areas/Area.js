@@ -24,7 +24,7 @@ class Area {
 
     loadArea(id) {
         let res = conn.query("SELECT AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM areas " +
-            "INNER JOIN areastypes ON areastypes.idAreaType = Areas.idAreaType " +
+            "INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType " +
             "WHERE idArea = " + id)[0];
         this.name = res["AreaName"];
         this.desc = res["AreaDesc"];
