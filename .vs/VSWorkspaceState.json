@@ -6,8 +6,9 @@
     "\\bin\\Areas",
     "\\bin\\Fight",
     "\\bin\\Stats",
+    "\\bin\\Translator",
     "\\conf"
   ],
-  "SelectedNode": "\\bin\\WorldEntity.js",
+  "SelectedNode": "\\bin\\Commandes.js",
   "PreviewInSolutionExplorer": false
 }

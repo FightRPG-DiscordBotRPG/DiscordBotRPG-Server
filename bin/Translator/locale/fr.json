@@ -1,0 +1,107 @@
+{
+  "errors" : {
+    "generic" : "Vous ne pouvez pas faire cela maintenant. %d Haha !",
+    "you_cant_claim" : "Vous ne pouvez pas conquérir cette zone",
+    "you_have_to_be_in_a_guild" : "Vous devez être dans une guilde pour faire ceci",
+    "you_dont_have_right_to_change_announcement" : "Vous n'avez pas la permission de modifier l'annonce de guilde",
+    "you_cant_exceed_x_characters" : "Vous ne pouvez pas dépasser %d caractères",
+    "already_in_guild" : "Impossible, vous êtes déjà dans une guilde !",
+    "guild_name_empty" : "Vous devez choisir le nom de votre guilde",
+    "guild_have_to_be_gm_to_disband" : "Vous devez être le chef de la guilde pour pouvoir la dissoudre",
+    "guild_dont_be_in_guild_to_join_a_guild" : "Vous ne devez pas être dans une guilde pour demander à en rejoindre une",
+    "guild_enter_id_to_join" : "Vous devez entrer l'identifiant de la guilde que vous voulez rejoindre",
+    "guild_character_not_ask_to_join" : "Cette personne n'a pas demandé à rejoindre votre guilde",
+    "guild_enter_id_to_add" : "Vous devez entrer l'identifiant de la personne à ajouter",
+    "guild_cant_remove_appliances" : "Vous ne pouvez pas faire ça",
+    "guild_have_to_enter_id_to_remove_apply" : "Vous devez choisir l'identifiant du personnage",
+    "guild_have_to_enter_id_to_remove_apply_playerside" : "Vous devez entrer l'identifiant de la guilde",
+    "guild_not_in_guild" : "Vous n'êtes pas dans une guilde",
+    "guild_cant_give_this_money" : "Vous ne pouvez pas donner cette somme à la guilde",
+    "guild_you_dont_have_enough_money" : "Vous n'avez pas cette somme",
+    "guild_you_have_to_select_ammount_money" : "Veuillez choisir la somme à donner à votre guilde",
+    "guild_you_have_to_select_ammount_to_retrive" : "Veuillez choisir la somme à retirer",
+    "collect_enter_id_to_collect" : "Veuillez entrer l'identifiant de la ressource à récolter",
+    "collect_tired_wait_x_seconds" : "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
+    "item_you_dont_have_this_item" : "Vous n'avez pas cet objet",
+    "item_choose_id_or_equipement" : "Vous devez entrer l'identifiant de l'emplacement d'inventaire ou bien choisir parmi \"head,chest,legs,weapon\"",
+    "item_you_cant_equip" : "Vous ne pouvez pas équiper cet objet",
+    "item_you_dont_have" : "Vous n'avez pas cet objet",
+    "item_enter_id_to_equip" : "Vous devez entrer l'identifiant de l'objet à équiper",
+    "item_you_dont_have_item_equiped_here" : "Vous n'avez pas d'objets équipé dans cet emplacement",
+    "item_you_have_to_choose_type_to_unequip" : "Vous devez choisir le type d'objet à déséquiper"
+
+  },
+  "area" : {
+    "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
+    "resources" : "Ressources de la zone :",
+    "resource"  : "- ID : %d | %s | %s",
+    "list_of_players_in_area" : "Liste des joueurs de la zone %s :",
+    "player"    : "ID : %d | Nom : %s | Niveau : %d",
+    "wild_area" : "%d | %s | Niveaux : %s",
+    "city_area" : "%d | %s (Ville) | Niveau : %s",
+    "no_description" : "Aucune description pour cette zone",
+    "maximum_quality" : "Qualité maximale pour un objet :",
+    "you_claimed" : "Vous avez conquis cette zone"
+  },
+  "resources" : {
+    "wood"  : "Bois",
+    "ore"   : "Minerai",
+    "tree"  : "Arbre",
+    "plant" : "Plante",
+
+    "woods" : "Bois",
+    "ores"  : "Minerais",
+    "trees" : "Arbres",
+    "plants": "Plantes",
+
+    "noresources" : "Pas de ressources ici",
+
+    "collected_x_resource" : "Vous avez récolté %d %s",
+    "resource_dont_exist" : "Vous ne voyez cette ressource nulle part"
+  },
+  "general" : {
+    "nothing_at_this_page" : "Cette page ne contient rien",
+    "page" : "Page",
+    "none" : "Aucun",
+    "description" : "Description",
+    "monsters" : "Monstres",
+    "monster" : "Monstre",
+    "resource" : "Ressource",
+    "resources" : "Ressources"
+  },
+  "guild" : {
+    "you_dont_have_a_guild" : "Vous n'avez pas de guilde",
+    "member" : "Membre",
+    "members" : "Membres",
+    "officer": "Officier",
+    "guild_master" : "Chef de Guilde",
+    "guild_announcement" : "Annonce de Guilde",
+    "no_guild_announcement" : "Pas d'annonce de guilde",
+    "you_have_updated_guild_announcement" : "Vous avez modifié l'annonce de guilde avec succès",
+    "members_out_of" : "Membres : %d/%d",
+    "level_out_of" : "Niveau : %d/%d",
+    "required_to_level_up" : "Argent requis pour monter le niveau de la guilde : %d G",
+    "money_available" : "Argent disponible",
+    "money" : "%dG",
+    "guild_x_created" : "La guilde : %s a bien été créée !",
+    "dont_have_enough_to_create" : "Vous n'avez pas suffisamment d'argent pour créer une guilde (Il vous faut %dG)",
+    "guild_disband" : "Vous avez dissous la guilde !",
+    "guild_applied" : "Vous avez postulé pour rejoindre la guilde",
+    "character_have_been_accepted" : "Cette personne a bien été accepté dans la guilde",
+    "you_have_denied_this_apply" : "Candidature refusé",
+    "you_have_cancel_your_apply" : "Vous avez annulé votre candidature",
+    "you_have_denied_all_applies" : "Vous avez refusé toutes les candidatures",
+    "you_have_cancel_all_your_applies" : "Vous avez annulé toutes vos candidatures",
+    "you_leaved_guild" : "Vous avez quitté votre guilde",
+    "member_kicked" : "Le membre à été éjecté",
+    "rank_modified" : "Le rang de ce membre a été modifié avec succès",
+    "you_gift_x_g_to_guild" : "Vous avez donné %dG à votre guilde",
+    "you_retrive_x_g_from_guild" : "Vous avez retiré %dG de votre guilde",
+    "guild_level_up" : "Votre guilde est monté d'un niveau, elle est dérsormais niveau : %d"
+
+  },
+  "inventory_equipment" : {
+    "item_equiped" : "Votre objet a été équipé",
+    "item_unequiped" : "L'objet a été déséquipé"
+  }
+}

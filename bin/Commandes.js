@@ -10,6 +10,7 @@ const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
 const Fight = require("./Fight/Fight");
 const Monster = require("./Monstre");
+const Translator = require("./Translator/Translator");
 
 class Commandes {
     constructor(prefix) {
@@ -57,7 +58,7 @@ class Commandes {
 
                 this.bot.user.setPresence({
                     game: {
-                        name: this.nbrConnectedUsers + " joueurs connectés !",
+                        name: this.nbrConnectedUsers + " players connected !",
                     },
                 });
                 console.log(sizeof(this.connectedUsers));
@@ -73,6 +74,7 @@ class Commandes {
 
             }
 
+            let lang = this.connectedUsers[authorIdentifier].lang;
             console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
             // Detect Commands
@@ -83,15 +85,15 @@ class Commandes {
 
                 case "claim":
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
-                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character.idGuild)
+                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character.idGuild, lang)
                     } else {
-                        err.push("Vous devez être dans uen guilde.");
+                        err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                     }
 
                     if (err[0]) {
                         msg = err[0];
                     } else {
-                        msg = "Vous avez claim cette zone.";
+                        msg = Translator.getString(lang, "area", "you_claimed");
                     }
 
                     message.channel.send(msg);
@@ -103,9 +105,9 @@ class Commandes {
 
                 case "guild":
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
-                        msg = this.connectedGuilds[this.connectedUsers[authorIdentifier].character.idGuild].toStr();
+                        msg = this.connectedGuilds[this.connectedUsers[authorIdentifier].character.idGuild].toStr(lang);
                     } else {
-                        msg = "Vous n'avez pas de guilde.";
+                        msg = Translator.getString(lang, "guild", "you_dont_have_a_guild");
                     }
                     message.channel.send(msg);
                     break;
@@ -125,19 +127,19 @@ class Commandes {
 
                                     this.connectedUsers[authorIdentifier].character.removeMoney(Globals.guilds.basePriceLevel);
 
-                                    msg = "La guilde : " + tGuild.name + " à bien été créée !";
+                                    msg = Translator.getString(lang, "guild", "guild_x_created", [tGuild.name]);
                                 } else {
                                     msg = err[0];
                                 }
                             } else {
-                                msg = "Vous n'avez pas suffisamment d'argent pour créer une guilde (Il vous faut : " + Globals.guilds.basePriceLevel + "G).";
+                                msg = Translator.getString(lang, "guild", "dont_have_enough_to_create", [Globals.guilds.basePriceLevel]);
                             }
 
                         } else {
-                            msg = "Vous êtes déjà dans une guilde !";
+                            msg = Translator.getString(lang, "errors", "already_in_guild");
                         }
                     } else {
-                        msg = "Vous devez choisir le nom de votre guilde.";
+                        msg = Translator.getString(lang, "errors", "guild_name_empty");
                     }
                     message.reply(msg);
                     break;
@@ -149,9 +151,9 @@ class Commandes {
                         this.areasManager.unclaimAll(tGuildId);
                         this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                         delete this.connectedGuilds[tGuildId];
-                        msg = "Vous avez bien dissous la guilde !";
+                        msg = Translator.getString(lang, "guild", "guild_disband");
                     } else {
-                        msg = "Vous devez être chef de guilde pour pouvoir la disband.";
+                        msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_disband");
                     }
                     message.channel.send(msg);
                     break;
@@ -166,13 +168,13 @@ class Commandes {
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
-                                msg = "Vous avez postulé pour rejoindre la guilde.";
+                                msg = Translator.getString(lang, "guild", "guild_applied");
                             }
                         } else {
-                            msg = "Vous ne devez pas être dans une guilde pour demander à en rejoindre une.";
+                            msg = Translator.getString(lang, "errors", "guild_dont_be_in_guild_to_join_a_guild");
                         }
                     } else {
-                        msg = "Vous devez entrer l'identifiant de la guilde que vous voulez rejoindre.";
+                        msg = Translator.getString(lang, "errors", "guild_enter_id_to_join");
                     }
 
                     message.reply(msg);
@@ -189,7 +191,7 @@ class Commandes {
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
-                                msg = "Le personnage à bien été accepté dans la guilde.";
+                                msg = Translator.getString(lang, "guild", "character_have_been_accepted");
                                 uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
                                 Guild.deleteUsersAppliances(messageArray[1]);
                                 if (this.connectedUsers[uIDGuild]) {
@@ -197,10 +199,10 @@ class Commandes {
                                 }
                             }
                         } else {
-                            msg = "Ce personnage n'a pas demandé à rejoindre votre guilde.";
+                            msg = Translator.getString(lang, "errors", "guild_character_not_ask_to_join");
                         }
                     } else {
-                        msg = "Vous devez entrer l'identifiant du personnage à ajouté.";
+                        msg = Translator.getString(lang, "errors", "guild_enter_id_to_add");
                     }
                     message.reply(msg);
                     break;
@@ -227,22 +229,22 @@ class Commandes {
                         if (Number.isInteger(messageArray[1])) {
                             if (this.connectedGuilds[tGuildId].canCancelApplies(this.connectedUsers[authorIdentifier].character.id)) {
                                 Guild.deleteUserForThisGuildAppliance(messageArray[1], tGuildId);
-                                msg = "Vous avez bien refusé l'candidatures.";
+                                msg = Translator.getString(lang, "guild", "you_have_denied_this_apply");
                             } else {
-                                msg = "Vous n'avez pas le droit de faire cela.";
+                                msg = Translator.getString(lang, "errors", "guild_cant_remove_appliances");
                             }
 
 
                         } else {
-                            msg = "Vous devez choisir l'identifiant du personnage.";
+                            msg = Translator.getString(lang, "errors", "guild_have_to_enter_id_to_remove_apply");
                         }
 
                     } else {
                         if (Number.isInteger(messageArray[1])) {
                             Guild.deleteUserForThisGuildAppliance(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
-                            msg = "Vous avez bien annulé l'candidatures.";
+                            msg = Translator.getString(lang, "guild", "you_have_cancel_your_apply");
                         } else {
-                            msg = "Vous devez choisir l'identifiant de la guilde.";
+                            msg = Translator.getString(lang, "errors", "guild_have_to_enter_id_to_remove_apply_playerside");
                         }
                     }
                     message.reply(msg);
@@ -254,13 +256,13 @@ class Commandes {
                     if (tGuildId > 0) {
                         if (this.connectedGuilds[tGuildId].canCancelApplies(this.connectedUsers[authorIdentifier].character.id)) {
                             this.connectedGuilds[tGuildId].deleteGuildAppliances();
-                            msg = "Vous avez bien refusé toutes les candidatures.";
+                            msg = Translator.getString(lang, "guild", "you_have_denied_all_applies");
                         } else {
-                            msg = "Vous n'avez pas le droit de faire cela.";
+                            msg = Translator.getString(lang, "errors", "guild_cant_remove_appliances");
                         }
                     } else {
                         Guild.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
-                        msg = "Vous avez bien annulé toutes vos candidatures.";
+                        msg = Translator.getString(lang, "guild", "you_have_cancel_all_your_applies");
                     }
 
                     message.reply(msg);
@@ -286,16 +288,16 @@ class Commandes {
                             msg = err[0];
                         } else {
                             if (messageArray[1] == this.connectedUsers[authorIdentifier].character.id) {
-                                msg = "Vous avez quitté votre guilde.";
+                                msg = Translator.getString(lang, "guild", "you_leaved_guild");
                             } else {
-                                msg = "Le membre à bien été supprimé.";
+                                msg = Translator.getString(lang, "guild", "member_kicked");
                             }
                             if (this.connectedUsers[uIDGuild]) {
                                 this.connectedUsers[uIDGuild].character.idGuild = 0;
                             }
                         }
                     } else {
-                        msg = "Vous n'êtes pas dans une guilde.";
+                        msg = Translator.getString(lang, "errors", "guild_not_in_guild");
                     }
 
                     message.reply(msg);
@@ -311,7 +313,7 @@ class Commandes {
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = "Le rang de ce membre à bien été modifié.";
+                        msg = Translator.getString(lang, "guild", "rank_modified");
                     }
                     message.reply(msg);
                     break;
@@ -320,15 +322,15 @@ class Commandes {
                 case "gmessage":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
-                        err = this.connectedGuilds[tGuildId].setMessage(this.connectedUsers[authorIdentifier].character.id, this.getArgsString(messageArray));
+                        err = this.connectedGuilds[tGuildId].setMessage(this.connectedUsers[authorIdentifier].character.id, this.getArgsString(messageArray), lang);
                     } else {
-                        err.push("Vous devez être dans une guilde pour faire cela.");
+                        err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                     }
 
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = "Vous avez bien modifié le message de guilde.";
+                        msg = Translator.getString(lang, "guild", "you_have_updated_guild_announcement");
                     }
 
                     message.channel.send(msg);
@@ -340,23 +342,23 @@ class Commandes {
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
                         if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(messageArray[1])) {
                             if (!this.connectedGuilds[tGuildId].addMoney(messageArray[1])) {
-                                err.push("Vous ne pouvez pas donner cette somme à la guilde.");
+                                err.push(Translator.getString(lang, "errors", "guild_cant_give_this_money"));
                             } else {
                                 //Si tout est ok
                                 this.connectedUsers[authorIdentifier].character.removeMoney(messageArray[1]);
                             }
                         } else {
-                            err.push("Vous n'avez pas cette somme.");
+                            err.push(Translator.getString(lang, "errors", "guild_you_dont_have_enough_money"));
                         }
 
                     } else {
-                        err.push("Vous devez choisir la somme à donner à votre guilde.");
+                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_ammount_money"));
                     }
 
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = "Vous avez bien donné " + messageArray[1] + "G à votre guilde.";
+                        msg = Translator.getString(lang, "guild", "you_gift_x_g_to_guild", [messageArray[1]]);
                     }
 
                     message.channel.send(msg);
@@ -368,13 +370,13 @@ class Commandes {
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
                         err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
                     } else {
-                        err.push("Vous devez choisir la somme à donner à votre guilde.");
+                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_ammount_to_retrive"));
                     }
 
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = "Vous avez retiré " + messageArray[1] + "G de votre guilde.";
+                        msg = Translator.getString(lang, "guild", "you_retrive_x_g_from_guild", [messageArray[1]]);
                         this.connectedUsers[authorIdentifier].character.addMoney(messageArray[1]);
                     }
 
@@ -390,7 +392,7 @@ class Commandes {
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = "Votre guilde est bien monté de niveau, elle passe niveau : " + this.connectedGuilds[tGuildId].level;
+                        msg = Translator.getString(lang, "guild", "guild_level_up"[this.connectedGuilds[tGuildId].level]);
                     }
 
                     message.channel.send(msg);
@@ -414,7 +416,7 @@ class Commandes {
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
-                    message.reply(this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, this.connectedUsers));
+                    message.reply(this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, this.connectedUsers, lang));
                     break;
 
                 case "active":
@@ -444,16 +446,16 @@ class Commandes {
                                     let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
                                     this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
                                 }
-                                msg = "Vous avez récolté " + 1 + " " + resourceToCollect.nomItem + ".";
+                                msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]);
                             } else {
                                 // error object don't exist
-                                msg = "Vous ne voyez cette ressource nulle part.";
+                                msg = Translator.getString(lang, "resources", "resource_dont_exist");
                             }
                         } else {
-                            msg = "Vous devez entrer l'id de la ressource à récolter.";
+                            msg = Translator.getString(lang, "errors", "collect_enter_id_to_collect");
                         }
                     } else {
-                        msg = "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : " + Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes.";
+                        msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                     }
 
                     message.reply(msg);
@@ -478,7 +480,7 @@ class Commandes {
 
                             msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats);
                         } else {
-                            msg = "```Vous n'avez pas cet objet```";
+                            msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
                         }
 
                         /*else {
@@ -497,7 +499,7 @@ class Commandes {
                         if (idItemToSee > 0) {
                             msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee);
                         } else {
-                            msg = "```Vous devez entrer l'id de l'emplacement d'inventaire ou bien choisir parmi head,chest,legs,weapon```";
+                            msg = "```" + Translator.getString(lang, "errors", "item_choose_id_or_equipement") + "```";
                         }
 
                     }
@@ -534,15 +536,15 @@ class Commandes {
                                 if (swapItem > 0) {
                                     this.connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
                                 }
-                                msg = "Votre item a été équipé.";
+                                msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
                             } else {
-                                msg = "Vous ne pouvez pas équiper cet objet.";
+                                msg = Translator.getString(lang, "errors", "item_you_cant_equip");
                             }
                         } else {
-                            msg = "Vous n'avez pas cet objet !";
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have");
                         }
                     } else {
-                        msg = "Vous devez entrer l'identifiant de l'objet à équiper.";
+                        msg = Translator.getString(lang, "errors", "item_enter_id_to_equip");
                     }
 
                     message.channel.send(msg);
@@ -556,13 +558,13 @@ class Commandes {
                         let itemToInventory = this.connectedUsers[authorIdentifier].character.equipement.unEquip(toUnequip);
                         if (itemToInventory > 0) {
                             this.connectedUsers[authorIdentifier].character.inv.addToInventory(itemToInventory);
-                            msg = "L'objet à bien été retiré !";
+                            msg = Translator.getString(lang, "inventory_equipment", "item_unequiped");
                         } else {
-                            msg = "Vous n'avez pas d'objets d'équipé dans cet emplacement !";
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have_item_equiped_here");
                         }
 
                     } else {
-                        msg = "Vous devez choisir le type à retirer.";
+                        msg = Translator.getString(lang, "errors", "item_you_have_to_choose_type_to_unequip");
                     }
 
                     message.channel.send(msg);
@@ -764,12 +766,12 @@ class Commandes {
                     break;
 
                 case "area":
-                    msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area);
+                    msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area, lang);
                     message.channel.send(msg);
                     break;
 
                 case "areas":
-                    message.channel.send(this.areasManager.seeAllAreas());
+                    message.channel.send(this.areasManager.seeAllAreas(lang));
                     break;
 
                 case "travel":

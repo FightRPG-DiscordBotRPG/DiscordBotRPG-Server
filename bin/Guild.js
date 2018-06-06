@@ -2,6 +2,7 @@
 const conn = require("../conf/mysql.js");
 const Discord = require("discord.js");
 const Globals = require("./Globals.js");
+const Translator = require("./Translator/Translator");
 
 class Guild {
     // Discord User Info
@@ -169,7 +170,7 @@ class Guild {
 
     }
 
-    toStr() {
+    toStr(lang) {
         let membersStr = "```";
         let rmStr = "";
         let roStr = "";
@@ -177,13 +178,13 @@ class Guild {
         for (let i in this.members) {
             switch (this.members[i].rank) {
                 case 1:
-                    rmStr += i + " | " + this.members[i].name + " | Membre \n";
+                    rmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "member") + "\n";
                     break;
                 case 2:
-                    roStr += i + " | " + this.members[i].name + " | Officier\n";
+                    roStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "offcer") + "\n";
                     break;
                 case 3:
-                    rgmStr += i + " | " + this.members[i].name + " | Chef de Guilde\n";
+                    rgmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "guild_master") + "\n";
                     break;
             }
         }
@@ -193,10 +194,10 @@ class Guild {
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
             .setAuthor(this.name, "https://upload.wikimedia.org/wikipedia/commons/b/b4/Guild-logo-01_.png")
-            .addField("Message de guilde", (this.message ? this.message : "Pas de message de guilde"))
-            .addField("Membres " + this.nbrMembers + "/" + (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level)), membersStr)
-            .addField("Level : " + this.level + "/" + Globals.guilds.maxLevel, "Argent pour monter de niveau : " + this.getNextLevelPrice() + "G", true)
-            .addField("Money", this.money + "G", true);
+            .addField(Translator.getString(lang, "guild", "guild_announcement"), (this.message ? this.message : Translator.getString(lang, "guild", "no_guild_announcement")))
+            .addField(Translator.getString(lang, "guild", "members_out_of", [this.nbrMembers, (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level))]), membersStr)
+            .addField(Translator.getString(lang, "guild", "level_out_of", [this.level, Globals.guilds.maxLevel]), Translator.getString(lang, "guild", "required_to_level_up", [this.getNextLevelPrice()]), true)
+            .addField(Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [this.money]), true);
 
         return embed;
     }
@@ -209,7 +210,7 @@ class Guild {
         return Object.keys(this.members).length < (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level)) ? false : true;
     }
 
-    setMessage(idCharacter, message) {
+    setMessage(idCharacter, message, lang) {
         let err = [];
 
         if (message.length < 255) {
@@ -217,10 +218,10 @@ class Guild {
                 this.message = message;
                 this.saveMessage();
             } else {
-                err.push("Vous n'avez pas la permission de modifier le message de guilde.");
+                err.push(Translator.getString(lang, "errors", "you_dont_have_right_to_change_announcement"));
             }
         } else {
-            err.push("Vous ne pouvez pas dépasser 254 charactères.");
+            err.push(Translator.getString(lang, "errors", "you_cant_exceed_x_characters", [254]));
         }
 
         return err;

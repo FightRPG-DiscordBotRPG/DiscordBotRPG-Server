@@ -2,6 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const Area = require("./Area");
 const Discord = require("discord.js");
+const Translator = require("../Translator/Translator");
 
 class WildArea extends Area{
 
@@ -22,13 +23,13 @@ class WildArea extends Area{
         return res[0]["nomRarity"];
     }
 
-    toStr() {
+    toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.name + " | " + this.levels + " | Owned by : " + this.getOwner(), this.image)
-            .addField("Description", (this.desc ? this.desc : "Aucune description pour cette zone") + "\n\nQualité Maximale pour un objet : **" + this.getMaxItemQuality() + "**")
-            .addField("Monstres", this.getMonsters())
-            .addField("Resources", this.getResources())
+            .setAuthor(this.name + " | " + this.levels + " | Owned by : " + this.getOwner(lang), this.image)
+            .addField(Translator.getString(lang, "general", "description"), (this.desc ? this.desc : Translator.getString(lang, "area", "no_description")) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") +" **" + this.getMaxItemQuality() + "**")
+            .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
+            .addField(Translator.getString(lang, "general", "resources"), this.getResources(lang))
             .setImage(this.image);
     }
 }

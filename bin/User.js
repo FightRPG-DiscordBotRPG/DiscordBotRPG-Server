@@ -13,6 +13,7 @@ class User {
         this.character = new Character();
         this.avatar = "";
         this.username = username;
+        this.lang = "en";
     }
 
     // Init for new user
@@ -42,6 +43,7 @@ class User {
             this.character.loadCharacter(res[0]["idCharacter"]);
             this.username = res[0]["userName"];
             this.character.name = this.username;
+            this.lang = res[0]["lang"];
         }
 
     }

@@ -4,6 +4,7 @@ const WildArea = require("./WildArea.js");
 const CityArea = require("./CityArea.js");
 const Globals = require("../Globals.js");
 const Discord = require("discord.js");
+const Translator = require("../Translator/Translator");
 
 class AreasManager {
 
@@ -57,8 +58,8 @@ class AreasManager {
     }
 
     // Return string embed discord
-    seeThisArea(idArea) {
-        return this.areas.get(idArea).toStr();
+    seeThisArea(idArea, lang) {
+        return this.areas.get(idArea).toStr(lang);
     }
 
     addOnePlayer(idArea) {
@@ -69,7 +70,7 @@ class AreasManager {
         this.areas.get(idArea).nbrPlayers--;
     }
 
-    seeAllAreas() {
+    seeAllAreas(lang) {
         let str = "```";
 
         // No Map
@@ -90,10 +91,12 @@ class AreasManager {
         for (let [key, value] of this.areas) {
             switch (this.areas.get(key).areaType) {
                 case "wild":
-                    str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
+                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
+                    str += Translator.getString(lang, "area", "wild_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
                     break;
                 case "city":
-                    str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
+                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
+                    str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
                     break;
             }
 
@@ -132,8 +135,8 @@ class AreasManager {
         return this.areas.get(idArea).name;
     }
 
-    getPlayersOf(idArea, page, connectedUsers) {
-        return this.areas.get(idArea).getPlayers(page, connectedUsers);
+    getPlayersOf(idArea, page, connectedUsers, lang) {
+        return this.areas.get(idArea).getPlayers(page, connectedUsers, lang);
     }
 
     getResources(idArea) {

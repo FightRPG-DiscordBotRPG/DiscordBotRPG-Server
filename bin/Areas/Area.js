@@ -1,6 +1,7 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
 const Globals = require("../Globals");
+const Translator = require("../Translator/Translator");
 
 class Area {
 
@@ -73,26 +74,28 @@ class Area {
         
     }
 
-    getMonsters() {
+    getMonsters(lang) {
         let str = "```";
         for (let i in this.monsters) {
-            str += "ID : " + i + " | " + this.monsters[i]["name"] + " | Lv : " + this.monsters[i]["avglevel"] + " | Type : " + this.monsters[i]["type"] + "\n\n";
+            //str += "ID : " + i + " | " + this.monsters[i]["name"] + " | Lv : " + this.monsters[i]["avglevel"] + " | Type : " + this.monsters[i]["type"] + "\n\n";
+            str += Translator.getString(lang, "area", "monster", [i, this.monsters[i]["name"], this.monsters[i]["avglevel"], this.monsters[i]["type"]]) + "\n\n";
         }
         str += "```";
         return str;
     }
 
-    getResources() {
-        let strWoods = "Bois\n";
-        let strStones = "Minerais\n";
-        let strHerbs = "Herbes\n";
-        let str = "```Resources de la zone :\n";
+    getResources(lang) {
+        let strWoods =  Translator.getString(lang, "resources", "woods") + "\n";
+        let strStones = Translator.getString(lang, "resources", "ores") + "\n";
+        let strHerbs =  Translator.getString(lang, "resources", "plants") + "\n";
+        let str = "```" + Translator.getString(lang, "area", "resources") + "\n";
         let tempString = "";
         //let id = 0;
 
         for (let i = 0; i < this.resources.length; i++) {
             // On créer d'abord la vue de l'objet
-            tempString = "- ID : " + (i+1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
+            //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
+            tempString = Translator.getString(lang, "area", "resource", [i + 1, this.resources[i]["nomItem"], this.resources[i]["nomRarity"]]) + "\n\n";
 
             switch (this.resources[i]["nomType"]) {
                 case "wood":
@@ -108,7 +111,7 @@ class Area {
             }
         }
         if (this.resources.length === 0) {
-            str += "Pas de ressources ici";
+            str += Translator.getString(lang, "resources", "noresources");
         } else {
             str += strWoods + strStones + strHerbs;
         }
@@ -138,10 +141,10 @@ class Area {
         return this.maxItemRarity;
     }
 
-    getPlayers(page, connectedUsers) {
+    getPlayers(page, connectedUsers, lang) {
         page = page;
         let str = "```";
-        str += "Liste des joueurs de la zone " + this.name + " :\n\n";
+        str += Translator.getString(lang, "area", "list_of_players_in_area", [this.name]) + "\n\n";
         let maxPage = Math.ceil(this.nbrPlayers/10);
 
         page = page > maxPage || page <= 0 ? 1 : page;
@@ -153,16 +156,17 @@ class Area {
         if (res[0]) {
             for (let i in res) {
                 if (connectedUsers[res[i].idUser]) {
-                    str += "ID : " + connectedUsers[res[i].idUser].character.id + " | "
+                    /*str += "ID : " + connectedUsers[res[i].idUser].character.id + " | "
                         + "Nom : " + connectedUsers[res[i].idUser].username + " | "
-                        + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n"; 
+                        + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n"; */
+                    str += Translator.getString(lang, "area", "player", [connectedUsers[res[i].idUser].character.id, connectedUsers[res[i].idUser].username, connectedUsers[res[i].idUser].character.getLevel()]) + "\n\n";
                 }
 
             }
         } else {
-            str += "Cette page ne contient rien";
+            str += Translator.getString(lang, "general", "nothing_at_this_page");
         }
-        str += "\nPage : " + page + " / " + maxPage;
+        str += "\n"+ Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
         str += "```";
         return str;
     }
@@ -179,11 +183,11 @@ class Area {
     /**
      * Return owner name if exist or "None";
      */
-    getOwner() {
+    getOwner(lang) {
         if (this.owner > 0) {
             return conn.query("SELECT nom FROM guilds WHERE idGuild = " + this.owner)[0].nom;
         }
-        return "None";
+        return Translator.getString(lang, "general", "none");
     }
 
     saveOwner() {
@@ -198,13 +202,13 @@ class Area {
     /*
     *   CONQUEST
     */
-    claim(idGuild) {
+    claim(idGuild, lang) {
         let err = [];
         if (this.owner == 0) {
             this.owner = idGuild;
             this.saveOwner();
         } else {
-            err.push("Vous ne pouvez pas claim");
+            err.push(Translator.getString(lang, "errors", "you_cant_claim"));
         }
         return err;
     }

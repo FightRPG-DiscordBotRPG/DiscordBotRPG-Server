@@ -4,7 +4,7 @@ var MySql = require('sync-mysql');
 var connection = new MySql({
     host: 'localhost',
     user: 'discord_bot_rpg',
-    password: 'sdo#FWDViY5tgG*e',
+    password: 'sdobFWDViY5tgGYe',
     database: 'discord_bot_rpg'
 });
 

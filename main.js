@@ -8,6 +8,7 @@ const conn = require("./conf/mysql.js");
 const Globals = require("./bin/Globals.js");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
+const Translator = require("./bin/Translator/Translator");
 
 
 var bot = new Discord.Client();
@@ -18,6 +19,7 @@ process.on('unhandledRejection', up => { throw up });
 console.log("Bot Starting ...");
 
 console.log(Globals);
+
 
 bot.on("ready", () => {
     bot.user.setPresence({
