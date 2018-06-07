@@ -75,7 +75,7 @@ class Commandes {
             }
 
             let lang = this.connectedUsers[authorIdentifier].lang;
-            console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
+            //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
             // Detect Commands
             switch (command) {
@@ -412,7 +412,6 @@ class Commandes {
                         }
                     } else {
                         msg = Translator.getString(lang, "languages", "list_of_languages") + "\n" + Translator.getAvailableLanguages(lang);
-                        console.log(lang);
                     }
                     message.channel.send(msg);
                     break;
