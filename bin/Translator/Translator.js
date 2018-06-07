@@ -38,10 +38,10 @@ class Translator {
 
     static load(callback) {
         var self = this;
-        fs.readdir("./bin/Translator/locale", (err, filenames) => {
+        fs.readdir(__dirname + "/locale", (err, filenames) => {
             if (!err) {
                 for (let i of filenames) {
-                    self.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync("./bin/Translator/locale/" + i));
+                    self.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync(__dirname + "/locale/" + i));
                     self.nbOfTranslations++;
                 }
                 callback ? callback() : null;
@@ -50,9 +50,9 @@ class Translator {
     }
 
     static loadSync() {
-        var filenames = fs.readdirSync("./bin/Translator/locale");
+        var filenames = fs.readdirSync(__dirname + "/locale");
         for (let i of filenames) {
-            this.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync("./bin/Translator/locale/" + i));
+            this.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync(__dirname + "/locale/" + i));
             this.nbOfTranslations++;
         }
     }
