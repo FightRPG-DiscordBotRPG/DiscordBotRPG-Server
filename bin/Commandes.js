@@ -35,7 +35,7 @@ class Commandes {
         let err = [];
         let apPage;
 
-        if (command !== undefined && !message.author.bot) {
+        if (command !== undefined && !message.author.bot && message.content.startsWith(this.prefix)) {
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
                 return;
             }
