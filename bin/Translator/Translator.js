@@ -18,8 +18,22 @@ class Translator {
 
         }
 
-        return "Tranlation not found";
+        return "TNF";
 
+    }
+
+    static isLangExist(lang) {
+        return this.translations[lang] ? true : false
+    }
+
+    static getAvailableLanguages(lang) {
+        let tr = "";
+        let count = 0;
+        for (let i in this.translations) {
+            count++;
+            tr += this.getString(lang, "languages", i) + " (" + i + ")" + (count == this.nbOfTranslations ? "" : ", ");
+        }
+        return tr;
     }
 
     static load(callback) {
@@ -28,6 +42,7 @@ class Translator {
             if (!err) {
                 for (let i of filenames) {
                     self.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync("./bin/Translator/locale/" + i));
+                    self.nbOfTranslations++;
                 }
                 callback ? callback() : null;
             }
@@ -38,11 +53,13 @@ class Translator {
         var filenames = fs.readdirSync("./bin/Translator/locale");
         for (let i of filenames) {
             this.translations[i.split(".")[0]] = JSON.parse(fs.readFileSync("./bin/Translator/locale/" + i));
+            this.nbOfTranslations++;
         }
     }
 }
 
 Translator.translations = {};
+Translator.nbOfTranslations = 0;
 Translator.loadSync();
 
 

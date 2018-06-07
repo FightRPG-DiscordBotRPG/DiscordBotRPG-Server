@@ -18,21 +18,21 @@ class Guild {
 
     // Create guild
     // Return err = array of errors
-    createGuild(guildName, idCharacter) {
+    createGuild(guildName, idCharacter, lang) {
         // Need to verify if guild name already taken
         let res = [];
         let err = [];
 
         // Verifcation nom guilde
         if (guildName.length > 60 || guildName.length < 4) {
-            err.push("Le nom de la guilde doit ne doit pas dépasser 60 caratères ou être inférieur à 4 caractères.");
+            err.push(Translator.getString(lang, "errors", "guild_name_cant_exceed_x_characters", [60,4]));
             return err;
         }
 
         // Verification si nom déjà pris
         res = conn.query("SELECT idGuild FROM guilds WHERE nom = ?;", [guildName]);
         if (res.length > 0) {
-            err.push("Ce nom de guilde est déjà pris.");
+            err.push(Translator.getString(lang, "errors", "guild_name_taken"));
             return err;
         }
 
@@ -63,7 +63,7 @@ class Guild {
      * @param {Number} idOther ID Of Character to Add
      * @param {Number} rank (optional) rank
      */
-    addMember(idAsk, idOther, rank) {
+    addMember(idAsk, idOther, rank, lang) {
         rank = rank ? rank : 1;
         let err = [];
         let res;
@@ -88,7 +88,7 @@ class Guild {
         return err;
     }
 
-    removeMember(idAsk, idOther) {
+    removeMember(idAsk, idOther, lang) {
         let err = [];
         if (this.members[idOther]) {
             if (this.members[idAsk].rank > this.members[idOther].rank || idAsk == idOther) {
@@ -97,30 +97,30 @@ class Guild {
                     conn.query("DELETE FROM guildsmembers WHERE idCharacter = " + idOther + ";");
                     this.nbrMembers--;
                 } else {
-                    err.push("Vous êtes le chef de guilde, vous ne pouvez pas abandonner la guilde comme cela, mais vous pouvez la dissoudre avec la commande ::gdisband");
+                    err.push(Translator.getString(lang, "errors", "guild_cant_leave_guild_as_gm"));
                 }
 
             } else {
-                err.push("Vous n'avez pas les droits pour supprimer ce membre.");
+                err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_kick"));
             }
         } else {
-            err.push("Ce membre n'existe pas.");
+            err.push(Translator.getString(lang, "errors", "guild_member_dont_exist"));
         }
 
         return err;
     }
 
-    updateMember(idAsk, idOther, rank) {
+    updateMember(idAsk, idOther, rank, lang) {
         let err = [];
         if (this.members[idOther]) {
             if (this.members[idAsk].rank > this.members[idOther].rank && rank < this.members[idAsk].rank) {
                 conn.query("UPDATE guildsmembers SET idGuildRank = " + rank + " WHERE idCharacter = " + idOther + ";");
                 this.members[idOther].rank = rank;
             } else {
-                err.push("Vous ne pouvez pas faire cela.");
+                err.push(Translator.getString(lang, "errors", "generic"));
             }
         } else {
-            err.push("Ce membre n'existe pas.");
+            err.push(Translator.getString(lang, "errors", "guild_member_dont_exist"));
         }
         
         return err;
@@ -257,7 +257,7 @@ class Guild {
      * Return true if done else false
      * @param {Number} number
      */
-    removeMoney(number, idCharacter) {
+    removeMoney(number, idCharacter, lang) {
         let err = [];
 
         if (this.money >= number && number > 0) {
@@ -265,10 +265,10 @@ class Guild {
                 this.money -= number;
                 this.saveMoney();
             } else {
-                err.push("Vous n'avez pas la permission de retirer de l'argent.");
+                err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_remove_money"));
             }
         } else {
-            err.push("Vous ne pouvez pas retirer autant d'argent.");
+            err.push(Translator.getString(lang, "errors", "guild_guild_dont_have_this_amount_of_money"));
         }
 
         return err;
@@ -277,7 +277,7 @@ class Guild {
     /**
      * Return true if done else false
      */
-    levelUp(idCharacter) {
+    levelUp(idCharacter, lang) {
         let err = [];
 
         if (this.members[idCharacter].rank >= 2) {
@@ -285,11 +285,11 @@ class Guild {
                 this.level += 1;
                 this.saveLevel();
             } else {
-                err.push("Votre guilde n'a pas assez d'argent pour monter de niveau. Il vous manque : " + this.getNextLevelPrice() + "G");
+                err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice()]));
             }
         
         } else {
-            err.psuh("Vous n'avez pas la permission de monter le niveau de la guilde.");
+            err.psuh(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
         }
 
 
@@ -301,7 +301,7 @@ class Guild {
     }
 
     // Apppliance of ugild
-    getGuildAppliances(page) {
+    getGuildAppliances(page, lang) {
         page = page <= 0 ? 1 : page;
         let idCharacterMaxLength = 10;
         let userNameMaxLength = 35;
@@ -337,7 +337,7 @@ class Guild {
                     + " ".repeat(Math.floor(actualLevelLength)) + i.actualLevel + " ".repeat(Math.ceil(actualLevelLength)) + "|\n"
             }
         } else {
-            str += "Personne n'a demandé à rejoindre votre guilde.";
+            str += Translator.getString(lang, "guild", "nobody_ask_to_join_your_guild");
         }
 
         str += "```";
@@ -362,21 +362,21 @@ class Guild {
      * @param {Number} idCharacter
      * @returns {Array}
      */
-    static applyTo(idGuild, idCharacter) {
+    static applyTo(idGuild, idCharacter, lang) {
         let err = [];
         if (this.isGuildExist(idGuild)) {
             if (!this.haveAlreadyApplied(idGuild, idCharacter)) {
                 if (!this.haveReachAppliesLimit(idCharacter)) {
                     conn.query("INSERT INTO guildsappliances VALUES(" + idGuild + ", " + idCharacter + ")");
                 } else {
-                    err.push("Vous ne pouvez postuler que pour rejoindre " + Globals.guilds.maxApplies + " guildes maximum en même temps");
+                    err.push(Translator.getString(lang, "errors", "guild_player_reach_max_applies", [Globals.guilds.maxApplies]));
                 }
 
             } else {
-                err.push("Vous avez déjà postulé pour rejoindre cette guilde.");
+                err.push(Translator.getString(lang, "errors", "guild_player_already_applied"));
             }
         } else {
-            err.push("Cette guilde n'existe pas.");
+            err.push(Translator.getString(lang, "errors", "guild_not_exist"));
         }
         return err;
     }
@@ -437,7 +437,7 @@ class Guild {
      * 
      * @param {any} idCharacter
      */
-    static getAppliances(idCharacter) {
+    static getAppliances(idCharacter, lang) {
         let res = conn.query("SELECT guilds.idGuild, nom, level FROM guildsappliances " +
             "INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild " +
             "WHERE idCharacter = " + idCharacter);
@@ -470,7 +470,7 @@ class Guild {
                     + " ".repeat(Math.floor(levelLength)) + i.level + " ".repeat(Math.ceil(levelLength)) + "|\n"
             }
         } else {
-            str += "Vous ne postulez pas pour rejoindre une guilde.";
+            str += Translator.getString(lang, "guild", "guild_no_apply_player");
         }
 
 
@@ -478,7 +478,7 @@ class Guild {
         return str;
     }
 
-    static getGuilds(page) {
+    static getGuilds(page, lang) {
         let count = conn.query("SELECT COUNT(*) FROM guilds")[0]["COUNT(*)"];
         let maxPage = Math.ceil(count / 10);
 
@@ -525,10 +525,10 @@ class Guild {
                     + " ".repeat(Math.floor(guildmembersLenght)) + count + "/" + maxMembers + " ".repeat(Math.ceil(guildmembersLenght)) + "|\n"
             }
         } else {
-            str += "Rien à afficher ici.";
+            str += Translator.getString(lang, "guild", "nothing_to_print");
         }
 
-        str += "Page " + page + "/" + maxPage;
+        str +=  Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]);
 
         str += "```";
         return str;

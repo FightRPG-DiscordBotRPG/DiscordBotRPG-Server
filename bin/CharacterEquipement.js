@@ -4,6 +4,7 @@ const Globals = require("./Globals.js");
 const Item = require("./Item.js");
 const Discord = require("discord.js");
 const Stats = require("./Stats/Stats.js");
+const Translator = require("./Translator/Translator");
 
 class CharacterEquipement {
     // Discord User Info
@@ -33,16 +34,16 @@ class CharacterEquipement {
         return -1;
     }
 
-    seeThisItem(type) {
+    seeThisItem(type, lang) {
         let embed;
         if (this.objects[type]) {
             embed = new Discord.RichEmbed()
                 .setAuthor(this.objects[type].name, Globals.addr + "images/items/" + this.objects[type].image + ".png")
                 .setColor(this.objects[type].rarityColor)
-                .addField(this.objects[type].typeName + " | " + this.objects[type].rarity + " | Lv : " + this.objects[type].level + " (Actuellement Equipé)", this.objects[type].desc)
-                .addField("Attributes : ", this.objects[type].stats.toStr());
+                .addField(Translator.getString(lang, "item_types", this.objects[type].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[type].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[type].level + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", this.objects[type].desc != "" ? this.objects[type].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[type].stats.toStr({}, lang));
         } else {
-            embed = "``` Vous n'avez rien d'équipé dans cet emplacement ```";
+            embed = "``` " + Translator.getString(lang, "inventory_equipment", "nothing_in_this_slot") + " ```";
         }
 
 
@@ -127,11 +128,17 @@ class CharacterEquipement {
         }
     }
 
-    toStr() {
-        let str = "| id |                  Nom                    |         Type         | idType | Niveau |    Rareté    |\n\n";
+    toStr(lang) {
+        //let str = "| id |                  Nom                    |         Type         | idType | Niveau |    Rareté    |\n\n";
+        let str = "";
+        str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "rarity") + "\n\n";
         let empty = true;
         let count = 0;
         for (let i in this.objects) {
+            /*
             //str += " + " + this.objects[i].name + " | " + this.objects[i].typeName + " | " + this.objects[i].type + " | " + this.objects[i].level + " | " + this.objects[i].rarity + "\n";
             // Id
             count = 4 - this.objects[i].id.toString().length;
@@ -156,13 +163,17 @@ class CharacterEquipement {
             // Raret�
             count = 14 - this.objects[i].rarity.length;
             str += " ".repeat(Math.floor(count / 2)) + this.objects[i].rarity + " ".repeat(Math.ceil(count / 2)) + "|\n";
+            */
+            str += this.objects[i].toStr(lang) + "\n";
 
             empty = false;
+
         }
         if (empty) {
-            let strNoObjects = "Vous n'avez pas d'objets d'équipé !";
-            count = (77) - strNoObjects.length;
-            str += "|" + " ".repeat(Math.floor(count / 2)) + strNoObjects + " ".repeat(Math.ceil(count / 2)) + "|";
+            let strNoObjects = Translator.getString(lang, "inventory_equipment", "nothing_equipped");
+            /*count = (77) - strNoObjects.length;
+            str += "|" + " ".repeat(Math.floor(count / 2)) + strNoObjects + " ".repeat(Math.ceil(count / 2)) + "|";*/
+            str += strNoObjects;
         }
 
         return str;

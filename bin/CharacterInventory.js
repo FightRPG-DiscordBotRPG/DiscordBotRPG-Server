@@ -3,6 +3,7 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Item = require("./Item.js");
 const Discord = require("discord.js");
+const Translator = require("./Translator/Translator");
 
 class CharacterInventory {
     // Discord User Info
@@ -119,10 +120,16 @@ class CharacterInventory {
     }
 
     // Affichage
-    toStr(page) {
+    toStr(page, lang) {
         page = page ? page - 1 : 0;
         let str = "```";
-        str += "|   nb   |" + "                             Nom                               |" + "         Type         |" + " Niveau |" + "    Rareté    |\n";
+        //str += "|   nb   |" + "                             Nom                               |" + "         Type         |" + " Niveau |" + "    Rareté    |\n";
+        str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "rarity") + "\n\n";
+
         let keys = Object.keys(this.objects);
         if (keys.length > 0) {
             // Doing pagination
@@ -134,16 +141,19 @@ class CharacterInventory {
 
             // Create string for each objects
             for (let i of paginated) {
-                str += "|" + " ".repeat(Math.floor((8 - i.toString().length) / 2)) + i + " ".repeat(Math.ceil((8 - i.toString().length) / 2)) + "|";
-                str += this.objects[i].toStr() + "\n";
+                /*str += "|" + " ".repeat(Math.floor((8 - i.toString().length) / 2)) + i + " ".repeat(Math.ceil((8 - i.toString().length) / 2)) + "|";
+                str += this.objects[i].toStr() + "\n";*/
+                str += i + " - " + this.objects[i].toStr(lang) + "\n";
             }
         } else {
-            str += "|                                                                                                                 |\n";
-            str += "|                                           Votre inventaire est vide !                                           |\n";
-            str += "|_________________________________________________________________________________________________________________|";
+            /*str += "|                                                                                                                       |\n";
+            str += "|                                              Votre inventaire est vide !                                              |\n";
+            str += "|_______________________________________________________________________________________________________________________|";*/
+            str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
         }
-        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : "1";
-        str += "\n\nPage " + (page + 1) + "/" + nbrOfPages;
+        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : 1;
+        //str += "\n\nPage " + (page + 1) + "/" + nbrOfPages;
+        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [(page + 1), nbrOfPages])
         str += "```"
         return str;
     }
@@ -152,12 +162,12 @@ class CharacterInventory {
      * Send string to show - supposing idEmplacement valid
      * @param {any} idEmplacement
      */
-    seeThisItem(idEmplacement, compareStats) {
+    seeThisItem(idEmplacement, compareStats, lang) {
         let embed = new Discord.RichEmbed()
             .setAuthor(this.objects[idEmplacement].name, Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
-            .addField(this.objects[idEmplacement].typeName + " | " + this.objects[idEmplacement].rarity + " | Lv : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc)
-            .addField("Attributes : ", this.objects[idEmplacement].stats.toStr(compareStats))
+            .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang))
         return embed;
     }
 

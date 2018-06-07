@@ -118,7 +118,7 @@ class Commandes {
                         if (this.connectedUsers[authorIdentifier].character.idGuild == 0) {
                             if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(Globals.guilds.basePriceLevel)) {
                                 let tGuild = new Guild();
-                                let err = tGuild.createGuild(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                                let err = tGuild.createGuild(messageArray[1], this.connectedUsers[authorIdentifier].character.id, lang);
                                 if (err.length == 0) {
                                     this.connectedGuilds[tGuild.id] = tGuild;
                                     this.connectedUsers[authorIdentifier].character.idGuild = tGuild.id;
@@ -164,7 +164,7 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (Number.isInteger(messageArray[1])) {
                         if (tGuildId == 0) {
-                            err = Guild.applyTo(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                            err = Guild.applyTo(messageArray[1], this.connectedUsers[authorIdentifier].character.id, lang);
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
@@ -187,7 +187,7 @@ class Commandes {
 
                     if (Number.isInteger(messageArray[1])) {
                         if (Guild.haveAlreadyApplied(tGuildId, messageArray[1])) {
-                            err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
+                            err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], lang);
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
@@ -214,9 +214,9 @@ class Commandes {
                     }
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
-                        msg = this.connectedGuilds[tGuildId].getGuildAppliances(apPage);
+                        msg = this.connectedGuilds[tGuildId].getGuildAppliances(apPage, lang);
                     } else {
-                        msg = Guild.getAppliances(this.connectedUsers[authorIdentifier].character.id);
+                        msg = Guild.getAppliances(this.connectedUsers[authorIdentifier].character.id, lang);
                     }
                     message.channel.send(msg);
                     break;
@@ -283,7 +283,7 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
                         uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
-                        err = this.connectedGuilds[tGuildId].removeMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1]);
+                        err = this.connectedGuilds[tGuildId].removeMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], lang);
                         if (err.length > 0) {
                             msg = err[0];
                         } else {
@@ -309,7 +309,7 @@ class Commandes {
                     messageArray[2] = parseInt(messageArray[2], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
-                    err = this.connectedGuilds[tGuildId].updateMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], messageArray[2]);
+                    err = this.connectedGuilds[tGuildId].updateMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], messageArray[2], lang);
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
@@ -319,7 +319,7 @@ class Commandes {
                     break;
 
 
-                case "gmessage":
+                case "gannounce":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
                         err = this.connectedGuilds[tGuildId].setMessage(this.connectedUsers[authorIdentifier].character.id, this.getArgsString(messageArray), lang);
@@ -352,7 +352,7 @@ class Commandes {
                         }
 
                     } else {
-                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_ammount_money"));
+                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_amount_money"));
                     }
 
                     if (err.length > 0) {
@@ -368,9 +368,9 @@ class Commandes {
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
-                        err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id);
+                        err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id, lang);
                     } else {
-                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_ammount_to_retrive"));
+                        err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_amount_to_retrive"));
                     }
 
                     if (err.length > 0) {
@@ -386,7 +386,7 @@ class Commandes {
 
                 case "glevelup":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id);
+                    err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id, lang);
 
 
                     if (err.length > 0) {
@@ -401,6 +401,21 @@ class Commandes {
                 /*
                 * OTHER
                 */
+
+                case "lang":
+                    if (messageArray[1]) {
+                        if (Translator.isLangExist(messageArray[1])) {
+                            this.connectedUsers[authorIdentifier].changeLang(messageArray[1]);
+                            msg = Translator.getString(messageArray[1], "languages", "lang_changed", [Translator.getString(messageArray[1], "languages", messageArray[1])])
+                        } else {
+                            msg = Translator.getString(lang, "errors", "languages_lang_dont_exist");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "languages", "list_of_languages") + "\n" + Translator.getAvailableLanguages(lang);
+                        console.log(lang);
+                    }
+                    message.channel.send(msg);
+                    break;
 
                 case "giveme":
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
@@ -478,7 +493,7 @@ class Commandes {
                             if (oneEquipped)
                                 equippedStats = this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats;
 
-                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats);
+                            msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats, lang);
                         } else {
                             msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
                         }
@@ -497,7 +512,7 @@ class Commandes {
                     } else {
                         idItemToSee = this.getEquipableIDType(messageArray[1]);
                         if (idItemToSee > 0) {
-                            msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee);
+                            msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee, lang);
                         } else {
                             msg = "```" + Translator.getString(lang, "errors", "item_choose_id_or_equipement") + "```";
                         }
@@ -514,9 +529,9 @@ class Commandes {
                     msg = "";
                     if (invPage && Number.isInteger(invPage)) {
                         //msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(invIdItem);
-                        msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage);
+                        msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage, lang);
                     } else {
-                        msg = this.connectedUsers[authorIdentifier].character.inv.toStr();
+                        msg = this.connectedUsers[authorIdentifier].character.inv.toStr(0, lang);
                     }
 
                     message.channel.send(msg);
@@ -572,14 +587,14 @@ class Commandes {
 
                 case "equipList":
                 case "equipment":
-                    message.channel.send("```" + this.connectedUsers[authorIdentifier].character.equipement.toStr() + "```");
+                    message.channel.send("```" + this.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```");
                     break;
 
                 case "reset":
                     if (this.connectedUsers[authorIdentifier].character.resetStats()) {
-                        message.reply("Réinitialisation terminée !");
+                        message.reply(Translator.getString(lang, "character", "reset_done"));
                     } else {
-                        message.reply("Vous n'avez pas assez d'argent pour reset vos stats !");
+                        message.reply(Translator.getString(lang, "errors", "character_you_dont_have_enough_to_reset"));
                     }
 
                     break;
@@ -594,15 +609,15 @@ class Commandes {
                         if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
                             let itemValue = this.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
                             if (itemValue > 0) {
-                                msg = "Vous avez vendu ce que vous vouliez pour " + itemValue + "G";
+                                msg = numberOfItemsToSell == 1 ? Translator.getString(lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(lang, "economic", "sell_for_x_plural", [itemValue]);
                             } else {
-                                msg = "Vous ne possedez pas cet objet.";
+                                msg = Translator.getString(lang, "errors", "item_you_dont_have");
                             }
                         } else {
-                            msg = "Vous devez entrez l'ID de l'item à vendre !";
+                            msg = Translator.getString(lang, "errors", "economic_enter_id_item_to_sell");
                         }
                     } else {;
-                        msg = "Vous devez être dans une ville pour pouvoir vendre vos objets.";
+                        msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
                     }
 
 
@@ -613,12 +628,12 @@ class Commandes {
                     if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.area)) {
                         let allSelled = this.connectedUsers[authorIdentifier].character.sellAllInventory();
                         if (allSelled > 0) {
-                            msg = "Vous avez vendu tout les objets de votre inventaire pour " + allSelled + "G";
+                            msg = Translator.getString(lang, "economic", "sell_all_for_x", [allSelled]);
                         } else {
-                            msg = "Le marchand n'accepte pas de vous acheter du vent...";
+                            msg = Translator.getString(lang, "errors", "economic_cant_sell_nothing");
                         }
                     } else {
-                        msg = "Vous devez être dans une ville pour pouvoir vendre vos objets."
+                        msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
                     }
 
                     message.channel.send(msg);
@@ -649,8 +664,7 @@ class Commandes {
                         }
 
                     } else {
-                        message.reply("Vous n'êtes pas administrateur, mais vous avez essayé de tricher, malheureusement, dieu n'est pas gentil et il a décidé de vous punir en " +
-                            "vous faisant revivre une nouvelle vie (Vous êtes dersormais niveau 1).");
+                        message.reply(Translator.getString(lang, "admmin", "no_admin_xp_command"));
                     }
 
                     break;
@@ -738,7 +752,7 @@ class Commandes {
                     break;
 
                 case "help":
-                    message.channel.send(this.helpPanel());
+                    message.channel.send(this.helpPanel(lang, 1));
                     break;
 
                 case "fight":
@@ -753,15 +767,15 @@ class Commandes {
                             } else {
                                 idEnemy = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             }
-                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster);
+                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster, lang);
                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
 
                         } else {
                             // Error Message
-                            message.channel.send("Vous devez entrer l'identifiant du monstre que vous voulez attaquer.");
+                            message.channel.send(Translator.getString(lang, "errors", "fight_enter_id_monster"));
                         }
                     } else {
-                        message.reply("Vous ne pouvez pas vous battre en ville.");
+                        message.reply(Translator.getString(lang, "errors", "fight_impossible_in_town"));
                     }
                     break;
 
@@ -779,7 +793,7 @@ class Commandes {
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                         if (this.areasManager.exist(wantedAreaToTravel)) {
                             if (wantedAreaToTravel == this.connectedUsers[authorIdentifier].character.area) {
-                                msg = "Vous êtes déjà à cet endroit.";
+                                msg = Translator.getString(lang, "errors", "travel_already_here");
                             } else {
 
                                 // Update le compte de joueurs
@@ -789,15 +803,15 @@ class Commandes {
                                 this.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel);
 
                                 // Messages
-                                msg = "Vous avez bien voyagé vers la zone : " + this.areasManager.getNameOf(wantedAreaToTravel) + ".";
-                                msg += "\nVous êtes fatigué vous allez devoir attendre " + Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes avant de pouvoir refaire une action.";
+                                msg = Translator.getString(lang, "travel", "travel_to_area", [this.areasManager.getNameOf(wantedAreaToTravel)]);
+                                msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                             }
 
                         } else {
-                            msg = "Cette zone n'existe pas !";
+                            msg = Translator.getString(lang, "errors", "travel_area_dont_exist");
                         }
                     } else {
-                        msg = "Vous êtes trop fatigué pour voyager vous devez encore attendre : " + Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000) + " secondes.";
+                        msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                     }
                     message.channel.send(msg);
                     break;
@@ -817,22 +831,22 @@ class Commandes {
                                 mId = Leaderboard.idOf(idOtherPlayerCharacter);
                             }
                         } else {
-                            message.channel.send("Vous devez choisir votre adversaire !");
+                            message.channel.send(Translator.getString(lang, "errors", "fight_pvp_choose_enemy"));
                         }
 
                         // Ici on lance le combat si possible
                         if (this.connectedUsers[mId]) {
                             if (authorIdentifier !== mId) {
-                                this.fightManager.fightPvP(this.connectedUsers[authorIdentifier], this.connectedUsers[mId], message);
+                                this.fightManager.fightPvP(this.connectedUsers[authorIdentifier], this.connectedUsers[mId], message, lang);
                             } else {
-                                message.channel.send("Vous ne pouvez pas vous combattre !");
+                                message.channel.send(Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself"));
                             }
 
                         } else {
-                            message.channel.send("Cet adversaire n'est pas connecté !");
+                            message.channel.send(Translator.getString(lang, "errors", "fight_pvp_not_same_area"));
                         }
                     } else {
-                        message.reply("Vous ne pouvez pas attaquer un autre joueur ici.");
+                        message.reply(Translator.getString(lang, "errors", "fight_pvp_cant_fight_here"));
                     }
 
                     break;
@@ -841,13 +855,16 @@ class Commandes {
                     if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
                         let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
                         if (done) {
-                            msg = "L'attribut " + this.getToStrShort(messageArray[1]) + " a été augmenté et passe désormais à " + this.connectedUsers[authorIdentifier].character.stats[this.getToStrShort(messageArray[1])]
-                                + ". Il vous reste " + this.connectedUsers[authorIdentifier].character.statPoints + " point" + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ? "s" : "") + " à répartir."
+                            msg = Translator.getString(lang, "character", "attribute_up_to", [this.getToStrShort(messageArray[1]), this.connectedUsers[authorIdentifier].character.stats[this.getToStrShort(messageArray[1])]])
+                                + "." + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ?
+                                    Translator.getString(lang, "character", "attribute_x_points_available_plural", [this.connectedUsers[authorIdentifier].character.statPoints]) :
+                                    Translator.getString(lang, "character", "attribute_x_points_available", [this.connectedUsers[authorIdentifier].character.statPoints]));
+                            
                         } else {
-                            msg = "Vous ne pouvez pas distribuer autant de points !";
+                            msg = Translator.getString(lang, "errors", "character_you_cant_distribute_this_amount_of_points");
                         }
                     } else {
-                        msg = "Cet Attrbiut n'existe pas";
+                        msg = Translator.getString(lang, "errors", "character_attribute_dont_exist");
                     }
 
                     message.reply(msg);
@@ -863,10 +880,10 @@ class Commandes {
                     message.channel.send(emojiList);
                     break;
 
-                case "token":
+                /*case "token":
                     msg = "Hi, you have requested your unique token to use our Mobile/Web App.\n Do not share this token with anyone.\n Your token is : " + this.connectedUsers[authorIdentifier].getToken();
                     message.author.send(msg);
-                    break;
+                    break;*/
             }
         }
 
@@ -884,8 +901,8 @@ class Commandes {
     }
 
     // Return string or embed
-    helpPanel() {
-        let str = "```apache\n"
+    helpPanel(lang, page) {
+        /*let str = "```apache\n"
             + "::Help::\n"
             + "[Inventaire]\n" +
             "::inv : Affiche l'inventaire.\n" +
@@ -926,9 +943,56 @@ class Commandes {
             "::gaddmoney <amount> : Donne de l'argent à la guilde. \n" +
             "::gremovemoney <amount> : Permet de retirer de l'argent de la guilde. \n" +
             "::glevelup : Permet de faire monter de niveau la guilde. \n"
-            +"```";
+            + "```";*/
+        let str = "```apache\n" +
+            "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+            "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
+            "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
+            "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
+            "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
+            "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
 
+            "[" + Translator.getString(lang, "help_panel", "equipment_title") + "]\n" +
+            "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
+            "::equip <itemID> : " + Translator.getString(lang, "help_panel", "equip") + "\n" +
+            "::unequip <itemType> : " + Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)" + "\n" +
 
+            "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
+            "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
+            "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + "\n" +
+            "::leaderboard : " + Translator.getString(lang, "help_panel", "leaderboard") + "\n" +
+            "::reset : " + Translator.getString(lang, "help_panel", "reset") + "\n" +
+
+            "[" + Translator.getString(lang, "help_panel", "fight_title") + "]\n" +
+            "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
+            "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
+            "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n" +
+
+            "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
+            "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
+            "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
+            "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
+            "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n" +
+
+            "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
+            "::guild : " + Translator.getString(lang, "help_panel", "guild") + "\n" +
+            "::guilds <page> : " + Translator.getString(lang, "help_panel", "guilds") + "\n" +
+            "::gcreate <name> : " + Translator.getString(lang, "help_panel", "gcreate") + "\n" +
+            "::gdisband : " + Translator.getString(lang, "help_panel", "gdisband") + "\n" +
+            "::gapply <guildID> : " + Translator.getString(lang, "help_panel", "gapply") + "\n" +
+            "::gcreate <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
+            "::gapplies : " + Translator.getString(lang, "help_panel", "gapplies") + "\n" +
+            "::gapplyremove <applyID> : " + Translator.getString(lang, "help_panel", "gapplyremove") + "\n" +
+            "::gappliesremove : " + Translator.getString(lang, "help_panel", "gappliesremove") + "\n" +
+            "::gannounce <message> : " + Translator.getString(lang, "help_panel", "gannounce") + "\n" +
+            "::gaddmoney <amount> : " + Translator.getString(lang, "help_panel", "gaddmoney") + "\n" +
+            "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
+            "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
+
+            "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
+            "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
+            "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n" +
+            "```";
 
         return str;
     }

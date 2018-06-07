@@ -1,6 +1,7 @@
 {
   "errors" : {
-    "generic" : "Vous ne pouvez pas faire cela maintenant. %d Haha !",
+    "generic" : "Vous ne pouvez pas faire cela maintenant",
+    "generic_tired" : "Vous êtes fatigué attendez : %d secondes puis recommencer",
     "you_cant_claim" : "Vous ne pouvez pas conquérir cette zone",
     "you_have_to_be_in_a_guild" : "Vous devez être dans une guilde pour faire ceci",
     "you_dont_have_right_to_change_announcement" : "Vous n'avez pas la permission de modifier l'annonce de guilde",
@@ -18,21 +19,50 @@
     "guild_not_in_guild" : "Vous n'êtes pas dans une guilde",
     "guild_cant_give_this_money" : "Vous ne pouvez pas donner cette somme à la guilde",
     "guild_you_dont_have_enough_money" : "Vous n'avez pas cette somme",
-    "guild_you_have_to_select_ammount_money" : "Veuillez choisir la somme à donner à votre guilde",
-    "guild_you_have_to_select_ammount_to_retrive" : "Veuillez choisir la somme à retirer",
+    "guild_you_have_to_select_amount_money" : "Veuillez choisir la somme à donner à votre guilde",
+    "guild_you_have_to_select_amount_to_retrive" : "Veuillez choisir la somme à retirer",
+    "guild_name_cant_exceed_x_characters" : "La nom de la guilde ne doit pas dépasser %d caractères ou être inférieur à %d caractères",
+    "guild_name_taken" : "Ce nom de guilde est déjà utilisé",
+    "guild_player_reach_max_applies" : "Vous ne pouvez postuler que pour rejoindre %d guildes maximum en même temps",
+    "guild_player_already_applied" : "Vous avez déjà postulé pour rejoindre cette guilde",
+    "guild_not_exist" : "Cette guilde n'existe pas",
+    "guild_cant_leave_guild_as_gm" : "Vous êtes le chef de guilde, vous ne pouvez pas abandonner la guilde comme cela, mais vous pouvez la dissoudre avec la commande ::gdisband",
+    "guild_dont_have_right_to_kick" : "Vous n'avez pas les droits pour éjecter ce membre",
+    "guild_member_dont_exist" : "Ce membre n'existe pas",
+    "guild_dont_have_right_to_remove_money" : "Vous n'avez pas la permission de retirer de l'argent",
+    "guild_guild_dont_have_this_amount_of_money" : "Vous ne pouvez pas retirer autant d'argent de la guilde",
+    "guild_no_enough_money_to_level_up" : "Votre guilde n'a pas assez d'argent pour monter de niveau. Il vous manque : %dG",
+    "guild_dont_have_right_to_level_up" : "Vous n'avez pas la permission de monter le niveau de la guilde",
     "collect_enter_id_to_collect" : "Veuillez entrer l'identifiant de la ressource à récolter",
     "collect_tired_wait_x_seconds" : "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
     "item_you_dont_have_this_item" : "Vous n'avez pas cet objet",
     "item_choose_id_or_equipement" : "Vous devez entrer l'identifiant de l'emplacement d'inventaire ou bien choisir parmi \"head,chest,legs,weapon\"",
     "item_you_cant_equip" : "Vous ne pouvez pas équiper cet objet",
-    "item_you_dont_have" : "Vous n'avez pas cet objet",
+    "item_you_dont_have" : "Vous ne possédez pas cet objet",
     "item_enter_id_to_equip" : "Vous devez entrer l'identifiant de l'objet à équiper",
     "item_you_dont_have_item_equiped_here" : "Vous n'avez pas d'objets équipé dans cet emplacement",
-    "item_you_have_to_choose_type_to_unequip" : "Vous devez choisir le type d'objet à déséquiper"
+    "item_you_have_to_choose_type_to_unequip" : "Vous devez choisir le type d'objet à déséquiper",
+    "character_you_dont_have_enough_to_reset" : "Vous n'avez pas assez d'argent pour réinitialiser vos stats !",
+    "economic_enter_id_item_to_sell" : "Vous devez entrer l'ID de l'objet à vendre",
+    "economic_have_to_be_in_town" : "Vous devez être dans une ville pour pouvoir vendre vos objets",
+    "economic_cant_sell_nothing" : "Impossible de vendre quelque chose, votre inventaire est vide",
+    "fight_enter_id_monster" : "Vous devez entrer l'identifiant du monstre que vous voulez combattre",
+    "fight_impossible_in_town" : "Vous ne pouvez pas vous battre en ville",
+    "fight_already_in" : "Vous êtes déjà en combat, finissez votre combat avant d'en commencer un autre",
+    "travel_already_here" : "Vous êtes déjà dans cette zone",
+    "travel_area_dont_exist" : "Cette zone n'existe pas",
+    "travel_tired_wait_x" : "Vous êtes trop fatigué pour pouvoir voyager, vous devez encore attendre : %d secondes",
+    "fight_pvp_choose_enemy" : "Vous devez choisir votre adversaire",
+    "fight_pvp_cant_fight_yourself" : "Vous ne pouvez pas vous combattre",
+    "fight_pvp_not_same_area" : "Vous ne voyez cette personne nulle part",
+    "fight_pvp_cant_fight_here" : "Vous ne pouvez pas attaquer un autre joueur ici",
+    "character_you_cant_distribute_this_amount_of_points" : "Vous ne pouvez pas distribuer autant de points",
+    "character_attribute_dont_exist" : "Cet attribut n'existe pas",
+    "languages_lang_dont_exist" : "Cette langue n'existe pas, veuillez consulter la liste des langues disponibles en utilisant la commande ::lang"
 
   },
   "area" : {
-    "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
+    "monster"   : "ID : %d | %s | Niv : %d | Type : %s",
     "resources" : "Ressources de la zone :",
     "resource"  : "- ID : %d | %s | %s",
     "list_of_players_in_area" : "Liste des joueurs de la zone %s :",
@@ -41,7 +71,8 @@
     "city_area" : "%d | %s (Ville) | Niveau : %s",
     "no_description" : "Aucune description pour cette zone",
     "maximum_quality" : "Qualité maximale pour un objet :",
-    "you_claimed" : "Vous avez conquis cette zone"
+    "you_claimed" : "Vous avez conquis cette zone",
+    "owned_by" : "Propriétaire"
   },
   "resources" : {
     "wood"  : "Bois",
@@ -63,11 +94,14 @@
     "nothing_at_this_page" : "Cette page ne contient rien",
     "page" : "Page",
     "none" : "Aucun",
+    "nobody" : "Personne",
     "description" : "Description",
     "monsters" : "Monstres",
     "monster" : "Monstre",
     "resource" : "Ressource",
-    "resources" : "Ressources"
+    "resources" : "Ressources",
+    "lvl" : "Niv.",
+    "page_out_of_x" : "Page %d/%d"
   },
   "guild" : {
     "you_dont_have_a_guild" : "Vous n'avez pas de guilde",
@@ -97,11 +131,145 @@
     "rank_modified" : "Le rang de ce membre a été modifié avec succès",
     "you_gift_x_g_to_guild" : "Vous avez donné %dG à votre guilde",
     "you_retrive_x_g_from_guild" : "Vous avez retiré %dG de votre guilde",
-    "guild_level_up" : "Votre guilde est monté d'un niveau, elle est dérsormais niveau : %d"
-
+    "guild_level_up" : "Votre guilde est monté d'un niveau, elle est dérsormais niveau : %d",
+    "guild_no_apply_player" : "Vous ne postulez pas pour rejoindre une guilde",
+    "nobody_ask_to_join_your_guild" : "Personne n'a demandé à rejoindre votre guilde",
+    "nothing_to_print" : "Rien à afficher ici"
   },
   "inventory_equipment" : {
     "item_equiped" : "Votre objet a été équipé",
-    "item_unequiped" : "L'objet a été déséquipé"
-  }
+    "item_unequiped" : "L'objet a été déséquipé",
+    "id" : "id",
+    "name" : "Nom",
+    "type" : "Type",
+    "level" : "Niveau",
+    "rarity" : "Rareté",
+    "empty_inventory" : "Inventaire Vide",
+    "no_desc" : "Pas de description pour cet objet",
+    "page_x_out_of" : "Page %d/%d",
+    "currently_equipped" : "Actuellement Equipé",
+    "attributes" : "Attributs",
+    "nothing_in_this_slot" : "Vous n'avez pas d'objet équipé dans cet emplacement",
+    "nothing_equipped" : "Vous n'avez pas d'objets d'équipé"
+  },
+  "character" : {
+    "reset_done" : "Réinitialisation terminée !",
+    "attribute_up_to" : "L'attribut %s a été augmenté et passe désormais à %d points",
+    "attribute_x_points_available" : "Il vous reste %d point à répartir",
+    "attribute_x_points_available_plural" : "Il vous reste %d points à répartir"
+  },
+  "economic" : {
+    "sell_for_x" : "Vous avez vendu vendu votre objet pour %dG",
+    "sell_for_x_plural" : "Vous avez vendu vos objets pour %dG",
+    "sell_all_for_x" : "Vous avez vendu tous les objets de votre inventaire pour %dG"
+  },
+  "admin" : {
+    "no_admin_xp_command" : "Vous n'êtes pas administrateur, mais vous avez essayé de tricher, malheureusement, dieu n'est pas gentil et il a décidé de vous punir en vous faisant revivre une nouvelle vie (Vous êtes dersormais niveau 1)."
+  },
+   "travel" : {
+     "travel_to_area" : "Vous avez voyagé vers la zone : %s",
+     "travel_to_area_exhaust" : "Vous êtes fatigué vous allez devoir attendre %d secondes avant de pouvoir refaire une action"
+   },
+   "fight_pve" : {
+     "ganked_by_monster" : "Vous n'avez pas été assez discret, vous vous faites attaquer par un monstre ! (Il vous faut plus de perception)",
+     "user_get_attacked" : "%s se fait attaquer par : %s !",
+     "user_attacked" : "%s attaque %s !",
+     "onfight_user_attack" : "%s attaque le monstre %s et lui inflige %d points de dégâts",
+     "onfight_monster_attack" : "%s attaque le joueur %s et lui inflige %d points de dégâts",
+     "drop_item" : "Vous avez gagné un objet (%s) ! Bravo !",
+     "level_up" : "Bravo ! Vous avez gagné : %d niv. Vous êtes désormais niveau : %d !",
+     "money_gain" : "Vous gagnez : %d G",
+     "xp_gain" : "Vous gagnez : %d XP",
+     "nothing_gain" : "Vous ne gagnez rien !",
+     "both_gain" : "Vous gagnez : %d XP et %d G"
+
+   },
+   "fight_general" : {
+     "combat_log" : "Résumé du combat",
+     "critical_hit" : "Coup Critique",
+     "stun_hit" : "Coup Assomant",
+     "win" : "Vous avez gagné le combat !",
+     "loose" : "Vous avez perdu le combat !"
+   },
+   "rarities" : {
+     "common" : "Commun",
+     "rare" : "Rare",
+     "superiror" : "Supérieur",
+     "epic" : "Epique",
+     "lengendary" : "Légendaire"
+   },
+   "languages" : {
+     "fr" : "Français",
+     "en" : "Anglais",
+     "list_of_languages" : "Liste des langues disponibles (utilisez le nom raccourci pour changer votre langue)",
+     "lang_changed" : "Langue modifiée avec succès, le bot vous répondra desormais en %s"
+   },
+   "item_types" : {
+     "weapon" : "Arme",
+     "chest" : "Torse",
+     "legs" : "Jambes",
+     "head" : "Tête"
+   },
+   "stats" : {
+     "strength" : "Force",
+     "intellect" : "Intelligence",
+     "constitution" : "Constitution",
+     "armor" : "Armure",
+     "dexterity" : "Dextérité",
+     "wisdom" : "Sagesse",
+     "will" : "Volonté",
+     "perception" : "Perception",
+     "charisma" : "Charisme",
+     "luck" : "Chance"
+   },
+   "help_panel" : {
+     "help" : "Aide",
+
+     "inventory_title" : "Inventaire",
+     "inv" : "Affiche l'inventaire",
+     "item" : "Affiche les informations sur l'objet choisi",
+     "sell" : "Vend l'objet choisi",
+     "sellall" : "Vend tous les objets de l'inventaire",
+
+     "equipment_title" : "Equipement",
+     "equipment" : "Affiche les objets équipés",
+     "equip" : "Equipé l'objet choisi",
+     "unequip" : "Déséquipe l'objet de l'emplacement choisi",
+
+     "character_title" : "Personnage",
+     "info" : "Affiche les informations sur votre personnage",
+     "up" : "Ajoute à la caractéristique statName number Points",
+     "leaderboard" : "Affiche ton rang PvP",
+     "reset" : "Te permet de réinitialiser tes caractéristiques",
+
+     "fight_title" : "Combats",
+     "fight" : "Permet de tenter d'attaquer le monstre choisi",
+     "arenaMention" : "Permet d'attaquer le joueur mentionné",
+     "arena" : "Permet d'attaquer le joueur choisi",
+
+     "areas_title" : "Zones",
+     "area" : "Affiche les informations de la zone dans laquelle tu te trouve",
+     "areas" : "Affiche toutes les zones",
+     "areaplayers" : "Affiche les joueurs de la zone",
+     "travel" : "Permet de voyager à la zone areaID",
+
+     "guilds_title" : "Guildes",
+     "guild" : "Affiche les informations de la guilde dans laquelle vous êtes",
+     "guilds" : "Affiche les guildes",
+     "gcreate" : "Permet de créer une guilde",
+     "gdisband" : "Permet de dissoudre la guilde (GM only)",
+     "gapply" : "Permet de demander à rejoindre une guilde",
+     "gaccept" : "Permet d'accepter quelqu'un dans votre guilde",
+     "gapplies" : "Afficher les candidatures",
+     "gapplyremove" : "Permet de supprimer la candidature voulue",
+     "gappliesremove" : "Supprime toutes les candidatures en cours",
+     "gannounce" : "Permet de changer l'annonce de guilde",
+     "gaddmoney" : "Donne de l'argent à la guilde",
+     "gremovemoney" : "Permet de retirer de l'argent de la guilde.",
+     "glevelup" : "Permet de faire monter de niveau la guilde.",
+
+     "other_title" : "Autres",
+     "lang" : "Permet d'afficher la liste des langues disponibles",
+     "lang_param" : "Permet de changer de langue"
+   }
 }

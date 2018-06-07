@@ -187,7 +187,7 @@ class Area {
         if (this.owner > 0) {
             return conn.query("SELECT nom FROM guilds WHERE idGuild = " + this.owner)[0].nom;
         }
-        return Translator.getString(lang, "general", "none");
+        return Translator.getString(lang, "general", "nobody");
     }
 
     saveOwner() {

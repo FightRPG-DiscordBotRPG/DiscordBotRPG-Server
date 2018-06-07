@@ -13,7 +13,7 @@ class CityArea extends Area {
     toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.name + " | " + this.levels + " | Owned by : " + this.getOwner(lang), this.image)
+            .setAuthor(this.name + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "general", "description"), (this.desc ? this.desc : Translator.getString(lang, "area", "no_description")) + "\n\nAvancement de la ville : **" + 1 + "**")
             .addField("PNJ", "``` PLACEHOLDER ```")
             .addField("Services", "```- Tavernier\n- Banque\n- Marché\n- Forge```")

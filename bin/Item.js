@@ -2,6 +2,7 @@
 const conn = require("../conf/mysql.js");
 const ItemsStats = require("./Stats/StatsItems.js");
 const Globals = require("./Globals.js");
+const Translator = require("./Translator/Translator");
 
 
 class Item {
@@ -33,7 +34,7 @@ class Item {
         let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = "+this.id+";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.name = res["nomItem"];
-        this.desc = res["descItem"] !== undefined ? res["descItem"] : "Aucune description pour cet objet.";
+        this.desc = res["descItem"] !== undefined ? res["descItem"] : "";
         this.level = res["level"];
         this.image = res["imageItem"];
 
@@ -53,16 +54,17 @@ class Item {
         conn.query("DELETE FROM items WHERE idItem = " + this.id + ";");
     }
 
-    toStr() {
-        //return this.id + "|" + this.name + " | " + this.typeName + " | Lv : " + this.level + " | " + this.rarity;
+    toStr(lang) {
+        return this.name + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity);
 
-        let str = "";
+        // OLD WAY - beautiful but not readable on mobile
+        /*let str = "";
         let count = 0;
         let strNum = "";
 
-        /*
+        
         count = 8 - this.id.toString().length;
-        str += "|" + " ".repeat(Math.floor(count / 2)) + this.id + " ".repeat(Math.ceil(count / 2)) + "|";*/
+        str += "|" + " ".repeat(Math.floor(count / 2)) + this.id + " ".repeat(Math.ceil(count / 2)) + "|";
 
         // Nom | Si + 1 item on affiche le nombre
         count = 63 - this.name.length;
@@ -85,7 +87,7 @@ class Item {
         count = 14 - this.rarity.length;
         str += " ".repeat(Math.floor(count / 2)) + this.rarity + " ".repeat(Math.ceil(count / 2)) + "|";
 
-        return str;
+        return str;*/
     }
 
     getCost(number) {

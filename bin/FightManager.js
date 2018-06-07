@@ -5,6 +5,7 @@ const ProgressBar = require("./ProgressBar");
 const Globals = require("./Globals");
 const LootSystem = require("./LootSystem.js");
 const FightPvE = require("./Fight/FightPvE");
+const Translator = require("./Translator/Translator");
 
 class FightManager {
     constructor() {
@@ -57,7 +58,8 @@ class FightManager {
         return arr;
     }
 
-    _fightPvE(users, monsters, message, canIFightTheMonster) {
+    _fightPvE(users, monsters, message, canIFightTheMonster, lang) {
+        console.log(lang);
         let time = Date.now();
         let userid = message.author.id;
         let alreadyInBattle = this.fights[userid] !== undefined;
@@ -72,23 +74,23 @@ class FightManager {
                 summaryIndex: 0,
             };
             if (!canIFightTheMonster) {
-                message.channel.send("Vous n'avez pas été assez discret, vous vous faites attaquer ! (Il vous faut plus de perception)");
-                this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " se fait attaquer par : " + enemies[0].name + " !\n\n";
+                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster"));
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [users[0].name, enemies[0].name]) + "\n\n";
             } else {
-                this.fights[userid].text[2] = "<:user:403148210295537664> " + users[0].name + " attaque un monstre : " + enemies[0].name + " !\n\n";
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [users[0].name, enemies[0].name]) + "\n\n";
             }
             //console.log("Fight Initialized");
-            message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]))
-                .then(msg => this._discordFightPvE(msg, userid));
+            message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
+                .then(msg => this._discordFightPvE(msg, userid, lang));
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize Fight : Already in battle");
-                message.reply("Already in Battle : You can't fight");
+                message.reply(Translator.getString(lang, "errors", "fight_already_in"));
             } else if (timeToFight >= 0) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.reply("You are exhausted you have to wait " + Math.ceil(timeToFight / 1000) + " seconds before you can fight again !");
+                message.reply(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)]));
             }
 
         }
@@ -131,53 +133,51 @@ class FightManager {
         return toApi;
     }
 
-    _discordFightPvE(message, userid) {
+    _discordFightPvE(message, userid, lang) {
         let ind = this.fights[userid].summaryIndex;
         let summary = this.fights[userid].fight.summary;
         if (ind < summary.rounds.length) {
 
             if (summary.rounds[ind].roundType == "Character") {
-                this.swapArrayIndexes("<:user:403148210295537664> " + summary.rounds[ind].attackerName + " attaque le monstre " + summary.rounds[ind].defenderName +
-                    " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
-                    (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
-                    (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
+                this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
+                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
                     "\n\n", userid);
             } else if (summary.rounds[ind].roundType == "Monster") {
-                this.swapArrayIndexes("<:monstre:403149357387350016> " + summary.rounds[ind].attackerName + " attaque le joueur " + summary.rounds[ind].defenderName +
-                    " et lui inflige " + summary.rounds[ind].damage + " points de degats " +
-                    (summary.rounds[ind].critical === true ? "(Coup Critique !) " : "") +
-                    (summary.rounds[ind].stun === true ? "(Coup Assomant !) " : "") +
+                this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
+                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
                     "\n\n", userid);
             }
 
 
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]));
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang));
             this.fights[userid].summaryIndex++;
             setTimeout(() => {
-                this._discordFightPvE(message, userid);
+                this._discordFightPvE(message, userid, lang);
             }, 2000);
 
         } else {
             if (summary.winner == 0) {
-                this.swapArrayIndexes("<:win:403151177153249281> Vous avez gagné le combat !\n\n", userid);
+                this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", userid);
 
                 if (this.fights[userid].fight.entities[0].length == 1) {
                     if (summary.drops.length > 0) {
-                        this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + summary.drops[0].drop + ") ! Bravo !\n\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "drop_item", [Translator.getString(lang, "raritites", summary.drops[0].drop)]) + "\n\n", userid);
                     }
                     if (summary.levelUpped.length > 0) {
-                        this.swapArrayIndexes("<:levelup:403456740139728906> Bravo ! Vous avez gagné : " + summary.levelUpped[0].levelGained + " niv. " + ".Vous êtes desormais niveau : " + summary.levelUpped[0].newLevel + " !\n", userid);
+                        this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]) + "\n", userid);
                     }
 
                     if (summary.xp === 0) {
-                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.money + " Argent\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "money_gain", [summary.money]) + "\n", userid);
                     } else if (summary.money === 0) {
-                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.xp + " XP\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "xp_gain", [summary.xp]) + "\n", userid);
                     } else if (summary.xp === 0 && summary.money === 0) {
-                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous ne gagnez rien !\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "nothing_gain", [summary.xp]) + "\n", userid);
                     } else {
-                        this.swapArrayIndexes("<:treasure:403457812535181313>  Vous gagnez : " + summary.xp + " XP et " + summary.money + " Argent\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "both_gain", [summary.xp, summary.money]) + "\n", userid);
                     }
 
                 } else {
@@ -185,7 +185,7 @@ class FightManager {
                     //this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + rarityName + ") ! Bravo !\n\n", userid);
                 }
             } else {
-                this.swapArrayIndexes("<:loose:403153660756099073> Vous avez perdu le combat !\n", userid);
+                this.swapArrayIndexes("<:loose:403153660756099073> " + Translator.getString(lang, "fight_general", "loose") + "\n", userid);
             }
 
 
@@ -197,7 +197,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color)).then(this._deleteFight(userid));
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color, lang)).then(this._deleteFight(userid));
 
         }
 
@@ -209,6 +209,7 @@ class FightManager {
         delete this.fights[userid];
     }
 
+    // Deprecated
     fightPvE(user, message, idEnemy, canIFightTheMonster) {
         let time = Date.now();
         let alreadyInBattle = this.fights[user.id] !== undefined;
@@ -247,6 +248,7 @@ class FightManager {
         }
     }
 
+    // Deprecated
     fightPvEUpdate(message, userid) {
 
         // TODO : based on stats and weapons - DONE
@@ -401,7 +403,9 @@ class FightManager {
 
     }
 
-    _embedPvE(userid, text, color=[128,128,128]) {
+    _embedPvE(userid, text, color, lang) {
+        color = color || [128, 128, 128]
+        lang = lang || "en"
         let healthBar = new ProgressBar();
         let ind = this.fights[userid].summaryIndex;
         let summary = this.fights[userid].fight.summary;
@@ -447,12 +451,13 @@ class FightManager {
 
         let embed = new Discord.RichEmbed()
             .setColor(color)
-            .addField("Combat Log", text)
-            .addField(firstName + " | Lv : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
-            .addField(monsterTitle + secondName + " | Lv : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);
+            .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
+            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
+            .addField(monsterTitle + secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);
         return embed;
     }
 
+    // Deprecated
     embedPvE(character1, monster, text) {
         let healthBar = new ProgressBar();
         let first = healthBar.draw(character1.character.actualHP, character1.character.maxHP);
@@ -476,7 +481,7 @@ class FightManager {
     }
 
     // PvP Fight
-    fightPvP(attacker, defender, message) {
+    fightPvP(attacker, defender, message, lang) {
         let time = Date.now();
         let alreadyInBattle = this.fights[attacker.id] !== undefined;
         let timeToFight = attacker.character.canFightAt <= time;
@@ -506,17 +511,17 @@ class FightManager {
                     msg => this.fightPvPUpdate(msg, attacker.id)
                     );
             } else {
-                message.reply("Vous devez être dans la même zone que votre adversaire !");
+                message.reply(Translator.getString(lang, "errors", "fight_pvp_not_same_area"));
             }
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize PvP Fight : Already in battle");
-                message.reply("Vous combattez déjà, finissez votre combat avant d'en commencer un autre !");
+                message.reply(Translator.getString(lang, "errors", "fight_already_in"));
             } else if (!timeToFight) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.reply("Vous êtes fatigué attendez : " + Math.round((attacker.character.canFightAt - time) / 1000) + " secondes puis recommencez !");
+                message.reply(Translator.getString(lang, "errors", "generic_tired", [Math.round((attacker.character.canFightAt - time) / 1000)]));
             }
 
         }

@@ -2,6 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const Stats = require("./Stats.js");
 const Globals = require("../Globals.js");
+const Translator = require("../Translator/Translator");
 
 class StatsItems extends Stats{
 
@@ -24,7 +25,7 @@ class StatsItems extends Stats{
         conn.query("DELETE FROM itemsstats WHERE idItem = " + this.id + ";");
     }
 
-    toStr(compareStats) {
+    toStr(compareStats, lang) {
         let str = "```";
         let count = 1;
         let totalSpaces = 30;
@@ -38,7 +39,8 @@ class StatsItems extends Stats{
                 let end = "";
                 let beforeNumber = "";
                 let statStr = this[stat].toString();
-                let nbrChar = stat.length + 2 + diff.length;
+                let statLocalized = Translator.getString(lang, "stats", stat)
+                let nbrChar = statLocalized.length + 2 + diff.length;
                 let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                 beforeNumber += " ".repeat(lessSpaces);
                 if (count === 2) {
@@ -49,7 +51,7 @@ class StatsItems extends Stats{
                     end += " ".repeat(1) + "|" + " ".repeat(1);
                 }
                 count++;
-                str += "" + stat + beforeNumber + "[" + this[stat] + diff + "]" + end;
+                str += "" + statLocalized + beforeNumber + "[" + this[stat] + diff + "]" + end;
             }
 
         }

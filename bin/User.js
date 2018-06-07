@@ -5,6 +5,7 @@ const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");
+const Translator = require("./Translator/Translator");
 
 class User {
     // Discord User Info
@@ -62,6 +63,12 @@ class User {
 
     saveUser() {
         this.character.saveCharacter();
+    }
+
+    changeLang(lang) {
+        this.lang = lang;
+        console.log(this.lang + " | " + lang);
+        conn.query("UPDATE users SET lang = ? WHERE idUser = ?", [lang, this.id]);
     }
 
     //Affichage

@@ -1,6 +1,7 @@
 const Fight = require("./Fight");
 const Globals = require("../Globals");
 const LootSystem = require("../LootSystem");
+const Translator = require("../Translator/Translator");
 
 
 class FightPvE extends Fight {
@@ -43,7 +44,8 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[1].length);
     }
 
-    endFight() {
+    endFight(lang) {
+        lang = lang || "fr"
         if (this.winnerGroup == 0) {
             // Need this to know if level up
             let totalXp = 0;
@@ -99,19 +101,19 @@ class FightPvE extends Fight {
                     let rarityName = "";
                     switch (loot) {
                         case 1:
-                            rarityName = "Commun";
+                            rarityName = "common";
                             break;
                         case 2:
-                            rarityName = "Rare";
+                            rarityName = "rare";
                             break;
                         case 3:
-                            rarityName = "Supérieur";
+                            rarityName = "superior";
                             break;
                         case 4:
-                            rarityName = "Epique";
+                            rarityName = "epic";
                             break;
                         case 5:
-                            rarityName = "Légendaire";
+                            rarityName = "lengendary";
                             break;
                     }
 
