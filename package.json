@@ -64,7 +64,7 @@
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "version": "1.0.2"
     },
-    "discord.js": "^11.3.0",
+    "discord.js": "^11.3.2",
     "express": "^4.16.3",
     "express-rate-limit": "^2.11.0",
     "get-port": {
@@ -126,7 +126,7 @@
       "resolved": "https://registry.npmjs.org/mysql/-/mysql-2.15.0.tgz",
       "version": "2.15.0"
     },
-    "nodemon": "^1.14.11",
+    "nodemon": "^1.17.5",
     "object-sizeof": "^1.2.0",
     "pify": {
       "integrity": "sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=",
