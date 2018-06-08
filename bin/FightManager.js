@@ -164,7 +164,7 @@ class FightManager {
 
                 if (this.fights[userid].fight.entities[0].length == 1) {
                     if (summary.drops.length > 0) {
-                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "drop_item", [Translator.getString(lang, "raritites", summary.drops[0].drop)]) + "\n\n", userid);
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "drop_item", [Translator.getString(lang, "rarities", summary.drops[0].drop)]) + "\n\n", userid);
                     }
                     if (summary.levelUpped.length > 0) {
                         this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]) + "\n", userid);
