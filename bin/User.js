@@ -67,7 +67,6 @@ class User {
 
     changeLang(lang) {
         this.lang = lang;
-        console.log(this.lang + " | " + lang);
         conn.query("UPDATE users SET lang = ? WHERE idUser = ?", [lang, this.id]);
     }
 

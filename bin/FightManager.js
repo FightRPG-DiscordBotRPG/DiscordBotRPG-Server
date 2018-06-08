@@ -59,7 +59,6 @@ class FightManager {
     }
 
     _fightPvE(users, monsters, message, canIFightTheMonster, lang) {
-        console.log(lang);
         let time = Date.now();
         let userid = message.author.id;
         let alreadyInBattle = this.fights[userid] !== undefined;
