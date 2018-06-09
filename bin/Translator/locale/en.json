@@ -58,8 +58,29 @@
     "fight_pvp_cant_fight_here" : "You can't fight another player here",
     "character_you_cant_distribute_this_amount_of_points" : "You can't allocate this amount of points",
     "character_attribute_dont_exist" : "This attribute doesn't exist",
-    "languages_lang_dont_exist" : "This language doesn't exist, please refer to the list of available languages using the following comamnd ::lang"
+    "languages_lang_dont_exist" : "This language doesn't exist, please refer to the list of available languages using the following comamnd ::lang",
 
+    "group_already_in_group" : "Vous ne devez pas être dans un groupe pour pouvoir faire cela",
+    "group_not_in_group" : "Vous devez être dans un groupe pour pouvoir faire cela",
+    "group_occupied" : "Votre groupe est occupé finissez ce que vous faites puis recommencez",
+    "group_not_leader" : "Vous devez être le chef de votre groupe pour pouvoir faire cela",
+    "group_cant_invite_yourself" : "Vous ne pouvez pas vous inviter",
+    "group_user_not_connected" : "Vous devez inviter un utilisateur connecté",
+    "group_invite_already_in_group" : "Cet utilisateur est déjà dans un groupe",
+    "group_invite_waiting" : "Cet utilisateur a déjà une demande d'un groupe en attente",
+    "group_you_dont_receive_invitation" : "Vous n'avez pas reçu d'invitation à rejoindre un groupe",
+    "group_full_join" : "Le groupe que vous essayez de rejoindre est au complet"
+
+  },
+  "group" : {
+    "you_left" : "Vous avez quitté votre groupe",
+    "invitation_sent" : "Invitation à rejoindre le groupe envoyée",
+    "someone_invited_you" : "L'utilisateur %s vous invite à rejoindre son groupe (utilisez %s pour accepter ou %s pour refuser)",
+    "you_joined" : "Vous avez rejoint le groupe",
+    "you_declined" : "Vous avez décliné l'invitation à rejoindre le groupe",
+    "someone_left_the_group" : "L'utilisateur %s a quitté votre groupe",
+    "someone_joined_the_group" : "L'utilisateur %s a rejoint votre groupe",
+    "someone_declined_invitation" : "L'utilisateur %s a refusé de rejoindre votre groupe"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
