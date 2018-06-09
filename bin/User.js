@@ -42,7 +42,8 @@ class User {
         } else {
             // Sinon on le load
             this.character.loadCharacter(res[0]["idCharacter"]);
-            this.username = res[0]["userName"];
+            conn.query("UPDATE users SET username = ? WHERE idUser = ?", [this.username, this.id]);
+            //this.username = res[0]["userName"];
             this.character.name = this.username;
             this.lang = res[0]["lang"];
         }
