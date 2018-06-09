@@ -26,6 +26,10 @@ class Character extends WorldEntity {
         this.area = 0;
         this.honorPoints = 0;
         this.idGuild = 0;
+
+        // Party mechanics
+        this.pendingPartyInvite = null;
+        this.group = null;
     }
 
     init() {
@@ -100,6 +104,11 @@ class Character extends WorldEntity {
         this.canFightAt = Date.now() + baseTimeToWait;
         this.area = idArea;
         this.saveArea();
+    }
+
+    // Group System
+    leaveGroup() {
+        this.group = null;
     }
 
     // Str Stats

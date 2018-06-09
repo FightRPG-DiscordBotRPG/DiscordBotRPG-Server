@@ -8,6 +8,7 @@ const AreasManager = require("./Areas/AreasManager.js");
 const sizeof = require('object-sizeof');
 const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
+const Group = require("./Group.js");
 const Fight = require("./Fight/Fight");
 const Monster = require("./Monstre");
 const Translator = require("./Translator/Translator");
@@ -70,11 +71,14 @@ class Commandes {
                         this.connectedGuilds[this.connectedUsers[authorIdentifier].character.idGuild].loadGuild(this.connectedUsers[authorIdentifier].character.idGuild);
                     }
                 }
+
                 
 
             }
 
+            let group = this.connectedUsers[authorIdentifier].character.group;
             let lang = this.connectedUsers[authorIdentifier].lang;
+            let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
             // Detect Commands
@@ -396,6 +400,123 @@ class Commandes {
                     }
 
                     message.channel.send(msg);
+                    break;
+
+                /*
+                * GROUP SYSTEM
+                */
+                /*case "grpcreate":
+                    //firstMention = mentions.first();
+                    if (group == null) {
+                        this.connectedUsers[authorIdentifier].character.group = new Group(this.connectedUsers[authorIdentifier]);
+                    }
+                    break;*/
+                case "grpleave":
+                    if (group != null) {
+                        if (!group.doingSomething) {
+                            group.playerLeave(this.connectedUsers[authorIdentifier], message.client);
+                            msg = Translator.getString(lang, "group", "you_left");
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_occupied");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    }
+                    message.channel.send(msg);
+                    break;
+
+                case "grpinvite":
+                    firstMention = mentions.first();
+                    // Si pas dans un groupe le créer
+                    if (group == null) {
+                        this.connectedUsers[authorIdentifier].character.group = new Group(this.connectedUsers[authorIdentifier]);
+                    }
+                    group = this.connectedUsers[authorIdentifier].character.group;
+
+                    if (group.leader === this.connectedUsers[authorIdentifier]) {
+                        if (!group.doingSomething) {
+                            if (firstMention) {
+                                if (firstMention.id != authorIdentifier) {
+                                    if (this.connectedUsers[firstMention.id]) {
+                                        if (this.connectedUsers[firstMention.id].character.group === null) {
+                                            if (this.connectedUsers[firstMention.id].character.pendingPartyInvite == null) {
+                                                group.invite(this.connectedUsers[firstMention.id]);
+                                                firstMention.send(Translator.getString(this.connectedUsers[firstMention.id].lang, "group", "someone_invited_you", [this.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"]));
+                                                msg = Translator.getString(lang, "group", "invitation_sent");
+                                            } else {
+                                                msg = Translator.getString(lang, "errors", "group_invite_waiting");
+                                            }
+                                        } else {
+                                            msg = Translator.getString(lang, "errors", "group_invite_already_in_group");
+                                        }
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "group_user_not_connected");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "group_cant_invite_yourself");
+                                }
+                            } else {
+                                // error
+                                msg = "Use the command like this \"::grpinvite @someone\"";
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_occupied");
+                        }
+
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_not_leader");
+                    }
+
+                    message.channel.send(msg);
+
+                    break;
+
+                case "grpaccept":
+                    if (group == null) {
+                        if (pending != null) {
+                            if (!pending.doingSomething) {
+                                if (!pending.isFull()) {
+                                    pending.addPlayer(this.connectedUsers[authorIdentifier], message.client);
+                                    msg = Translator.getString(lang, "group", "you_joined");
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "group_full_join");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "group_occupied");
+                            }
+
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_you_dont_receive_invitation");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_already_in_group");
+                    }
+                    message.channel.send(msg);
+                    break;
+
+                case "grpdecline":
+                    if (group == null) {
+                        if (pending != null) {
+                            pending.playerDeclineBroadcast(this.connectedUsers[authorIdentifier], message.client);
+                            this.connectedUsers[authorIdentifier].character.pendingPartyInvite = null;
+                            msg = Translator.getString(lang, "group" , "you_declined");
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_you_dont_receive_invitation");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_already_in_group");
+                    }
+                    message.channel.send(msg);
+                    break;
+
+                case "grp":
+                    /*console.log(authorIdentifier + " : \n");
+                    console.log(group);
+                    console.log("\n");*/
+                    //console.log(message.client.users.get());
+                    /*if (group) {
+                        group.debug();
+                    }*/
                     break;
 
                 /*
