@@ -47,7 +47,7 @@ class Commandes {
             // Init connection
             if (!this.connectedUsers[authorIdentifier]) {
                 // Load User
-                this.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.username);
+                this.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag);
                 this.connectedUsers[authorIdentifier].loadUser();
                  
                 this.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
@@ -392,7 +392,7 @@ class Commandes {
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
-                        msg = Translator.getString(lang, "guild", "guild_level_up"[this.connectedGuilds[tGuildId].level]);
+                        msg = Translator.getString(lang, "guild", "guild_level_up", [this.connectedGuilds[tGuildId].level]);
                     }
 
                     message.channel.send(msg);
@@ -720,7 +720,7 @@ class Commandes {
                         /*let monsters1 = [new Monster(20), new Monster(10), new Monster(12)];
                         let monsters2 = [new Monster(19), new Monster(15), new Monster(11)];*/
 
-                        let monsters1 = [new Monster(20)];
+                       /* let monsters1 = [new Monster(20)];
                         let monsters2 = [new Monster(20)];
 
                         monsters1[0].stats.intellect = 0;
@@ -736,7 +736,8 @@ class Commandes {
 
 
                         let f = new Fight(monsters1, monsters2);
-                        console.log(f.summary);
+                        console.log(f.summary);*/
+                        console.log(this.connectedUsers[authorIdentifier].username);
                     }
                     break;
 
@@ -751,7 +752,7 @@ class Commandes {
                     break;
 
                 case "help":
-                    message.channel.send(this.helpPanel(lang, 1));
+                    message.channel.send(this.helpPanel(lang, parseInt(messageArray[1], 10)));
                     break;
 
                 case "fight":
@@ -901,56 +902,66 @@ class Commandes {
 
     // Return string or embed
     helpPanel(lang, page) {
-        let str = "```apache\n" +
-            "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-            "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
-            "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
-            "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
-            "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
-            "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
+        let str = "";
+        let maxPage = 2;
+        page = page && page > 0 && page <= maxPage ? page : 1;
 
-            "[" + Translator.getString(lang, "help_panel", "equipment_title") + "]\n" +
-            "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
-            "::equip <itemID> : " + Translator.getString(lang, "help_panel", "equip") + "\n" +
-            "::unequip <itemType> : " + Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)" + "\n" +
+        switch (page) {
+            case 1:
+                str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                    "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
+                    "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
+                    "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
+                    "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
+                    "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
 
-            "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
-            "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
-            "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)\n" +
-            "::leaderboard : " + Translator.getString(lang, "help_panel", "leaderboard") + "\n" +
-            "::reset : " + Translator.getString(lang, "help_panel", "reset") + "\n" +
+                    "[" + Translator.getString(lang, "help_panel", "equipment_title") + "]\n" +
+                    "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
+                    "::equip <itemID> : " + Translator.getString(lang, "help_panel", "equip") + "\n" +
+                    "::unequip <itemType> : " + Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)" + "\n" +
 
-            "[" + Translator.getString(lang, "help_panel", "fight_title") + "]\n" +
-            "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
-            "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
-            "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n" +
+                    "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
+                    "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
+                    "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)\n" +
+                    "::leaderboard : " + Translator.getString(lang, "help_panel", "leaderboard") + "\n" +
+                    "::reset : " + Translator.getString(lang, "help_panel", "reset") + "\n" +
 
-            "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
-            "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
-            "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
-            "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
-            "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n" +
+                    "[" + Translator.getString(lang, "help_panel", "fight_title") + "]\n" +
+                    "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
+                    "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
+                    "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n" +
 
-            "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
-            "::guild : " + Translator.getString(lang, "help_panel", "guild") + "\n" +
-            "::guilds <page> : " + Translator.getString(lang, "help_panel", "guilds") + "\n" +
-            "::gcreate <name> : " + Translator.getString(lang, "help_panel", "gcreate") + "\n" +
-            "::gdisband : " + Translator.getString(lang, "help_panel", "gdisband") + "\n" +
-            "::gapply <guildID> : " + Translator.getString(lang, "help_panel", "gapply") + "\n" +
-            "::gcreate <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
-            "::gapplies : " + Translator.getString(lang, "help_panel", "gapplies") + "\n" +
-            "::gapplyremove <applyID> : " + Translator.getString(lang, "help_panel", "gapplyremove") + "\n" +
-            "::gappliesremove : " + Translator.getString(lang, "help_panel", "gappliesremove") + "\n" +
-            "::gannounce <message> : " + Translator.getString(lang, "help_panel", "gannounce") + "\n" +
-            "::gaddmoney <amount> : " + Translator.getString(lang, "help_panel", "gaddmoney") + "\n" +
-            "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
-            "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
+                    "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
+                    "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
+                    "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
+                    "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
+                    "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
+                break;
+            case 2:
+                str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                    "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
+                    "::guild : " + Translator.getString(lang, "help_panel", "guild") + "\n" +
+                    "::guilds <page> : " + Translator.getString(lang, "help_panel", "guilds") + "\n" +
+                    "::gcreate <name> : " + Translator.getString(lang, "help_panel", "gcreate") + "\n" +
+                    "::gdisband : " + Translator.getString(lang, "help_panel", "gdisband") + "\n" +
+                    "::gapply <guildID> : " + Translator.getString(lang, "help_panel", "gapply") + "\n" +
+                    "::gcreate <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
+                    "::gapplies : " + Translator.getString(lang, "help_panel", "gapplies") + "\n" +
+                    "::gapplyremove <applyID> : " + Translator.getString(lang, "help_panel", "gapplyremove") + "\n" +
+                    "::gappliesremove : " + Translator.getString(lang, "help_panel", "gappliesremove") + "\n" +
+                    "::gannounce <message> : " + Translator.getString(lang, "help_panel", "gannounce") + "\n" +
+                    "::gaddmoney <amount> : " + Translator.getString(lang, "help_panel", "gaddmoney") + "\n" +
+                    "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
+                    "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
 
-            "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
-            "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
-            "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n" +
-            "```";
-
+                    "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
+                    "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
+                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n";
+                break;
+        }
+        str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
         return str;
     }
 
