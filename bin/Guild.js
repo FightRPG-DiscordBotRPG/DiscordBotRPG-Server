@@ -281,7 +281,9 @@ class Guild {
         let err = [];
 
         if (this.members[idCharacter].rank >= 2) {
-            if (this.removeMoney(this.getNextLevelPrice())) {
+            if (this.money >= this.getNextLevelPrice()) {
+                this.money -= this.getNextLevelPrice();
+                this.saveMoney();
                 this.level += 1;
                 this.saveLevel();
             } else {
