@@ -14,11 +14,9 @@ class Translator {
             args = Array.isArray(args) ? args : [];
             args.unshift(this.translations[lang][type][name]);
             return util.format.apply(util, args);
-
-
         }
 
-        return "TNF";
+        return lang + " | " + type + " | " + name;
 
     }
 
