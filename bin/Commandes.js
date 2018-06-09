@@ -901,48 +901,6 @@ class Commandes {
 
     // Return string or embed
     helpPanel(lang, page) {
-        /*let str = "```apache\n"
-            + "::Help::\n"
-            + "[Inventaire]\n" +
-            "::inv : Affiche l'inventaire.\n" +
-            "::inventory : Alias de ::inv.\n" +
-            "::item <idItem> : Affiche les informations sur l'objet choisi.\n" +
-            "::sell <idItem> <number(Optional)> : Vend l'objet choisi.\n" +
-            "::sellall : Vend tout les objets de l'inventaire.\n"
-            + "[Equipement]\n" +
-            "::equipList : Affiche les objets équipés.\n" +
-            "::equipment : Alias de ::equipList.\n" +
-            "::equip <idItem> : Equipe l'objet choisi.\n" +
-            "::unequip <idTypeEmplacement> : Déséquipe l'objet de l'emplacement choisi.\n"
-            + "[Personnage]\n" +
-            "::info : Affiche les informations sur votre personnage.\n" +
-            "::up <NomStat> <Nombre> : Ajoute à la caractéristique NomStat Nombre.(str,con,dex,will,cha,int,wis,per,luck)\n" +
-            "::leaderboard : Affiche ton rang PvP.\n" +
-            "::reset : Te permet de reset tes statistiques.\n"
-            + "[Combats]\n" +
-            "::fight <idMonstre> : Permet de tenter d'attaquer le monstre idMonstre.\n" +
-            "::arena @Mention : Permet d'attaquer le joueur mentionné.\n" +
-            "::arena <idCharacter> : Permet d'attaquer le joueur chosi.\n"
-            + "[Zones]\n" +
-            "::area : Affiche les informations de la zone dans laquelle tu te trouve.\n" +
-            "::areas : Affiche toutes les zones.\n" +
-            "::areaplayers <page> : Affiche les joueurs de la zone \n" +
-            "::travel <idZone> : Permet de voyager à la zone idZone.\n"
-            + "[Guildes]\n" +
-            "::guild : Affiche les informations de la guilde dans laquelle vous êtes.\n" +
-            "::guilds <page> : Affiche les guildes.\n" +
-            "::gcreate <name> : Permet de créer une guilde.\n" +
-            "::gdisband : Permet de dissoudre la guilde (GM only) \n" +
-            "::gapply <idGuild> : Permet de demander à rejoindre une guilde. \n" +
-            "::gaccept <idCharacter> : Permet d'accepter quelqu'un dans votre guilde \n" +
-            "::gapplies : Afficher les candidatures \n" +
-            "::gapplyremove <idApply> : Permet de supprimer la candidature voulue. \n" +
-            "::gappliesremove : Supprime toutes les candidatures en cours. \n" +
-            "::gmessage <message> : Permet de changer le message de guilde. \n" +
-            "::gaddmoney <amount> : Donne de l'argent à la guilde. \n" +
-            "::gremovemoney <amount> : Permet de retirer de l'argent de la guilde. \n" +
-            "::glevelup : Permet de faire monter de niveau la guilde. \n"
-            + "```";*/
         let str = "```apache\n" +
             "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
             "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
@@ -958,7 +916,7 @@ class Commandes {
 
             "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
             "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
-            "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + "\n" +
+            "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)\n" +
             "::leaderboard : " + Translator.getString(lang, "help_panel", "leaderboard") + "\n" +
             "::reset : " + Translator.getString(lang, "help_panel", "reset") + "\n" +
 
