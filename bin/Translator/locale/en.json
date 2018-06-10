@@ -69,7 +69,8 @@
     "group_invite_already_in_group" : "Cet utilisateur est déjà dans un groupe",
     "group_invite_waiting" : "Cet utilisateur a déjà une demande d'un groupe en attente",
     "group_you_dont_receive_invitation" : "Vous n'avez pas reçu d'invitation à rejoindre un groupe",
-    "group_full_join" : "Le groupe que vous essayez de rejoindre est au complet"
+    "group_full_join" : "Le groupe que vous essayez de rejoindre est au complet",
+    "group_cant_invite_more_than" : "Vous ne pouvez pas inviter plus de %d joueurs en même temps"
 
   },
   "group" : {
@@ -80,7 +81,9 @@
     "you_declined" : "Vous avez décliné l'invitation à rejoindre le groupe",
     "someone_left_the_group" : "L'utilisateur %s a quitté votre groupe",
     "someone_joined_the_group" : "L'utilisateur %s a rejoint votre groupe",
-    "someone_declined_invitation" : "L'utilisateur %s a refusé de rejoindre votre groupe"
+    "someone_declined_invitation" : "L'utilisateur %s a refusé de rejoindre votre groupe",
+    "now_muted" : "Les notifications en rapport avec le groupe sont maintenant désactivées",
+    "now_unmuted" : "Les notifications en rapport avec le groupe sont maintenant activées"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
