@@ -358,6 +358,9 @@ class Character extends WorldEntity {
         conn.query("UPDATE charactershonor SET honor = " + this.honorPoints + " WHERE idCharacter = " + this.id);
     }
 
+    toStrSimple() {
+        return this.name + " | " + this.getLevel() + " | " + "254";
+    }
 
 
 }
