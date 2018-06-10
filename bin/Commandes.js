@@ -77,7 +77,7 @@ class Commandes {
             }
 
             let group = this.connectedUsers[authorIdentifier].character.group;
-            let lang = this.connectedUsers[authorIdentifier].lang;
+            let lang = this.connectedUsers[authorIdentifier].getLang();
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
@@ -411,6 +411,19 @@ class Commandes {
                         this.connectedUsers[authorIdentifier].character.group = new Group(this.connectedUsers[authorIdentifier]);
                     }
                     break;*/
+                case "grpmute":
+                    this.connectedUsers[authorIdentifier].muteGroup(true);
+                    message.channel.send(Translator.getString(lang, "group", "now_muted"));
+                    break;
+
+                case "grpunmute":
+                    this.connectedUsers[authorIdentifier].muteGroup(false);
+                    message.channel.send(Translator.getString(lang, "group", "now_unmuted"));
+                    break;
+
+                case "grpkick":
+                    break;
+                
                 case "grpleave":
                     if (group != null) {
                         if (!group.doingSomething) {
@@ -435,30 +448,35 @@ class Commandes {
 
                     if (group.leader === this.connectedUsers[authorIdentifier]) {
                         if (!group.doingSomething) {
-                            if (firstMention) {
-                                if (firstMention.id != authorIdentifier) {
-                                    if (this.connectedUsers[firstMention.id]) {
-                                        if (this.connectedUsers[firstMention.id].character.group === null) {
-                                            if (this.connectedUsers[firstMention.id].character.pendingPartyInvite == null) {
-                                                group.invite(this.connectedUsers[firstMention.id]);
-                                                firstMention.send(Translator.getString(this.connectedUsers[firstMention.id].lang, "group", "someone_invited_you", [this.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"]));
-                                                msg = Translator.getString(lang, "group", "invitation_sent");
+                            if (group.nbOfInvitedPlayers() < 5) {
+                                if (firstMention) {
+                                    if (firstMention.id != authorIdentifier) {
+                                        if (this.connectedUsers[firstMention.id]) {
+                                            if (this.connectedUsers[firstMention.id].character.group === null) {
+                                                if (this.connectedUsers[firstMention.id].character.pendingPartyInvite == null) {
+                                                    group.invite(this.connectedUsers[firstMention.id]);
+                                                    firstMention.send(Translator.getString(this.connectedUsers[firstMention.id].getLang(), "group", "someone_invited_you", [this.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"]));
+                                                    msg = Translator.getString(lang, "group", "invitation_sent");
+                                                } else {
+                                                    msg = Translator.getString(lang, "errors", "group_invite_waiting");
+                                                }
                                             } else {
-                                                msg = Translator.getString(lang, "errors", "group_invite_waiting");
+                                                msg = Translator.getString(lang, "errors", "group_invite_already_in_group");
                                             }
                                         } else {
-                                            msg = Translator.getString(lang, "errors", "group_invite_already_in_group");
+                                            msg = Translator.getString(lang, "errors", "group_user_not_connected");
                                         }
                                     } else {
-                                        msg = Translator.getString(lang, "errors", "group_user_not_connected");
+                                        msg = Translator.getString(lang, "errors", "group_cant_invite_yourself");
                                     }
                                 } else {
-                                    msg = Translator.getString(lang, "errors", "group_cant_invite_yourself");
+                                    // error
+                                    msg = "Use the command like this \"::grpinvite @someone\"";
                                 }
                             } else {
-                                // error
-                                msg = "Use the command like this \"::grpinvite @someone\"";
+                                msg = Translator.getString(lang, "errors", "group_cant_invite_more_than", [5]);
                             }
+                            
                         } else {
                             msg = Translator.getString(lang, "errors", "group_occupied");
                         }
@@ -497,7 +515,7 @@ class Commandes {
                 case "grpdecline":
                     if (group == null) {
                         if (pending != null) {
-                            pending.playerDeclineBroadcast(this.connectedUsers[authorIdentifier], message.client);
+                            pending.playerDeclinedBroadcast(this.connectedUsers[authorIdentifier], message.client);
                             this.connectedUsers[authorIdentifier].character.pendingPartyInvite = null;
                             msg = Translator.getString(lang, "group" , "you_declined");
                         } else {
@@ -510,13 +528,13 @@ class Commandes {
                     break;
 
                 case "grp":
-                    /*console.log(authorIdentifier + " : \n");
-                    console.log(group);
-                    console.log("\n");*/
-                    //console.log(message.client.users.get());
-                    /*if (group) {
-                        group.debug();
-                    }*/
+                    if (group != null) {
+                        msg = group.toStr();
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    }
+
+                    message.channel.send(msg);
                     break;
 
                 /*
@@ -858,7 +876,7 @@ class Commandes {
 
                         let f = new Fight(monsters1, monsters2);
                         console.log(f.summary);*/
-                        console.log(this.connectedUsers[authorIdentifier].username);
+                        //console.log(this.connectedUsers[authorIdentifier].username);
                     }
                     break;
 

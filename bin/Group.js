@@ -2,6 +2,7 @@
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
+const Discord = require("discord.js");
 
 var nextID = 0;
 
@@ -11,26 +12,44 @@ class Group {
 		leader.pendingPartyInvite = null;
 		this.id = nextID;
 		nextID++;
-		this.players = {};
+        this.players = {};
+        this.pendingPlayers = {};
 		this.leader = leader;
 		this.doingSomething = false;
 	}
 
 	invite(player) {
-		player.character.pendingPartyInvite = this;
+        player.character.pendingPartyInvite = this;
+        this.pendingPlayers[player.id] = player;
 	}
 
 	nbOfPlayers() {
 		return Object.keys(this.players).length + 1;
-	}
+    }
+
+    nbOfInvitedPlayers() {
+        return Object.keys(this.pendingPlayers).length;
+    }
 
 	isFull() {
-		return Object.keys(this.players).length + 1 >= 5 ? true : false;
-	}
+		return Object.keys(this.players).length + 1 >= 5;
+    }
+
+    isMaxInvitationsReached() {
+        return Object.keys(this.pendingPlayers).length > 5;
+    }
+
+    exist() {
+        if (this.players == null || this.leader == null) {
+            return false;
+        }
+        return true;
+    }
 
 	addPlayer(player, discordClient) {
 		this.playerJoinedBroadcast(player, discordClient);
-		player.character.pendingPartyInvite = null;
+        player.character.pendingPartyInvite = null;
+        delete this.pendingPlayers[player.id];
 		this.players[player.id] = player;
 		player.character.group = this;
 
@@ -39,9 +58,12 @@ class Group {
 	disband() {
 		this.leader.character.leaveGroup();
 		for (let user in this.players) {
-			this.players[user].character.leaveGroup();
-		}
-
+            this.players[user].character.leaveGroup();
+        }
+        for (let user2 in this.pendingPlayers) {
+            this.pendingPlayers[user2].character.pendingPartyInvite = null;
+        }
+        this.pendingPlayers = null;
 		this.players = null;
 		this.leader = null;
 		//console.log(this);
@@ -69,37 +91,74 @@ class Group {
 
 	}
 
-	debug() {
-		for (let user in this.players) {
-			console.log(user);
-		}
-	}
-
 	playerLeaveBroadcast(player, discordClient) {
 		// Send to leader
-		discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.lang, "group", "someone_left_the_group", [player.username]))
+        if (!this.leader.isGroupMuted()) {
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username]))
+        }
+
 
 		// Send to rest of group
 		for (let user in this.players) {
-			user = this.players[user];
-			discordClient.users.get(user.id).send(Translator.getString(user.lang, "group", "someone_left_the_group", [player.username]))
+            user = this.players[user];
+            if (!user.isGroupMuted()) {
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username]))
+            }
 		}
 	}
 
 	playerJoinedBroadcast(player, discordClient) {
 		// Send to leader
-		discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.lang, "group", "someone_joined_the_group", [player.username]))
-
+        if (!this.leader.isGroupMuted()) {
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username]))
+        }
 		// Send to rest of group
 		for (let user in this.players) {
-			user = this.players[user];
-			discordClient.users.get(user.id).send(Translator.getString(user.lang, "group", "someone_joined_the_group", [player.username]))
+            user = this.players[user];
+            if (!user.isGroupMuted()) {
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username]))
+            }
 		}
 	}
 
-	playerDeclinedBroadcast(player, discordClient) {
-		discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.lang, "group", "someone_declined_invitation", [player.username]))
-	}
+    playerDeclinedBroadcast(player, discordClient) {
+        if (!this.leader.isGroupMuted()) {
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]))
+        }
+    }
+
+    toStr(lang) {
+        let membersOfGroup = "```diff\n";
+        membersOfGroup += "+ " + this.leader.character.toStrSimple() + "\n";
+        for (let user in this.players) {
+            user = this.players[user];
+            membersOfGroup += "+ " + user.character.toStrSimple() + "\n";
+        }
+        membersOfGroup += "```";
+
+        let invitedPlayers = "```diff\n";
+        if (this.nbOfInvitedPlayers() > 0) {
+            for (let user in this.pendingPlayers) {
+                user = this.pendingPlayers[user];
+                invitedPlayers += "+ " + user.character.toStrSimple() + "\n";
+            }
+        } else {
+            invitedPlayers += "- Personne n'a été invité à rejoindre votre groupe";
+        }
+
+        invitedPlayers += "```";
+
+
+
+        let embed = new Discord.RichEmbed()
+            .setColor([0, 127, 255])
+            .setAuthor("Groupe | Level moyen : 20 | iLvl moyen : 199", "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
+            .addField("Membres du groupe (" + this.nbOfPlayers() + " / 5)", membersOfGroup)
+            .addField("Utilisateurs invités (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers)
+            ;
+
+        return embed;
+    }
 
 
 
