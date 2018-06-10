@@ -14,7 +14,11 @@ class User {
         this.character = new Character();
         this.avatar = "";
         this.username = username;
-        this.lang = "en";
+
+        this.preferences = {
+            lang: "en",
+            groupmute : false,
+        };
     }
 
     // Init for new user
@@ -30,6 +34,7 @@ class User {
             res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
         conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`, `token`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "');");
+        conn.query("INSERT INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
     }
 
     // Load user from DB
@@ -45,7 +50,11 @@ class User {
             conn.query("UPDATE users SET username = ? WHERE idUser = ?", [this.username, this.id]);
             //this.username = res[0]["userName"];
             this.character.name = this.username;
-            this.lang = res[0]["lang"];
+
+            res = conn.query("SELECT * FROM userspreferences WHERE idUser = ?", [this.id]);
+
+            this.preferences.lang = res[0]["lang"];
+            this.preferences.groupmute = res[0]["groupmute"];
         }
 
     }
@@ -67,8 +76,21 @@ class User {
     }
 
     changeLang(lang) {
-        this.lang = lang;
-        conn.query("UPDATE users SET lang = ? WHERE idUser = ?", [lang, this.id]);
+        this.preferences.lang = lang;
+        conn.query("UPDATE userspreferences SET lang = ? WHERE idUser = ?", [lang, this.id]);
+    }
+
+    getLang() {
+        return this.preferences.lang;
+    }
+
+    isGroupMuted() {
+        return this.preferences.groupmute;
+    }
+
+    muteGroup(bool) {
+        bool == true ? this.preferences.groupmute = true : this.preferences.groupmute = false;
+        conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [this.preferences.groupmute, this.id]);
     }
 
     //Affichage
