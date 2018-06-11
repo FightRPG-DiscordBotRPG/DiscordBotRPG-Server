@@ -421,7 +421,7 @@ class Commandes {
                             if (!group.doingSomething) {
                                 if (group.leader == this.connectedUsers[authorIdentifier]) {
                                     if (messageArray[1] != this.connectedUsers[authorIdentifier].username) {
-                                        if (group.kick(messageArray[1]), message.client) {
+                                        if (group.kick(messageArray[1], message.client)) {
                                             msg = Translator.getString(lang, "group", "user_kicked", [messageArray[1]]);
                                         } else {
                                             if (group.cancelInvite(messageArray[1])) {
@@ -445,6 +445,7 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
                     }
+                    message.channel.send(msg);
 
                     break;
                 
