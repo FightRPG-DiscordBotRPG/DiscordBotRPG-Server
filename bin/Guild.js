@@ -181,7 +181,7 @@ class Guild {
                     rmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "member") + "\n";
                     break;
                 case 2:
-                    roStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "offcer") + "\n";
+                    roStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "officer") + "\n";
                     break;
                 case 3:
                     rgmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "guild_master") + "\n";
@@ -281,14 +281,19 @@ class Guild {
         let err = [];
 
         if (this.members[idCharacter].rank >= 2) {
-            if (this.money >= this.getNextLevelPrice()) {
-                this.money -= this.getNextLevelPrice();
-                this.saveMoney();
-                this.level += 1;
-                this.saveLevel();
+            if (this.level < Globals.guilds.maxLevel) {
+                if (this.money >= this.getNextLevelPrice()) {
+                    this.money -= this.getNextLevelPrice();
+                    this.saveMoney();
+                    this.level += 1;
+                    this.saveLevel();
+                } else {
+                    err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice()]));
+                }
             } else {
-                err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice()]));
+                err.push(Translator.getString(lang, "errors", "guild_already_max_level"));
             }
+            
         
         } else {
             err.psuh(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
