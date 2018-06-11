@@ -79,11 +79,11 @@ class Guild {
                 conn.query("INSERT INTO guildsmembers VALUES(" + idOther + ", " + this.id + ", " + rank + " );");
                 this.nbrMembers++;
             } else {
-                err.push("Vous avez atteint le nombre maximal de membres.");
+                err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
 
         } else {
-            err.push("Vous n'avez pas la permission d'ajouter des membres.");
+            err.push(Translator.getString(lang, "errors", "guild_cant_invite_players"));
         }
         return err;
     }

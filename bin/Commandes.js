@@ -62,7 +62,7 @@ class Commandes {
                         name: this.nbrConnectedUsers + " players connected !",
                     },
                 });
-                console.log(sizeof(this.connectedUsers));
+                //console.log(sizeof(this.connectedUsers));
 
                 // Load Guild
                 if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
@@ -191,7 +191,7 @@ class Commandes {
 
                     if (Number.isInteger(messageArray[1])) {
                         if (Guild.haveAlreadyApplied(tGuildId, messageArray[1])) {
-                            err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], lang);
+                            err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], 1,lang);
                             if (err.length > 0) {
                                 msg = err[0];
                             } else {
