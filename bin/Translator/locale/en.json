@@ -33,6 +33,8 @@
     "guild_guild_dont_have_this_amount_of_money" : "You can't retrieve this much money from the guild",
     "guild_no_enough_money_to_level_up" : "Your guild doesn't have enough money to level up. You still need : %dG",
     "guild_dont_have_right_to_level_up" : "You don't have the right to raise the level of the guild",
+    "guild_maximum_members" : "Vous avez atteint le nombre maxmimal de membres",
+    "guild_cant_invite_players" : "Vous n'avez pas la permission d'accepter des membres",
     "collect_enter_id_to_collect" : "Please enter the id of the resource to collect",
     "collect_tired_wait_x_seconds" : "You are too tired to collect these resources, you still have to wait: %s seconds",
     "item_you_dont_have_this_item" : "You don't have this item",
@@ -310,6 +312,6 @@
      "grpdecline" : "Vous permet de décliner l'invitaiton à rejoindre un groupe",
      "grpkick" : "Vous permet d'éjecter un membre de votre groupe ou d'annuler une inviation à rejoindre votre groupe",
      "grpmute" : "Vous permet de désactiver les notifications de groupe",
-     "grpunmute" : "Vous permet d'activer les notifications de groupe",
+     "grpunmute" : "Vous permet d'activer les notifications de groupe"
    }
 }
