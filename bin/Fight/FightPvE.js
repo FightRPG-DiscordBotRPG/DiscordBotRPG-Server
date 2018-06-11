@@ -123,9 +123,6 @@ class FightPvE extends Fight {
                     });
                 }
 
-                // 2 Seconds per round * 1000 => ms
-                this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2000);
-
             }
 
             this.summary.xp = totalXp;
@@ -133,6 +130,12 @@ class FightPvE extends Fight {
 
 
         }
+
+        for (let i in this.entities[0]) {
+            // 2.5 Seconds per round * 1000 => ms
+            this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
+        }
+
     }
 
 }
