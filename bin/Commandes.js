@@ -405,12 +405,6 @@ class Commandes {
                 /*
                 * GROUP SYSTEM
                 */
-                /*case "grpcreate":
-                    //firstMention = mentions.first();
-                    if (group == null) {
-                        this.connectedUsers[authorIdentifier].character.group = new Group(this.connectedUsers[authorIdentifier]);
-                    }
-                    break;*/
                 case "grpmute":
                     this.connectedUsers[authorIdentifier].muteGroup(true);
                     message.channel.send(Translator.getString(lang, "group", "now_muted"));
@@ -422,6 +416,36 @@ class Commandes {
                     break;
 
                 case "grpkick":
+                    if (messageArray[1]) {
+                        if (group != null) {
+                            if (!group.doingSomething) {
+                                if (group.leader == this.connectedUsers[authorIdentifier]) {
+                                    if (messageArray[1] != this.connectedUsers[authorIdentifier].username) {
+                                        if (group.kick(messageArray[1]), message.client) {
+                                            msg = Translator.getString(lang, "group", "user_kicked", [messageArray[1]]);
+                                        } else {
+                                            if (group.cancelInvite(messageArray[1])) {
+                                                msg = Translator.getString(lang, "group", "invite_cancel", [messageArray[1]]);
+                                            } else {
+                                                msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [messageArray[1]]);
+                                            }
+                                        }
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "group_cant_kick_yourself");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "group_not_leader");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "group_occupied");
+                            }
+                        } else {
+                            Translator.getString(lang, "errors", "group_not_in_group");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
+                    }
+
                     break;
                 
                 case "grpleave":

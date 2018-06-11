@@ -53,7 +53,35 @@ class Group {
 		this.players[player.id] = player;
 		player.character.group = this;
 
-	}
+    }
+
+    kick(playername, discordClient) {
+        for (let user in this.players) {
+            user = this.players[user];
+            if (user.username == playername) {
+                // Make sure it leaves the group
+                user.character.leaveGroup();
+                this.playerKickedBroadcast(user, discordClient);
+                delete this.players[user.id];
+                return true;
+            }
+        }
+        return false;
+    }
+
+    cancelInvite(playername) {
+        for (let user in this.pendingPlayers) {
+            user = this.pendingPlayers[user];
+            if (user.username == playername) {
+                user.character.pendingPartyInvite = null;
+                delete this.pendingPlayers[user.id];
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
 	disband() {
 		this.leader.character.leaveGroup();
@@ -124,6 +152,19 @@ class Group {
     playerDeclinedBroadcast(player, discordClient) {
         if (!this.leader.isGroupMuted()) {
             discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]))
+        }
+    }
+
+    playerKickedBroadcast(player, discordClient) {
+        for (let user in this.players) {
+            user = this.players[user];
+            if (user == player) {
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "you_ve_been_kicked"));
+            } else {
+                if (!user.isGroupMuted()) {
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username]))
+                }
+            }
         }
     }
 
