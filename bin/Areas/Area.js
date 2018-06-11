@@ -141,6 +141,7 @@ class Area {
         return this.maxItemRarity;
     }
 
+    // TODO Change way it works, right now it's not working as intended
     getPlayers(page, connectedUsers, lang) {
         page = page;
         let str = "```";
