@@ -151,11 +151,19 @@ class FightManager {
 
 
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang));
-            this.fights[userid].summaryIndex++;
-            setTimeout(() => {
-                this._discordFightPvE(message, userid, lang);
-            }, 2000);
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
+                .then(() => {
+                    this.fights[userid].summaryIndex++;
+                    setTimeout(() => {
+                        this._discordFightPvE(message, userid, lang);
+                    }, 2000);
+                })
+                .catch(() => {
+                    setTimeout(() => {
+                        this._deleteFight(userid)
+                    }, (summary.rounds.length - ind) * 2000);
+                });
+
 
         } else {
             if (summary.winner == 0) {
@@ -196,7 +204,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color, lang)).then(this._deleteFight(userid));
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color, lang)).then(this._deleteFight(userid)).catch(this._deleteFight(userid));
 
         }
 
@@ -636,7 +644,13 @@ class FightManager {
             }, 2000);
         }
 
-        message.edit(this.embedPvP(this.fights[userid].attacker, this.fights[userid].defender, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2]));
+        message.edit(this.embedPvP(this.fights[userid].attacker, this.fights[userid].defender, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2])).catch(() => {
+            setTimeout(() => {
+                this.fights[userid].attacker.character.waitForNextFight();
+                delete this.fights[userid];
+                done = false;
+            }, 20000)
+        });
 
         if (done) {
             this.fights[userid].attacker.character.waitForNextFight();
