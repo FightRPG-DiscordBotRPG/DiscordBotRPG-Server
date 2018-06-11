@@ -70,7 +70,10 @@
     "group_invite_waiting" : "Cet utilisateur a déjà une demande d'un groupe en attente",
     "group_you_dont_receive_invitation" : "Vous n'avez pas reçu d'invitation à rejoindre un groupe",
     "group_full_join" : "Le groupe que vous essayez de rejoindre est au complet",
-    "group_cant_invite_more_than" : "Vous ne pouvez pas inviter plus de %d joueurs en même temps"
+    "group_cant_invite_more_than" : "Vous ne pouvez pas inviter plus de %d joueurs en même temps",
+    "group_user_not_in_your_group" : "L'utilisateur %s n'est ni dans votre groupe, ni dans la liste d'attente pour rejoindre votre groupe",
+    "group_user_kick_empty_name" : "Vous devez choisir la personne que vous voulez éjecter",
+    "group_cant_kick_yourself" : "Vous ne pouvez pas vous éjecter du groupe"
 
   },
   "group" : {
@@ -83,7 +86,10 @@
     "someone_joined_the_group" : "L'utilisateur %s a rejoint votre groupe",
     "someone_declined_invitation" : "L'utilisateur %s a refusé de rejoindre votre groupe",
     "now_muted" : "Les notifications en rapport avec le groupe sont maintenant désactivées",
-    "now_unmuted" : "Les notifications en rapport avec le groupe sont maintenant activées"
+    "now_unmuted" : "Les notifications en rapport avec le groupe sont maintenant activées",
+    "user_kicked" : "L'utilisateur %s a été éjecté du groupe",
+    "invite_cancel" : "L'invitation à rejoindre le groupe pour l'utilisateur %s a été annulée",
+    "you_ve_been_kicked" : "Vous avez été éjecté du groupe"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
