@@ -300,6 +300,16 @@
 
      "other_title" : "Other",
      "lang" : "Shows the list of available languages",
-     "lang_param" : "Allows you to switch languages"
+     "lang_param" : "Allows you to switch languages",
+
+     "groups_title" : "Groupes",
+     "grp" : "Affiche le groupe dans lequel vous êtes",
+     "grpinvite_mention" : "Invite le joueur @mention à rejoindre votre groupe",
+     "grpleave" : "Vous permet de quitter votre groupe",
+     "grpaccept" : "Vous permet d'accepter l'invitation a rejoindre un groupe",
+     "grpdecline" : "Vous permet de décliner l'invitaiton à rejoindre un groupe",
+     "grpkick" : "Vous permet d'éjecter un membre de votre groupe ou d'annuler une inviation à rejoindre votre groupe",
+     "grpmute" : "Vous permet de désactiver les notifications de groupe",
+     "grpunmute" : "Vous permet d'activer les notifications de groupe",
    }
 }

@@ -1067,7 +1067,7 @@ class Commandes {
     // Return string or embed
     helpPanel(lang, page) {
         let str = "";
-        let maxPage = 2;
+        let maxPage = 3;
         page = page && page > 0 && page <= maxPage ? page : 1;
 
         switch (page) {
@@ -1123,6 +1123,19 @@ class Commandes {
                     "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
                     "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
                     "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n";
+                break;
+            case 3:
+                str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                    "[" + Translator.getString(lang, "help_panel", "groups_title") + "]\n" +
+                    "::grp : " + Translator.getString(lang, "help_panel", "grp") + "\n" +
+                    "::grpinvite @mention : " + Translator.getString(lang, "help_panel", "grpinvite_mention") + "\n" +
+                    "::grpleave : " + Translator.getString(lang, "help_panel", "grpleave") + "\n" +
+                    "::grpaccept : " + Translator.getString(lang, "help_panel", "grpaccept") + "\n" +
+                    "::grpdecline : " + Translator.getString(lang, "help_panel", "grpdecline") + "\n" +
+                    "::grpkick <name#tag> : " + Translator.getString(lang, "help_panel", "grpkick") + "\n" +
+                    "::grpmute : " + Translator.getString(lang, "help_panel", "grpmute") + "\n" +
+                    "::grpunmute : " + Translator.getString(lang, "help_panel", "grpunmute") + "\n";
                 break;
         }
         str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
