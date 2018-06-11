@@ -35,6 +35,7 @@
     "guild_dont_have_right_to_level_up" : "Vous n'avez pas la permission de monter le niveau de la guilde",
     "guild_maximum_members" : "Vous avez atteint le nombre maxmimal de membres",
     "guild_cant_invite_players" : "Vous n'avez pas la permission d'accepter des membres",
+    "guild_already_max_level" : "Votre guilde est déjà au niveau maximum",
     "collect_enter_id_to_collect" : "Veuillez entrer l'identifiant de la ressource à récolter",
     "collect_tired_wait_x_seconds" : "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
     "item_you_dont_have_this_item" : "Vous n'avez pas cet objet",
