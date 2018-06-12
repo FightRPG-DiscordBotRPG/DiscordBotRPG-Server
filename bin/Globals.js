@@ -7,6 +7,7 @@ let maxStatsId = conn.query("SELECT COUNT(*) FROM stats")[0]["COUNT(*)"];
 let statsIds = {};
 let equipsPossible = [];
 let areasTypes = [];
+let monstersTypes = {};
 let res;
 
 // All Stats
@@ -25,6 +26,11 @@ for (let i = 0; i < res.length; i++) {
     areasTypes.push(res[i]["NomAreaType"]);
 }
 
+res = conn.query("SELECT * FROM monstrestypes");
+for (let i in res) {
+    monstersTypes[res[i]["nom"]] = res[i]['idType'];
+}
+
 
 
 
@@ -33,13 +39,14 @@ let rarityChances = {
     rare: 8 / 100,
     superieur: 5 / 100,
     epique: 1 / 100,
-    legendaire: 0.5 / 100,
+    legendaire: 0.1 / 100,
 }
 
 var Globals = {
     "maxLevel": maxLevel,
     "maxStatsId": maxStatsId,
     "statsIds": statsIds,
+    "monstersIds": monstersTypes,
     "basicWaitTimeBeforeFight": 20,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeCollectTravel" : 30,
@@ -80,5 +87,6 @@ var Globals = {
 
 
 }
+
 
 module.exports = Globals;
