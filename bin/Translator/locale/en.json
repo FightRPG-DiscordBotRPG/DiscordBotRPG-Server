@@ -63,36 +63,36 @@
     "character_attribute_dont_exist" : "This attribute doesn't exist",
     "languages_lang_dont_exist" : "This language doesn't exist, please refer to the list of available languages using the following comamnd ::lang",
 
-    "group_already_in_group" : "Vous ne devez pas être dans un groupe pour pouvoir faire cela",
-    "group_not_in_group" : "Vous devez être dans un groupe pour pouvoir faire cela",
-    "group_occupied" : "Votre groupe est occupé finissez ce que vous faites puis recommencez",
-    "group_not_leader" : "Vous devez être le chef de votre groupe pour pouvoir faire cela",
-    "group_cant_invite_yourself" : "Vous ne pouvez pas vous inviter",
-    "group_user_not_connected" : "Vous devez inviter un utilisateur connecté",
-    "group_invite_already_in_group" : "Cet utilisateur est déjà dans un groupe",
-    "group_invite_waiting" : "Cet utilisateur a déjà une demande d'un groupe en attente",
-    "group_you_dont_receive_invitation" : "Vous n'avez pas reçu d'invitation à rejoindre un groupe",
-    "group_full_join" : "Le groupe que vous essayez de rejoindre est au complet",
-    "group_cant_invite_more_than" : "Vous ne pouvez pas inviter plus de %d joueurs en même temps",
-    "group_user_not_in_your_group" : "L'utilisateur %s n'est ni dans votre groupe, ni dans la liste d'attente pour rejoindre votre groupe",
-    "group_user_kick_empty_name" : "Vous devez choisir la personne que vous voulez éjecter",
-    "group_cant_kick_yourself" : "Vous ne pouvez pas vous éjecter du groupe"
+    "group_already_in_group" : "You can't be in a group to do this",
+    "group_not_in_group" : "You must be in a group to do this",
+    "group_occupied" : "Your group is busy, finish what you're doing and try again",
+    "group_not_leader" : "You must be the leader of the group to do this",
+    "group_cant_invite_yourself" : "You can't invite yourself",
+    "group_user_not_connected" : "You must invite a connected user",
+    "group_invite_already_in_group" : "This user is already in a group",
+    "group_invite_waiting" : "This user has a pending invitation",
+    "group_you_dont_receive_invitation" : "You haven't received any invitation to join a group",
+    "group_full_join" : "The group you're trying to join is full",
+    "group_cant_invite_more_than" : "You can't invite more than %d players at the same time",
+    "group_user_not_in_your_group" : "User %s isn't in your group nor in the pending list to join it",
+    "group_user_kick_empty_name" : "You must select the user you want to kick out",
+    "group_cant_kick_yourself" : "You can't kick yourself out of the group"
 
   },
   "group" : {
-    "you_left" : "Vous avez quitté votre groupe",
-    "invitation_sent" : "Invitation à rejoindre le groupe envoyée",
-    "someone_invited_you" : "L'utilisateur %s vous invite à rejoindre son groupe (utilisez %s pour accepter ou %s pour refuser)",
-    "you_joined" : "Vous avez rejoint le groupe",
-    "you_declined" : "Vous avez décliné l'invitation à rejoindre le groupe",
-    "someone_left_the_group" : "L'utilisateur %s a quitté votre groupe",
-    "someone_joined_the_group" : "L'utilisateur %s a rejoint votre groupe",
-    "someone_declined_invitation" : "L'utilisateur %s a refusé de rejoindre votre groupe",
-    "now_muted" : "Les notifications en rapport avec le groupe sont maintenant désactivées",
-    "now_unmuted" : "Les notifications en rapport avec le groupe sont maintenant activées",
-    "user_kicked" : "L'utilisateur %s a été éjecté du groupe",
-    "invite_cancel" : "L'invitation à rejoindre le groupe pour l'utilisateur %s a été annulée",
-    "you_ve_been_kicked" : "Vous avez été éjecté du groupe"
+    "you_left" : "You left your group",
+    "invitation_sent" : "Invitation to join the group sent",
+    "someone_invited_you" : "User %s invited you to join their group (use %s to accept or %s to decline)",
+    "you_joined" : "You joined the group",
+    "you_declined" : "You declined the invitation to join the group",
+    "someone_left_the_group" : "User %s left your group",
+    "someone_joined_the_group" : "User %s joined your group",
+    "someone_declined_invitation" : "User %s declined to join your group",
+    "now_muted" : "Group notifications are now deactivated",
+    "now_unmuted" : "Group notifications are now activated",
+    "user_kicked" : "User %s was kicked out of the group",
+    "invite_cancel" : "The group invitation to user %s was cancelled",
+    "you_ve_been_kicked" : "You have been kicked out of the group"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
@@ -105,7 +105,8 @@
     "no_description" : "No description available for this area",
     "maximum_quality" : "Maximum quality for an obejct:",
     "you_claimed" : "You've claimed this area",
-    "owned_by" : "Owned by"
+    "owned_by" : "Owned by",
+    "monter_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s"
   },
   "resources" : {
     "wood"  : "Wood",
@@ -215,7 +216,10 @@
      "xp_gain" : "You won: %d XP",
      "nothing_gain" : "You won nothing!",
      "both_gain" : "You won: %d XP and %d G"
-
+   },
+   "monsters_types" : {
+     "normal" : "Normal",
+     "elite" : "Elite"
    },
    "fight_general" : {
      "combat_log" : "Combat log",
@@ -305,14 +309,14 @@
      "lang" : "Shows the list of available languages",
      "lang_param" : "Allows you to switch languages",
 
-     "groups_title" : "Groupes",
-     "grp" : "Affiche le groupe dans lequel vous êtes",
-     "grpinvite_mention" : "Invite le joueur @mention à rejoindre votre groupe",
-     "grpleave" : "Vous permet de quitter votre groupe",
-     "grpaccept" : "Vous permet d'accepter l'invitation a rejoindre un groupe",
-     "grpdecline" : "Vous permet de décliner l'invitaiton à rejoindre un groupe",
-     "grpkick" : "Vous permet d'éjecter un membre de votre groupe ou d'annuler une inviation à rejoindre votre groupe",
-     "grpmute" : "Vous permet de désactiver les notifications de groupe",
-     "grpunmute" : "Vous permet d'activer les notifications de groupe"
+     "groups_title" : "Groups",
+     "grp" : "Shows the group you're in",
+     "grpinvite_mention" : "Invites player @mention to join your group",
+     "grpleave" : "Allows you to leave your group",
+     "grpaccept" : "Accepts an invitation to join a group",
+     "grpdecline" : "Declines an invitation to join a group",
+     "grpkick" : "Kicks out a member of your group or cancels an invitation to join your group",
+     "grpmute" : "Deactivates group notifications",
+     "grpunmute" : "Activates group notifications"
    }
 }

@@ -105,7 +105,8 @@
     "no_description" : "Aucune description pour cette zone",
     "maximum_quality" : "Qualité maximale pour un objet :",
     "you_claimed" : "Vous avez conquis cette zone",
-    "owned_by" : "Propriétaire"
+    "owned_by" : "Propriétaire",
+    "monter_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s"
   },
   "resources" : {
     "wood"  : "Bois",
@@ -215,7 +216,10 @@
      "xp_gain" : "Vous gagnez : %d XP",
      "nothing_gain" : "Vous ne gagnez rien !",
      "both_gain" : "Vous gagnez : %d XP et %d G"
-
+   },
+   "monsters_types" : {
+     "normal" : "Normal",
+     "elite" : "Elite"
    },
    "fight_general" : {
      "combat_log" : "Résumé du combat",
