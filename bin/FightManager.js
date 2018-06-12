@@ -449,7 +449,7 @@ class FightManager {
         }
 
 
-        if (summary.rounds[ind].monsterType == "Normal") {
+        if (summary.rounds[ind].monsterType == "normal") {
             monsterTitle = summary.rounds[ind].monsterDifficultyName + " ";
         } else {
             monsterTitle = "<:elite:406090076511141888>";
@@ -470,7 +470,7 @@ class FightManager {
         let first = healthBar.draw(character1.character.actualHP, character1.character.maxHP);
         let second = healthBar.draw(monster.actualHP, monster.maxHP);
         let monsterTitle = "";
-        if (monster.type == "Normal") {
+        if (monster.type == "normal") {
             monsterTitle = monster.difficulty.name + " ";
         } else {
             monsterTitle = "<:elite:406090076511141888>";
