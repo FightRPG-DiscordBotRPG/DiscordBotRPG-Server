@@ -16,7 +16,16 @@ class Group {
         this.pendingPlayers = {};
 		this.leader = leader;
 		this.doingSomething = false;
-	}
+    }
+
+    getArrayOfPlayers() {
+        let arrPlayers = [];
+        for (let i in this.players) {
+            arrPlayers.push(this.players[i]);
+        }
+        arrPlayers.push(this.leader);
+        return arrPlayers;
+    }
 
 	invite(player) {
         player.character.pendingPartyInvite = this;
