@@ -925,13 +925,13 @@ class Commandes {
                     if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
                         if (idEnemy != undefined && Number.isInteger(idEnemy)) {
                             let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.area, idEnemy, this.connectedUsers[authorIdentifier].character.getStat("perception"));
-
+                            let enemies = [];
                             if (!canIFightTheMonster) {
-                                idEnemy = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
+                                enemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             } else {
-                                idEnemy = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
+                                enemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
                             }
-                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], [{id:idEnemy, number: 1}], message, canIFightTheMonster, lang);
+                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], enemies, message, canIFightTheMonster, lang);
                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
 
                         } else {

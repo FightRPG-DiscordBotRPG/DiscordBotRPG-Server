@@ -2,6 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
+const MonstreGroupe = require("../MonstreGroupe");
 
 class Area {
 
@@ -49,15 +50,34 @@ class Area {
         }
 
         // Load monsters
-        res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
+
+        res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idArea = ?;", [this.id]);
+        //res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
+
+        let arrOfMonstersGroup = {};
         for (let i in res) {
             let monsterLight = {
                 id: res[i]["idMonstre"],
                 name: res[i]["name"],
                 avglevel: res[i]["avglevel"],
-                type: res[i]["nom"]
+                type: res[i]["nom"],
+                number: res[i]["number"]
             }
-            this.monsters.push(monsterLight);
+
+            let idToString = res[i]["idMonstreGroupe"].toString();
+            if (Object.keys(arrOfMonstersGroup).indexOf(idToString) == -1) {
+                arrOfMonstersGroup[idToString] = [];
+            }
+
+            arrOfMonstersGroup[idToString].push(monsterLight);
+        }
+
+        for (let i in arrOfMonstersGroup) {
+            let grpMonster = new MonstreGroupe();
+            grpMonster.setMonsters(arrOfMonstersGroup[i]);
+
+            this.monsters.push(grpMonster);
+
         }
 
         // Load max rarity/quality item
@@ -78,7 +98,13 @@ class Area {
         let str = "```";
         for (let i in this.monsters) {
             //str += "ID : " + i + " | " + this.monsters[i]["name"] + " | Lv : " + this.monsters[i]["avglevel"] + " | Type : " + this.monsters[i]["type"] + "\n\n";
-            str += Translator.getString(lang, "area", "monster", [i, this.monsters[i]["name"], this.monsters[i]["avglevel"], this.monsters[i]["type"]]) + "\n\n";
+            //str += Translator.getString(lang, "area", "monster", [i, this.monsters[i]["name"], this.monsters[i]["avglevel"], this.monsters[i]["type"]]) + "\n\n";
+            if (this.monsters[i].numberOfMonsters > 1) {
+                //str += "Groupe de " + this.monsters[i].numberOfMonsters + " montres" + "\n\n";
+                str += Translator.getString(lang, "area", "monter_group", [i, this.monsters[i].name, this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+            } else {
+                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].name, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+            }
         }
         str += "```";
         return str;
@@ -121,20 +147,22 @@ class Area {
 
     getMonsterId(idEmplacementMonstre) {
         if (idEmplacementMonstre < this.monsters.length && idEmplacementMonstre >= 0) {
-            return this.monsters[idEmplacementMonstre].id;
+            //return this.monsters[idEmplacementMonstre].getMonstersIDs()[0];
+            //return idEmplacementMonstre;
+            return this.monsters[idEmplacementMonstre].getMonsters();
         } else {
             return null;
         }
     }
 
     getRandomMonster(notThisEnemy) {
-        let toReturn = this.monsters[Math.floor(Math.random() * this.monsters.length)].id;
+        let index = Math.floor(Math.random() * this.monsters.length);
         if (this.monsters.length > 1) {
-            while (toReturn == notThisEnemy) {
-                toReturn = this.monsters[Math.floor(Math.random() * this.monsters.length)].id;
+            while (index == notThisEnemy) {
+                index = Math.floor(Math.random() * this.monsters.length);
             }
         }
-        return toReturn;
+        return this.monsters[index].getMonsters();
     }
 
     getMaxItemQuality() {
