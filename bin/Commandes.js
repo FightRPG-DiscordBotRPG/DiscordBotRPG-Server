@@ -99,8 +99,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "area", "you_claimed");
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 /*
@@ -113,7 +111,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "guild", "you_dont_have_a_guild");
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "gcreate":
@@ -145,7 +142,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_name_empty");
                     }
-                    message.reply(msg);
                     break;
 
                 case "gdisband":
@@ -159,7 +155,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_disband");
                     }
-                    message.channel.send(msg);
                     break;
                 
 
@@ -180,9 +175,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_enter_id_to_join");
                     }
-
-                    message.reply(msg);
-
                     break;
 
                 case "gaccept":
@@ -190,25 +182,29 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
 
                     if (Number.isInteger(messageArray[1])) {
-                        if (Guild.haveAlreadyApplied(tGuildId, messageArray[1])) {
-                            err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], 1,lang);
-                            if (err.length > 0) {
-                                msg = err[0];
-                            } else {
-                                msg = Translator.getString(lang, "guild", "character_have_been_accepted");
-                                uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
-                                Guild.deleteUsersAppliances(messageArray[1]);
-                                if (this.connectedUsers[uIDGuild]) {
-                                    this.connectedUsers[uIDGuild].character.idGuild = tGuildId;
+                        if (tGuildId > 0) {
+                            if (Guild.haveAlreadyApplied(tGuildId, messageArray[1])) {
+                                err = this.connectedGuilds[tGuildId].addMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], 1, lang);
+                                if (err.length > 0) {
+                                    msg = err[0];
+                                } else {
+                                    msg = Translator.getString(lang, "guild", "character_have_been_accepted");
+                                    uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
+                                    Guild.deleteUsersAppliances(messageArray[1]);
+                                    if (this.connectedUsers[uIDGuild]) {
+                                        this.connectedUsers[uIDGuild].character.idGuild = tGuildId;
+                                    }
                                 }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "guild_character_not_ask_to_join");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "guild_character_not_ask_to_join");
+                            err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                         }
+ 
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_enter_id_to_add");
                     }
-                    message.reply(msg);
                     break;
 
                 case "gapplies":
@@ -222,7 +218,6 @@ class Commandes {
                     } else {
                         msg = Guild.getAppliances(this.connectedUsers[authorIdentifier].character.id, lang);
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "gapplyremove":
@@ -251,7 +246,6 @@ class Commandes {
                             msg = Translator.getString(lang, "errors", "guild_have_to_enter_id_to_remove_apply_playerside");
                         }
                     }
-                    message.reply(msg);
                     break;
 
                 case "gappliesremove":
@@ -268,9 +262,6 @@ class Commandes {
                         Guild.deleteUsersAppliances(this.connectedUsers[authorIdentifier].character.id);
                         msg = Translator.getString(lang, "guild", "you_have_cancel_all_your_applies");
                     }
-
-                    message.reply(msg);
-
                     break;
 
                 case "guilds":
@@ -279,7 +270,6 @@ class Commandes {
                         apPage = 1;
                     }
                     msg = Guild.getGuilds(apPage);
-                    message.channel.send(msg);
                     break;
 
                 case "gremove":
@@ -303,8 +293,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_not_in_guild");
                     }
-
-                    message.reply(msg);
                     break;
 
                 case "gmod":
@@ -312,14 +300,19 @@ class Commandes {
                     messageArray[1] = parseInt(messageArray[1], 10);
                     messageArray[2] = parseInt(messageArray[2], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
-                    err = this.connectedGuilds[tGuildId].updateMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], messageArray[2], lang);
+
+                    if (tGuildId > 0) {
+                        uIDGuild = this.connectedGuilds[tGuildId].getIdUserByIdCharacter(messageArray[1]);
+                        err = this.connectedGuilds[tGuildId].updateMember(this.connectedUsers[authorIdentifier].character.id, messageArray[1], messageArray[2], lang);
+                    } else {
+                        err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
+                    }
+                    
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
                         msg = Translator.getString(lang, "guild", "rank_modified");
                     }
-                    message.reply(msg);
                     break;
 
 
@@ -336,25 +329,26 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "guild", "you_have_updated_guild_announcement");
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 case "gaddmoney":
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
-                        if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(messageArray[1])) {
-                            if (!this.connectedGuilds[tGuildId].addMoney(messageArray[1])) {
-                                err.push(Translator.getString(lang, "errors", "guild_cant_give_this_money"));
+                        if (tGuildId > 0) {
+                            if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(messageArray[1])) {
+                                if (!this.connectedGuilds[tGuildId].addMoney(messageArray[1])) {
+                                    err.push(Translator.getString(lang, "errors", "guild_cant_give_this_money"));
+                                } else {
+                                    //Si tout est ok
+                                    this.connectedUsers[authorIdentifier].character.removeMoney(messageArray[1]);
+                                }
                             } else {
-                                //Si tout est ok
-                                this.connectedUsers[authorIdentifier].character.removeMoney(messageArray[1]);
+                                err.push(Translator.getString(lang, "errors", "guild_you_dont_have_enough_money"));
                             }
                         } else {
-                            err.push(Translator.getString(lang, "errors", "guild_you_dont_have_enough_money"));
+                            err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                         }
-
                     } else {
                         err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_amount_money"));
                     }
@@ -364,15 +358,17 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "guild", "you_gift_x_g_to_guild", [messageArray[1]]);
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 case "gremovemoney":
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
-                        err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id, lang);
+                        if (tGuildId > 0) {
+                            err = this.connectedGuilds[tGuildId].removeMoney(messageArray[1], this.connectedUsers[authorIdentifier].character.id, lang);
+                        } else {
+                            err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
+                        }
                     } else {
                         err.push(Translator.getString(lang, "errors", "guild_you_have_to_select_amount_to_retrive"));
                     }
@@ -383,23 +379,22 @@ class Commandes {
                         msg = Translator.getString(lang, "guild", "you_retrive_x_g_from_guild", [messageArray[1]]);
                         this.connectedUsers[authorIdentifier].character.addMoney(messageArray[1]);
                     }
-
-                    message.channel.send(msg);
                     break;
 
 
                 case "glevelup":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id, lang);
-
+                    if (tGuildId > 0) {
+                        err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id, lang);
+                    } else {
+                        err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
+                    }
 
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
                         msg = Translator.getString(lang, "guild", "guild_level_up", [this.connectedGuilds[tGuildId].level]);
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 /*
@@ -407,12 +402,12 @@ class Commandes {
                 */
                 case "grpmute":
                     this.connectedUsers[authorIdentifier].muteGroup(true);
-                    message.channel.send(Translator.getString(lang, "group", "now_muted"));
+                    msg = Translator.getString(lang, "group", "now_muted")
                     break;
 
                 case "grpunmute":
                     this.connectedUsers[authorIdentifier].muteGroup(false);
-                    message.channel.send(Translator.getString(lang, "group", "now_unmuted"));
+                    msg = Translator.getString(lang, "group", "now_unmuted");
                     break;
 
                 case "grpkick":
@@ -440,13 +435,11 @@ class Commandes {
                                 msg = Translator.getString(lang, "errors", "group_occupied");
                             }
                         } else {
-                            Translator.getString(lang, "errors", "group_not_in_group");
+                            msg = Translator.getString(lang, "errors", "group_not_in_group");
                         }
                     } else {
                         msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
                     }
-                    message.channel.send(msg);
-
                     break;
                 
                 case "grpleave":
@@ -460,7 +453,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_not_in_group");
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "grpinvite":
@@ -509,9 +501,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_not_leader");
                     }
-
-                    message.channel.send(msg);
-
                     break;
 
                 case "grpaccept":
@@ -534,7 +523,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_already_in_group");
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "grpdecline":
@@ -549,7 +537,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_already_in_group");
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "grp":
@@ -558,8 +545,40 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "group_not_in_group");
                     }
+                    break;
 
-                    message.channel.send(msg);
+                case "grpfight":
+                    let idEnemyGroup = parseInt(messageArray[1], 10);
+                    if (group != null) {
+                        if (group.leader === this.connectedUsers[authorIdentifier]) {
+                            if (!group.doingSomething) {
+                                if (group.allInSameArea()) {
+                                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                                        if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
+                                            let grpEnemies = [];
+                                            grpEnemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemyGroup);
+                                            this.fightManager._fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
+                                            //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
+                                        } else {
+                                            // Error Message
+                                            msg = Translator.getString(lang, "errors", "fight_enter_id_monster");
+                                        }
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "fight_impossible_in_town");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "group_not_same_area");
+                                }
+
+                            } else {
+                                msg = Translator.getString(lang, "errors", "group_occupied");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_not_leader");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    }
                     break;
 
                 /*
@@ -577,7 +596,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "languages", "list_of_languages") + "\n" + Translator.getAvailableLanguages(lang);
                     }
-                    message.channel.send(msg);
                     break;
 
                 case "giveme":
@@ -594,7 +612,7 @@ class Commandes {
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
-                    message.reply(this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, this.connectedUsers, lang));
+                    msg = this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, this.connectedUsers, lang);
                     break;
 
                 case "active":
@@ -635,8 +653,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                     }
-
-                    message.reply(msg);
                     break;
 
                 case "item":
@@ -661,17 +677,6 @@ class Commandes {
                             msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
                         }
 
-                        /*else {
-                            idItemToSee = this.connectedUsers[authorIdentifier].character.equipement.doIHaveThisItem(idItemToSee);
-                            
-                            if (idItemToSee > 0) {
-                                msg = this.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee);
-                            } else {
-                                msg = "```Vous n'avez pas cet objet```";
-                            }
-
-                        }*/
-
                     } else {
                         idItemToSee = this.getEquipableIDType(messageArray[1]);
                         if (idItemToSee > 0) {
@@ -681,9 +686,6 @@ class Commandes {
                         }
 
                     }
-
-                    message.channel.send(msg);
-
                     break;
 
                 case "inv":
@@ -696,9 +698,6 @@ class Commandes {
                     } else {
                         msg = this.connectedUsers[authorIdentifier].character.inv.toStr(0, lang);
                     }
-
-                    message.channel.send(msg);
-
                     break;
 
                 // Equip more than 1 item once
@@ -724,8 +723,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "item_enter_id_to_equip");
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 case "unequip":
@@ -744,20 +741,18 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "item_you_have_to_choose_type_to_unequip");
                     }
-
-                    message.channel.send(msg);
                     break;
 
                 case "equipList":
                 case "equipment":
-                    message.channel.send("```" + this.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```");
+                    msg = "```" + this.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```";
                     break;
 
                 case "reset":
                     if (this.connectedUsers[authorIdentifier].character.resetStats()) {
-                        message.reply(Translator.getString(lang, "character", "reset_done"));
+                        msg = Translator.getString(lang, "character", "reset_done");
                     } else {
-                        message.reply(Translator.getString(lang, "errors", "character_you_dont_have_enough_to_reset"));
+                        msg = Translator.getString(lang, "errors", "character_you_dont_have_enough_to_reset")
                     }
 
                     break;
@@ -782,9 +777,6 @@ class Commandes {
                     } else {;
                         msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
                     }
-
-
-                    message.channel.send(msg);
                     break;
 
                 case "sellall":
@@ -798,9 +790,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
                     }
-
-                    message.channel.send(msg);
-
                     break;
 
                 case "xp":
@@ -821,13 +810,13 @@ class Commandes {
                                 let plur = diffLevel > 1 ? "x" : "";
                                 str += "<:levelup:403456740139728906> Bravo ! Vous avez gagné : " + diffLevel + " niveau" + plur + ". Vous êtes desormais niveau : " + this.connectedUsers[authorIdentifier].character.getLevel() + " !\n";
                             }
-                            message.reply(str);
+                            msg = str;
                         } else {
-                            message.reply("Vous êtes déjà au niveau maximum !");
+                            msg = "Vous êtes déjà au niveau maximum !";
                         }
 
                     } else {
-                        message.reply(Translator.getString(lang, "admmin", "no_admin_xp_command"));
+                        msg = Translator.getString(lang, "admmin", "no_admin_xp_command");
                     }
 
                     break;
@@ -844,18 +833,17 @@ class Commandes {
                         this.connectedUsers[authorIdentifier].character.addMoney(value);
                         str += "<:treasure:403457812535181313> Vous avez désormais : " + this.connectedUsers[authorIdentifier].character.money + " Argent !";
 
-                        message.reply(str);
+                        msg = str;
                     } else {
-                        message.reply("Vous n'êtes pas administrateur, mais vous avez essayé de tricher, malheureusement, dieu n'est pas gentil et il a décidé de vous punir en " +
-                            "vous rendant pauvre (Vous n'avez desormais plus que 1 Argent).");
+                        msg = "Vous n'êtes pas administrateur, mais vous avez essayé de tricher, malheureusement, dieu n'est pas gentil et il a décidé de vous punir en " +
+                            "vous rendant pauvre (Vous n'avez desormais plus que 1 Argent).";
                     }
-
                     break;
 
                 case "resetfight":
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
                         this.connectedUsers[authorIdentifier].character.canFightAt = 0;
-                        message.channel.send("Reset Done");
+                        msg = "Reset Done";
                         //console.log("reset fight");
                     }
                     break;
@@ -863,9 +851,9 @@ class Commandes {
                 case "nameOf":
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
                         if (this.connectedUsers[messageArray[1]]) {
-                            message.reply(this.connectedUsers[messageArray[1]].character.name);
+                            msg = this.connectedUsers[messageArray[1]].character.name;
                         } else {
-                            message.reply("Non Connecté");
+                            msg = "Non Connecté";
                         }
                     }
                     break;
@@ -907,16 +895,14 @@ class Commandes {
 
                 case "leaderboard":
                     msg = Leaderboard.playerLeaderboardToStr(this.connectedUsers[authorIdentifier].character.id);
-                    message.reply(msg);
                     break;
 
                 case "info":
-                    message.channel.send(this.connectedUsers[authorIdentifier].infoPanel());
-                    //message.channel.send("XP : " + this.connectedUsers[authorIdentifier].character.levelSystem.actualXP + " | Argent : " + this.connectedUsers[authorIdentifier].character.money + " | Level : " + this.connectedUsers[authorIdentifier].character.levelSystem.actualLevel);
+                    msg = this.connectedUsers[authorIdentifier].infoPanel();
                     break;
 
                 case "help":
-                    message.channel.send(this.helpPanel(lang, parseInt(messageArray[1], 10)));
+                    msg = this.helpPanel(lang, parseInt(messageArray[1], 10));
                     break;
 
                 case "fight":
@@ -936,20 +922,19 @@ class Commandes {
 
                         } else {
                             // Error Message
-                            message.channel.send(Translator.getString(lang, "errors", "fight_enter_id_monster"));
+                            msg = Translator.getString(lang, "errors", "fight_enter_id_monster");
                         }
                     } else {
-                        message.reply(Translator.getString(lang, "errors", "fight_impossible_in_town"));
+                        msg = Translator.getString(lang, "errors", "fight_impossible_in_town");
                     }
                     break;
 
                 case "area":
                     msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area, lang);
-                    message.channel.send(msg);
                     break;
 
                 case "areas":
-                    message.channel.send(this.areasManager.seeAllAreas(lang));
+                    msg = this.areasManager.seeAllAreas(lang);
                     break;
 
                 case "travel":
@@ -977,7 +962,6 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                     }
-                    message.channel.send(msg);
                     break;
 
 
@@ -995,7 +979,7 @@ class Commandes {
                                 mId = Leaderboard.idOf(idOtherPlayerCharacter);
                             }
                         } else {
-                            message.channel.send(Translator.getString(lang, "errors", "fight_pvp_choose_enemy"));
+                            msg = Translator.getString(lang, "errors", "fight_pvp_choose_enemy");
                         }
 
                         // Ici on lance le combat si possible
@@ -1003,14 +987,14 @@ class Commandes {
                             if (authorIdentifier !== mId) {
                                 this.fightManager.fightPvP(this.connectedUsers[authorIdentifier], this.connectedUsers[mId], message, lang);
                             } else {
-                                message.channel.send(Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself"));
+                                msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself");
                             }
 
                         } else {
-                            message.channel.send(Translator.getString(lang, "errors", "fight_pvp_not_same_area"));
+                            msg = Translator.getString(lang, "errors", "fight_pvp_not_same_area");
                         }
                     } else {
-                        message.reply(Translator.getString(lang, "errors", "fight_pvp_cant_fight_here"));
+                        msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_here");
                     }
 
                     break;
@@ -1030,18 +1014,16 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "character_attribute_dont_exist");
                     }
-
-                    message.reply(msg);
                     break;
 
                 case "salty":
                     const saltEmoji = this.bot.emojis.find("name", "saltbae");
-                    message.channel.send(`${saltEmoji}`);
+                    msg = `${saltEmoji}`;
                     break;
 
                 case "emojiList" :
                     const emojiList = message.guild.emojis.map(e => e.toString()).join(" ");
-                    message.channel.send(emojiList);
+                    msg = emojiList;
                     break;
 
                 /*case "token":
@@ -1049,6 +1031,10 @@ class Commandes {
                     message.author.send(msg);
                     break;*/
             }
+
+            msg != "" ? message.channel.send(msg).catch((error) => {
+                message.author.send(error.message);
+            }) : null;
         }
 
 
@@ -1093,6 +1079,7 @@ class Commandes {
 
                     "[" + Translator.getString(lang, "help_panel", "fight_title") + "]\n" +
                     "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
+                    "::grpfight <monsterID> : " + Translator.getString(lang, "help_panel", "grpfight") + "\n" +
                     "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
                     "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n" +
 
