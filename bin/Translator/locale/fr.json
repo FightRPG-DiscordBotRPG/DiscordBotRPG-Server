@@ -76,7 +76,8 @@
     "group_cant_invite_more_than" : "Vous ne pouvez pas inviter plus de %d joueurs en même temps",
     "group_user_not_in_your_group" : "L'utilisateur %s n'est ni dans votre groupe, ni dans la liste d'attente pour rejoindre votre groupe",
     "group_user_kick_empty_name" : "Vous devez choisir la personne que vous voulez éjecter",
-    "group_cant_kick_yourself" : "Vous ne pouvez pas vous éjecter du groupe"
+    "group_cant_kick_yourself" : "Vous ne pouvez pas vous éjecter du groupe",
+    "group_not_same_area" : "Tous les membres du groupe doivent se trouver dans la même zone"
 
   },
   "group" : {
@@ -102,11 +103,12 @@
     "player"    : "ID : %d | Nom : %s | Niveau : %d",
     "wild_area" : "%d | %s | Niveaux : %s",
     "city_area" : "%d | %s (Ville) | Niveau : %s",
+    "dungeon_area" : "%d | %s (Donjon) | Niveau : %s",
     "no_description" : "Aucune description pour cette zone",
     "maximum_quality" : "Qualité maximale pour un objet :",
     "you_claimed" : "Vous avez conquis cette zone",
     "owned_by" : "Propriétaire",
-    "monter_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s"
+    "monster_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s"
   },
   "resources" : {
     "wood"  : "Bois",
@@ -215,11 +217,22 @@
      "money_gain" : "Vous gagnez : %d G",
      "xp_gain" : "Vous gagnez : %d XP",
      "nothing_gain" : "Vous ne gagnez rien !",
-     "both_gain" : "Vous gagnez : %d XP et %d G"
+     "both_gain" : "Vous gagnez : %d XP et %d G",
+     "group_drop_item" : "Votre groupe a gagné des objets ! Bravo !",
+     "group_level_up" : "Quelqu'un dans votre groupe à gagné un niveau !",
+     "group_money_gain" : "Votre groupe a gagné : %d G",
+     "group_xp_gain" : "Votre groupe a gagné  : %d XP",
+     "group_nothing_gain" : "Votre groupe n'a rien gagné !",
+     "group_both_gain" : "Votre groupe a gagné : %d XP et %d G",
+     "group_pm_gain" : "Vous avez gagné : %d XP et %d G",
+     "group_pm_gain_other" : "Vous avez aussi gagné des objets : %s",
+     "group_pm_lost_fight" : "Votre groupe a perdu le combat",
+     "group_pm_won_fight" : "Votre groupe a gagné le combat"
    },
    "monsters_types" : {
      "normal" : "Normal",
-     "elite" : "Elite"
+     "elite" : "Elite",
+     "boss" : "Boss"
    },
    "fight_general" : {
      "combat_log" : "Résumé du combat",
@@ -280,7 +293,8 @@
      "reset" : "Te permet de réinitialiser tes caractéristiques",
 
      "fight_title" : "Combats",
-     "fight" : "Permet de tenter d'attaquer le monstre choisi",
+     "fight" : "Permet de tenter d'attaquer le/les monstres choisis",
+     "grpfight" : "Permet d'attaquer avec son groupe le/les montres choisis",
      "arenaMention" : "Permet d'attaquer le joueur mentionné",
      "arena" : "Permet d'attaquer le joueur choisi",
 

@@ -76,7 +76,8 @@
     "group_cant_invite_more_than" : "You can't invite more than %d players at the same time",
     "group_user_not_in_your_group" : "User %s isn't in your group nor in the pending list to join it",
     "group_user_kick_empty_name" : "You must select the user you want to kick out",
-    "group_cant_kick_yourself" : "You can't kick yourself out of the group"
+    "group_cant_kick_yourself" : "You can't kick yourself out of the group",
+    "group_not_same_area" : "Every members of the group have to be in the same area"
 
   },
   "group" : {
@@ -102,11 +103,12 @@
     "player"    : "ID : %d | Name : %s | Level : %d",
     "wild_area" : "%d | %s | Levels : %s",
     "city_area" : "%d | %s (Town) | Level : %s",
+    "dungeon_area" : "%d | %s (Dungeon) | Level : %s",
     "no_description" : "No description available for this area",
     "maximum_quality" : "Maximum quality for an obejct:",
     "you_claimed" : "You've claimed this area",
     "owned_by" : "Owned by",
-    "monter_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s"
+    "monster_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s"
   },
   "resources" : {
     "wood"  : "Wood",
@@ -215,11 +217,22 @@
      "money_gain" : "You won: %d G",
      "xp_gain" : "You won: %d XP",
      "nothing_gain" : "You won nothing!",
-     "both_gain" : "You won: %d XP and %d G"
+     "both_gain" : "You won: %d XP and %d G",
+     "group_drop_item" : "Your group won some items! Congrats!",
+     "group_level_up" : "Someone leveled up in your group! Congrats!",
+     "group_money_gain" : "Your group won: %d G",
+     "group_xp_gain" : "Your group won: %d XP",
+     "group_nothing_gain" : "Your gorup won nothing!",
+     "group_both_gain" : "Your group won: %d XP and %d G",
+     "group_pm_gain" : "You won: %d XP et %d G",
+     "group_pm_gain_other" : "You have also won items: %s",
+     "group_pm_lost_fight" : "Your group lost the fight",
+     "group_pm_won_fight" : "Your group won the fight"
    },
    "monsters_types" : {
      "normal" : "Normal",
-     "elite" : "Elite"
+     "elite" : "Elite",
+     "boss" : "Boss"
    },
    "fight_general" : {
      "combat_log" : "Combat log",
@@ -280,7 +293,8 @@
      "reset" : "Allows you to reset your attributes",
 
      "fight_title" : "Fights",
-     "fight" : "Allows you to try to attack the selected monster",
+     "fight" : "Allows you to try to attack the selected monster/monsters",
+     "grpfight" : "Allow you to try to attack the selected monster/monters with your group",
      "arenaMention" : "Allows you to attack the mentionned player",
      "arena" : "Allows you to attack the selected player",
 
