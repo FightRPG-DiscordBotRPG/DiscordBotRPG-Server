@@ -2,6 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const WildArea = require("./WildArea.js");
 const CityArea = require("./CityArea.js");
+const DungeonArea = require("./DungeonArea");
 const Globals = require("../Globals.js");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
@@ -22,6 +23,9 @@ class AreasManager {
                     break;
                 case "city":
                     this.areas.set(res[i].idArea, new CityArea(res[i].idArea));
+                    break;
+                case "dungeon":
+                    this.areas.set(res[i].idArea, new DungeonArea(res[i].idArea));
                     break;
             }
             
@@ -97,6 +101,9 @@ class AreasManager {
                 case "city":
                     //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
                     str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
+                    break;
+                case "dungeon":
+                    str += Translator.getString(lang, "area", "dungeon_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
                     break;
             }
 
