@@ -36,7 +36,6 @@ class MonstreGroup  {
         this.name = listMonster[indexTo].name;
         this.type = listMonster[indexTo].type;
         this.avglevel = Math.round(this.avglevel / this.numberOfMonsters);
-
     }
 
     getMonstersIDs() {
