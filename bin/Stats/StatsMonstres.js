@@ -19,7 +19,11 @@ class StatsMonstres extends Stats {
         this.id = id;
         let res = conn.query("SELECT DISTINCT value, nom FROM statsmonstres INNER JOIN stats ON statsmonstres.idStat = stats.idStat WHERE idMonstre = " + this.id);
         for (let stat in res) {
-            this[res[stat].nom] = Math.ceil(parseInt(res[stat].value, 10) * difficulty);
+            if (res[stat].nom != "armor") {
+                this[res[stat].nom] = Math.ceil(parseInt(res[stat].value, 10) * difficulty);
+            } else {
+                this[res[stat].nom] = Math.ceil(parseInt(res[stat].value, 10));
+            }
         }
     }
 
