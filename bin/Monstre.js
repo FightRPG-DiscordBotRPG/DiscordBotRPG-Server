@@ -37,11 +37,15 @@ class Monstre extends WorldEntity {
         this.type = res["nom"];
 
         if (this.type == "elite") {
-            bonus = 3;
-            this.luckBonus = 60;
+            bonus = 2;
+            this.luckBonus = 40;
             this.stats.loadStat(this.id, 1.3);
         } else if (this.type == "normal") {
             this.stats.loadStat(this.id, this.difficulty.value);
+        } else if (this.type == "boss") {
+            bonus = 10;
+            this.luckBonus = 120;
+            this.stats.loadStat(this.id, 2);
         }
 
 
