@@ -59,19 +59,23 @@ class FightPvE extends Fight {
 
                 // Add exp and money
                 let xp = 0;
-                let money = (rawMoney / this.entities[0].length) * this.calMultDiffLevel(avgLevelEnemies, actualLevel);
+                let diffLevelEnemy = this.calMultDiffLevel(avgLevelEnemies, actualLevel);
+
+                let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
                 money = Math.round(money);
+                this.summary.goldGained[this.entities[0][i].name] = money;
                 totalMoney += money;
 
                 this.entities[0][i].addMoney(money);
 
                 if (actualLevel < Globals.maxLevel) {
-                    xp = (rawXp / this.entities[0].length) * this.calMultDiffLevel(avgLevelEnemies, actualLevel);
+                    xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
                     xp = Math.round(xp * (1 + this.entities[0][i].getStat("wisdom") / 100));
-
                     totalXp += xp;
-
+                    this.summary.xpGained[this.entities[0][i].name] = xp;
                     this.entities[0][i].addExp(xp);
+                } else {
+                    this.summary.xpGained[this.entities[0][i].name] = 0;
                 }
 
 
@@ -93,6 +97,8 @@ class FightPvE extends Fight {
 
                 // Loot or Not
                 let lootSystem = new LootSystem();
+                /*console.log(this.entities[0][i].name);
+                console.log(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus());*/
                 let loot = lootSystem.loot(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus());
                 let okLoot = lootSystem.isTheLootExistForThisArea(this.entities[0][i].area, loot);
                 if (okLoot) {
