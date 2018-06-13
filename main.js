@@ -43,6 +43,7 @@ Globals.connectedUsers = connectedUsers;
 Globals.connectedGuilds = connectedGuilds;
 Globals.areasManager = new AreasManager();
 Globals.fightManager = new FightManager();
+Globals.discordClient = bot;
 
 var fightManager = Globals.fightManager;
 var ChatReceiver = new Commandes(prefix);
