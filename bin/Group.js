@@ -18,6 +18,15 @@ class Group {
 		this.doingSomething = false;
     }
 
+    allInSameArea() {
+        for (let i in this.players) {
+            if (this.players[i].character.area != this.leader.character.area) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     getArrayOfPlayers() {
         let arrPlayers = [];
         for (let i in this.players) {
@@ -25,6 +34,23 @@ class Group {
         }
         arrPlayers.push(this.leader);
         return arrPlayers;
+    }
+
+    getArrayOfCharacters() {
+        let arrCharacters = [];
+        for (let i in this.players) {
+            arrCharacters.push(this.players[i].character);
+        }
+        arrCharacters.push(this.leader.character);
+        return arrCharacters;
+    }
+
+    getUsersIDsExceptLeader() {
+        let arr = [];
+        for (let i in this.players) {
+            arr.push(this.players[i].id);
+        }
+        return arr;
     }
 
 	invite(player) {
@@ -131,7 +157,7 @@ class Group {
 	playerLeaveBroadcast(player, discordClient) {
 		// Send to leader
         if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username]))
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username]));
         }
 
 
@@ -139,28 +165,28 @@ class Group {
 		for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username]))
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username]));
             }
 		}
 	}
 
 	playerJoinedBroadcast(player, discordClient) {
 		// Send to leader
-        if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username]))
+        if (!this.leader.isGroupMuted()) {;
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username]));
         }
 		// Send to rest of group
 		for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username]))
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username]));
             }
 		}
 	}
 
     playerDeclinedBroadcast(player, discordClient) {
         if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]))
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]));
         }
     }
 
@@ -171,7 +197,7 @@ class Group {
                 discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "you_ve_been_kicked"));
             } else {
                 if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username]))
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username]));
                 }
             }
         }
@@ -208,6 +234,82 @@ class Group {
             ;
 
         return embed;
+    }
+
+    fightEndBoardcast(discordClient, summary) {
+        if (summary.winner == 0) {
+            let str = "";
+
+            //Send to leader
+            if (!this.leader.isGroupMuted()) {
+                str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_won_fight") + "\n";
+                str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_gain", [summary.xpGained[this.leader.username], summary.goldGained[this.leader.username]]) + "\n";
+                let drops = {};
+                for (let i in summary.drops) {
+                    if (summary.drops[i].name == this.leader.username) {
+                        if (drops[summary.drops[i].drop]) {
+                            drops[summary.drops[i].drop].number++;
+                        } else {
+                            drops[summary.drops[i].drop] = { number: 1 };
+                        }
+                    }
+                }
+
+                if (Object.keys(drops).length > 0) {
+                    let dropsStr = "";
+                    for (let i in drops) {
+                        dropsStr += Translator.getString(this.leader.getLang(), "rarities", i) + "(" + drops[i].number + ") ";
+                    }
+                    str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_gain_other", [dropsStr]);
+                }
+
+
+                discordClient.users.get(this.leader.id).send(str);
+            }
+
+            // Send to rest of group
+            for (let user in this.players) {
+                user = this.players[user];
+                if (!user.isGroupMuted()) {
+                    str = "";
+                    str += Translator.getString(user.getLang(), "fight_pve", "group_pm_won_fight") + "\n";
+                    str += Translator.getString(user.getLang(), "fight_pve", "group_pm_gain", [summary.xpGained[user.username], summary.goldGained[user.username]]) + "\n";
+                    let drops = {};
+                    for (let i in summary.drops) {
+                        if (summary.drops[i].name == user.username) {
+                            if (drops[summary.drops[i].drop]) {
+                                drops[summary.drops[i].drop].number++;
+                            } else {
+                                drops[summary.drops[i].drop] = { number: 1 };
+                            }
+                        }
+                    }
+
+                    if (Object.keys(drops).length > 0) {
+                        let dropsStr = "";
+                        for (let i in drops) {
+                            dropsStr += Translator.getString(user.getLang(), "rarities", i) + "(" + drops[i].number + ") ";
+                        }
+                        str += Translator.getString(user.getLang(), "fight_pve", "group_pm_gain_other", [dropsStr]);
+                    }
+
+
+                    discordClient.users.get(user.id).send(str);
+                }
+            }
+        } else {
+            if (!this.leader.isGroupMuted()) {
+                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight", [player.username]));
+            }
+            // Send to rest of group
+            for (let user in this.players) {
+                user = this.players[user];
+                if (!user.isGroupMuted()) {
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight", [player.username]));
+                }
+            }
+        }
+
     }
 
 
