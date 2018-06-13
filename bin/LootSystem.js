@@ -14,11 +14,11 @@ class LootSystem {
         //console.log(chance);
         let rarity = 0;
 
-        let minLeg = 1 - Globals.rarityChances.legendaire * luckModifier;
-        let minEpique = minLeg - Globals.rarityChances.epique * luckModifier;
-        let minSuperieur = minEpique - Globals.rarityChances.superieur * luckModifier;
-        let minRare = minSuperieur - Globals.rarityChances.rare * luckModifier;
-        let minCommun = minRare - Globals.rarityChances.commun * luckModifier;
+        let minLeg = 1 - Globals.rarityChances.legendaire * (luckModifier > 20 ? 20 : luckModifier);
+        let minEpique = minLeg - Globals.rarityChances.epique * (luckModifier > 10 ? 10 : luckModifier);
+        let minSuperieur = minEpique - Globals.rarityChances.superieur * (luckModifier > 5 ? 5 : luckModifier);
+        let minRare = minSuperieur - Globals.rarityChances.rare * (luckModifier > 5 ? 5 : luckModifier);
+        let minCommun = minRare - Globals.rarityChances.commun * (luckModifier > 5 ? 5 : luckModifier);
 
 
 
