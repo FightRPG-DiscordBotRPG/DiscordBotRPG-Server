@@ -299,13 +299,13 @@ class Group {
             }
         } else {
             if (!this.leader.isGroupMuted()) {
-                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight", [player.username]));
+                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight"));
             }
             // Send to rest of group
             for (let user in this.players) {
                 user = this.players[user];
                 if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight", [player.username]));
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight"));
                 }
             }
         }
