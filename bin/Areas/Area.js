@@ -53,7 +53,6 @@ class Area {
 
         res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idArea = ?;", [this.id]);
         //res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
-
         let arrOfMonstersGroup = {};
         for (let i in res) {
             let monsterLight = {
@@ -101,7 +100,7 @@ class Area {
             //str += Translator.getString(lang, "area", "monster", [i, this.monsters[i]["name"], this.monsters[i]["avglevel"], this.monsters[i]["type"]]) + "\n\n";
             if (this.monsters[i].numberOfMonsters > 1) {
                 //str += "Groupe de " + this.monsters[i].numberOfMonsters + " montres" + "\n\n";
-                str += Translator.getString(lang, "area", "monter_group", [i, this.monsters[i].name, this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].name, this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
             } else {
                 str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].name, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
             }
