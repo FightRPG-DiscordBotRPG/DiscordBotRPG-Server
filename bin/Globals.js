@@ -35,11 +35,11 @@ for (let i in res) {
 
 
 let rarityChances = {
-    commun: 17 / 100,
-    rare: 8 / 100,
-    superieur: 5 / 100,
-    epique: 1 / 100,
-    legendaire: 0.1 / 100,
+    commun: 15 / 100,
+    rare: 10 / 100,
+    superieur: 4 / 100,
+    epique: 0.5 / 100,
+    legendaire: 0.2 / 100,
 }
 
 var Globals = {
