@@ -20,7 +20,8 @@ class FightManager {
         this.fights[userid].text[2] = text;
     }
 
-    
+
+    // Deprecated
     calMultDiffLevel(lv1, lv2) {
         let diff = lv1 - lv2;
         let mult = 1;
@@ -58,13 +59,29 @@ class FightManager {
         return arr;
     }
 
+    _fightAlreadyInBattle(userid) {
+        let user = Globals.connectedUsers[userid];
+        if (user.character.group != null) {
+            let plrs = user.character.group.getArrayOfPlayers();
+            for (let i of plrs) {
+                if (this.fights[plrs.id] !== undefined) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return this.fights[userid] !== undefined;
+        }
+    }
+
     _fightPvE(users, monsters, message, canIFightTheMonster, lang) {
         let time = Date.now();
         let userid = message.author.id;
-        let alreadyInBattle = this.fights[userid] !== undefined;
+        let alreadyInBattle = users.length > 1 ? this._fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
         let timeToFight = this._timeToFight(users);
         if (timeToFight < 0 && !alreadyInBattle) {
             let enemies = this._loadMonsters(monsters);
+
             this.fights[message.author.id] = {
                 text: ["", "", ""],
                 fight: new FightPvE(users, enemies),
@@ -72,24 +89,31 @@ class FightManager {
                 rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
                 summaryIndex: 0,
             };
+            if (users.length > 1 && Globals.connectedUsers[userid].character.group != null) {
+                Globals.connectedUsers[userid].character.group.doingSomething = true;
+                let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
+                for (let i of fenters) {
+                    this.fights[fenters] = this.fights[message.author.id];
+                }
+            }
             if (!canIFightTheMonster) {
-                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster"));
+                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => message.author.send(e.message));
                 this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [users[0].name, enemies[0].name]) + "\n\n";
             } else {
                 this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [users[0].name, enemies[0].name]) + "\n\n";
             }
             //console.log("Fight Initialized");
             message.channel.send(this._embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
-                .then(msg => this._discordFightPvE(msg, userid, lang));
+                .then(msg => this._discordFightPvE(msg, userid, lang)).catch(e => message.author.send(e.message));
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize Fight : Already in battle");
-                message.reply(Translator.getString(lang, "errors", "fight_already_in"));
+                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message));
             } else if (timeToFight >= 0) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.reply(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)]));
+                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)])).catch(e => message.author.send(e.message));
             }
 
         }
@@ -190,6 +214,23 @@ class FightManager {
                 } else {
                     // TODO For more people participating
                     //this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + rarityName + ") ! Bravo !\n\n", userid);
+                    if (summary.drops.length > 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_drop_item") + "\n\n", userid);
+                    }
+                    if (summary.levelUpped.length > 0) {
+                        this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "group_level_up") + "\n", userid);
+                    }
+
+                    if (summary.xp === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_money_gain", [summary.money]) + "\n", userid);
+                    } else if (summary.money === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_xp_gain", [summary.xp]) + "\n", userid);
+                    } else if (summary.xp === 0 && summary.money === 0) {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_nothing_gain", [summary.xp]) + "\n", userid);
+                    } else {
+                        this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_both_gain", [summary.xp, summary.money]) + "\n", userid);
+                    }
+
                 }
             } else {
                 this.swapArrayIndexes("<:loose:403153660756099073> " + Translator.getString(lang, "fight_general", "loose") + "\n", userid);
@@ -204,7 +245,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color, lang)).then(this._deleteFight(userid)).catch(this._deleteFight(userid));
+            message.edit(this._embedPvE(userid, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], color, lang)).then(this._deleteFight(userid)).catch(() => {this._deleteFight(userid)});
 
         }
 
@@ -213,6 +254,14 @@ class FightManager {
     }
 
     _deleteFight(userid) {
+        if (this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid].character.group != null) {
+            Globals.connectedUsers[userid].character.group.fightEndBoardcast(Globals.discordClient, this.fights[userid].fight.summary);
+            Globals.connectedUsers[userid].character.group.doingSomething = false;
+            let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
+            for (let i of fenters) {
+                delete this.fights[fenters];
+            }
+        }
         delete this.fights[userid];
     }
 
@@ -449,10 +498,12 @@ class FightManager {
         }
 
 
-        if (summary.rounds[ind].monsterType == "normal") {
-            monsterTitle = summary.rounds[ind].monsterDifficultyName + " ";
-        } else {
+        if (summary.rounds[ind].monsterType == "elite") {
             monsterTitle = "<:elite:406090076511141888>";
+        } else if (summary.rounds[ind].monsterType == "boss") {
+            monsterTitle = "<:boss:456113364687388683>";
+        } else {
+            monsterTitle = summary.rounds[ind].monsterDifficultyName + " ";
         }
 
 
@@ -516,19 +567,19 @@ class FightManager {
                 message.channel.send(this.embedPvP(attacker, defender, this.fights[attacker.id].text[0] + this.fights[attacker.id].text[1] + this.fights[attacker.id].text[2]))
                     .then(
                     msg => this.fightPvPUpdate(msg, attacker.id)
-                    );
+                ).catch(e => message.author.send(e.message));
             } else {
-                message.reply(Translator.getString(lang, "errors", "fight_pvp_not_same_area"));
+                message.channel.send(Translator.getString(lang, "errors", "fight_pvp_not_same_area")).catch(e => message.author.send(e.message));
             }
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize PvP Fight : Already in battle");
-                message.reply(Translator.getString(lang, "errors", "fight_already_in"));
+                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message));
             } else if (!timeToFight) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.reply(Translator.getString(lang, "errors", "generic_tired", [Math.round((attacker.character.canFightAt - time) / 1000)]));
+                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.round((attacker.character.canFightAt - time) / 1000)])).catch(e => message.author.send(e.message));
             }
 
         }
