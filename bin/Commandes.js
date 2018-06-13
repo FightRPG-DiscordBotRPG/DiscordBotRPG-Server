@@ -557,6 +557,9 @@ class Commandes {
                                         if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
                                             let grpEnemies = [];
                                             grpEnemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemyGroup);
+                                            if (grpEnemies == null) {
+                                                grpEnemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemyGroup);
+                                            }
                                             this.fightManager._fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
                                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
                                         } else {
