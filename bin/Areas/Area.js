@@ -13,14 +13,16 @@ class Area {
         this.image = "";
         this.levels = "";
         this.areaType = "";
-        this.nbrPlayers = 0;
+        //this.nbrPlayers = 0;
         this.owner = 0;
         this.fightPossible = false;
         this.resources = [];
         this.monsters = [];
+        this.characters = [];
         this.maxItemRarity = "";
         this.timeBeforeNextClaim = 0;
         this.loadArea(id);
+        this.players = [];
 
     }
 
@@ -91,6 +93,18 @@ class Area {
             this.maxItemRarity = res[0]["nomRarity"];
         }
         
+    }
+
+    addOnePlayer(character) {
+        this.players.push(character);
+        this.players.sort((a, b) => b.getLevel() - a.getLevel());
+        //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
+    }
+
+    removeOnePlayer(character) {
+        this.players.slice(1, this.players.indexOf(character));
+        this.players.sort((a, b) => b.getLevel() - a.getLevel());
+        //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
     }
 
     getMonsters(lang) {
@@ -171,29 +185,40 @@ class Area {
     // TODO Change way it works, right now it's not working as intended
     getPlayers(page, connectedUsers, lang) {
         page = page;
+        let perPage = 10;
         let str = "```";
         str += Translator.getString(lang, "area", "list_of_players_in_area", [this.name]) + "\n\n";
-        let maxPage = Math.ceil(this.nbrPlayers/10);
+        let maxPage = Math.ceil(this.players.length/perPage);
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = conn.query("SELECT users.idUser FROM users " +
+        let indexPage = (page - 1) * perPage;
+        if (this.players.length > indexPage) {
+            for (let i = indexPage; i < ((indexPage + perPage) < this.players.length ? (indexPage + perPage) : this.players.length); i++) {
+                let cha = this.players[i];
+                str += Translator.getString(lang, "area", "player", [cha.id, cha.name, cha.getLevel()]) + "\n\n";
+            }
+        } else {
+            str += Translator.getString(lang, "general", "nothing_at_this_page");
+        }
+
+        /*let res = conn.query("SELECT users.idUser FROM users " +
             "INNER JOIN characters ON characters.idCharacter = users.idCharacter " +
-            "WHERE characters.idArea = " + this.id + " ORDER BY users.userName ASC LIMIT 10 OFFSET " + ((page - 1) * 10));
+            "WHERE characters.idArea = " + this.id + " ORDER BY users.userName ASC LIMIT " + perPage + " OFFSET " + ((page - 1) * perPage));
 
         if (res[0]) {
             for (let i in res) {
                 if (connectedUsers[res[i].idUser]) {
-                    /*str += "ID : " + connectedUsers[res[i].idUser].character.id + " | "
+                    str += "ID : " + connectedUsers[res[i].idUser].character.id + " | "
                         + "Nom : " + connectedUsers[res[i].idUser].username + " | "
-                        + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n"; */
+                        + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n";
                     str += Translator.getString(lang, "area", "player", [connectedUsers[res[i].idUser].character.id, connectedUsers[res[i].idUser].username, connectedUsers[res[i].idUser].character.getLevel()]) + "\n\n";
                 }
 
             }
         } else {
             str += Translator.getString(lang, "general", "nothing_at_this_page");
-        }
+        }*/
         str += "\n"+ Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
         str += "```";
         return str;
@@ -256,7 +281,7 @@ class Area {
             name: this.name,
             image: this.image,
             levels: this.levels,
-            nbrPlayers: this.nbrPlayers,
+            nbrPlayers: this.players.length,
         }
     }
 

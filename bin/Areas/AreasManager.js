@@ -66,12 +66,12 @@ class AreasManager {
         return this.areas.get(idArea).toStr(lang);
     }
 
-    addOnePlayer(idArea) {
-        this.areas.get(idArea).nbrPlayers++;
+    addOnePlayer(idArea, character) {
+        this.areas.get(idArea).addOnePlayer(character);
     }
 
-    removeOnePlayer(idArea) {
-        this.areas.get(idArea).nbrPlayers--;
+    removeOnePlayer(idArea, character) {
+        this.areas.get(idArea).removeOnePlayer(character);
     }
 
     seeAllAreas(lang) {
@@ -131,9 +131,10 @@ class AreasManager {
     }
 
     // Update nbr players when a player travel to another location
-    updateTravel(from, to) {
-        this.areas.get(from).nbrPlayers -= 1;
-        this.areas.get(to).nbrPlayers += 1;
+    updateTravel(character, toArea) {
+
+        this.areas.get(character.area).removeOnePlayer(character);
+        this.areas.get(toArea).addOnePlayer(character);
     }
 
     // Single Getters for an area
