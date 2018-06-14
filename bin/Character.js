@@ -168,6 +168,10 @@ class Character extends WorldEntity {
         return 0;
     }
 
+    getPower() {
+        return this.equipement.getPower();
+    }
+
     updateStats() {
         // Partie equipement
         // TODO
@@ -249,7 +253,8 @@ class Character extends WorldEntity {
     }
 
     getResetStatsValue() {
-        return Math.round(((this.getLevel() - 1) * Globals.resetStatsPricePerLevel));
+        let levelMult = this.getLevel() > 2 ? this.getLevel() : 0;
+        return Math.round(((levelMult) * Globals.resetStatsPricePerLevel));
     }
 
     addExp(exp) {
@@ -359,7 +364,7 @@ class Character extends WorldEntity {
     }
 
     toStrSimple() {
-        return this.name + " | " + this.getLevel() + " | " + "254";
+        return this.name + " | " + this.getLevel() + " | " + this.getPower() + "%";
     }
 
 
