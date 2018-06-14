@@ -46,7 +46,6 @@ class Item {
         this.typeName = res["nomType"];
 
         this.equipable = res["equipable"];
-        
     }
 
     deleteItem() {
@@ -54,8 +53,23 @@ class Item {
         conn.query("DELETE FROM items WHERE idItem = " + this.id + ";");
     }
 
+    getPower() {
+        let statsPossible = Object.keys(Globals.statsIds);
+        let power = 0;
+        for (let i of statsPossible) {
+            let statPower = 0;
+            if (i != "armor") {
+                statPower = this.stats[i] / (Globals.maxLevel * 2);
+            } else {
+                statPower = this.stats[i] / Math.ceil((8 * (Math.pow(Globals.maxLevel, 2)) / 7) / 4.5);
+            }
+            power += statPower;
+        }
+        return Math.round(power / 5 * 100);
+    }
+
     toStr(lang) {
-        return this.name + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity);
+        return this.name + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
 
         // OLD WAY - beautiful but not readable on mobile
         /*let str = "";

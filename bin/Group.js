@@ -74,6 +74,24 @@ class Group {
         return Object.keys(this.pendingPlayers).length > 5;
     }
 
+    getAverageLevel() {
+        let avgLevel = this.leader.character.getLevel();
+        for (let user in this.players) {
+            user = this.players[user].character;
+            avgLevel += user.getLevel();
+        }
+        return Math.round(avgLevel / this.nbOfPlayers());
+    }
+
+    getAveragePower() {
+        let avgPower = this.leader.character.getPower();
+        for (let user in this.players) {
+            user = this.players[user].character;
+            avgPower += user.getPower();
+        }
+        return Math.round(avgPower / this.nbOfPlayers());
+    }
+
     exist() {
         if (this.players == null || this.leader == null) {
             return false;
@@ -219,7 +237,7 @@ class Group {
                 invitedPlayers += "+ " + user.character.toStrSimple() + "\n";
             }
         } else {
-            invitedPlayers += "- Personne n'a été invité à rejoindre votre groupe";
+            invitedPlayers += "- " + Translator.getString(lang, "group", "nobody_was_invited");
         }
 
         invitedPlayers += "```";
@@ -228,9 +246,9 @@ class Group {
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 127, 255])
-            .setAuthor("Groupe | Level moyen : 20 | iLvl moyen : 199", "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
-            .addField("Membres du groupe (" + this.nbOfPlayers() + " / 5)", membersOfGroup)
-            .addField("Utilisateurs invités (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers)
+            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [this.getAverageLevel()]) + " | " + Translator.getString(lang,"group","avg_power", [this.getAveragePower()]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
+            .addField(Translator.getString(lang, "group", "members_of_the_group") + " (" + this.nbOfPlayers() + " / 5)", membersOfGroup)
+            .addField(Translator.getString(lang, "group", "invited_users") + " (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers)
             ;
 
         return embed;

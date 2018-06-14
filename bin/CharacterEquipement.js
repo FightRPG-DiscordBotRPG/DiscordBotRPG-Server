@@ -40,7 +40,8 @@ class CharacterEquipement {
             embed = new Discord.RichEmbed()
                 .setAuthor(this.objects[type].name, Globals.addr + "images/items/" + this.objects[type].image + ".png")
                 .setColor(this.objects[type].rarityColor)
-                .addField(Translator.getString(lang, "item_types", this.objects[type].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[type].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[type].level + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", this.objects[type].desc != "" ? this.objects[type].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                .addField(Translator.getString(lang, "item_types", this.objects[type].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[type].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[type].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[type].getPower() + "%" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")"
+                , this.objects[type].desc != "" ? this.objects[type].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
                 .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[type].stats.toStr({}, lang));
         } else {
             embed = "``` " + Translator.getString(lang, "inventory_equipment", "nothing_in_this_slot") + " ```";
@@ -62,6 +63,14 @@ class CharacterEquipement {
         }
 
 
+    }
+
+    getPower() {
+        let avgPower = 0;
+        for (let i in this.objects) {
+            avgPower += this.objects[i].getPower();
+        }
+        return Math.round(avgPower / Globals.equipsPossible.length);
     }
 
     // -1 Pas Swap
@@ -134,7 +143,8 @@ class CharacterEquipement {
         str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "rarity") + "\n\n";
+        str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
         let empty = true;
         let count = 0;
         for (let i in this.objects) {

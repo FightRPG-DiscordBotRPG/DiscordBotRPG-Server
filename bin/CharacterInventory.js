@@ -128,7 +128,8 @@ class CharacterInventory {
         str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "rarity") + "\n\n";
+        str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
+        str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
 
         let keys = Object.keys(this.objects);
         if (keys.length > 0) {
@@ -166,7 +167,8 @@ class CharacterInventory {
         let embed = new Discord.RichEmbed()
             .setAuthor(this.objects[idEmplacement].name, Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
-            .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level, this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[idEmplacement].getPower() + "%"
+            , this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang))
         return embed;
     }
