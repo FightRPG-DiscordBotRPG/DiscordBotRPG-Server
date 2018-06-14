@@ -102,7 +102,7 @@ class Area {
     }
 
     removeOnePlayer(character) {
-        this.players.slice(1, this.players.indexOf(character));
+        this.players = this.players.slice(1, this.players.indexOf(character));
         this.players.sort((a, b) => b.getLevel() - a.getLevel());
         //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
     }
