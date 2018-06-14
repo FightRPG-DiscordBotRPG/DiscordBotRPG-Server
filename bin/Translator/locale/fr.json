@@ -95,7 +95,13 @@
     "now_unmuted" : "Les notifications en rapport avec le groupe sont maintenant activées",
     "user_kicked" : "L'utilisateur %s a été éjecté du groupe",
     "invite_cancel" : "L'invitation à rejoindre le groupe pour l'utilisateur %s a été annulée",
-    "you_ve_been_kicked" : "Vous avez été éjecté du groupe"
+    "you_ve_been_kicked" : "Vous avez été éjecté du groupe",
+    "nobody_was_invited" : "Personne n'a été invité à rejoindre votre groupe",
+    "group" : "Groupe",
+    "avg_level" : "Level moyen : %d",
+    "avg_power" : "Puissance Moyenne : %d%",
+    "members_of_the_group" : "Membres du groupe",
+    "invited_users" : "Utilisateurs invités"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Niv : %d | Type : %s",
@@ -188,7 +194,8 @@
     "currently_equipped" : "Actuellement Equipé",
     "attributes" : "Attributs",
     "nothing_in_this_slot" : "Vous n'avez pas d'objet équipé dans cet emplacement",
-    "nothing_equipped" : "Vous n'avez pas d'objets d'équipé"
+    "nothing_equipped" : "Vous n'avez pas d'objets d'équipé",
+    "power" : "Puissance"
   },
   "character" : {
     "reset_done" : "Réinitialisation terminée !",

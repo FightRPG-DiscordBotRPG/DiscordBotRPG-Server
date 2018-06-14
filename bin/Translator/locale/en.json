@@ -95,7 +95,13 @@
     "now_unmuted" : "Group notifications are now activated",
     "user_kicked" : "User %s was kicked out of the group",
     "invite_cancel" : "The group invitation to user %s was cancelled",
-    "you_ve_been_kicked" : "You have been kicked out of the group"
+    "you_ve_been_kicked" : "You have been kicked out of the group",
+    "nobody_was_invited" : "Nobody was invited to join your group",
+    "group" : "Group",
+    "avg_level" : "Average Level : %d",
+    "avg_power" : "Average Power : %d%",
+    "members_of_the_group" : "Members of the group",
+    "invited_users" : "Invited users"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
@@ -188,7 +194,8 @@
     "currently_equipped" : "Currently Equipped",
     "attributes" : "Attributes",
     "nothing_in_this_slot" : "You don't have any equipped item in this slot",
-    "nothing_equipped" : "You don't have any equipped item"
+    "nothing_equipped" : "You don't have any equipped item",
+    "power" : "Power"
   },
   "character" : {
     "reset_done" : "Reset done!",
