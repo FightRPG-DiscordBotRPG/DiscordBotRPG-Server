@@ -712,12 +712,17 @@ class Commandes {
                     if (toEquip !== undefined && Number.isInteger(toEquip)) {
                         if (this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(toEquip)) {
                             if (this.connectedUsers[authorIdentifier].character.inv.isEquipable(toEquip)) {
-                                let swapItem = this.connectedUsers[authorIdentifier].character.equipement.equip(this.connectedUsers[authorIdentifier].character.inv.objects[toEquip].id);
-                                this.connectedUsers[authorIdentifier].character.inv.deleteFromInventory(toEquip);
-                                if (swapItem > 0) {
-                                    this.connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
+                                if (this.connectedUsers[authorIdentifier].character.getLevel() >= this.connectedUsers[authorIdentifier].character.inv.objects[toEquip].level) {
+                                    let swapItem = this.connectedUsers[authorIdentifier].character.equipement.equip(this.connectedUsers[authorIdentifier].character.inv.objects[toEquip].id);
+                                    this.connectedUsers[authorIdentifier].character.inv.deleteFromInventory(toEquip);
+                                    if (swapItem > 0) {
+                                        this.connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
+                                    }
+                                    msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [this.connectedUsers[authorIdentifier].character.inv.objects[toEquip].level]);
                                 }
-                                msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
+
                             } else {
                                 msg = Translator.getString(lang, "errors", "item_you_cant_equip");
                             }
