@@ -53,7 +53,7 @@ class Commandes {
                  
                 this.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
 
-                this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.area);
+                this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character);
 
                 this.nbrConnectedUsers++;
 
@@ -415,14 +415,15 @@ class Commandes {
                         if (group != null) {
                             if (!group.doingSomething) {
                                 if (group.leader == this.connectedUsers[authorIdentifier]) {
-                                    if (messageArray[1] != this.connectedUsers[authorIdentifier].username) {
-                                        if (group.kick(messageArray[1], message.client)) {
-                                            msg = Translator.getString(lang, "group", "user_kicked", [messageArray[1]]);
+                                    let grptokick = message.content.split(this.prefix + "grpkick ")[1];
+                                    if (grptokick != this.connectedUsers[authorIdentifier].username) {
+                                        if (group.kick(grptokick, message.client)) {
+                                            msg = Translator.getString(lang, "group", "user_kicked", [grptokick]);
                                         } else {
-                                            if (group.cancelInvite(messageArray[1])) {
-                                                msg = Translator.getString(lang, "group", "invite_cancel", [messageArray[1]]);
+                                            if (group.cancelInvite(grptokick)) {
+                                                msg = Translator.getString(lang, "group", "invite_cancel", [grptokick]);
                                             } else {
-                                                msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [messageArray[1]]);
+                                                msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [grptokick]);
                                             }
                                         }
                                     } else {
@@ -949,7 +950,7 @@ class Commandes {
                             } else {
 
                                 // Update le compte de joueurs
-                                this.areasManager.updateTravel(this.connectedUsers[authorIdentifier].character.area, wantedAreaToTravel);
+                                this.areasManager.updateTravel(this.connectedUsers[authorIdentifier].character, wantedAreaToTravel);
 
                                 // change de zone
                                 this.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel);
