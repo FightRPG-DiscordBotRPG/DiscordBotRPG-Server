@@ -46,6 +46,10 @@ class AreasManager {
         return false;
     }
 
+    getService(idArea, serviceName) {
+        return this.areas.get(idArea).getService(serviceName);
+    }
+
     // idEnemy doit être valide !!
     selectRandomMonsterIn(idArea, idEnemy) {
         /*let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND NOT idMonstre = " + idEnemy + " ORDER BY RAND() LIMIT 1;");
@@ -167,6 +171,10 @@ class AreasManager {
                 this.areas.get(key).unclaim();
             }
         }
+    }
+
+    haveOwner(idArea) {
+        return this.areas.get(idArea).haveOwner();
     }
 
 
