@@ -1,6 +1,6 @@
 ﻿'use strict';
 const conn = require("../conf/mysql.js");
-const ItemsStats = require("./Stats/StatsItems.js");
+const StatsItems = require("./Stats/StatsItems.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
 
@@ -20,7 +20,7 @@ class Item {
         this.type = 0;
         this.typeName = "";
         this.equipable = true;
-        this.stats = new ItemsStats(id);
+        this.stats = new StatsItems(id);
         this.number = 1;
 
         // Functions0
@@ -145,7 +145,6 @@ class Item {
         };
         return toApiObject;
     }
-
 
 }
 
