@@ -35,6 +35,7 @@ class Commandes {
         let firstMention;
         let err = [];
         let apPage;
+        let nb;
 
         if (command !== undefined && !message.author.bot && message.content.startsWith(this.prefix)) {
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
@@ -79,10 +80,79 @@ class Commandes {
             let group = this.connectedUsers[authorIdentifier].character.group;
             let lang = this.connectedUsers[authorIdentifier].getLang();
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
+            let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "marketplace");
             //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
 
             // Detect Commands
             switch (command) {
+                /*
+                *   Marketplace
+                */
+
+                case "showmyorders":
+                    if (marketplace != null) {
+                        msg = marketplace.showCharacterOrders(this.connectedUsers[authorIdentifier].character.id, 1, lang);
+                    } else {
+                        msg = Translator.getString(lang, "errors", "marketplace_not_exist");
+                    }
+                    break;
+
+                case "placeorder":
+                    let toPlaceIdItem = parseInt(messageArray[1], 10);
+                    let nbOfItemsToPlace = parseInt(messageArray[2], 10);
+                    let priceToPlace = parseInt(messageArray[3], 10);
+                    // si endroit dispose d'un marché
+                    if (marketplace != null) {
+                        // si param ok
+                        if (toPlaceIdItem != null & Number.isInteger(toPlaceIdItem)) {
+                            // si il a l'objet
+                            if (this.connectedUsers[authorIdentifier].character.haveThisObject(toPlaceIdItem)) {
+                                // si param ok
+                                if (priceToPlace != null && Number.isInteger(priceToPlace)) {
+                                    priceToPlace = priceToPlace < 0 ? -priceToPlace : priceToPlace;
+                                    // si param nb of items
+                                    if (nbOfItemsToPlace != null && Number.isInteger(nbOfItemsToPlace) && nbOfItemsToPlace >= 1) {
+                                        // si il a le nb of item 
+                                        // nb = amount of player items
+                                        nb = this.connectedUsers[authorIdentifier].character.getAmountOfThisItem(toPlaceIdItem);
+                                        if (nb >= nbOfItemsToPlace) {
+                                            if (this.areasManager.haveOwner(this.connectedUsers[authorIdentifier].character.area)) {
+                                                if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(priceToPlace * marketplace.getTax())) {
+                                                    // enlever la taxe
+                                                    this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
+                                                    msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                                } else {
+                                                    msg = Translator.getString(lang, "errors", "marketplace_not_enough_to_pay_tax");
+                                                }
+                                            } else {
+                                                this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
+                                                msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                            }
+
+                                        } else {
+                                            msg =Translator.getString(lang, "errors", "marketplace_not_this_number_of_item");
+                                        }
+                                    } else {
+                                        msg =Translator.getString(lang, "errors", "marketplace_nb_of_item_not_ok");
+                                    }
+                                } else {
+                                    msg =Translator.getString(lang, "errors", "marketplace_price_forgotten");
+                                }
+
+                            } else {
+                                msg = Translator.getString(lang, "errors", "marketplace_dont_have_object");
+                            }
+
+                        } else {
+                            msg = Translator.getString(lang, "errors", "marketplace_id_item_forgotten");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "marketplace_not_exist");
+                    }
+                    break;
+               
+
+
                 /*
                 *   CONQUEST
                 */

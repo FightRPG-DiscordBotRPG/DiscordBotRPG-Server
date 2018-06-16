@@ -3,11 +3,17 @@ const conn = require("../../conf/mysql.js");
 const Area = require("./Area");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
+const Marketplace = require("../Marketplace/Marketplace");
 
 class CityArea extends Area {
 
     constructor(id) {
         super(id, id);
+        this.services = {
+            "marketplace": new Marketplace()
+        }
+
+        this.services.marketplace.loadMakerplace(this.id);
     }
 
     toStr(lang) {
@@ -22,5 +28,7 @@ class CityArea extends Area {
 
 
 }
+
+
 
 module.exports = CityArea;

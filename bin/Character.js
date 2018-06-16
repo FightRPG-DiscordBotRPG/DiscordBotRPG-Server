@@ -6,6 +6,8 @@ const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
 const CharacterEquipement = require("./CharacterEquipement.js");
 const WorldEntity = require("./WorldEntity.js");
+const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
+const Item = require("./Item");
 
 class Character extends WorldEntity {
 
@@ -316,6 +318,27 @@ class Character extends WorldEntity {
         return value;
     }
 
+    sellToMarketplace(marketplace, idEmplacement, nbr, price) {
+        let doIHavetoCreateANewItem = this.inv.objects[idEmplacement].number > nbr;
+        let order;
+        let idItem;
+        if (this.getAmountOfThisItem(idEmplacement) > nbr) {
+            // Je doit créer un nouvel item
+            let item = this.inv.getItem(idEmplacement);
+            idItem = Item.createNew(item.id, item.level);
+        } else {
+            // Là je n'en ai pas besoin puisque c'est le même nombre
+            idItem = this.inv.getIdItemOfThisEmplacement(idEmplacement);
+        }
+
+        this.inv.removeSomeFromInventory(idEmplacement, nbr, false);
+        order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
+        order.place();
+
+        console.log(order);
+
+    }
+
     // More = time in ms
     waitForNextFight(more = 0) {
         let baseTimeToWait = (Globals.basicWaitTimeBeforeFight - Math.floor(this.stats.constitution / 20)) * 1000;
@@ -340,6 +363,10 @@ class Character extends WorldEntity {
 
     haveThisObject(itemId) {
         return this.inv.doIHaveThisItem(itemId);
+    }
+
+    getAmountOfThisItem(idEmplacement) {
+        return this.inv.getItem(idEmplacement).number;
     }
 
     getIdOfThisIdBase(idBaseItem) {

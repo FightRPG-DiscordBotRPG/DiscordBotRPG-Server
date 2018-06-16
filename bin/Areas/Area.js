@@ -23,6 +23,7 @@ class Area {
         this.timeBeforeNextClaim = 0;
         this.loadArea(id);
         this.players = [];
+        this.services = {};
 
     }
 
@@ -182,7 +183,6 @@ class Area {
         return this.maxItemRarity;
     }
 
-    // TODO Change way it works, right now it's not working as intended
     getPlayers(page, connectedUsers, lang) {
         page = page;
         let perPage = 10;
@@ -233,6 +233,11 @@ class Area {
         return this.fightPossible;
     }
 
+    /* Services */
+    getService(serviceName) {
+        return this.services[serviceName];
+    }
+
     /**
      * Return owner name if exist or "None";
      */
@@ -241,6 +246,10 @@ class Area {
             return conn.query("SELECT nom FROM guilds WHERE idGuild = " + this.owner)[0].nom;
         }
         return Translator.getString(lang, "general", "nobody");
+    }
+
+    haveOwner() {
+        return this.owner > 0;
     }
 
     saveOwner() {
