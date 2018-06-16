@@ -47,7 +47,6 @@ Globals.discordClient = bot;
 
 var fightManager = Globals.fightManager;
 var ChatReceiver = new Commandes(prefix);
-var areasManager = new AreasManager();
 
 
 
