@@ -202,7 +202,6 @@ class Fight {
             return mult < 0 ? 0 : mult;
         } else if (diff > 0) {
             mult = mult + 0.25 * diff;
-            mult = mult <= 1.5 ? mult : 1.5;
             return mult < 0 ? 0 : mult;
         }
         return 1;
