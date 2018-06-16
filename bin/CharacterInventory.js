@@ -34,6 +34,10 @@ class CharacterInventory {
         return false;
     }
 
+    getItem(idEmplacement) {
+        return this.objects[idEmplacement];
+    }
+
     addToInventory(idItem, number) {
         number = number ? number : 1;
         let idEmplacement = this.getIdEmplacementOfItem(idItem);
@@ -209,6 +213,10 @@ class CharacterInventory {
             }
         }
         return null;
+    }
+
+    getIdItemOfThisEmplacement(idEmplacement) {
+        return this.objects[idEmplacement] ? this.objects[idEmplacement].id : -1;
     }
 
     /*
