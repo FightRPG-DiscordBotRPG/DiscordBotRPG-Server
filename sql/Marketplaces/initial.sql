@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`MarketplacesOrders` (
   `idItem` INT(10) UNSIGNED NOT NULL,
   `idCharacter` INT(10) UNSIGNED NOT NULL,
   `number` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-  `price` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+  `price` BIGINT(19) UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY (`idMarketplace`, `idItem`, `idCharacter`),
   INDEX `fk_MarketplacesOrders_Items1_idx` (`idItem` ASC),
   INDEX `fk_MarketplacesOrders_Characters1_idx` (`idCharacter` ASC),
@@ -65,3 +65,45 @@ FROM areas
 INNER JOIN areastypes
 ON areas.idAreaType = areastypes.idAreaType
 WHERE areastypes.NomAreaType = "city"
+
+-- MySQL Workbench Synchronization
+-- Generated: 2018-06-17 13:31
+-- Model: New Model
+-- Version: 1.0
+-- Project: Name of the project
+-- Author: Roncarlos
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+ALTER TABLE `discord_bot_rpg`.`Characters`
+CHANGE COLUMN `money` `money` BIGINT(19) UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`Guilds`
+CHANGE COLUMN `argent` `argent` BIGINT(19) UNSIGNED NOT NULL DEFAULT 0 ;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- MySQL Workbench Synchronization
+-- Generated: 2018-06-17 15:55
+-- Model: New Model
+-- Version: 1.0
+-- Project: Name of the project
+-- Author: Roncarlos
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+ALTER TABLE `discord_bot_rpg`.`UsersPreferences`
+ADD COLUMN `marketplacemute` TINYINT(4) NOT NULL DEFAULT 0 AFTER `lang`;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
