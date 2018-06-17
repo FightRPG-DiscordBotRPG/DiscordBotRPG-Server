@@ -87,12 +87,24 @@
     "marketplace_price_forgotten" : "Vous devez renseigner le prix auquel vous voulez vendre l'objet",
     "marketplace_nb_of_item_not_ok" : "Vous devez choisir le nombre d'objets à vendre",
     "marketplace_not_this_number_of_item" : "Vous n'avez pas autant d'objets sur vous",
-    "marketplace_not_enough_to_pay_tax" : "Vous n'avez pas assez d'argent pour payer la taxe de mise en vente"
+    "marketplace_not_enough_to_pay_tax" : "Vous n'avez pas assez d'argent pour payer la taxe de mise en vente",
+    "marketplace_id_to_cancel_forgotten" : "Vous devez choisir l'objet à récupérer",
+    "marketplace_order_dont_exist" : "Cet objet n'existe pas",
+    "marketplace_order_not_yours" : "Cet objet ne vous appartient pas",
+    "marketplace_id_to_buy_forgotten" : "Vous devez choisir l'objet à acheter",
+    "marketplace_order_yours" : "Vous ne pouvez pas acheter votre propre marchandise",
+    "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela"
   },
   "marketplace" : {
     "placed": "Votre objet à été mis en vente",
     "placed_plur": "Vos objets ont été mis en vente",
-    "header_str": "Joueur - idObjet - Nom - Type - Niveau - Rareté - Puissance - Nombre - Prix"
+    "header_str": "Joueur - idObjet - Nom - Type - Niveau - Rareté - Puissance - Nombre - Prix",
+    "retrieve" : "Vous avez récupéré votre objet",
+    "retrieve_plur" : "Vous avez récupéré vos objets",
+    "you_sold_plur" : "Vous avez vendu %d objets pour %dG",
+    "you_sold" : "Vous avez vendu %d objet pour %dG",
+    "you_buy": "Vous avez acheté %d objet pour %dG",
+    "you_buy_plur" : "Vous avez acheté %d objets pour %dG"
   },
   "group" : {
     "you_left" : "You left your group",
@@ -279,7 +291,10 @@
      "weapon" : "Weapon",
      "chest" : "Chest",
      "legs" : "Legs",
-     "head" : "Head"
+     "head" : "Head",
+     "wood"  : "Bois",
+     "stone" : "Pierre",
+     "herbs" : "Herbe"
    },
    "stats" : {
      "strength" : "Strength",
