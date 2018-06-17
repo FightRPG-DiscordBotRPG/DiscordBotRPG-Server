@@ -37,6 +37,11 @@ class Marketplace {
         return res;
     }
 
+    getThisOrder(idItem) {
+        let res = conn.query("SELECT * FROM marketplacesorders WHERE idItem = ?", [idItem]);
+        return res[0] ? new MarketplaceOrder(res[0]["idMarketplace"], idItem, res[0]["idCharacter"], res[0]["number"], res[0]["price"]) : null;
+    }
+
     showCharacterOrders(idCharacter, page, lang) {
         let str = "```\n";
         str += Translator.getString(lang, "marketplace", "header_str") + "\n\n";

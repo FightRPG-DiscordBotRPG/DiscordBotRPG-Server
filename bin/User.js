@@ -17,7 +17,8 @@ class User {
 
         this.preferences = {
             lang: "en",
-            groupmute : false,
+            groupmute: false,
+            marketplacemute: false,
         };
     }
 
@@ -55,6 +56,7 @@ class User {
 
             this.preferences.lang = res[0]["lang"];
             this.preferences.groupmute = res[0]["groupmute"];
+            this.preferences.marketplacemute = res[0]["marketplacemute"];
         }
 
     }
@@ -93,9 +95,28 @@ class User {
         return this.preferences.groupmute;
     }
 
+    isMarketplaceMuted() {
+        return this.preferences.marketplacemute;
+    }
+
     muteGroup(bool) {
         bool == true ? this.preferences.groupmute = true : this.preferences.groupmute = false;
         conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [this.preferences.groupmute, this.id]);
+    }
+
+    muteMarketplace(bool) {
+        bool == true ? this.preferences.marketplacemute = true : this.preferences.marketplacemute = false;
+        conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?", [this.preferences.groupmute, this.id]);
+    }
+
+    marketTell(str) {
+        if (!this.isMarketplaceMuted()) {
+            this.tell(str);
+        }
+    }
+
+    tell(str) {
+        Globals.discordClient.users.get(this.id).send(str);
     }
 
     //Affichage

@@ -318,14 +318,16 @@ class Character extends WorldEntity {
         return value;
     }
 
+    // Marketplace
+
     sellToMarketplace(marketplace, idEmplacement, nbr, price) {
-        let doIHavetoCreateANewItem = this.inv.objects[idEmplacement].number > nbr;
         let order;
         let idItem;
         if (this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
             let item = this.inv.getItem(idEmplacement);
-            idItem = Item.createNew(item.id, item.level);
+            //idItem = Item.createNew(item.idBaseItem, item.level);
+            idItem = conn.query("INSERT INTO items VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
             idItem = this.inv.getIdItemOfThisEmplacement(idEmplacement);
@@ -334,9 +336,47 @@ class Character extends WorldEntity {
         this.inv.removeSomeFromInventory(idEmplacement, nbr, false);
         order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
         order.place();
+    }
 
-        console.log(order);
+    marketplaceCollectThisItem(order) {
+        let item = new Item(order.idItem);
+        order.remove();
+        if (item.equipable) {
+            this.inv.addToInventory(order.idItem, order.number);
+        } else {
+            let inventoryItemID = this.inv.getIdOfThisIdBase(item.idBaseItem);
+            if (inventoryItemID != null) {
+                this.inv.addToInventory(inventoryItemID, order.number);
+                item.deleteItem();
+            } else {
+                this.inv.addToInventory(order.idItem, order.number);
+            }
+        }
 
+    }
+
+
+    marketplaceBuyThisItem(order, number) {
+        if (order.number == number) {
+            this.marketplaceCollectThisItem(order);
+        } else {
+            order.number -= number;
+            order.update();
+            let item = new Item(order.idItem);
+            if (item.equipable) {
+                this.inv.addToInventory(order.idItem, order.number);
+            } else {
+                let inventoryItemID = this.inv.getIdOfThisIdBase(item.idBaseItem);
+                if (inventoryItemID != null) {
+                    this.inv.addToInventory(inventoryItemID, number);
+                } else {
+                    let idItem = conn.query("INSERT INTO items VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
+                    this.inv.addToInventory(idItem, number);
+                }
+            }
+
+        }
+        this.removeMoney(order.price * number);  
     }
 
     // More = time in ms

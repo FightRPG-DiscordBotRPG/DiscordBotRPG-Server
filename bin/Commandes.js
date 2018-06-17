@@ -36,6 +36,7 @@ class Commandes {
         let err = [];
         let apPage;
         let nb;
+        let temp;
 
         if (command !== undefined && !message.author.bot && message.content.startsWith(this.prefix)) {
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
@@ -108,7 +109,7 @@ class Commandes {
                             // si il a l'objet
                             if (this.connectedUsers[authorIdentifier].character.haveThisObject(toPlaceIdItem)) {
                                 // si param ok
-                                if (priceToPlace != null && Number.isInteger(priceToPlace)) {
+                                if (priceToPlace != null && Number.isInteger(priceToPlace) && priceToPlace < 18446744073709551615) {
                                     priceToPlace = priceToPlace < 0 ? -priceToPlace : priceToPlace;
                                     // si param nb of items
                                     if (nbOfItemsToPlace != null && Number.isInteger(nbOfItemsToPlace) && nbOfItemsToPlace >= 1) {
@@ -150,9 +151,74 @@ class Commandes {
                         msg = Translator.getString(lang, "errors", "marketplace_not_exist");
                     }
                     break;
-               
+
+                case "cancelorder":
+                    let idOrderToCancel = parseInt(messageArray[1], 10);
+                    if (marketplace != null) {
+                        if (idOrderToCancel != null && Number.isInteger(idOrderToCancel)) {
+                            let orderToCancel = marketplace.getThisOrder(idOrderToCancel);
+                            if (orderToCancel != null) {
+                                if (orderToCancel.idCharacter === this.connectedUsers[authorIdentifier].character.id) {
+                                    this.connectedUsers[authorIdentifier].character.marketplaceCollectThisItem(orderToCancel);
+                                    msg = Translator.getString(lang, "marketplace", orderToCancel.number > 1 ? "retrieve_plur" : "retrieve");
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "marketplace_order_not_yours");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "marketplace_order_dont_exist");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "marketplace_id_to_cancel_forgotten");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "marketplace_not_exist");
+                    }
+                    break;
+
+                case "buyorder":
+                    let idOrderToBuy = parseInt(messageArray[1], 10);
+                    let numberOrderToBuy = parseInt(messageArray[2], 10);
+                    if (marketplace != null) {
+                        if (idOrderToBuy != null && Number.isInteger(idOrderToBuy)) {
+                            numberOrderToBuy = numberOrderToBuy != null && Number.isInteger(numberOrderToBuy) ? numberOrderToBuy : 1;
+                            let orderToBuy = marketplace.getThisOrder(idOrderToBuy);
+                            numberOrderToBuy = numberOrderToBuy <= 0 ? 1 : (numberOrderToBuy <= orderToBuy.number ? numberOrderToBuy : orderToBuy.number);
+                            if (orderToBuy != null) {
+                                if (orderToBuy.idCharacter !== this.connectedUsers[authorIdentifier].character.id) {
+                                    if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
+                                        temp = conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter])[0]["idUser"];
+                                        // Recupération de l'objet
+                                        this.connectedUsers[authorIdentifier].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
+
+                                        // Puis donne l'argent au vendeur
+                                        if (this.connectedUsers[temp]) {
+                                            this.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
+                                            this.connectedUsers[temp].marketTell(Translator.getString(lang, "marketplace", numberOrderToBuy > 1 ? "you_sold_plur" : "you_sold", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]));
+                                        } else {
+                                            conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
+                                        }
+                                        msg = Translator.getString(lang, "marketplace", numberOrderToBuy > 1 ? "you_buy_plur" : "you_buy", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]);
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "marketplace_not_enough_money");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "marketplace_order_yours");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "marketplace_order_dont_exist");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "marketplace_id_to_buy_forgotten");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "marketplace_not_exist");
+                    }
+                    break;
 
 
+                case "mksearchbyname":
+
+                    break;
                 /*
                 *   CONQUEST
                 */

@@ -17,7 +17,7 @@ class MarketplaceOrder {
     }
 
     update() {
-        conn.query("UPDATE marketplacesorders SET price = ?", [this.price]);
+        conn.query("UPDATE marketplacesorders SET number = ?", [this.number]);
     }
 
     place() {
