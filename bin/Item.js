@@ -69,7 +69,8 @@ class Item {
     }
 
     toStr(lang) {
-        return this.name + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
+        let numberStr = this.number > 1 ? " [x" + this.number + "]" : "";
+        return this.name + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
 
         // OLD WAY - beautiful but not readable on mobile
         /*let str = "";
