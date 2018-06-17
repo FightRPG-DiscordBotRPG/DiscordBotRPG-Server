@@ -84,6 +84,7 @@ var Globals = {
         "maxApplies" : 5,
     },
     "addr": "http://azz-tech.no-ip.org:8080/",
+    "discordClient": {}
 
 
 }
