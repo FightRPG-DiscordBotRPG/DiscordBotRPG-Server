@@ -367,6 +367,15 @@
      "grpdecline" : "Vous permet de décliner l'invitaiton à rejoindre un groupe",
      "grpkick" : "Vous permet d'éjecter un membre de votre groupe ou d'annuler une inviation à rejoindre votre groupe",
      "grpmute" : "Vous permet de désactiver les notifications de groupe",
-     "grpunmute" : "Vous permet d'activer les notifications de groupe"
+     "grpunmute" : "Vous permet d'activer les notifications de groupe",
+
+     "market_title" : "Hotel des ventes",
+     "mkmylist" : "Affiche vos ordres de vente",
+     "mkplace" : "Place l'objet <idItemInInventory> en nombre <nb> pour <price>G",
+     "mkcancel" : "Annule l'odre de vente choisi pour l'objet <idItem>",
+     "mkbuy" : "Achète <nb> de l'objet <idItem>",
+     "mksearch" : "Recherche l'objet par son nom et son niveau",
+     "mksee" : "Affiche l'objet <idItem>"
+
    }
 }
