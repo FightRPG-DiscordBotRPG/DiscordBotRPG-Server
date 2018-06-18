@@ -224,8 +224,8 @@
   "character" : {
     "reset_done" : "Reset done!",
     "attribute_up_to" : "The attribute %s has increased and is now up to %d points",
-    "attribute_x_points_available" : "There is %d point to allocate",
-    "attribute_x_points_available_plural" : "There are %d points to allocate"
+    "attribute_x_points_available" : "There is %d point to allocate left",
+    "attribute_x_points_available_plural" : "There are %d points to allocate left"
   },
   "economic" : {
     "sell_for_x" : "You sold your item for %dG",
@@ -367,6 +367,15 @@
      "grpdecline" : "Declines an invitation to join a group",
      "grpkick" : "Kicks out a member of your group or cancels an invitation to join your group",
      "grpmute" : "Deactivates group notifications",
-     "grpunmute" : "Activates group notifications"
+     "grpunmute" : "Activates group notifications",
+
+     "market_title" : "Hotel des ventes",
+     "mkmylist" : "Affiche vos ordres de vente",
+     "mkplace" : "Place l'objet <idItemInInventory> en nombre <nb> pour <price>G",
+     "mkcancel" : "Annule l'odre de vente choisi pour l'objet <idItem>",
+     "mkbuy" : "Achète <nb> de l'objet <idItem>",
+     "mksearch" : "Search for the object by his name and his level",
+     "mksee" : "Affiche l'objet <idItem>"
+
    }
 }
