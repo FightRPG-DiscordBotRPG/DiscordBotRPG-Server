@@ -254,7 +254,7 @@ class FightManager {
     }
 
     _deleteFight(userid) {
-        if (this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid].character.group != null) {
+        if (this.fights[userid] && this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid].character.group != null) {
             Globals.connectedUsers[userid].character.group.fightEndBoardcast(Globals.discordClient, this.fights[userid].fight.summary);
             Globals.connectedUsers[userid].character.group.doingSomething = false;
             let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
