@@ -84,7 +84,10 @@ var Globals = {
         "maxApplies" : 5,
     },
     "addr": "http://azz-tech.no-ip.org:8080/",
-    "discordClient": {}
+    "discordClient": {},
+    "help": {
+        "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
+    }
 
 
 }

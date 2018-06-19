@@ -14,6 +14,7 @@ class User {
         this.character = new Character();
         this.avatar = "";
         this.username = username.replace(/[\u0800-\uFFFF]/g, '');
+        this.isNew = false;
 
         this.preferences = {
             lang: "en",
@@ -24,6 +25,7 @@ class User {
 
     // Init for new user
     init() {
+        this.isNew = true;
         this.character.init();
         this.character.name = this.username;
 

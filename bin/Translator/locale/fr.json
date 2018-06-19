@@ -311,6 +311,8 @@
    "help_panel" : {
      "help" : "Aide",
 
+     "tutorial" : "Hey ! Je vois que c'est le première fois que tu utilise FightRPG, un tutoriel est disponible a cette adresse : %s\nSuit le avant de faire quoi que ce soit, ça va vraiment t'aider !",
+
      "inventory_title" : "Inventaire",
      "inv" : "Affiche l'inventaire",
      "item" : "Affiche les informations sur l'objet choisi",

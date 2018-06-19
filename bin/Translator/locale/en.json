@@ -311,6 +311,8 @@
    "help_panel" : {
      "help" : "Help",
 
+     "tutorial" : "Hi ! I see that is your first time using FightRPG. There is a tutorial at this link : %s\nFollow it before doing anything, it will help you !",
+
      "inventory_title" : "Inventory",
      "inv" : "Shows the inventory",
      "item" : "Shows the information of the selected item",

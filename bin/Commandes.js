@@ -15,7 +15,7 @@ const Translator = require("./Translator/Translator");
 
 class Commandes {
     constructor(prefix) {
-        this.prefix = prefix != undefined ? prefix : "::";
+        this.prefix = prefix != null ? prefix : "::";
         this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
@@ -52,7 +52,7 @@ class Commandes {
                 // Load User
                 this.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag);
                 this.connectedUsers[authorIdentifier].loadUser();
-                 
+
                 this.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
 
                 this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character);
@@ -83,6 +83,12 @@ class Commandes {
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "marketplace");
             //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
+            if (this.connectedUsers[authorIdentifier].isNew) {
+                message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
+                this.connectedUsers[authorIdentifier].isNew = false;
+            }
+
+
 
             // Detect Commands
             switch (command) {
