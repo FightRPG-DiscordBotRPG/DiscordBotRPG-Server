@@ -32,29 +32,52 @@ class Marketplace {
     }
 
     getCharacterOrders(idCharacter, page) {
-        page = page ? (page <= 0 ? 1 : page) : 1;
+        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 5;
-        let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, page - 1]);
         let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ?", [this.id, idCharacter])[0]["COUNT(*)"] / perPage);
-        console.log();
-        return { res: res, maxPage: maxPage };
+        page = maxPage > 0 && maxPage < page ? maxPage : page;
+        let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, page - 1]);
+        return { res: res, maxPage: maxPage, page: page };
     }
 
     getAllOrdersCorrespondingTo(itemName, level, page) {
-        page = page ? (page <= 0 ? 1 : page) : 1;
-        let perPage = 1;
-        let res = conn.query(`SELECT * FROM marketplacesorders
-                                INNER JOIN items ON items.idItem = marketplacesorders.idItem
-                                INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
-            [this.id, itemName, level, perPage, page - 1]);
+        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
+        let perPage = 5;
 
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ?`,
             [this.id, itemName, level])[0]["COUNT(*)"] / perPage);
-        return { res: res, maxPage: maxPage};
+        page = maxPage > 0 && maxPage < page ? maxPage : page;
+        let res = conn.query(`SELECT * FROM marketplacesorders
+                                INNER JOIN items ON items.idItem = marketplacesorders.idItem
+                                INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
+            [this.id, itemName, level, perPage, page - 1]);
+
+        return { res: res, maxPage: maxPage, page: page };
+    }
+
+    getAll(page) {
+        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
+        let perPage = 5;
+        let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM marketplacesorders
+                                INNER JOIN items ON items.idItem = marketplacesorders.idItem
+                                INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC`,
+            [this.id])[0]["COUNT(*)"] / perPage);
+        page = maxPage > 0 && maxPage < page ? maxPage : page;
+
+        let res = conn.query(`SELECT * FROM marketplacesorders
+                                INNER JOIN items ON items.idItem = marketplacesorders.idItem
+                                INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC LIMIT ? OFFSET ?`,
+            [this.id, perPage, page - 1]);
+
+
+
+        return { res: res, maxPage: maxPage, page: page };
     }
 
     getThisOrder(idItem) {
@@ -64,29 +87,23 @@ class Marketplace {
     }
 
     showCharacterOrders(idCharacter, page, lang) {
-        let str = "```\n";
-        str += Translator.getString(lang, "marketplace", "header_str") + "\n\n";
-        let res = this.getCharacterOrders(idCharacter, page);
-        let orders = res.res;
-        if (orders.length > 0) {
-            for (let order of orders) {
-                let morder = new MarketplaceOrder(this.id, order.idItem, order.idCharacter, order.number, order.price);
-                str += morder.toStr(lang) + "\n";
-            }
-            str += "\n";
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n\n";
-        }
-        str += Translator.getString(lang, "general", "page_out_of_x", [page, res.maxPage])
-        str += "```";
-        return str;
+        let res = this.getCharacterOrders(idCharacter, Number.parseInt(page));
+        return this.createShow(res, lang);
     }
 
     showSearchOrder(itemName, level, page, lang) {
+        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page));
+        return this.createShow(res, lang);
+    }
+
+    showAll(page, lang) {
+        let res = this.getAll(Number.parseInt(page));
+        return this.createShow(res, lang);
+    }
+
+    createShow(res, lang) {
         let str = "```\n";
         str += Translator.getString(lang, "marketplace", "header_str") + "\n\n";
-
-        let res = this.getAllOrdersCorrespondingTo(itemName, level, page);
         let orders = res.res;
         if (orders.length > 0) {
             for (let order of orders) {
@@ -97,10 +114,12 @@ class Marketplace {
         } else {
             str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n\n";
         }
-        str += Translator.getString(lang, "general", "page_out_of_x", [page, res.maxPage > 0 ? res.maxPage : 1])
+        str += Translator.getString(lang, "general", "page_out_of_x", [res.page, res.maxPage > 0 ? res.maxPage : 1])
         str += "```";
         return str;
     }
+
+
 
     showItemOrder(idItem, character, lang) {
         let item = new Item(idItem);

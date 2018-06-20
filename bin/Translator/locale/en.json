@@ -377,6 +377,7 @@
      "mkcancel" : "Annule l'odre de vente choisi pour l'objet <idItem>",
      "mkbuy" : "Achète <nb> de l'objet <idItem>",
      "mksearch" : "Search for the object by his name and his level",
+     "mkshow" : "Show all objets in the market at given page",
      "mksee" : "Affiche l'objet <idItem>"
 
    }

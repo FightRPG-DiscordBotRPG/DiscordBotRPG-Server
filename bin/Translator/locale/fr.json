@@ -377,6 +377,7 @@
      "mkcancel" : "Annule l'odre de vente choisi pour l'objet <idItem>",
      "mkbuy" : "Achète <nb> de l'objet <idItem>",
      "mksearch" : "Recherche l'objet par son nom et son niveau",
+     "mkshow" : "Affiche touche les objets du marhcé à la page choisie",
      "mksee" : "Affiche l'objet <idItem>"
 
    }

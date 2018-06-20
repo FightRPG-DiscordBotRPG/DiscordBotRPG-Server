@@ -98,7 +98,7 @@ class Commandes {
 
                 case "mkmylist":
                     if (marketplace != null) {
-                        msg = marketplace.showCharacterOrders(this.connectedUsers[authorIdentifier].character.id, 1, lang);
+                        msg = marketplace.showCharacterOrders(this.connectedUsers[authorIdentifier].character.id, messageArray[1] ? messageArray[1] : 1, lang);
                     } else {
                         msg = Translator.getString(lang, "errors", "marketplace_not_exist");
                     }
@@ -228,8 +228,15 @@ class Commandes {
                         return i % 2 ? v : v.split(' ')
                     })).filter(Boolean);
                     if (marketplace != null) {
-                        console.log(mksearch);
-                        msg = marketplace.showSearchOrder(mksearch[0] ? mksearch[0] : "", mksearch[1] ? mksearch[1] : 1, 1, lang);
+                        msg = marketplace.showSearchOrder(mksearch[0] ? mksearch[0] : "", mksearch[1] ? mksearch[1] : 1, mksearch[2] ? mksearch[2] : 1, lang);
+                    } else {
+                        msg = Translator.getString(lang, "errors", "marketplace_not_exist");
+                    }
+                    break;
+
+                case "mkshow":
+                    if (marketplace != null) {
+                        msg = marketplace.showAll(messageArray[1], lang);
                     } else {
                         msg = Translator.getString(lang, "errors", "marketplace_not_exist");
                     }
@@ -1302,7 +1309,8 @@ class Commandes {
                     "::mkplace <idItemInInventory> <nb> <price> : " + Translator.getString(lang, "help_panel", "mkplace") + "\n" +
                     "::mkcancel <idItem> : " + Translator.getString(lang, "help_panel", "mkcancel") + "\n" +
                     "::mkbuy <idItem> : " + Translator.getString(lang, "help_panel", "mkbuy") + "\n" +
-                    "::mksearch <itemName> <level> : " + Translator.getString(lang, "help_panel", "mksearch") + "\n" +
+                    "::mksearch \"<itemName>\" <level> <page> : " + Translator.getString(lang, "help_panel", "mksearch") + "\n" +
+                    "::mkshow <page> : " + Translator.getString(lang, "help_panel", "mkshow") + "\n" +
                     "::mksee <idItem> : " + Translator.getString(lang, "help_panel", "mksee") + "\n";
                 break;
         }
