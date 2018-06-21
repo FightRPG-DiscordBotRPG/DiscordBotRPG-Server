@@ -38,9 +38,10 @@ class Area {
         this.areaType = res["NomAreaType"];
         //this.nbrPlayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
 
-        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemsbase.nomItem, itemstypes.nomType, itemsrarities.nomRarity " +
+        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemsbase.nomItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType " +
             "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
             "INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType " +
+            "INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType " +
             "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity WHERE idArea = " + this.id);
         for (let i in res) {
             this.resources.push(res[i]);
@@ -137,14 +138,14 @@ class Area {
             //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
             tempString = Translator.getString(lang, "area", "resource", [i + 1, this.resources[i]["nomItem"], this.resources[i]["nomRarity"]]) + "\n\n";
 
-            switch (this.resources[i]["nomType"]) {
+            switch (this.resources[i]["nomSousType"]) {
                 case "wood":
                     strWoods += tempString;
                     break;
-                case "stone":
+                case "ore":
                     strStones += tempString;
                     break;
-                case "herb":
+                case "plant":
                     strHerbs += tempString;
                     break;
                 

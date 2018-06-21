@@ -19,6 +19,8 @@ class Item {
         this.level = 0;
         this.type = 0;
         this.typeName = "";
+        this.sousType = 0;
+        this.sousTypeName = "";
         this.equipable = true;
         this.stats = new StatsItems(id);
         this.number = 1;
@@ -31,7 +33,7 @@ class Item {
 
     loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = "+this.id+";")[0];
+        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, nomItem, descItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = "+this.id+";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.name = res["nomItem"];
         this.desc = res["descItem"] !== undefined ? res["descItem"] : "";
@@ -44,6 +46,9 @@ class Item {
 
         this.type = res["idType"];
         this.typeName = res["nomType"];
+
+        this.sousType = res["idSousType"];
+        this.sousTypeName = res["nomSousType"];
 
         this.equipable = res["equipable"];
     }
@@ -70,7 +75,7 @@ class Item {
 
     toStr(lang) {
         let numberStr = this.number > 1 ? " [x" + this.number + "]" : "";
-        return this.name + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
+        return this.name + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " (" + Translator.getString(lang, "item_sous_types", this.sousTypeName) + ")" + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
 
         // OLD WAY - beautiful but not readable on mobile
         /*let str = "";

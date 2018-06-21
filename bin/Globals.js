@@ -87,10 +87,12 @@ var Globals = {
     "discordClient": {},
     "help": {
         "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
-    }
-
-
+    },
+    "connectedUsers": {},
+    "connectedGuilds": {},
+    "areasManager": {},
+    "fightManager": {}
 }
 
-
 module.exports = Globals;
+

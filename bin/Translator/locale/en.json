@@ -294,7 +294,16 @@
      "head" : "Head",
      "wood"  : "Bois",
      "stone" : "Pierre",
-     "herbs" : "Herbe"
+     "herbs" : "Herbe",
+     "resource" : "Resource"
+   },
+   "item_sous_types": {
+     "wood"  : "Wood",
+     "ore"   : "Ore",
+     "plant" : "Plant",
+     "sword" : "Sword",
+     "whip" : "Whip",
+     "armor" : "Armor"
    },
    "stats" : {
      "strength" : "Strength",
