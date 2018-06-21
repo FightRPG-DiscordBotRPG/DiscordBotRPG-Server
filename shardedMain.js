@@ -1,63 +1,37 @@
 'use strict';
 const Commandes = require("./bin/Commandes.js")
+const Globals = require("./bin/Globals.js");
 const Discord = require("discord.js");
 const Key = require("./conf/botkey.js");
-const FightManager = require("./bin/FightManager");
-const User = require("./bin/User");
-const conn = require("./conf/mysql.js");
-const Globals = require("./bin/Globals.js");
-const crypto = require("crypto");
-const AreasManager = require("./bin/Areas/AreasManager.js");
-const Translator = require("./bin/Translator/Translator");
-
 
 var bot = new Discord.Client();
-var prefix = "::";
-
-process.on('unhandledRejection', up => { throw up });
 
 console.log("Bot Starting ...");
-
-console.log(Globals);
-
-
 bot.on("ready", () => {
-    bot.user.setPresence({
+    /*bot.user.setPresence({
         game: {
             name: "Aucun Joueur !",
         },
-    });
+    });*/
 
     console.log("Bot Ready");
 });
-
-// Key Don't open
 bot.login(Key);
+var ChatReceiver = new Commandes("::");
 
-
-// UNDER CONSTRUCTION SUBJECT TO CHANGE
-var connectedUsers = {};
-var connectedGuilds = {};
-
-Globals.connectedUsers = connectedUsers;
-Globals.connectedGuilds = connectedGuilds;
-Globals.areasManager = new AreasManager();
-Globals.fightManager = new FightManager();
-Globals.discordClient = bot;
-
-var ChatReceiver = new Commandes(prefix);
-
-ChatReceiver.bot = bot;
+ChatReceiver.bot = Globals.bot;
 ChatReceiver.fightManager = Globals.fightManager;
-ChatReceiver.connectedUsers = Globals.areasManager;
+ChatReceiver.connectedUsers = Globals.connectedUsers;
 ChatReceiver.nbrConnectedUsers = 0;
 ChatReceiver.connectedGuilds = Globals.connectedGuilds;
 ChatReceiver.areasManager = Globals.areasManager;
+Globals.discordClient = bot;
 
 
 
 bot.on('message', (message) => {
     try {
+        console.log(Globals);
         ChatReceiver.reactTo(message);
     } catch (err) {
         let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
@@ -72,13 +46,6 @@ bot.on('message', (message) => {
         console.log(err);
         message.channel.send(msgError);
     }
-    
+
 
 });
-
-
-
-// Load api after all 
-const ApiResponder = require("./api/ApiResponder.js");
-
-
