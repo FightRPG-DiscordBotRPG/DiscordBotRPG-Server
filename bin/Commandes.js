@@ -5,13 +5,13 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const LootSystem = require("./LootSystem.js");
 const AreasManager = require("./Areas/AreasManager.js");
-const sizeof = require('object-sizeof');
 const Leaderboard = require("./Leaderboard.js");
 const Guild = require("./Guild.js");
 const Group = require("./Group.js");
 const Fight = require("./Fight/Fight");
 const Monster = require("./Monstre");
 const Translator = require("./Translator/Translator");
+const CraftSystem = require("./CraftSystem/CraftSystem");
 
 class Commandes {
     constructor(prefix) {
@@ -809,15 +809,27 @@ class Commandes {
                             let resourceToCollect = this.areasManager.getResource(this.connectedUsers[authorIdentifier].character.area, idToCollect);
                             //idToCollect = this.areasManager.getResourceId(this.connectedUsers[authorIdentifier].character.area, idToCollect);
                             if (resourceToCollect) {
-                                idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                                this.connectedUsers[authorIdentifier].character.waitForNextResource();
-                                if (idToCollect) {
-                                    this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+                                if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
+                                    idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+                                    this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
+                                    let collectXP = CraftSystem.getXPCollect(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                    let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
+                                    if (idToCollect) {
+                                        this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+                                    } else {
+                                        let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
+                                        this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                    }
+                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
+                                    msg += Translator.getString(lang, "resources", "collect_gain_xp", [collectXP]) + "\n";
+
+                                    if(collectCraftUP > 0) {
+                                        msg +=  Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                                    }
                                 } else {
-                                    let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
-                                    this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                    msg = Translator.getString(lang, "errors", "collect_dont_have_required_level", [resourceToCollect.requiredLevel]);
                                 }
-                                msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]);
+                                
                             } else {
                                 // error object don't exist
                                 msg = Translator.getString(lang, "resources", "resource_dont_exist");
@@ -840,13 +852,10 @@ class Commandes {
                         doIHaveThisItem = this.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
                         if (doIHaveThisItem) {
                             let typeName = this.connectedUsers[authorIdentifier].character.inv.objects[idItemToSee].typeName;
-
                             let oneEquipped = this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)] ? true : false;
                             let equippedStats;
-
                             if (oneEquipped)
                                 equippedStats = this.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats;
-
                             msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats, lang);
                         } else {
                             msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
