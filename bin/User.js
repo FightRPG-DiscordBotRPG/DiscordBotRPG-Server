@@ -127,6 +127,10 @@ class User {
         let xpProgressBar = new ProgressBar();
         let xpBar = "";
         let xpOn = "";
+
+        let xpBarCraft = "";
+        let xpOnCraft = "";
+
         if (this.character.getLevel() === Globals.maxLevel) {
             xpOn = "Niveau Max";
             xpBar = xpProgressBar.draw(1, 1);
@@ -135,13 +139,26 @@ class User {
             xpBar = xpProgressBar.draw(this.character.levelSystem.actualXP, this.character.levelSystem.expToNextLevel);
         }
 
+        if(this.character.getCraftLevel() === Globals.maxLevel) {
+            xpOnCraft = "Niveau Max";
+            xpBarCraft = xpProgressBar.draw(1, 1);
+        } else {
+            xpOnCraft = this.character.getCratfXP() + " / " + this.character.getCraftNextLevelXP();
+            xpBarCraft = xpProgressBar.draw(this.character.getCratfXP(), this.character.getCraftNextLevelXP());
+        }
+
+
+
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
             .setAuthor(this.character.name + " | Power : " + this.character.getPower() + "%", this.avatar)
             .addField("Attributes | " + this.character.statPoints + " point" + statPointsPlur + " à répartir (Prix du reset : " + this.character.getResetStatsValue() + "G)", this.character.getStatsStr())
             .addField("Level : " + this.character.getLevel() + "    |    " + xpOn, xpBar, true)
-            .addField("Money", this.character.money + " G", true)
-            .addField("Honor", this.character.honorPoints + " Pts", true);
+            .addField("Craft Level : " + this.character.getCraftLevel() + "    |    " + xpOnCraft, xpBarCraft, true)
+            .addBlankField(true)
+            .addField("Money", this.character.money + " G",true)
+            .addField("Honor", this.character.honorPoints + " Pts", true)
+            .addBlankField(true);
 
         return embed;
     }
