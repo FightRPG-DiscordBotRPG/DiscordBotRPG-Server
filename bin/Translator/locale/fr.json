@@ -38,6 +38,7 @@
     "guild_already_max_level" : "Votre guilde est déjà au niveau maximum",
     "collect_enter_id_to_collect" : "Veuillez entrer l'identifiant de la ressource à récolter",
     "collect_tired_wait_x_seconds" : "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
+    "collect_dont_have_required_level" : "Vous n'avez pas le niveau de métier nécessaire pour récolter cette ressource. Vous devez au moins être niveau : %d",
     "item_you_dont_have_this_item" : "Vous n'avez pas cet objet",
     "item_choose_id_or_equipement" : "Vous devez entrer l'identifiant de l'emplacement d'inventaire ou bien choisir parmi \"head,chest,legs,weapon\"",
     "item_you_cant_equip" : "Vous ne pouvez pas équiper cet objet",
@@ -156,7 +157,10 @@
     "noresources" : "Pas de ressources ici",
 
     "collected_x_resource" : "Vous avez récolté %d %s",
-    "resource_dont_exist" : "Vous ne voyez cette ressource nulle part"
+    "resource_dont_exist" : "Vous ne voyez cette ressource nulle part",
+    "collect_gain_xp" : "Vous avez gagné %d XP à votre métier de craft",
+    "job_level_up" : "Vous avez gagné %d niveau à votre métier de craft",
+    "job_level_up_plur" : "Vous avez gagné %d niveaux à votre métier de craft"
   },
   "general" : {
     "nothing_at_this_page" : "Cette page ne contient rien",

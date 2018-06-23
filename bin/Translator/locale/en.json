@@ -38,6 +38,7 @@
     "guild_already_max_level" : "Votre guilde est déjà au niveau maximum",
     "collect_enter_id_to_collect" : "Please enter the id of the resource to collect",
     "collect_tired_wait_x_seconds" : "You are too tired to collect these resources, you still have to wait: %s seconds",
+    "collect_dont_have_required_level" : "You don't have the required crafting level to collect this resource, you must be at least level %d",
     "item_you_dont_have_this_item" : "You don't have this item",
     "item_choose_id_or_equipement" : "You must enter the id of your inventory slot or choose between \"head,chest,legs,weapon\"",
     "item_you_cant_equip" : "You can't equip this item",
@@ -156,7 +157,10 @@
     "noresources" : "No resources here",
 
     "collected_x_resource" : "You've collected %d %s",
-    "resource_dont_exist" : "You don't see this resource anywhere"
+    "resource_dont_exist" : "You don't see this resource anywhere",
+    "collect_gain_xp" : "You've gain %d XP to your crafting job",
+    "job_level_up" : "You've gain %d level to your crafting job",
+    "job_level_up_plur" : "You've gain %d levels to your crafting job"
   },
   "general" : {
     "nothing_at_this_page" : "This page is empty",
