@@ -47,9 +47,9 @@ var Globals = {
     "maxStatsId": maxStatsId,
     "statsIds": statsIds,
     "monstersIds": monstersTypes,
-    "basicWaitTimeBeforeFight": 20,
+    "basicWaitTimeBeforeFight": 30,
     "basicWaitTimeAfterTravel": 120,
-    "basicWaitTimeCollectTravel" : 30,
+    "basicWaitTimeCollectTravel" : 10,
     "admins": ["241564725870198785", "285789367954440194"],
     "activated" : true,
     "mDifficulties": [
