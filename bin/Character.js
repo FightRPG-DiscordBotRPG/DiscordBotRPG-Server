@@ -8,6 +8,7 @@ const CharacterEquipement = require("./CharacterEquipement.js");
 const WorldEntity = require("./WorldEntity.js");
 const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
 const Item = require("./Item");
+const PlayerCraft = require("./CraftSystem/PlayerCraft");
 
 class Character extends WorldEntity {
 
@@ -22,6 +23,7 @@ class Character extends WorldEntity {
         this.maxHP = 0;
         this.actualHP = 0;
         this.levelSystem = new LevelSystem();
+        this.craftSystem = new PlayerCraft();
         this.statPoints = 0;
         this.money = 0;
         this.canFightAt = 0;
@@ -41,7 +43,7 @@ class Character extends WorldEntity {
 
         //Init level system
         this.levelSystem.init(this.id);
-
+        this.craftSystem.init(this.id);
 
         // Init Honor
         conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);");
@@ -72,6 +74,7 @@ class Character extends WorldEntity {
         this.id = id;
         this.stats.loadStat(id);
         this.levelSystem.loadLevelSystem(this.id);
+        this.craftSystem.load(this.id);
         this.statPoints = res["statPoints"];
         this.money = res["money"];
         this.area = res["idArea"];
@@ -381,14 +384,14 @@ class Character extends WorldEntity {
 
     // More = time in ms
     waitForNextFight(more = 0) {
-        let baseTimeToWait = (Globals.basicWaitTimeBeforeFight - Math.floor(this.stats.constitution / 20)) * 1000;
+        let baseTimeToWait = (Globals.basicWaitTimeBeforeFight - Math.floor(this.stats.constitution / 50)) * 1000;
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait + more;
     }
 
-    waitForNextResource() {
-        let baseTimeToWait = (Globals.basicWaitTimeCollectTravel - Math.floor(this.stats.constitution / 10)) * 1000;
-        //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
+    waitForNextResource(rarity = 1) {
+        let baseTimeToWait = (Globals.basicWaitTimeCollectTravel - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCollectTravel / 2)) * 1000 * rarity;
+        console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
     }
 
@@ -396,9 +399,30 @@ class Character extends WorldEntity {
         return this.idGuild > 0 ? true : false;
     }
 
+
+    addCraftXP(xp) {
+        let actualLevel = this.getCraftLevel();
+        let nextLevel = 0;
+        this.craftSystem.addThisExp(xp);
+        nextLevel = this.getCraftLevel();
+        return nextLevel - actualLevel;
+    }
+
     // GetSpecial
     getLevel() {
         return this.levelSystem.actualLevel;
+    }
+
+    getCraftLevel() {
+        return this.craftSystem.actualLevel;
+    }
+
+    getCratfXP() {
+        return this.craftSystem.actualXP;
+    }
+
+    getCraftNextLevelXP() {
+        return this.craftSystem.expToNextLevel;
     }
 
     haveThisObject(itemId) {
