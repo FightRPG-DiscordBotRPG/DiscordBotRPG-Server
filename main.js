@@ -49,9 +49,9 @@ var ChatReceiver = new Commandes(prefix);
 
 ChatReceiver.bot = bot;
 ChatReceiver.fightManager = Globals.fightManager;
-ChatReceiver.connectedUsers = Globals.areasManager;
+ChatReceiver.connectedUsers = connectedUsers;
 ChatReceiver.nbrConnectedUsers = 0;
-ChatReceiver.connectedGuilds = Globals.connectedGuilds;
+ChatReceiver.connectedGuilds = connectedGuilds;
 ChatReceiver.areasManager = Globals.areasManager;
 
 
