@@ -61,7 +61,7 @@ class FightManager {
 
     _fightAlreadyInBattle(userid) {
         let user = Globals.connectedUsers[userid];
-        if (user.character.group != null) {
+        if (user != null && user.character.group != null) {
             let plrs = user.character.group.getArrayOfPlayers();
             for (let i of plrs) {
                 if (this.fights[plrs.id] !== undefined) {
@@ -89,7 +89,7 @@ class FightManager {
                 rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
                 summaryIndex: 0,
             };
-            if (users.length > 1 && Globals.connectedUsers[userid].character.group != null) {
+            if (users.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
                 Globals.connectedUsers[userid].character.group.doingSomething = true;
                 let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
                 for (let i of fenters) {
@@ -254,7 +254,7 @@ class FightManager {
     }
 
     _deleteFight(userid) {
-        if (this.fights[userid] && this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid].character.group != null) {
+        if (this.fights[userid] && this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid] && Globals.connectedUsers[userid].character.group != null) {
             Globals.connectedUsers[userid].character.group.fightEndBoardcast(Globals.discordClient, this.fights[userid].fight.summary);
             Globals.connectedUsers[userid].character.group.doingSomething = false;
             let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
