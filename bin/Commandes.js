@@ -82,6 +82,7 @@ class Commandes {
             let lang = this.connectedUsers[authorIdentifier].getLang();
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "marketplace");
+            let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "craftingbuilding");
             //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
             if (this.connectedUsers[authorIdentifier].isNew) {
                 message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
@@ -92,6 +93,26 @@ class Commandes {
 
             // Detect Commands
             switch (command) {
+                /*
+                *   Craft
+                */
+                case "craftlist": 
+                    if(craftingbuilding != null) {
+                        msg = craftingbuilding.craftingListToEmbed(messageArray[1], lang);
+                    } else {
+                        msg = Translator.getString(lang, "errors", "craft_no_building");
+                    }
+                    break;
+
+                case "showcraft":
+                    if(craftingbuilding != null) {
+                        msg = craftingbuilding.craftToEmbed(messageArray[1], lang);
+                    } else {
+                        msg = Translator.getString(lang, "errors", "craft_no_building");
+                    }
+                    break;  
+
+
                 /*
                 *   Marketplace
                 */
