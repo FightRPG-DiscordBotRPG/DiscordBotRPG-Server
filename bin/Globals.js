@@ -8,6 +8,7 @@ let statsIds = {};
 let equipsPossible = [];
 let areasTypes = [];
 let monstersTypes = {};
+let itemsrarities = [];
 let res;
 
 // All Stats
@@ -31,6 +32,11 @@ for (let i in res) {
     monstersTypes[res[i]["nom"]] = res[i]['idType'];
 }
 
+res = conn.query("SELECT * FROM itemsrarities");
+for (let i in res) {
+    itemsrarities[res[i].idRarity] = res[i].nomRarity;
+}
+
 
 
 
@@ -47,6 +53,7 @@ var Globals = {
     "maxStatsId": maxStatsId,
     "statsIds": statsIds,
     "monstersIds": monstersTypes,
+    "itemsrarities" : itemsrarities,
     "basicWaitTimeBeforeFight": 30,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeCollectTravel" : 10,
