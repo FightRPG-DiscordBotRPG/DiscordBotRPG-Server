@@ -114,3 +114,66 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- Insert for all characters
 INSERT INTO characterscraftlevel (idCharacter) SELECT characters.idCharacter FROM characters
+
+-- MySQL Workbench Synchronization
+-- Generated: 2018-06-23 13:15
+-- Model: New Model
+-- Version: 1.0
+-- Project: Name of the project
+-- Author: Roncarlos
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`craftbuilding` (
+  `idCraftBuilding` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idArea` INT(10) UNSIGNED NOT NULL,
+  `active` TINYINT(4) NOT NULL DEFAULT 1,
+  `level` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idCraftBuilding`),
+  UNIQUE INDEX `idCraftBuilding_UNIQUE` (`idCraftBuilding` ASC),
+  INDEX `fk_CraftBuilding_Areas1_idx` (`idArea` ASC),
+  UNIQUE INDEX `idArea_UNIQUE` (`idArea` ASC),
+  CONSTRAINT `fk_CraftBuilding_Areas1`
+    FOREIGN KEY (`idArea`)
+    REFERENCES `discord_bot_rpg`.`areas` (`idArea`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+ALTER TABLE `discord_bot_rpg`.`craftbuilding` 
+DROP COLUMN `level`,
+ADD COLUMN `rarityMax` INT(10) UNSIGNED NOT NULL DEFAULT 1 AFTER `active`,
+ADD INDEX `fk_CraftBuilding_ItemsRarities1_idx` (`rarityMax` ASC);
+
+ALTER TABLE `discord_bot_rpg`.`craftbuilding` 
+ADD CONSTRAINT `fk_CraftBuilding_ItemsRarities1`
+  FOREIGN KEY (`rarityMax`)
+  REFERENCES `discord_bot_rpg`.`itemsrarities` (`idRarity`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+INSERT IGNORE INTO craftbuilding (idArea)
+SELECT idArea
+FROM areas
+INNER JOIN areastypes
+ON areas.idAreaType = areastypes.idAreaType
+WHERE areastypes.NomAreaType = "city"
+
