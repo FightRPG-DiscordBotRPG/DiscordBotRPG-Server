@@ -94,7 +94,14 @@
     "marketplace_order_not_yours" : "Cet objet ne vous appartient pas",
     "marketplace_id_to_buy_forgotten" : "Vous devez choisir l'objet à acheter",
     "marketplace_order_yours" : "Vous ne pouvez pas acheter votre propre marchandise",
-    "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela"
+    "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela",
+
+    "craft_no_building": "Il n'y a pas de batîment de craft d'actif dans cette zone",
+    "craft_dont_exist" : "Cette recette n'est pas disponible"
+  },
+  "craft" : {
+    "header" : "Nom - Type - Sous-Type - Rareté - Nombre",
+    "needed_items" : "Objets requis"
   },
   "marketplace" : {
     "placed": "Votre objet à été mis en vente",

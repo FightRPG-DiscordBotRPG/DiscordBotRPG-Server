@@ -94,7 +94,14 @@
     "marketplace_order_not_yours" : "Cet objet ne vous appartient pas",
     "marketplace_id_to_buy_forgotten" : "Vous devez choisir l'objet à acheter",
     "marketplace_order_yours" : "Vous ne pouvez pas acheter votre propre marchandise",
-    "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela"
+    "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela",
+
+    "craft_no_building": "There is no crafting building active here",
+    "craft_dont_exist" : "This blueprint is unavailable"
+  },
+  "craft" : {
+    "header" : "Name - Type - Subtype - Rarity - Number",
+    "needed_items" : "Needed Items"
   },
   "marketplace" : {
     "placed": "Votre objet à été mis en vente",
