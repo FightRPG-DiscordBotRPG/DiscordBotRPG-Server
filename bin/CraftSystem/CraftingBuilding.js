@@ -28,13 +28,13 @@ class CraftingBuilding {
         let perPage = 10;
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel DESC`,
+                                WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC`,
             [this.maxRarity])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
         let res = conn.query(`SELECT * FROM craftitem
                     INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                    WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel DESC LIMIT ? OFFSET ?`,
+                    WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT ? OFFSET ?`,
             [this.maxRarity, perPage, page - 1]);
 
 
