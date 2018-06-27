@@ -12,17 +12,19 @@ class Craft {
     }
 
     load(id) {
-        let res = conn.query(`SELECT DISTINCT nomItem, itemsbase.idRarity, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel FROM craftitemsneeded 
-        INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitemsneeded.IdCraftItem
+        let res = conn.query(`SELECT DISTINCT nomItem, itemsbase.idRarity, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, itemsbase.idBaseItem FROM craftitemsneeded 
+        INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
+        INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
         INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
-        INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
-        INNER JOIN craftitem ON craftitem.idBaseItem = craftitemsneeded.IdCraftItem
+        INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity 
+        INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
         WHERE craftitemsneeded.IdCraftItem = ?;
         `, [id]);
         if(res[0]) {
             res = res[0];
             this.exist = true;
             this.itemInfo = {
+                idBase: res.idBaseItem,
                 name: res.nomItem,
                 desc: res.descItem,
                 image: res.imageItem,
@@ -35,15 +37,17 @@ class Craft {
                 minLevel: res.minLevel,
             }
 
-            res = conn.query(`SELECT nomItem, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number FROM craftitemsneeded 
+            res = conn.query(`SELECT nomItem, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
+            INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
             INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitemsneeded.NeededItem
             INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
-            INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
-            INNER JOIN craftitem ON craftitem.idBaseItem = craftitemsneeded.IdCraftItem
+            INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity 
+            INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
             WHERE craftitemsneeded.IdCraftItem = ?;`, [id]);
 
             for(let item of res) {
                 this.requiredItems.push({
+                    idBase: item.idBaseItem,
                     name: item.nomItem,
                     typename: item.nomType,
                     stypename: item.nomSousType,
@@ -65,7 +69,7 @@ class Craft {
     }
 
     requiredItemsToStr(lang) {
-        let str = "```\n" + Translator.getString(lang, "craft", "header") + "\n";
+        let str = "```\n" + Translator.getString(lang, "craft", "header_required") + "\n";
 
         for(let item of this.requiredItems) {
             str += "\n";
@@ -79,6 +83,7 @@ class Craft {
     canBeCraft(buildingRarityLevel) {
         return this.itemInfo.idRarity <= buildingRarityLevel;
     }
+
 }
 
 module.exports = Craft;

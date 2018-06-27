@@ -196,6 +196,27 @@ class CharacterInventory {
         return false;
     }
 
+    // craft system
+    getItemOfThisID(itemId) {
+        for(let item of this.objects) {
+            if(item.idBaseItem == itemId) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    // craft system
+    getItemsOfThosesIds(ArrItemsIDs) {
+        let arr = [];
+        for(let i in this.objects) {
+            if(ArrItemsIDs.indexOf(this.objects[i].idBaseItem) > -1) {
+                arr.push({item:this.objects[i], index:i});
+            }
+        }
+        return arr;
+    }
+
     getIdEmplacementOfItem(itemId) {
         for (let i in this.objects) {
             if (this.objects[i].id === itemId) {

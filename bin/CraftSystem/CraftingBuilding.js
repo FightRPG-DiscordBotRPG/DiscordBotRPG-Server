@@ -45,7 +45,7 @@ class CraftingBuilding {
     craftingListToEmbed(page, lang) {
         let res = this.getCraftingList(page);
         let str = "```\n";
-        str += Translator.getString(lang, "crafting", "header_str") + "\n\n";
+        str += Translator.getString(lang, "craft", "header_craft_list") + "\n\n";
         let crafts = res.res;
         if (crafts.length > 0) {
             for (let craft of crafts) {
@@ -72,6 +72,18 @@ class CraftingBuilding {
         }
 
         return Translator.getString(lang, "errors", "craft_dont_exist");
+    }
+
+    getCraft(idCraft) {
+        idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 0;
+        
+        if(idCraft > 0) {
+            let craft = new Craft(idCraft);
+            if(craft.exist && craft.canBeCraft(this.maxRarity)) {
+                return craft;
+            }
+        }
+        return null;
     }
 
 }

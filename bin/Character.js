@@ -9,6 +9,7 @@ const WorldEntity = require("./WorldEntity.js");
 const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
 const Item = require("./Item");
 const PlayerCraft = require("./CraftSystem/PlayerCraft");
+const LootSystem = require("./LootSystem");
 
 class Character extends WorldEntity {
 
@@ -321,6 +322,58 @@ class Character extends WorldEntity {
         return value;
     }
 
+    // Craft
+    isCraftable(craft) {
+        return craft.itemInfo.minLevel <= this.getCraftLevel();
+    }
+
+    itemCraftedLevel(maxLevelItem) {
+        return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
+    }
+
+    craft(craft) {
+        let items = this.inv.getItemsOfThosesIds(craft.requiredItems.map((e) => e.idBase));
+        let gotAllItems = true;
+        if(items.length === craft.requiredItems.length) {
+
+            // Crack if got all of the required items
+            for(let i in items) {
+                for(let j in craft.requiredItems) {
+                    if(items[i].item.idBaseItem === craft.requiredItems[j].idBase && items[i].item.number < craft.requiredItems[j].number) {
+                        gotAllItems = false;
+                        break;
+                    }
+                }
+            }
+
+            if(gotAllItems) {
+
+                // On del les objets requis
+                for(let i in craft.requiredItems) {
+
+                }
+                for(let i in items) {
+                    for(let j in craft.requiredItems) {
+                        if(items[i].item.idBaseItem === craft.requiredItems[j].idBase) {
+                            this.inv.removeSomeFromInventory(items[i].index, craft.requiredItems[j].number, true);
+                        }
+                    }
+                }
+                
+                let ls = new LootSystem();
+
+                // Create new item
+                let newItemID = ls.newItem(craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel));
+
+                // on add 1 à l'inventaire
+                this.inv.addToInventory(newItemID);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     // Marketplace
 
     sellToMarketplace(marketplace, idEmplacement, nbr, price) {
@@ -347,7 +400,7 @@ class Character extends WorldEntity {
         if (item.equipable) {
             this.inv.addToInventory(order.idItem, order.number);
         } else {
-            let inventoryItemID = this.inv.getIdOfThisIdBase(item.idBaseItem);
+            let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
             if (inventoryItemID != null) {
                 this.inv.addToInventory(inventoryItemID, order.number);
                 item.deleteItem();
@@ -369,7 +422,7 @@ class Character extends WorldEntity {
             if (item.equipable) {
                 this.inv.addToInventory(order.idItem, order.number);
             } else {
-                let inventoryItemID = this.inv.getIdOfThisIdBase(item.idBaseItem);
+                let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
                 if (inventoryItemID != null) {
                     this.inv.addToInventory(inventoryItemID, number);
                 } else {
@@ -391,7 +444,13 @@ class Character extends WorldEntity {
 
     waitForNextResource(rarity = 1) {
         let baseTimeToWait = (Globals.basicWaitTimeCollectTravel - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCollectTravel / 2)) * 1000 * rarity;
-        console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
+        //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
+        this.canFightAt = Date.now() + baseTimeToWait;
+    }
+
+    waitForNextCraft(rarity = 1) {
+        let baseTimeToWait = (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
+        //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
     }
 

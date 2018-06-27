@@ -59,11 +59,6 @@ class Commandes {
 
                 this.nbrConnectedUsers++;
 
-                this.bot.user.setPresence({
-                    game: {
-                        name: this.nbrConnectedUsers + " players connected !",
-                    },
-                });
                 //console.log(sizeof(this.connectedUsers));
 
                 // Load Guild
@@ -83,7 +78,7 @@ class Commandes {
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "marketplace");
             let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "craftingbuilding");
-            //console.log("[" + new Date().toDateString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
+            console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
             if (this.connectedUsers[authorIdentifier].isNew) {
                 message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
                 this.connectedUsers[authorIdentifier].isNew = false;
@@ -110,6 +105,44 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "craft_no_building");
                     }
+                    break;
+
+                case "craft":
+                    if(craftingbuilding != null) {
+                        // ToCraft = Craft type
+                        if(this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                            let toCraft = craftingbuilding.getCraft(messageArray[1]);
+                            if(toCraft) {
+                                if(this.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
+                                    if(this.connectedUsers[authorIdentifier].character.craft(toCraft)) {
+                                        msg = Translator.getString(lang, "craft", "craft_done", [toCraft.itemInfo.name]) + "\n";
+    
+                                        this.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
+    
+                                        let craftXP = CraftSystem.getXP(this.connectedUsers[authorIdentifier].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), this.connectedUsers[authorIdentifier].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
+    
+                                        let craftCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(craftXP);
+    
+                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [craftXP]) + "\n";
+    
+                                        if(craftCraftUP > 0) {
+                                            msg +=  Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
+                                        }
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "craft_dont_have_required_items");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "craft_dont_have_required_level", [toCraft.itemInfo.minLevel]);
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "craft_dont_exist");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "craft_tired_wait_x_seconds", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "craft_no_building");
+                    }
                     break;  
 
 
@@ -132,7 +165,7 @@ class Commandes {
                     // si endroit dispose d'un marché
                     if (marketplace != null) {
                         // si param ok
-                        if (toPlaceIdItem != null & Number.isInteger(toPlaceIdItem)) {
+                        if (toPlaceIdItem != null && Number.isInteger(toPlaceIdItem)) {
                             // si il a l'objet
                             if (this.connectedUsers[authorIdentifier].character.haveThisObject(toPlaceIdItem)) {
                                 // si param ok
@@ -833,7 +866,7 @@ class Commandes {
                                 if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
                                     idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
                                     this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
-                                    let collectXP = CraftSystem.getXPCollect(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
                                     let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
                                     if (idToCollect) {
                                         this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
@@ -1243,7 +1276,7 @@ class Commandes {
             }
 
             msg != "" ? message.channel.send(msg).catch((error) => {
-                message.author.send(error.message);
+                message.author.send(error.message).catch((e) => {console.log(e)});
             }) : null;
         }
 
@@ -1342,6 +1375,15 @@ class Commandes {
                     "::mksearch \"<itemName>\" <level> <page> : " + Translator.getString(lang, "help_panel", "mksearch") + "\n" +
                     "::mkshow <page> : " + Translator.getString(lang, "help_panel", "mkshow") + "\n" +
                     "::mksee <idItem> : " + Translator.getString(lang, "help_panel", "mksee") + "\n";
+                break;
+
+                case 4:
+                str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                    "[" + Translator.getString(lang, "help_panel", "craft_title") + "]\n" +
+                    "::grp : " + Translator.getString(lang, "help_panel", "grp") + "\n" +
+                    "::grpinvite @mention : " + Translator.getString(lang, "help_panel", "grpinvite_mention") + "\n" +
+                    "::grpleave : " + Translator.getString(lang, "help_panel", "grpleave") + "\n";
                 break;
         }
         str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
