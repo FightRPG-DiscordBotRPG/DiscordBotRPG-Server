@@ -24,18 +24,19 @@ class CraftingBuilding {
     }
 
     getCraftingList(page) {
+        page = Number.parseInt(page ? page : 1);
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC`,
+                                WHERE itemsbase.idRarity <= ?`,
             [this.maxRarity])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
         let res = conn.query(`SELECT * FROM craftitem
                     INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
                     WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT ? OFFSET ?`,
-            [this.maxRarity, perPage, page - 1]);
+            [this.maxRarity, perPage, (page - 1) * perPage]);
 
 
 
@@ -49,7 +50,7 @@ class CraftingBuilding {
         let crafts = res.res;
         if (crafts.length > 0) {
             for (let craft of crafts) {
-                str += craft.idBaseItem + " - " + craft.nomItem + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                str += craft.idCraftItem + " - " + craft.nomItem + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
             }
             str += "\n";
         } else {
