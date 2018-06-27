@@ -70,6 +70,8 @@ class CharacterInventory {
         this.objects[idEmplacement].number -= number;
         if (this.objects[idEmplacement].number <= 0) {
             this.deleteFromInventory(idEmplacement, deleteObject);
+        } else {
+            conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, this.objects[idEmplacement].id])
         }
     }
 
