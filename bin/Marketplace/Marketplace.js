@@ -36,7 +36,7 @@ class Marketplace {
         let perPage = 5;
         let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ?", [this.id, idCharacter])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
-        let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, page - 1]);
+        let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, (page - 1) * perPage]);
         return { res: res, maxPage: maxPage, page: page };
     }
 
@@ -54,7 +54,7 @@ class Marketplace {
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
-            [this.id, itemName, level, perPage, page - 1]);
+            [this.id, itemName, level, perPage, (page - 1) * perPage]);
 
         return { res: res, maxPage: maxPage, page: page };
     }
