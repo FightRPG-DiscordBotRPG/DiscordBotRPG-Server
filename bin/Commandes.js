@@ -99,7 +99,7 @@ class Commandes {
                     }
                     break;
 
-                case "showcraft":
+                case "craftshow":
                     if(craftingbuilding != null) {
                         msg = craftingbuilding.craftToEmbed(messageArray[1], lang);
                     } else {
@@ -311,7 +311,7 @@ class Commandes {
                 /*
                 *   CONQUEST
                 */
-
+/*
                 case "claim":
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
                         err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character.idGuild, lang)
@@ -324,7 +324,7 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "area", "you_claimed");
                     }
-                    break;
+                    break;*/
 
                 /*
                 *   GUILDS
@@ -864,17 +864,25 @@ class Commandes {
                             //idToCollect = this.areasManager.getResourceId(this.connectedUsers[authorIdentifier].character.area, idToCollect);
                             if (resourceToCollect) {
                                 if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
-                                    idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
                                     this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
-                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                    
+                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), 
+                                    resourceToCollect.idRarity, true);
                                     let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
-                                    if (idToCollect) {
-                                        this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+
+                                    idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+                                    if(CraftSystem.haveCollectItem(this.connectedUsers[authorIdentifier].character.getStat("intellect"), resourceToCollect.idRarity)) {
+                                        if (idToCollect) {
+                                            this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+                                        } else {
+                                            let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
+                                            this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                        }
+                                        msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
                                     } else {
-                                        let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
-                                        this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                        msg = Translator.getString(lang, "resources", "not_collected") + "\n";
                                     }
-                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
+                                      
                                     msg += Translator.getString(lang, "resources", "collect_gain_xp", [collectXP]) + "\n";
 
                                     if(collectCraftUP > 0) {
@@ -1296,7 +1304,7 @@ class Commandes {
     // Return string or embed
     helpPanel(lang, page) {
         let str = "";
-        let maxPage = 3;
+        let maxPage = 4;
         page = page && page > 0 && page <= maxPage ? page : 1;
 
         switch (page) {
@@ -1381,9 +1389,10 @@ class Commandes {
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "craft_title") + "]\n" +
-                    "::grp : " + Translator.getString(lang, "help_panel", "grp") + "\n" +
-                    "::grpinvite @mention : " + Translator.getString(lang, "help_panel", "grpinvite_mention") + "\n" +
-                    "::grpleave : " + Translator.getString(lang, "help_panel", "grpleave") + "\n";
+                    "::craftlist <page>: " + Translator.getString(lang, "help_panel", "craftlist") + "\n" +
+                    "::craftshow <idCraft> : " + Translator.getString(lang, "help_panel", "craftshow") + "\n" +
+                    "::craft <idCraft> : " + Translator.getString(lang, "help_panel", "craft") + "\n" +
+                    "::collect <idResource> : " + Translator.getString(lang, "help_panel", "collect") + "\n";
                 break;
         }
         str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
