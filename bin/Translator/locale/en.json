@@ -97,11 +97,16 @@
     "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela",
 
     "craft_no_building": "There is no crafting building active here",
-    "craft_dont_exist" : "This blueprint is unavailable"
+    "craft_dont_exist" : "This blueprint is unavailable",
+    "craft_dont_have_required_level": "You dont have the minimum required level to craft this item. You must be at least level : %d",
+    "craft_dont_have_required_items": "You don't have all the required resources to craft this item",
+    "craft_tired_wait_x_seconds" : "You are too tired to craft an item, you still have to wait: %s seconds"
   },
   "craft" : {
-    "header" : "Name - Type - Subtype - Rarity - Number",
-    "needed_items" : "Needed Items"
+    "header_required" : "Name - Type - Subtype - Rarity - Number",
+    "header_craft_list" : "ID - Name - Minimum Lvl. - Maximum Lvl. - Rarity",
+    "needed_items" : "Needed Items",
+    "craft_done": "You have made the following item : \"%s\""
   },
   "marketplace" : {
     "placed": "Votre objet à été mis en vente",
