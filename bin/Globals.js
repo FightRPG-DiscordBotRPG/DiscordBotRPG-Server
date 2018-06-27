@@ -51,9 +51,9 @@ let rarityChances = {
 let collectChances = {
     commun: 50 / 100,
     rare: 30 / 100,
-    superieur: 20 / 100,
-    epique: 7 / 100,
-    legendaire: 3 / 100,
+    superieur: 9 / 100,
+    epique: 1.5 / 100,
+    legendaire: 0.8 / 100,
 }
 
 var Globals = {
