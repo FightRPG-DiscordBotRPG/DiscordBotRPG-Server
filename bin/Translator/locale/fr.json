@@ -98,8 +98,8 @@
 
     "craft_no_building": "Il n'y a pas de batîment de craft d'actif dans cette zone",
     "craft_dont_exist" : "Cette recette n'est pas disponible",
-    "craft_dont_have_required_level": "Vous n'avez pas le niveau minimum requis pour fabriquer cet objet, vous devez être au moins niveau : %d",
-    "craft_dont_have_required_items": "Vous n'avez pas tous les ressources requises pour fabriquer cet objet",
+    "craft_dont_have_required_level": "Vous n'avez pas le niveau minimum de fabrication requis pour fabriquer cet objet, vous devez être au moins niveau : %d",
+    "craft_dont_have_required_items": "Vous n'avez pas toutes les ressources requises pour fabriquer cet objet",
     "craft_tired_wait_x_seconds" : "Vous êtes trop fatigué pour fabriquer des objets vous devez encore attendre : %s secondes"
   },
   "craft" : {
@@ -167,6 +167,7 @@
     "plants": "Plantes",
 
     "noresources" : "Pas de ressources ici",
+    "not_collected" : "Vous n'avez pas réussi a récolter la ressource",
 
     "collected_x_resource" : "Vous avez récolté %d %s",
     "resource_dont_exist" : "Vous ne voyez cette ressource nulle part",
@@ -403,7 +404,15 @@
      "mkbuy" : "Achète <nb> de l'objet <idItem>",
      "mksearch" : "Recherche l'objet par son nom et son niveau",
      "mkshow" : "Affiche touche les objets du marhcé à la page choisie",
-     "mksee" : "Affiche l'objet <idItem>"
+     "mksee" : "Affiche l'objet <idItem>",
+     
+     "craft_title" : "Métiers",
+     "craftlist" : "Affiche la liste des recettes disponibles dans la ville, a la page souhaité",
+     "craftshow" : "Affiche la recette d'identifiant idCraft",
+     "craft" : "Fabrique l'objet dont l'id est passé en paramètre",
+     "collect" : "Collecte la ressource dont l'id est passé en paramètre"
+
+     
 
    }
 }

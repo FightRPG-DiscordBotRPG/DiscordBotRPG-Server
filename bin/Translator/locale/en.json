@@ -167,6 +167,7 @@
     "plants": "Plants",
 
     "noresources" : "No resources here",
+    "not_collected" : "You didn't succeed to collect this resource",
 
     "collected_x_resource" : "You've collected %d %s",
     "resource_dont_exist" : "You don't see this resource anywhere",
@@ -403,7 +404,13 @@
      "mkbuy" : "Achète <nb> de l'objet <idItem>",
      "mksearch" : "Search for the object by his name and his level",
      "mkshow" : "Show all objets in the market at given page",
-     "mksee" : "Affiche l'objet <idItem>"
+     "mksee" : "Affiche l'objet <idItem>",
+     
+     "craft_title" : "Job System",
+     "craftlist" : "Show all the available recipes in this city at given page",
+     "craftshow" : "Show the recipe of given id",
+     "craft" : "Craft the recipe of given id",
+     "collect" : "Collect the rousource of given id"
 
    }
 }
