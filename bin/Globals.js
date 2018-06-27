@@ -48,6 +48,14 @@ let rarityChances = {
     legendaire: 0.2 / 100,
 }
 
+let collectChances = {
+    commun: 50 / 100,
+    rare: 30 / 100,
+    superieur: 20 / 100,
+    epique: 7 / 100,
+    legendaire: 3 / 100,
+}
+
 var Globals = {
     "maxLevel": maxLevel,
     "maxStatsId": maxStatsId,
@@ -80,6 +88,7 @@ var Globals = {
     ],
     "equipsPossible": equipsPossible,
     "rarityChances": rarityChances,
+    "collectChances":collectChances,
     "areasTypes": areasTypes,
     "chanceToFightTheMonsterYouWant": 0.63,
     "resetStatsPricePerLevel": 250,
