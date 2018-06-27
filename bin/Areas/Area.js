@@ -126,9 +126,15 @@ class Area {
     }
 
     getResources(lang) {
-        let strWoods =  Translator.getString(lang, "resources", "woods") + "\n";
-        let strStones = Translator.getString(lang, "resources", "ores") + "\n";
-        let strHerbs =  Translator.getString(lang, "resources", "plants") + "\n";
+        let strWoodsHeader = Translator.getString(lang, "resources", "woods") + "\n";
+        let strWoods = "";
+
+        let strStonesHeader = Translator.getString(lang, "resources", "ores") + "\n";
+        let strStones = "";
+
+        let strHerbsHeader = Translator.getString(lang, "resources", "plants") + "\n";
+        let strHerbs = "";
+
         let str = "```" + Translator.getString(lang, "area", "resources") + "\n";
         let tempString = "";
         //let id = 0;
@@ -136,7 +142,7 @@ class Area {
         for (let i = 0; i < this.resources.length; i++) {
             // On créer d'abord la vue de l'objet
             //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
-            tempString = Translator.getString(lang, "area", "resource", [i + 1, this.resources[i]["nomItem"], this.resources[i]["nomRarity"]]) + "\n\n";
+            tempString = Translator.getString(lang, "area", "resource", [i + 1, this.resources[i]["nomItem"], Translator.getString(lang, "rarities", this.resources[i]["nomRarity"])]) + "\n\n";
 
             switch (this.resources[i]["nomSousType"]) {
                 case "wood":
@@ -154,7 +160,7 @@ class Area {
         if (this.resources.length === 0) {
             str += Translator.getString(lang, "resources", "noresources");
         } else {
-            str += strWoods + strStones + strHerbs;
+            str += strWoods.length > 0 ? strWoodsHeader + strWoods : "" + strStones.length > 0 ? strStonesHeader + strStones : "" + strHerbs.length > 0 ? strHerbsHeader + strHerbs : "";
         }
          
         return str + "```";
