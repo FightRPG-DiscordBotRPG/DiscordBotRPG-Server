@@ -145,6 +145,148 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
 
---INSERT INTO craftitem VALUES (NULL, 20, 1, 1);
---INSERT INTO craftitemsneeded VALUES (1, 20, 3), (1, 22, 1);
+--- Ajout des ressources
+
+-- ORe plant wood
+-- id nom desc type rarity image idsoustype
+
+-- Wood | Ore | Plants
+INSERT INTO itemsbase VALUES 
+(null, "Bois de Châtaignier", "", 5, 2, "unknown", 3),
+(null, "Bois d'ébène", "", 5, 3, "unknown", 3),
+(null, "Bois de Sapin centenaire", "", 5, 4, "unknown", 3),
+(null, "Bois d'Orme enchanté", "", 5, 5, "unknown", 3),
+
+(null, "Fer affiné", "", 5, 2, "unknown", 1),
+(null, "Argent scintillante", "", 5, 3, "unknown", 1),
+(null, "Adamantium", "", 5, 4, "unknown", 1),
+(null, "Crystal éthérien", "", 5, 5, "unknown", 1),
+
+(null, "Roseau solitaire", "", 5, 2, "unknown", 2),
+(null, "Coton", "", 5, 3, "unknown", 2),
+(null, "Ronces du Chaos", "", 5, 4, "unknown", 2),
+(null, "Lianes cinglantes", "", 5, 5, "unknown", 2);
+
+
+
+DELETE FROM areasresources
+
+INSERT INTO areasresources VALUES 
+(1, 20, 1),
+(1, 27, 4),
+(1, 28, 7),
+(1, 29, 12),
+
+(2, 22, 1),
+(2, 35, 4),
+(2, 36, 7),
+(2, 37, 12),
+(2, 38, 15),
+
+(3, 21, 1),
+(3, 31, 4),
+(3, 32, 7),
+(3, 33, 12),
+(3, 34, 15),
+
+(4, 30, 15);
+
+-- 1 - 10 
+-- Commun
+INSERT INTO craftitem VALUES (NULL, 10, 1, 1);
+INSERT INTO craftitemsneeded VALUES (1, 20, 2), (1, 22, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 4);
+INSERT INTO craftitemsneeded VALUES (2, 20, 1), (2, 22, 2);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 7);
+INSERT INTO craftitemsneeded VALUES (3, 20, 1), (3, 22, 2);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 10);
+INSERT INTO craftitemsneeded VALUES (4, 20, 1), (4, 22, 2);
+
+-- Rare
+INSERT INTO craftitem VALUES (NULL, 10, 1, 2);
+INSERT INTO craftitemsneeded VALUES (5, 35, 1), (5, 31, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 5);
+INSERT INTO craftitemsneeded VALUES (6, 35, 1), (6, 31, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 8);
+INSERT INTO craftitemsneeded VALUES (7, 35, 1), (7, 31, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 11);
+INSERT INTO craftitemsneeded VALUES (8, 35, 1), (8, 31, 1);
+
+-- Supérieur
+INSERT INTO craftitem VALUES (NULL, 10, 1, 3);
+INSERT INTO craftitemsneeded VALUES (9, 36, 1), (9, 32, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 6);
+INSERT INTO craftitemsneeded VALUES (10, 36, 1), (10, 32, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 9);
+INSERT INTO craftitemsneeded VALUES (11, 36, 1), (11, 32, 1);
+
+INSERT INTO craftitem VALUES (NULL, 10, 1, 12);
+INSERT INTO craftitemsneeded VALUES (12, 36, 1), (12, 32, 1);
+
+-- 10 - 15
+-- Supérieur
+INSERT INTO craftitem VALUES (NULL, 15, 10, 3);
+INSERT INTO craftitemsneeded VALUES (13, 36, 1), (13, 32, 1), (13, 28, 1);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 6);
+INSERT INTO craftitemsneeded VALUES (14, 36, 2), (14, 32, 1);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 9);
+INSERT INTO craftitemsneeded VALUES (15, 36, 2), (15, 32, 1);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 12);
+INSERT INTO craftitemsneeded VALUES (16, 36, 2), (16, 32, 1);
+
+-- Epic
+INSERT INTO craftitem VALUES (NULL, 15, 10, 14);
+INSERT INTO craftitemsneeded VALUES (17, 35, 1), (17, 33, 1), (17, 29, 1);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 15);
+INSERT INTO craftitemsneeded VALUES (18, 31, 1), (18, 33, 2);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 18);
+INSERT INTO craftitemsneeded VALUES (19, 31, 1), (19, 33, 2);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 19);
+INSERT INTO craftitemsneeded VALUES (20, 31, 1), (20, 33, 2);
+
+-- 15 - 20
+-- Epic
+INSERT INTO craftitem VALUES (NULL, 15, 10, 14);
+INSERT INTO craftitemsneeded VALUES (21, 35, 2), (21, 33, 1), (21, 29, 1);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 15);
+INSERT INTO craftitemsneeded VALUES (22, 31, 2), (22, 33, 2);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 18);
+INSERT INTO craftitemsneeded VALUES (23, 31, 2), (23, 33, 2);
+
+INSERT INTO craftitem VALUES (NULL, 15, 10, 19);
+INSERT INTO craftitemsneeded VALUES (24, 31, 2), (24, 33, 2);
+
+-- Légendaire
+INSERT INTO craftitem VALUES (NULL, 20, 15, 13);
+INSERT INTO craftitemsneeded VALUES (25, 29, 1), (25, 37, 1), (25, 34, 1);
+
+INSERT INTO craftitem VALUES (NULL, 20, 15, 16);
+INSERT INTO craftitemsneeded VALUES (26, 38, 1), (26, 37, 2);
+
+INSERT INTO craftitem VALUES (NULL, 20, 15, 17);
+INSERT INTO craftitemsneeded VALUES (27, 38, 1), (27, 37, 2);
+
+INSERT INTO craftitem VALUES (NULL, 20, 15, 26);
+INSERT INTO craftitemsneeded VALUES (28, 38, 1), (28, 37, 2);
+
+
+
+
+
 
