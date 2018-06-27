@@ -39,26 +39,12 @@ ADD CONSTRAINT `fk_AreasResources_LevelsRequire1`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
-
 -- Insert for all characters
 INSERT INTO characterscraftlevel (idCharacter) SELECT characters.idCharacter FROM characters
 
 
-
-INSERT IGNORE INTO craftbuilding (idArea)
-SELECT idArea
-FROM areas
-INNER JOIN areastypes
-ON areas.idAreaType = areastypes.idAreaType
-WHERE areastypes.NomAreaType = "city"
-
 -- MySQL Workbench Synchronization
--- Generated: 2018-06-27 12:50
+-- Generated: 2018-06-27 20:38
 -- Model: New Model
 -- Version: 1.0
 -- Project: Name of the project
@@ -76,7 +62,6 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`craftitem` (
   PRIMARY KEY (`idCraftItem`),
   INDEX `fk_CraftItem_LevelsRequire1_idx` (`maxLevel` ASC),
   INDEX `fk_CraftItem_LevelsRequire2_idx` (`minLevel` ASC),
-  UNIQUE INDEX `idCraftItem_UNIQUE` (`idCraftItem` ASC),
   INDEX `fk_CraftItem_ItemsBase1_idx` (`idBaseItem` ASC),
   CONSTRAINT `fk_CraftItem_LevelsRequire1`
     FOREIGN KEY (`maxLevel`)
@@ -145,6 +130,14 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
 
+
+
+INSERT IGNORE INTO craftbuilding (idArea)
+SELECT idArea
+FROM areas
+INNER JOIN areastypes
+ON areas.idAreaType = areastypes.idAreaType
+WHERE areastypes.NomAreaType = "city"
 --- Ajout des ressources
 
 -- ORe plant wood
