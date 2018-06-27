@@ -20,11 +20,10 @@ console.log("Bot Starting ...");
 
 console.log(Globals);
 
-
 bot.on("ready", () => {
     bot.user.setPresence({
         game: {
-            name: "Aucun Joueur !",
+            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
         },
     });
 
@@ -74,6 +73,22 @@ bot.on('message', (message) => {
     }
     
 
+});
+
+bot.on('guildCreate', () => {
+    bot.user.setPresence({
+        game: {
+            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
+        },
+    });
+});
+
+bot.on('guildDelete', () => {
+    bot.user.setPresence({
+        game: {
+            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
+        },
+    });
 });
 
 
