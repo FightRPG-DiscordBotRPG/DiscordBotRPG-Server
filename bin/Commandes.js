@@ -242,8 +242,8 @@ class Commandes {
                         if (idOrderToBuy != null && Number.isInteger(idOrderToBuy)) {
                             numberOrderToBuy = numberOrderToBuy != null && Number.isInteger(numberOrderToBuy) ? numberOrderToBuy : 1;
                             let orderToBuy = marketplace.getThisOrder(idOrderToBuy);
-                            numberOrderToBuy = numberOrderToBuy <= 0 ? 1 : (numberOrderToBuy <= orderToBuy.number ? numberOrderToBuy : orderToBuy.number);
                             if (orderToBuy != null) {
+                                numberOrderToBuy = numberOrderToBuy <= 0 ? 1 : (numberOrderToBuy <= orderToBuy.number ? numberOrderToBuy : orderToBuy.number);
                                 if (orderToBuy.idCharacter !== this.connectedUsers[authorIdentifier].character.id) {
                                     if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
                                         temp = conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter])[0]["idUser"];
