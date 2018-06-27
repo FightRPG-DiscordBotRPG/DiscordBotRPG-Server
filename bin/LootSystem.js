@@ -111,6 +111,57 @@ class LootSystem {
 
     }
 
+    // Return id of new item if created
+    newItem(idBase, level) {
+        let res = conn.query(`SELECT * FROM itemsbase WHERE itemsbase.idBaseItem = ?`, [idBase]);
+        if(res[0]) {
+            let rarity = res[0].idRarity;
+            let stats = {};
+            let statsPossible = Object.keys(Globals.statsIds);
+            let alreadyDone = rarity - 1;
+            let objectType = res[0]["idType"];
+    
+            let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
+            ratio = ratio / 100 * rarity / 5;
+    
+    
+            if (objectType === 1) {
+                //Une arme
+                stats.strength = Math.ceil(level * ratio * 2);
+            } else {
+                stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+            }
+    
+            while (alreadyDone > 0) {
+                ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
+                ratio = ratio / 100 * rarity / 5; 
+                let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
+                while (stats[r]) {
+                    r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
+                }
+    
+                if (r != "armor") {
+                    stats[r] = Math.ceil(level * ratio * 2);
+                } else {
+                    stats[r] = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+                }
+    
+    
+                alreadyDone--;
+            }
+
+            let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + idBase + ", " + level + ")")["insertId"];
+            for (let i in stats) {
+                conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")");
+            }
+
+            return idInsert;
+
+        }
+
+        return -1;
+    }
+
 }
 
 module.exports = LootSystem;
