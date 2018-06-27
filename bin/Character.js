@@ -349,9 +349,6 @@ class Character extends WorldEntity {
             if(gotAllItems) {
 
                 // On del les objets requis
-                for(let i in craft.requiredItems) {
-
-                }
                 for(let i in items) {
                     for(let j in craft.requiredItems) {
                         if(items[i].item.idBaseItem === craft.requiredItems[j].idBase) {
