@@ -64,6 +64,7 @@
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "version": "1.0.2"
     },
+    "dblapi.js": "^2.1.0",
     "discord.js": "^11.3.2",
     "express": "^4.16.3",
     "express-rate-limit": "^2.11.0",

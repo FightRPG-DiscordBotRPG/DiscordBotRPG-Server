@@ -3,12 +3,10 @@ const Commandes = require("./bin/Commandes.js")
 const Discord = require("discord.js");
 const Key = require("./conf/botkey.js");
 const FightManager = require("./bin/FightManager");
-const User = require("./bin/User");
-const conn = require("./conf/mysql.js");
 const Globals = require("./bin/Globals.js");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
-const Translator = require("./bin/Translator/Translator");
+const conf = require("./conf/conf");
 
 
 var bot = new Discord.Client();
@@ -23,11 +21,20 @@ console.log(Globals);
 bot.on("ready", () => {
     bot.user.setPresence({
         game: {
-            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
+            name: "On " + bot.guilds.size + " guilds !",
         },
     });
 
     console.log("Bot Ready");
+    if(conf.env === "prod") {
+        const DBL = require("dblapi.js");
+        const dbl = new DBL(conf.discordbotskey, client);
+        
+        setInterval(() => {
+            dbl.postStats(bot.guilds.size, bot.shards.Id, bot.shards.total);
+        }, 1800000);
+    }
+
 });
 
 // Key Don't open
@@ -78,7 +85,7 @@ bot.on('message', (message) => {
 bot.on('guildCreate', () => {
     bot.user.setPresence({
         game: {
-            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
+            name: "On " + bot.guilds.size + " guilds !",
         },
     });
 });
@@ -86,7 +93,7 @@ bot.on('guildCreate', () => {
 bot.on('guildDelete', () => {
     bot.user.setPresence({
         game: {
-            name: "On " + bot.guilds.reduce((acc) => acc + 1, 0) + " guilds !",
+            name: "On " + bot.guilds.size + " guilds !",
         },
     });
 });
