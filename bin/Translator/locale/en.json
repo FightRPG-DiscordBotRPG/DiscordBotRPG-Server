@@ -104,7 +104,7 @@
   },
   "craft" : {
     "header_required" : "Name - Type - Subtype - Rarity - Number",
-    "header_craft_list" : "ID - Name - Minimum Lvl. - Maximum Lvl. - Rarity",
+    "header_craft_list" : "ID - Name - Type - Minimum Lvl. - Maximum Lvl. - Rarity",
     "needed_items" : "Needed Items",
     "craft_done": "You have made the following item : \"%s\""
   },

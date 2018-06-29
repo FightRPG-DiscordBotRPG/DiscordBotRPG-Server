@@ -35,6 +35,7 @@ class CraftingBuilding {
 
         let res = conn.query(`SELECT * FROM craftitem
                     INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
+                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
                     WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT ? OFFSET ?`,
             [this.maxRarity, perPage, (page - 1) * perPage]);
 
@@ -50,7 +51,7 @@ class CraftingBuilding {
         let crafts = res.res;
         if (crafts.length > 0) {
             for (let craft of crafts) {
-                str += craft.idCraftItem + " - " + craft.nomItem + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                str += craft.idCraftItem + " - " + craft.nomItem + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
             }
             str += "\n";
         } else {

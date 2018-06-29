@@ -104,7 +104,7 @@
   },
   "craft" : {
     "header_required" : "Nom - Type - Sous-Type - Rareté - Nombre",
-    "header_craft_list" : "ID - Nom - Niv. Minimum - Niv. Maximum - Rareté",
+    "header_craft_list" : "ID - Nom - Type - Niv. Minimum - Niv. Maximum - Rareté",
     "needed_items" : "Objets requis",
     "craft_done": "Vous avez fabriqué l'objet suivant : \"%s\""
   },
