@@ -880,7 +880,7 @@ class Commandes {
                                         if (idToCollect) {
                                             this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
                                         } else {
-                                            let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
+                                            let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
                                             this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
                                         }
                                         msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
