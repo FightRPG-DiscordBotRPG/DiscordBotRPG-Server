@@ -21,7 +21,7 @@ class CraftSystem {
 
     static haveCollectItem(intellect, collectRarity) {
         let chance = Math.random();
-        let luckModifier = intellect / 100 + 1;
+        let luckModifier = intellect / 200 + 1;
         //console.log(chance);
         let chanceToGet = 0;
 
