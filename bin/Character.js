@@ -322,6 +322,14 @@ class Character extends WorldEntity {
         return value;
     }
 
+    setItemFavoriteInv(idEmplacement, fav) {
+        this.inv.getItem(idEmplacement).setFavorite(fav ? fav : false);
+    }
+
+    setItemFavoriteEquip(idEquip, fav) {
+        this.equipement.getItem(idEquip).setFavorite(fav ? fav : false);
+    }
+
     // Craft
     isCraftable(craft) {
         return craft.itemInfo.minLevel <= this.getCraftLevel();
@@ -380,7 +388,7 @@ class Character extends WorldEntity {
             // Je doit créer un nouvel item
             let item = this.inv.getItem(idEmplacement);
             //idItem = Item.createNew(item.idBaseItem, item.level);
-            idItem = conn.query("INSERT INTO items VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
+            idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
             idItem = this.inv.getIdItemOfThisEmplacement(idEmplacement);
@@ -423,7 +431,7 @@ class Character extends WorldEntity {
                 if (inventoryItemID != null) {
                     this.inv.addToInventory(inventoryItemID, number);
                 } else {
-                    let idItem = conn.query("INSERT INTO items VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
+                    let idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
                     this.inv.addToInventory(idItem, number);
                 }
             }
@@ -485,12 +493,20 @@ class Character extends WorldEntity {
         return this.inv.doIHaveThisItem(itemId);
     }
 
+    haveThisObjectEquipped(idEmplacement) {
+        return this.equipement.getItem(idEmplacement);
+    }
+
     getAmountOfThisItem(idEmplacement) {
         return this.inv.getItem(idEmplacement).number;
     }
 
     getIdOfThisIdBase(idBaseItem) {
         return this.inv.getIdOfThisIdBase(idBaseItem);
+    }
+    
+    isItemFavorite(idEmplacement) {
+        return this.inv.getItem(idEmplacement).isFavorite;
     }
 
     /**

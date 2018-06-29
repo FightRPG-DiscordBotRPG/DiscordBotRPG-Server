@@ -96,15 +96,18 @@ class CharacterInventory {
         let empty = true;
 
         // Update database inventory
-        conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id);
+        conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
 
         // Then delete all items
         for (let i in this.objects) {
             //conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id + " AND idItem = " + this.objects[i].id);
-            this.objects[i].deleteItem();
-            delete this.objects[i];
+            if(!this.objects[i].isFavorite) {
+                this.objects[i].deleteItem();
+                delete this.objects[i];
+    
+                empty = false;
+            }
 
-            empty = false;
         }
 
 
@@ -120,7 +123,9 @@ class CharacterInventory {
     getAllInventoryValue() {
         let value = 0;
         for (let i in this.objects) {
-            value += this.objects[i].getCost();
+            if(!this.objects[i].isFavorite) {
+                value += this.objects[i].getCost();
+            }
         }
         return value;
     }
@@ -171,10 +176,10 @@ class CharacterInventory {
      */
     seeThisItem(idEmplacement, compareStats, lang) {
         let embed = new Discord.RichEmbed()
-            .setAuthor(this.objects[idEmplacement].name, Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
+            .setAuthor(this.objects[idEmplacement].name + (this.objects[idEmplacement].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
             .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " (" + Translator.getString(lang, "item_sous_types", this.objects[idEmplacement].sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[idEmplacement].getPower() + "%"
-            , this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            , this.objects[idEmplacement].desc != null ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang));
         return embed;
     }

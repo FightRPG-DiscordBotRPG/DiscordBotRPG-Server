@@ -102,7 +102,7 @@ class LootSystem {
 
 
         
-        let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + idItemBase + ", " + level + ")")["insertId"];
+        let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idItemBase + ", " + level + ")")["insertId"];
         for (let i in stats) {
             conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")");
         }
@@ -150,7 +150,7 @@ class LootSystem {
                 alreadyDone--;
             }
 
-            let idInsert = conn.query("INSERT INTO items VALUES(NULL, " + idBase + ", " + level + ")")["insertId"];
+            let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idBase + ", " + level + ")")["insertId"];
             for (let i in stats) {
                 conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")");
             }

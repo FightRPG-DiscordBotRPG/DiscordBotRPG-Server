@@ -95,6 +95,7 @@
     "marketplace_id_to_buy_forgotten" : "Vous devez choisir l'objet à acheter",
     "marketplace_order_yours" : "Vous ne pouvez pas acheter votre propre marchandise",
     "marketplace_not_enough_money" : "Vous n'avez pas assez d'argent pour faire cela",
+    "marketplace_favorite_sell_impossible" : "Vous ne pouvez pas mettre en vente un objet marqué comme favori",
 
     "craft_no_building": "Il n'y a pas de batîment de craft d'actif dans cette zone",
     "craft_dont_exist" : "Cette recette n'est pas disponible",
@@ -236,7 +237,9 @@
     "attributes" : "Attributs",
     "nothing_in_this_slot" : "Vous n'avez pas d'objet équipé dans cet emplacement",
     "nothing_equipped" : "Vous n'avez pas d'objets d'équipé",
-    "power" : "Puissance"
+    "power" : "Puissance",
+    "item_tag_as_favorite" : "Cet objet est maintenant marqué comme favori",
+    "item_untag_as_favorite" : "Cet objet n'est désormais plus marqué comme favori"
   },
   "character" : {
     "reset_done" : "Réinitialisation terminée !",
@@ -342,6 +345,8 @@
      "inventory_title" : "Inventaire",
      "inv" : "Affiche l'inventaire",
      "item" : "Affiche les informations sur l'objet choisi",
+     "itemfav" : "Marque un objet comme favori pour empêcher sa vente",
+     "itemunfav" : "Enlève la marque favori d'un objet pour qu'il puisse être vendu",
      "sell" : "Vend l'objet choisi",
      "sellall" : "Vend tous les objets de l'inventaire",
 

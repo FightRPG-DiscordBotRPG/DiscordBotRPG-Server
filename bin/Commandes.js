@@ -37,6 +37,7 @@ class Commandes {
         let apPage;
         let nb;
         let temp;
+        let doIHaveThisItem = false;
 
         if (command !== undefined && !message.author.bot && message.content.startsWith(this.prefix)) {
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
@@ -181,18 +182,23 @@ class Commandes {
                                         // nb = amount of player items
                                         nb = this.connectedUsers[authorIdentifier].character.getAmountOfThisItem(toPlaceIdItem);
                                         if (nb >= nbOfItemsToPlace) {
-                                            if (this.areasManager.haveOwner(this.connectedUsers[authorIdentifier].character.area)) {
-                                                if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(priceToPlace * marketplace.getTax())) {
-                                                    // enlever la taxe
+                                            if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(toPlaceIdItem)) {
+                                                if (this.areasManager.haveOwner(this.connectedUsers[authorIdentifier].character.area)) {
+                                                    if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(priceToPlace * marketplace.getTax())) {
+                                                        // enlever la taxe
+                                                        this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
+                                                        msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                                    } else {
+                                                        msg = Translator.getString(lang, "errors", "marketplace_not_enough_to_pay_tax");
+                                                    }
+                                                } else {
                                                     this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
                                                     msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
-                                                } else {
-                                                    msg = Translator.getString(lang, "errors", "marketplace_not_enough_to_pay_tax");
                                                 }
                                             } else {
-                                                this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
-                                                msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                                msg = Translator.getString(lang, "errors", "marketplace_favorite_sell_impossible");
                                             }
+
 
                                         } else {
                                             msg =Translator.getString(lang, "errors", "marketplace_not_this_number_of_item");
@@ -911,8 +917,7 @@ class Commandes {
 
                 case "item":
                     let idItemToSee = parseInt(messageArray[1], 10);
-                    let doIHaveThisItem = false;
-                    msg = "";
+                    doIHaveThisItem = false;
                     if (idItemToSee !== undefined && Number.isInteger(idItemToSee)) {
                         //msg = this.connectedUsers[authorIdentifier].character.inv.seeThisItem(invIdItem);
                         //msg = this.connectedUsers[authorIdentifier].character.inv.toStr(invPage);
@@ -936,6 +941,55 @@ class Commandes {
                             msg = "```" + Translator.getString(lang, "errors", "item_choose_id_or_equipement") + "```";
                         }
 
+                    }
+                    break;
+
+                case "itemfav": 
+                    let idItemToFav = parseInt(messageArray[1], 10);
+                    if(idItemToFav !== undefined && Number.isInteger(idItemToFav)) {
+                        if(this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToFav)) {
+                            this.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToFav, true);
+                            msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
+                        } else {
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                        }
+                    } else {
+                        idItemToFav = this.getEquipableIDType(messageArray[1]);
+                        if(idItemToFav > 0) {
+                            if(this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToFav) != null) {
+                                this.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToFav, true);
+                                msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
+                            } else {
+                                msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                        }
+                    }
+                    break;
+
+                case "itemunfav": 
+                    let idItemToUnFav = parseInt(messageArray[1], 10);
+                    if(idItemToUnFav !== undefined && Number.isInteger(idItemToUnFav)) {
+                        if(this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToUnFav)) {
+                            this.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToUnFav, false);
+                            msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
+                        } else {
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                        }
+                    } else {
+                        idItemToUnFav = this.getEquipableIDType(messageArray[1]);
+                        if(idItemToUnFav > 0) {
+                            if(this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToUnFav) != null) {
+                                this.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToUnFav, false);
+                                msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
+                            } else {
+                                msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                            }
+
+                        } else {
+                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
+                        }
                     }
                     break;
 
@@ -1021,12 +1075,23 @@ class Commandes {
                     msg = "";
                     if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.area)) {
                         if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
-                            let itemValue = this.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
-                            if (itemValue > 0) {
-                                msg = numberOfItemsToSell == 1 ? Translator.getString(lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(lang, "economic", "sell_for_x_plural", [itemValue]);
+                            if(this.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
+                                if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
+                                    let itemValue = this.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
+                                    if (itemValue > 0) {
+                                        msg = numberOfItemsToSell == 1 ? Translator.getString(lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(lang, "economic", "sell_for_x_plural", [itemValue]);
+                                    } else {
+                                        // N'arrivera jamais normalement mais bon
+                                        msg = Translator.getString(lang, "errors", "item_you_dont_have");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "item_cant_sell_favorite");
+                                }
                             } else {
                                 msg = Translator.getString(lang, "errors", "item_you_dont_have");
                             }
+
+
                         } else {
                             msg = Translator.getString(lang, "errors", "economic_enter_id_item_to_sell");
                         }
@@ -1319,6 +1384,8 @@ class Commandes {
                     "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
                     "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
                     "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
+                    "::itemfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemfav") + "\n" +
+                    "::itemunfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemunfav") + "\n" +
                     "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
                     "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
 
