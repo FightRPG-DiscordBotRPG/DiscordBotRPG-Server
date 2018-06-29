@@ -119,15 +119,19 @@ class Commandes {
     
                                         this.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
     
-                                        let craftXP = CraftSystem.getXP(this.connectedUsers[authorIdentifier].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), this.connectedUsers[authorIdentifier].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
+                                        // Seulement s'il n'est pas niveau max
+                                        if(this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                            let craftXP = CraftSystem.getXP(this.connectedUsers[authorIdentifier].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), this.connectedUsers[authorIdentifier].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
     
-                                        let craftCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(craftXP);
-    
-                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [craftXP]) + "\n";
-    
-                                        if(craftCraftUP > 0) {
-                                            msg +=  Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
+                                            let craftCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(craftXP);
+        
+                                            msg += Translator.getString(lang, "resources", "collect_gain_xp", [craftXP]) + "\n";
+        
+                                            if(craftCraftUP > 0) {
+                                                msg +=  Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
+                                            }
                                         }
+                                        
                                     } else {
                                         msg = Translator.getString(lang, "errors", "craft_dont_have_required_items");
                                     }
@@ -865,11 +869,6 @@ class Commandes {
                             if (resourceToCollect) {
                                 if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
                                     this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
-                                    
-                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), 
-                                    resourceToCollect.idRarity, true);
-                                    let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
-
                                     idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
                                     if(CraftSystem.haveCollectItem(this.connectedUsers[authorIdentifier].character.getStat("intellect"), resourceToCollect.idRarity)) {
                                         if (idToCollect) {
@@ -882,12 +881,18 @@ class Commandes {
                                     } else {
                                         msg = Translator.getString(lang, "resources", "not_collected") + "\n";
                                     }
-                                      
-                                    msg += Translator.getString(lang, "resources", "collect_gain_xp", [collectXP]) + "\n";
 
-                                    if(collectCraftUP > 0) {
-                                        msg +=  Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                                    // Si le joueur n'est pas max level en craft
+                                    if(this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                        let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                        let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
+                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [collectXP]) + "\n";
+                                        if(collectCraftUP > 0) {
+                                            msg +=  Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                                        }
                                     }
+                                      
+
                                 } else {
                                     msg = Translator.getString(lang, "errors", "collect_dont_have_required_level", [resourceToCollect.requiredLevel]);
                                 }
