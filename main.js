@@ -28,10 +28,10 @@ bot.on("ready", () => {
     console.log("Bot Ready");
     if(conf.env === "prod") {
         const DBL = require("dblapi.js");
-        const dbl = new DBL(conf.discordbotskey, client);
-        
+        const dbl = new DBL(conf.discordbotskey, bot);
+
         setInterval(() => {
-            dbl.postStats(bot.guilds.size, bot.shards.Id, bot.shards.total);
+            dbl.postStats(bot.guilds.size);
         }, 1800000);
     }
 
