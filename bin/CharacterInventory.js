@@ -233,6 +233,15 @@ class CharacterInventory {
         return -1;
     }
 
+    getEmplacementOfThisItemIdBase(idBase) {
+        for(let i in this.objects) {
+            if(this.objects[i].idBaseItem == idBase) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     getIdOfThisIdBase(idBaseItem) {
         for (let i in this.objects) {
             //console.log("This " + this.objects[i].idBaseItem + " vs " + idBaseItem)

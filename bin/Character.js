@@ -342,8 +342,8 @@ class Character extends WorldEntity {
     craft(craft) {
         let items = this.inv.getItemsOfThosesIds(craft.requiredItems.map((e) => e.idBase));
         let gotAllItems = true;
+        
         if(items.length === craft.requiredItems.length) {
-
             // Crack if got all of the required items
             for(let i in items) {
                 for(let j in craft.requiredItems) {
@@ -360,7 +360,7 @@ class Character extends WorldEntity {
                 for(let i in items) {
                     for(let j in craft.requiredItems) {
                         if(items[i].item.idBaseItem === craft.requiredItems[j].idBase) {
-                            this.inv.removeSomeFromInventory(items[i].index, craft.requiredItems[j].number, true);
+                            this.inv.removeSomeFromInventory(this.inv.getEmplacementOfThisItemIdBase(items[i].item.idBaseItem), craft.requiredItems[j].number, true);
                         }
                     }
                 }
