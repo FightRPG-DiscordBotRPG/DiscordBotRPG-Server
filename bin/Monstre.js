@@ -60,8 +60,6 @@ class Monstre extends WorldEntity {
 
     updateStats() {
         // Partie equipement
-        // TODO
-
         // Partie Stats
         // Con : 1 -> 10HP & Level : 1 -> 10HP
         this.maxHP = 10 + this.stats.constitution * 10;
@@ -82,7 +80,7 @@ class Monstre extends WorldEntity {
         let critique = this.stats.dexterity / max;
 
         // Cap to 50%;
-        critique = critique > .5 ? .5 : critique;
+        critique = critique > .75 ? .75 : critique;
 
         return Math.random() <= critique ? true : false;
 
@@ -107,7 +105,7 @@ class Monstre extends WorldEntity {
 
     // percentage reduction
     damageDefenceReduction() {
-        let reduction = Math.round(this.stats.armor / ((8 * (this.level ^ 2)) / 7 + 5));
+        let reduction = Math.round(this.stats.armor / ((8 * (this.level ^ 2)) / 7 + 5) * 0.5);
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 

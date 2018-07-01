@@ -137,7 +137,7 @@ class Character extends WorldEntity {
         let critique = (this.stats.dexterity + this.equipement.stats.dexterity) / max;
 
         // Cap to 50%;
-        critique = critique > .5 ? .5 : critique;
+        critique = critique > .75 ? .75 : critique;
 
         return Math.random() <= critique ? true : false;
 
@@ -162,7 +162,7 @@ class Character extends WorldEntity {
 
     // percentage reduction
     damageDefenceReduction() {
-        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (this.level ^ 2)) / 7 + 5));
+        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (this.level ^ 2)) / 7 + 5) * .5);
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
