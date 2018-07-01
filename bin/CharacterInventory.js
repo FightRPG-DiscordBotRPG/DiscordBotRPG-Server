@@ -179,8 +179,9 @@ class CharacterInventory {
             .setAuthor(this.objects[idEmplacement].name + (this.objects[idEmplacement].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
             .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " (" + Translator.getString(lang, "item_sous_types", this.objects[idEmplacement].sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[idEmplacement].getPower() + "%"
-            , this.objects[idEmplacement].desc != null ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            , this.objects[idEmplacement].desc != null && this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang));
+        
         return embed;
     }
 

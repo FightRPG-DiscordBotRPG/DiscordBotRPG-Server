@@ -123,12 +123,12 @@ class Marketplace {
 
     showItemOrder(idItem, character, lang) {
         let item = new Item(idItem);
-        let compareStats = character.equipement.objects[this.getEquipableIDType(item.typeName)].stats
+        let compareStats = item.equipable ? character.equipement.objects[this.getEquipableIDType(item.typeName)].stats : null;
         return new Discord.RichEmbed()
             .setAuthor(item.name, Globals.addr + "images/items/" + item.image + ".png")
             .setColor(item.rarityColor)
             .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%"
-            , item.desc != "" ? item.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            , item.desc != "" && item.desc != null ? item.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
     }
 

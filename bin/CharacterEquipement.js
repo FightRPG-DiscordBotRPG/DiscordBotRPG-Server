@@ -41,7 +41,7 @@ class CharacterEquipement {
                 .setAuthor(this.objects[type].name + (this.objects[type].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[type].image + ".png")
                 .setColor(this.objects[type].rarityColor)
                 .addField(Translator.getString(lang, "item_types", this.objects[type].typeName) + " (" + Translator.getString(lang, "item_sous_types", this.objects[type].sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", this.objects[type].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[type].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[type].getPower() + "%" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")"
-                , this.objects[type].desc != null ? this.objects[type].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                , this.objects[type].desc != null && this.objects[type].desc != "" ? this.objects[type].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
                 .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[type].stats.toStr({}, lang));
         } else {
             embed = "``` " + Translator.getString(lang, "inventory_equipment", "nothing_in_this_slot") + " ```";
