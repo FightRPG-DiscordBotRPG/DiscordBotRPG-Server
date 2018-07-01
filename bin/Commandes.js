@@ -841,7 +841,11 @@ class Commandes {
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
                         messageArray[1] = parseInt(messageArray[1]);
                         if (messageArray[1] && Number.isInteger(messageArray[1])) {
-                            tLootSystem.getLoot(this.connectedUsers[authorIdentifier].character, messageArray[1], this.connectedUsers[authorIdentifier].character.getLevel());
+                            if(tLootSystem.adminGetItem(this.connectedUsers[authorIdentifier].character, messageArray[1], messageArray[2])) {
+                                msg = "Done";
+                            } else {
+                                msg = "Something goes wrong !";
+                            }
                         }
                     }
                     break;

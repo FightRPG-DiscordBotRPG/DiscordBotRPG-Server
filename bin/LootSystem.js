@@ -60,6 +60,35 @@ class LootSystem {
         }
     }
 
+    adminGetItem(character, idBase, number) {
+        number = Number.parseInt(number);
+        number = number > 0 && number < 11 ? number : 1;
+        let res = conn.query("SELECT * FROM itemsbase WHERE idBaseItem = ?", [idBase]);
+        let idToAdd;
+        if(res[0]) {
+            res = res[0];
+            if(res.idType == 5) {
+                // C'est une ressource donc stackable
+                idToAdd = character.getIdOfThisIdBase(idBase);
+                if(idToAdd == null) {
+                    idToAdd = this.newItem(idBase, 1);
+                }
+                character.inv.addToInventory(idToAdd, number);
+            } else {
+                // C'est autre chose donc pas stackable (pour l'instant)
+                for(let i = 0; i < number; i++) {
+                    idToAdd = this.newItem(idBase, character.getLevel());
+                    character.inv.addToInventory(idToAdd, 1);
+                }
+
+            }
+            return true;
+        }
+        return false;
+
+        
+    }
+
     getLoot(character, rarity, level) {
         let res = conn.query("SELECT itemsbase.idBaseItem, itemsbase.idType FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = " + character.area + " AND itemsbase.idRarity = " + rarity + ";");
         let r = Math.floor(Math.random() * res.length);
@@ -121,34 +150,36 @@ class LootSystem {
             let alreadyDone = rarity - 1;
             let objectType = res[0]["idType"];
     
-            let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
-            ratio = ratio / 100 * rarity / 5;
-    
-    
-            if (objectType === 1) {
-                //Une arme
-                stats.strength = Math.ceil(level * ratio * 2);
-            } else {
-                stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
-            }
-    
-            while (alreadyDone > 0) {
-                ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
-                ratio = ratio / 100 * rarity / 5; 
-                let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
-                while (stats[r]) {
-                    r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
-                }
-    
-                if (r != "armor") {
-                    stats[r] = Math.ceil(level * ratio * 2);
+            if(objectType != 5) {
+                let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
+                ratio = ratio / 100 * rarity / 5;
+        
+                if (objectType === 1) {
+                    //Une arme
+                    stats.strength = Math.ceil(level * ratio * 2);
                 } else {
-                    stats[r] = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+                    stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
                 }
-    
-    
-                alreadyDone--;
+        
+                while (alreadyDone > 0) {
+                    ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
+                    ratio = ratio / 100 * rarity / 5; 
+                    let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
+                    while (stats[r]) {
+                        r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
+                    }
+        
+                    if (r != "armor") {
+                        stats[r] = Math.ceil(level * ratio * 2);
+                    } else {
+                        stats[r] = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+                    }
+        
+        
+                    alreadyDone--;
+                }
             }
+            
 
             let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idBase + ", " + level + ")")["insertId"];
             for (let i in stats) {
