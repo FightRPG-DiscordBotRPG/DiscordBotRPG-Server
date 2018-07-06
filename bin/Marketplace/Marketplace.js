@@ -73,7 +73,7 @@ class Marketplace {
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC LIMIT ? OFFSET ?`,
-            [this.id, perPage, page - 1]);
+            [this.id, perPage, (page - 1) * perPage]);
 
 
 
