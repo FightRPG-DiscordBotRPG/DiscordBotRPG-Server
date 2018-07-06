@@ -63,7 +63,7 @@ class Craft {
                 .setAuthor(this.itemInfo.name, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
                 .setColor(this.itemInfo.rarityColor)
                 .addField(Translator.getString(lang, "item_types", this.itemInfo.typename) + " (" + Translator.getString(lang, "item_sous_types", this.itemInfo.stypename) + ")" + " | " + Translator.getString(lang, "rarities", this.itemInfo.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.itemInfo.minLevel + "-" + this.itemInfo.maxLevel + " | "
-                , this.itemInfo.desc != "" ? this.itemInfo.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                , this.itemInfo.desc != "" && this.itemInfo.desc != null ? this.itemInfo.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
                 .addField(Translator.getString(lang, "craft", "needed_items"), this.requiredItemsToStr(lang));
         return embed;
     }
