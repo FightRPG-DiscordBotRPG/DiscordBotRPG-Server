@@ -65,7 +65,7 @@ class Fight {
             this.initiatives.sort((a, b) => {
                 return b.getStat("intellect") - a.getStat("intellect");
             });
-            this.initiatives[i].updateStats()
+            this.initiatives[i].updateStats();
         }
 
         this.initiativeUpdate();
@@ -155,6 +155,7 @@ class Fight {
         if (done) {
             this.summary.winner = this.winnerGroup;
             this.endFight();
+            //console.log(this.summary);
         }
 
 
