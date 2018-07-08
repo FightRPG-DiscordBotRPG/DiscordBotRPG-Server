@@ -3,6 +3,7 @@ const conn = require("../conf/mysql.js");
 const Discord = require("discord.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
+const AreaTournament = require("./AreaTournament/AreaTournament");
 
 class Guild {
     // Discord User Info
@@ -57,6 +58,35 @@ class Guild {
         // err.length = 0 => pas d'erreurs;
         return err;
     }
+
+
+    // Conquest area
+
+    /**
+     * 
+     * @param {number} idArea 
+     */
+    enroll(idArea) {
+        AreaTournament.enrollGuild(this.id, idArea);
+    }
+
+    unenroll() {
+        AreaTournament.unenrollGuild(this.id);
+    }
+    
+    isRegisterToAnTournament() {
+        return conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id])[0] != null;
+    }
+
+    isTournamentStarted() {
+        let res = conn.query("SELECT DISTINCT started FROM conquesttournamentinfo INNER JOIN conquesttournamentinscriptions ON conquesttournamentinscriptions.idGuild = ?", [this.id])[0];
+        return res ? res.started : false;
+    }
+
+    getTournamentAreaEnrolled() {
+        return conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id])[0].idArea;
+    }
+
 
     /**
      * @param {Number} idAsk IDSelf
@@ -421,6 +451,15 @@ class Guild {
     static haveReachAppliesLimit(idCharacter) {
         return conn.query("SELECT COUNT(*) FROM guildsappliances WHERE idCharacter = " + idCharacter)[0]["COUNT(*)"] >= Globals.guilds.maxApplies ? true : false;
     }
+
+    /**
+     * Static
+     * 
+     */
+    /*
+    static getStatsOfAllMembers(id) {
+        let s = conn.query("SELECT idStat, SUM(value) as total FROM statscharacters WHERE statscharacters.idCharacter IN (SELECT guildsmembers.idCharacter FROM guildsmembers WHERE guildsmembers.idGuild = ?) GROUP BY idStat;", id); 
+    }*/
 
 
     /**
