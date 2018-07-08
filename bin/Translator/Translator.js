@@ -3,11 +3,18 @@ const util = require("util");
 
 class Translator {
     
-    static getString(lang, type, name,  args) {
+    /**
+     * 
+     * @param {String} lang 
+     * @param {String} type 
+     * @param {String} name 
+     * @param {Array} args 
+     * @returns {String} Translated String
+     */
+    static getString(lang, type, name, args) {
         if (!this.translations[lang]) {
             lang = "en";
         }
-
 
         if (this.translations[lang][type] && this.translations[lang][type][name]) {
            
@@ -20,10 +27,20 @@ class Translator {
 
     }
 
+    /**
+     * 
+     * @param {String} lang 
+     * @returns {boolean}
+     */
     static isLangExist(lang) {
         return this.translations[lang] ? true : false
     }
 
+    /**
+     * 
+     * @param {string} lang 
+     * @returns {string} List of available language Localized
+     */
     static getAvailableLanguages(lang) {
         let tr = "";
         let count = 0;
