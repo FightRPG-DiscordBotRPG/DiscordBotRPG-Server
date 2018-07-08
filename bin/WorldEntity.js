@@ -13,95 +13,66 @@ class WorldEntity {
     }
 
     updateStats() {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.updateStats === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        this.maxHP = 10 + this.stats.constitution * 10;
+        this.actualHP = this.maxHP;
     }
 
     damageCalcul() {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.damageCalcul === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        let baseDamage = (this.stats.strength + 1) * 2;
+        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
     }
 
     damageDefenceReduction() {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.damageDefenceReduction === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        let reduction = this.stats.armor / ((8 * (Math.pow(this.getLevel(), 2))) / 7 + 5) * 0.5;
+        return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
     getLevel() {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.getLevel === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        return this.level;
     }
 
     isThisACriticalHit() {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.isThisACriticalHit === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        // LAST NUMBER = NBR MAX ITEM
+        // LIMIT 75%
+        // Maximum Stat for this level
+        let max = this.getLevel() * 2 * 4;
+        // Calcul of chance
+        let critique = this.stats.dexterity / max;
+
+        // Cap to 75%;
+        critique = critique > .75 ? .75 : critique;
+
+        return Math.random() <= critique ? true : false;
+    }
+
+    getCriticalHitChance() {
+        let critique = this.stats.dexterity / (this.getLevel() * 2 * 4);
+        return critique > .75 ? .75 : critique;
     }
 
     getStat(statName) {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.getStat === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
+        if (this.stats[statName]) {
+            return this.stats[statName];
         }
+        return 0;
     }
 
 
     stun(advWill) {
-        if (this === WorldEntity) {
-            // Error Type 2. Abstract methods can not be called directly.
-            throw new TypeError("Can not call static abstract method foo.");
-        } else if (this.stun === WorldEntity.foo) {
-            // Error Type 3. The child has not implemented this method.
-            throw new TypeError("Please implement static abstract method foo.");
-        } else {
-            // Error Type 5. The child has implemented this method but also called `super.foo()`.
-            throw new TypeError("Do not call static abstract method foo from child.");
-        }
+        // LAST NUMBER = NBR MAX ITEM
+        // LIMIT 50%
+        // Maximum Stat for this level
+        let max = this.getLevel() * 2 * 4;
+        // Calcul of chance
+        let stun = (this.stats.charisma) / max;
+        let otherResist = (advWill) / max;
+
+        // Cap to 50%;
+        stun = stun > .5 ? .5 : stun;
+        otherResist = otherResist > .5 ? .5 : otherResist;
+        let chanceToStun = stun >= otherResist ? stun : 0;
+
+        return Math.random() <= chanceToStun ? true : false;
     }
 
 }
