@@ -7,7 +7,7 @@ const WorldEntity = require("./WorldEntity.js");
 class Monstre extends WorldEntity {
 
     constructor(id) {
-        super()
+        super();
         this._type = "Monster";
 
 
@@ -56,69 +56,6 @@ class Monstre extends WorldEntity {
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.level, 2))) / 6 * bonus);
         this.money = Math.round((Math.random() * (this.level * 2 - this.level) + this.level) * bonus);
-    }
-
-    updateStats() {
-        // Partie equipement
-        // Partie Stats
-        // Con : 1 -> 10HP & Level : 1 -> 10HP
-        this.maxHP = 10 + this.stats.constitution * 10;
-        this.actualHP = this.maxHP;
-    }
-
-    damageCalcul() {
-        let baseDamage = (this.stats.strength + 1) * 2;
-        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
-    }
-
-    isThisACriticalHit() {
-        // LAST NUMBER = NBR MAX ITEM
-        // LIMIT 50%
-        // Maximum Stat for this level
-        let max = this.getLevel() * 2 * 4;
-        // Calcul of chance
-        let critique = this.stats.dexterity / max;
-
-        // Cap to 50%;
-        critique = critique > .75 ? .75 : critique;
-
-        return Math.random() <= critique ? true : false;
-
-    }
-
-    stun(advWill) {
-        // LAST NUMBER = NBR MAX ITEM
-        // LIMIT 50%
-        // Maximum Stat for this level
-        let max = this.getLevel() * 2 * 4;
-        // Calcul of chance
-        let stun = (this.stats.charisma) / max;
-        let otherResist = (advWill) / max;
-
-        // Cap to 50%;
-        stun = stun > .5 ? .5 : stun;
-        otherResist = otherResist > .5 ? .5 : otherResist;
-        let chanceToStun = stun >= otherResist ? stun : 0;
-
-        return Math.random() <= chanceToStun ? true : false;
-    }
-
-    // percentage reduction
-    damageDefenceReduction() {
-        let reduction = Math.round(this.stats.armor / ((8 * (this.level ^ 2)) / 7 + 5) * 0.5);
-        return reduction > 0.5 ? 0.5 : 1 - reduction;
-    }
-
-    getLevel() {
-        return this.level;
-    }
-
-    // Get Stat
-    getStat(statName) {
-        if (this.stats[statName]) {
-            return this.stats[statName];
-        }
-        return 0;
     }
 
 }
