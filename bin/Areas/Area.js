@@ -3,6 +3,7 @@ const conn = require("../../conf/mysql.js");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const MonstreGroupe = require("../MonstreGroupe");
+const AreaTournament = require("../AreaTournament/AreaTournament");
 
 class Area {
 
@@ -21,10 +22,11 @@ class Area {
         this.characters = [];
         this.maxItemRarity = "";
         this.timeBeforeNextClaim = 0;
-        this.loadArea(id);
         this.players = [];
         this.services = {};
-
+        //this.tournament = {};
+        this.loadArea(id);
+        
     }
 
     loadArea(id) {
@@ -94,6 +96,9 @@ class Area {
         if (res[0]) {
             this.maxItemRarity = res[0]["nomRarity"];
         }
+
+        /*this.tournament = new AreaTournament(this);
+        this.tournament.scheduleTournament();*/
         
     }
 
@@ -240,7 +245,11 @@ class Area {
         return this.fightPossible;
     }
 
-    /* Services */
+    /**
+     * 
+     * @param {string} serviceName 
+     * @returns {Object} Service
+     */
     getService(serviceName) {
         return this.services[serviceName];
     }
@@ -249,14 +258,15 @@ class Area {
      * Return owner name if exist or "None";
      */
     getOwner(lang) {
-        if (this.owner > 0) {
-            return conn.query("SELECT nom FROM guilds WHERE idGuild = " + this.owner)[0].nom;
+        let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = " + this.id);
+        if (res.length > 0) {
+            return conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [res[0].idGuild])[0].nom;
         }
         return Translator.getString(lang, "general", "nobody");
     }
 
     haveOwner() {
-        return this.owner > 0;
+        return conn.query("SELECT idGuild FROM areasowners WHERE idArea = " + this.id)[0] != null;
     }
 
     saveOwner() {
@@ -285,6 +295,27 @@ class Area {
     unclaim() {
         this.owner = 0;
         this.saveOwner();
+    }
+
+    /**
+     * 
+     * @param {number} idGuild 
+     */
+    setOwner(idGuild) {
+        this.owner = 0;
+        this.saveOwner();
+        this.owner = idGuild;
+        this.saveOwner();
+    }
+
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {number} idGuild 
+     */
+    static staticSetOwner(idArea, idGuild) {
+        conn.query("DELETE FROM areasowners WHERE idArea = ?", [idArea]);
+        conn.query("INSERT INTO areasowners VALUES(?, ?)", [idArea, idGuild]);
     }
 
 
