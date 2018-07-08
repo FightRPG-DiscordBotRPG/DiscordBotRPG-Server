@@ -7,6 +7,7 @@
     "you_dont_have_right_to_change_announcement" : "Vous n'avez pas la permission de modifier l'annonce de guilde",
     "you_cant_exceed_x_characters" : "Vous ne pouvez pas dépasser %d caractères",
     "already_in_guild" : "Impossible, vous êtes déjà dans une guilde !",
+
     "guild_name_empty" : "Vous devez choisir le nom de votre guilde",
     "guild_have_to_be_gm_to_disband" : "Vous devez être le chef de la guilde pour pouvoir la dissoudre",
     "guild_dont_be_in_guild_to_join_a_guild" : "Vous ne devez pas être dans une guilde pour demander à en rejoindre une",
@@ -36,6 +37,12 @@
     "guild_maximum_members" : "Vous avez atteint le nombre maxmimal de membres",
     "guild_cant_invite_players" : "Vous n'avez pas la permission d'accepter des membres",
     "guild_already_max_level" : "Votre guilde est déjà au niveau maximum",
+    "guild_tournament_started" : "Votre guilde étant inscrite à un tournoi qui a déjà commencé, vous ne pouvez pas encore la dissoudre, veuillez attendre la fin du tournoi",
+    "guild_have_to_be_gm_to_enroll" : "Vous devez être le chef de guilde pour pouvoir inscrire votre guilde à ce tournoi",
+    "guild_already_enroll_in_tournament" : "Votre guilde est déjà inscrite à un tournoi",
+    "guild_tournament_started_generic" : "Le tournoi ayant déjà commencé, vous ne pouvez pas faire cela",
+    "guild_not_enrolled_in_tournament" : "Votre guilde n'est pas inscrire à un tournoi",
+
     "collect_enter_id_to_collect" : "Veuillez entrer l'identifiant de la ressource à récolter",
     "collect_tired_wait_x_seconds" : "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
     "collect_dont_have_required_level" : "Vous n'avez pas le niveau de métier nécessaire pour récolter cette ressource. Vous devez au moins être niveau : %d",
@@ -154,7 +161,10 @@
     "maximum_quality" : "Qualité maximale pour un objet :",
     "you_claimed" : "Vous avez conquis cette zone",
     "owned_by" : "Propriétaire",
-    "monster_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s"
+    "monster_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s",
+    "conquest" : "Conquête",
+    "conquest_next" : "Prochaine conquête de la zone : %s\nNombre de guildes inscrites : %d",
+    "conquest_ongoing" : "Conquête de zone en cours"
   },
   "resources" : {
     "wood"  : "Bois",
@@ -220,7 +230,9 @@
     "guild_level_up" : "Votre guilde est monté d'un niveau, elle est désormais niveau : %d",
     "guild_no_apply_player" : "Vous ne postulez pas pour rejoindre une guilde",
     "nobody_ask_to_join_your_guild" : "Personne n'a demandé à rejoindre votre guilde",
-    "nothing_to_print" : "Rien à afficher ici"
+    "nothing_to_print" : "Rien à afficher ici",
+    "enroll" : "Votre s'est bien inscrite pour le prochain tournoi de cette zone",
+    "unenroll" : "Votre guilde s'est bien désinscrite du prochain tournoi de la zone"
   },
   "inventory_equipment" : {
     "item_equiped" : "Votre objet a été équipé",
@@ -370,6 +382,7 @@
      "areas_title" : "Zones",
      "area" : "Affiche les informations de la zone dans laquelle vous vous trouvez",
      "areas" : "Affiche toutes les zones",
+     "areatournament" : "Affiche le prochain le tournoi de la zone",
      "areaplayers" : "Affiche les joueurs de la zone",
      "travel" : "Permet de voyager à la zone areaID",
 
@@ -387,6 +400,8 @@
      "gaddmoney" : "Donne de l'argent à la guilde",
      "gremovemoney" : "Permet de retirer de l'argent de la guilde.",
      "glevelup" : "Permet de faire monter de niveau la guilde.",
+     "genroll" : "Inscrit votre guilde au tournoi de la zone dans laquelle vous vous trouvez",
+     "gunenroll" : "Désinscrit votre guilde au tournoi auquel elle est inscrite",
 
      "other_title" : "Autres",
      "lang" : "Permet d'afficher la liste des langues disponibles",

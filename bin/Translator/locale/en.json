@@ -7,6 +7,7 @@
     "you_dont_have_right_to_change_announcement" : "You don't have the right to change the announcement of the guild",
     "you_cant_exceed_x_characters" : "You can't exceed %d characters",
     "already_in_guild" : "Impossible, you're already in a guild!",
+
     "guild_name_empty" : "You must choose a name for your guild",
     "guild_have_to_be_gm_to_disband" : "You must be the guild master to disband",
     "guild_dont_be_in_guild_to_join_a_guild" : "You can't ask to join a guild if you're already in one",
@@ -33,9 +34,15 @@
     "guild_guild_dont_have_this_amount_of_money" : "You can't retrieve this much money from the guild",
     "guild_no_enough_money_to_level_up" : "Your guild doesn't have enough money to level up. You still need : %dG",
     "guild_dont_have_right_to_level_up" : "You don't have the right to raise the level of the guild",
-    "guild_maximum_members" : "Vous avez atteint le nombre maxmimal de membres",
-    "guild_cant_invite_players" : "Vous n'avez pas la permission d'accepter des membres",
-    "guild_already_max_level" : "Votre guilde est déjà au niveau maximum",
+    "guild_maximum_members" : "Your guild reached the maximum number of members",
+    "guild_cant_invite_players" : "You don't have the right to accept people in your guild",
+    "guild_already_max_level" : "Your guild already reached the maximum level",
+    "guild_tournament_started" : "Your guild is enroll in a conquest that have already started, so you can't disband now, please wait until the conquest is ended",
+    "guild_have_to_be_gm_to_enroll" : "You must be the guild master to enroll your guild in this conquest",
+    "guild_already_enroll_in_tournament" : "You guild is already enrolled in a conquest",
+    "guild_tournament_started_generic" : "Since the conquest have already started, you can't do that now",
+    "guild_not_enrolled_in_tournament" : "Your guild is not enrolled in an conquest",
+    
     "collect_enter_id_to_collect" : "Please enter the id of the resource to collect",
     "collect_tired_wait_x_seconds" : "You are too tired to collect these resources, you still have to wait: %s seconds",
     "collect_dont_have_required_level" : "You don't have the required crafting level to collect this resource, you must be at least level %d",
@@ -155,7 +162,10 @@
     "maximum_quality" : "Maximum quality for an obejct:",
     "you_claimed" : "You've claimed this area",
     "owned_by" : "Owned by",
-    "monster_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s"
+    "monster_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s",
+    "conquest" : "Conquest",
+    "conquest_next" : "Next conquest : %s\nNumber of guilds enrolled : %d",
+    "conquest_ongoing" : "Conquest ongoing"
   },
   "resources" : {
     "wood"  : "Wood",
@@ -221,7 +231,9 @@
     "guild_level_up" : "Your guild level increased, it is now: %d",
     "guild_no_apply_player" : "You didn't apply to join a guild",
     "nobody_ask_to_join_your_guild" : "No one applied to join your guild",
-    "nothing_to_print" : "Nothing to see"
+    "nothing_to_print" : "Nothing to see",
+    "enroll" : "Your guild is now enrolled for the next conquest in this area",
+    "unenroll" : "Your guild is now unenrolled from the conquest in this area"
   },
   "inventory_equipment" : {
     "item_equiped" : "Your item is now equipped",
@@ -371,6 +383,7 @@
      "areas_title" : "Areas",
      "area" : "Shows the information of the area in which you are",
      "areas" : "Shows every areas",
+     "areatournament" : "Show the next conquest for this area",
      "areaplayers" : "Shows the players in the zone",
      "travel" : "Allows you to travel to the area areaID",
 
@@ -388,6 +401,8 @@
      "gaddmoney" : "Gives money to the guild",
      "gremovemoney" : "Retrieves money from the guild",
      "glevelup" : "Raises the guild level",
+     "genroll" : "Enrolls your guild for the next conquest of the area where you are in",
+     "gunenroll" : "Unenroll the guild from the next conquest of this area",
 
      "other_title" : "Other",
      "lang" : "Shows the list of available languages",
