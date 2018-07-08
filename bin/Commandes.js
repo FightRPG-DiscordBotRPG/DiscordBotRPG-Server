@@ -12,11 +12,21 @@ const Fight = require("./Fight/Fight");
 const Monster = require("./Monstre");
 const Translator = require("./Translator/Translator");
 const CraftSystem = require("./CraftSystem/CraftSystem");
+const AreaTournament = require("./AreaTournament/AreaTournament");
 
 class Commandes {
+
+    /**
+     * 
+     * @param {*} prefix 
+     * @property {Array<User>} connectedUsers
+     * @property {Array<Guild>} connectedGuilds;
+     */
     constructor(prefix) {
         this.prefix = prefix != null ? prefix : "::";
         this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
+        this.connectedUsers;
+        this.connectedGuilds;
         //this.regex = this.prefix + "[a-zA-Z]+";
     }
 
@@ -381,12 +391,27 @@ class Commandes {
 
                 case "gdisband":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
-                    if (tGuildId > 0
-                        && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        this.areasManager.unclaimAll(tGuildId);
-                        this.connectedGuilds[tGuildId].disband(this.connectedUsers);
-                        delete this.connectedGuilds[tGuildId];
-                        msg = Translator.getString(lang, "guild", "guild_disband");
+                    if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
+                        if(this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if(this.connectedGuilds[tGuildId].isTournamentStarted() == 1) {
+                                msg = Translator.getString(lang, "errors", "guild_tournament_started");
+                            } else {
+                                this.areasManager.unclaimAll(tGuildId);
+                                this.connectedGuilds[tGuildId].disband(this.connectedUsers);
+                                delete this.connectedGuilds[tGuildId];
+                                msg = Translator.getString(lang, "guild", "guild_disband"); 
+                            }
+                            
+                        } else {
+                            this.areasManager.unclaimAll(tGuildId);
+                            this.connectedGuilds[tGuildId].disband(this.connectedUsers);
+                            delete this.connectedGuilds[tGuildId];
+                            msg = Translator.getString(lang, "guild", "guild_disband"); 
+                        }
+
+
+                        
+                        
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_disband");
                     }
@@ -629,6 +654,44 @@ class Commandes {
                         msg = err[0];
                     } else {
                         msg = Translator.getString(lang, "guild", "guild_level_up", [this.connectedGuilds[tGuildId].level]);
+                    }
+                    break;
+
+                case "genroll": 
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
+                        if(!this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if(!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.area)) {
+                                this.connectedGuilds[tGuildId].enroll(this.connectedUsers[authorIdentifier].character.area);
+                                msg = Translator.getString(lang, "guild", "enroll");
+                            } else {
+                                msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "guild_already_enroll_in_tournament");
+                        }
+                        
+                    } else {
+                        msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_enroll");
+                    }
+                    break;
+
+                case "gunenroll": 
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
+                        if(this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if(!AreaTournament.haveStartedByIdArea(this.connectedGuilds[tGuildId].getTournamentAreaEnrolled())) {
+                                this.connectedGuilds[tGuildId].unenroll();
+                                msg = Translator.getString(lang, "guild", "unenroll");
+                            } else {
+                                msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "guild_not_enrolled_in_tournament");
+                        }
+                        
+                    } else {
+                        msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_enroll");
                     }
                     break;
 
@@ -1262,6 +1325,10 @@ class Commandes {
                     msg = this.areasManager.seeAllAreas(lang);
                     break;
 
+                case "areatournament":
+                    msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.area);
+                    break;
+
                 case "travel":
                     let wantedAreaToTravel = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
@@ -1413,6 +1480,7 @@ class Commandes {
                     "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
                     "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
                     "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
+                    "::areatournament : " + Translator.getString(lang, "help_panel", "areatournament") + "\n" +
                     "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
                     "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
                 break;
@@ -1433,10 +1501,10 @@ class Commandes {
                     "::gaddmoney <amount> : " + Translator.getString(lang, "help_panel", "gaddmoney") + "\n" +
                     "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
                     "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
+                    "::genroll : " + Translator.getString(lang, "help_panel", "genroll") + "\n" +
+                    "::gunenroll : " + Translator.getString(lang, "help_panel", "gunenroll") + "\n";
 
-                    "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
-                    "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
-                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n";
+
                 break;
             case 3:
                 str = "```apache\n" +
@@ -1468,7 +1536,11 @@ class Commandes {
                     "::craftlist <page>: " + Translator.getString(lang, "help_panel", "craftlist") + "\n" +
                     "::craftshow <idCraft> : " + Translator.getString(lang, "help_panel", "craftshow") + "\n" +
                     "::craft <idCraft> : " + Translator.getString(lang, "help_panel", "craft") + "\n" +
-                    "::collect <idResource> : " + Translator.getString(lang, "help_panel", "collect") + "\n";
+                    "::collect <idResource> : " + Translator.getString(lang, "help_panel", "collect") + "\n" +
+
+                    "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
+                    "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
+                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n";
                 break;
         }
         str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
