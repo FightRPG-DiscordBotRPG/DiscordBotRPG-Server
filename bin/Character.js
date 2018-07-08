@@ -5,25 +5,19 @@ const LevelSystem = require("./LevelSystem.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
 const CharacterEquipement = require("./CharacterEquipement.js");
-const WorldEntity = require("./WorldEntity.js");
+const CharacterEntity = require("./Entities/CharacterEntity");
 const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
 const Item = require("./Item");
 const PlayerCraft = require("./CraftSystem/PlayerCraft");
 const LootSystem = require("./LootSystem");
 
-class Character extends WorldEntity {
+class Character extends CharacterEntity {
 
     constructor(id) {
         super();
         this._type = "Character";
-
         this.id = id;
-        this.stats = new StatsPlayer();
         this.inv = new CharacterInventory();
-        this.equipement = new CharacterEquipement();
-        this.maxHP = 0;
-        this.actualHP = 0;
-        this.levelSystem = new LevelSystem();
         this.craftSystem = new PlayerCraft();
         this.statPoints = 0;
         this.money = 0;
@@ -160,13 +154,16 @@ class Character extends WorldEntity {
         return Math.random() <= chanceToStun ? true : false;
     }
 
-    // percentage reduction
     damageDefenceReduction() {
-        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (this.level ^ 2)) / 7 + 5) * .5);
+        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (Math.pow(this.level,2))) / 7 + 5) * .5);
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
-    // Get Stat
+    /**
+     * 
+     * @param {string} statName 
+     * @returns {number} Stat value
+     */
     getStat(statName) {
         if (this.stats[statName] && this.equipement.stats[statName]) {
             return this.stats[statName] + this.equipement.stats[statName];
@@ -174,20 +171,27 @@ class Character extends WorldEntity {
         return 0;
     }
 
+    /**
+     * @returns {number} Power in percentage
+     */
     getPower() {
         return this.equipement.getPower();
     }
 
+    /**
+     * Prends en compte l'équipement
+     */
     updateStats() {
-        // Partie equipement
-        // TODO
-
-        // Partie Stats
-        // Con : 1 -> 10HP & Level : 1 -> 10HP
         this.maxHP = 10 + (this.stats.constitution + this.equipement.stats["constitution"]) * 10;
         this.actualHP = this.maxHP;
     }
 
+    /**
+     * 
+     * @param {string} stat 
+     * @param {number} nbr 
+     * @returns {boolean} True if no errors False if not
+     */
     upStat(stat, nbr) {
         nbr = parseInt(nbr, 10);
         if (nbr > 0 && nbr <= this.statPoints) {
