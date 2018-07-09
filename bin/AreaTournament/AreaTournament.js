@@ -175,6 +175,11 @@ class AreaTournament {
         conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [idGuild]);
     }
 
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {string} lang 
+     */
     static toDiscordEmbed(idArea, lang) {
         if(AreaTournament.haveStartedByIdArea(idArea)) {
             return Translator.getString(lang, "area", "conquest_ongoing");
@@ -183,6 +188,11 @@ class AreaTournament {
         return Translator.getString(lang, "area", "conquest_next", [AreaTournament.getNextTournament(idArea).toUTCString(), AreaTournament.getNumberOfGuildsEnrolled(idArea)]);
     }
 
+    /**
+     * 
+     * @param {number} idArea 
+     * @returns {number}
+     */
     static getNumberOfGuildsEnrolled(idArea) {
         return conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea])[0].total;
     }

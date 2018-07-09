@@ -1,10 +1,14 @@
 'use strict';
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
+const Monstre = require("./Monstre");
 
 class MonstreGroup  {
 
     constructor() {
+        /**
+         * @type {Array<number>}
+         */
         this.monstersIDs = [];
         this.enemiesObjetsToFight = [];
 
@@ -15,11 +19,14 @@ class MonstreGroup  {
         this.numberOfMonsters = 0;
     }
 
+    /**
+     * 
+     * @param {Array<Monstre>} listMonster 
+     */
     setMonsters(listMonster) {
         this.avglevel = 0;
         let highestType = 0;
         let indexTo = 0;
-        let arrOfMonstersGroup = {};
         for (let i in listMonster) {
             if (Globals.monstersIds[listMonster[i].type] > highestType) {
                 highestType = Globals.monstersIds[listMonster[i].type];

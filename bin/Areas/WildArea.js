@@ -24,6 +24,10 @@ class WildArea extends Area{
         return res[0]["nomRarity"];
     }
 
+    /**
+     * @param {string} lang 
+     * @returns {RichEmbed}
+     */
     toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
@@ -31,7 +35,6 @@ class WildArea extends Area{
             .addField(Translator.getString(lang, "general", "description"), (this.desc ? this.desc : Translator.getString(lang, "area", "no_description")) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") + " **" + Translator.getString(lang, "rarities", this.getMaxItemQuality()) + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
             .addField(Translator.getString(lang, "general", "resources"), this.getResources(lang))
-            .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```")
             .setImage(this.image);
     }
 }
