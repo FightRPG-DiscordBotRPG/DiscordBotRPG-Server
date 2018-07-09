@@ -1,6 +1,6 @@
 'use strict';
 const Discord = require("discord.js");
-const User = require("./User.js");
+const User = require("./User");
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const LootSystem = require("./LootSystem.js");
@@ -18,16 +18,23 @@ class Commandes {
 
     /**
      * 
-     * @param {*} prefix 
-     * @property {Array<User>} connectedUsers
-     * @property {Array<Guild>} connectedGuilds;
+     * @param {string} prefix 
      */
     constructor(prefix) {
         this.prefix = prefix != null ? prefix : "::";
         this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
+        /**
+         * @type {Array<User>}
+         */
         this.connectedUsers;
+        /**
+         * @type {Array<Guild>};
+         */
         this.connectedGuilds;
-        //this.regex = this.prefix + "[a-zA-Z]+";
+        /**
+         * @type {AreasManager}
+         */
+        this.areasManager;
     }
 
     updateConnectedUsers() {
@@ -918,7 +925,7 @@ class Commandes {
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
-                    msg = this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, this.connectedUsers, lang);
+                    msg = this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, lang);
                     break;
 
                 case "active":
@@ -1325,8 +1332,9 @@ class Commandes {
                     msg = this.areasManager.seeAllAreas(lang);
                     break;
 
-                case "areatournament":
-                    msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.area);
+                case "areaconquest":
+                    //msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.area);
+                    msg = this.areasManager.seeConquestOfThisArea(this.connectedUsers[authorIdentifier].character.area, lang);
                     break;
 
                 case "travel":
