@@ -4,6 +4,9 @@ const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
+const Discord = require("discord.js");
+const Character = require("../Character");
+const Item = require("../Item");
 
 class Area {
 
@@ -17,7 +20,13 @@ class Area {
         //this.nbrPlayers = 0;
         this.owner = 0;
         this.fightPossible = false;
+        /**
+         * @type {Array<Item>}
+         */
         this.resources = [];
+        /**
+         * @type {Array<MonstreGroupe>}
+         */
         this.monsters = [];
         this.characters = [];
         this.maxItemRarity = "";
@@ -102,18 +111,30 @@ class Area {
         
     }
 
+    /**
+     * 
+     * @param {Character} character 
+     */
     addOnePlayer(character) {
         this.players.push(character);
         this.players.sort((a, b) => b.getLevel() - a.getLevel());
         //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
     }
 
+    /**
+     * 
+     * @param {Character} character 
+     */
     removeOnePlayer(character) {
         this.players.splice(this.players.indexOf(character), 1);
         this.players.sort((a, b) => b.getLevel() - a.getLevel());
         //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
     }
 
+    /**
+     * 
+     * @param {string} lang 
+     */
     getMonsters(lang) {
         let str = "```";
         for (let i in this.monsters) {
@@ -130,6 +151,10 @@ class Area {
         return str;
     }
 
+    /**
+     * 
+     * @param {string} lang 
+     */
     getResources(lang) {
         let strWoodsHeader = Translator.getString(lang, "resources", "woods") + "\n";
         let strWoods = "";
@@ -171,6 +196,11 @@ class Area {
         return str + "```";
     }
 
+    /**
+     * 
+     * @param {number} idEmplacementMonstre 
+     * @returns {MonstreGroupe} Returns null if no monsters
+     */
     getMonsterId(idEmplacementMonstre) {
         if (idEmplacementMonstre < this.monsters.length && idEmplacementMonstre >= 0) {
             //return this.monsters[idEmplacementMonstre].getMonstersIDs()[0];
@@ -181,6 +211,10 @@ class Area {
         }
     }
 
+    /**
+     * 
+     * @param {number} notThisEnemy 
+     */
     getRandomMonster(notThisEnemy) {
         let index = Math.floor(Math.random() * this.monsters.length);
         if (this.monsters.length > 1) {
@@ -195,7 +229,12 @@ class Area {
         return this.maxItemRarity;
     }
 
-    getPlayers(page, connectedUsers, lang) {
+    /**
+     * 
+     * @param {number} page 
+     * @param {string} lang 
+     */
+    getPlayers(page, lang) {
         page = page;
         let perPage = 10;
         let str = "```";
@@ -214,28 +253,15 @@ class Area {
             str += Translator.getString(lang, "general", "nothing_at_this_page");
         }
 
-        /*let res = conn.query("SELECT users.idUser FROM users " +
-            "INNER JOIN characters ON characters.idCharacter = users.idCharacter " +
-            "WHERE characters.idArea = " + this.id + " ORDER BY users.userName ASC LIMIT " + perPage + " OFFSET " + ((page - 1) * perPage));
-
-        if (res[0]) {
-            for (let i in res) {
-                if (connectedUsers[res[i].idUser]) {
-                    str += "ID : " + connectedUsers[res[i].idUser].character.id + " | "
-                        + "Nom : " + connectedUsers[res[i].idUser].username + " | "
-                        + "Level : " + connectedUsers[res[i].idUser].character.getLevel() + "\n";
-                    str += Translator.getString(lang, "area", "player", [connectedUsers[res[i].idUser].character.id, connectedUsers[res[i].idUser].username, connectedUsers[res[i].idUser].character.getLevel()]) + "\n\n";
-                }
-
-            }
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page");
-        }*/
         str += "\n"+ Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
         str += "```";
         return str;
     }
 
+    /**
+     * 
+     * @param {number} indexResource 
+     */
     getResource(indexResource) {
         //console.log(this.resources[indexResource]);
         return this.resources[indexResource - 1] ? this.resources[indexResource - 1] : null;
@@ -255,7 +281,9 @@ class Area {
     }
 
     /**
-     * Return owner name if exist or "None";
+     * 
+     * @param {string} lang 
+     * @returns {string}
      */
     getOwner(lang) {
         let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = " + this.id);
@@ -278,9 +306,12 @@ class Area {
         
     }
 
-    /*
-    *   CONQUEST
-    */
+
+    /**
+     * @deprecated
+     * @param {number} idGuild 
+     * @param {string} lang 
+     */
     claim(idGuild, lang) {
         let err = [];
         if (this.owner == 0) {
@@ -334,6 +365,24 @@ class Area {
 
     toApiFull() {
         return this;
+    }
+
+    /**
+     * 
+     * @param {string} lang 
+     */
+    conquestToStr(lang) {
+        return new Discord.RichEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(this.name + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```");
+    }
+
+    /**
+     * @param {string} lang 
+     */
+    toStr(lang) {
+        return new Discord.RichEmbed();
     }
 
 }
