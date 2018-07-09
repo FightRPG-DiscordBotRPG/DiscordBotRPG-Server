@@ -6,11 +6,19 @@ const DungeonArea = require("./DungeonArea");
 const Globals = require("../Globals.js");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
+const Area = require("../Areas/Area");
+const Character = require("../Character");
+
 
 class AreasManager {
 
+
     constructor() {
+        /**
+         * @type {Map<any, Area>}
+         */
         this.areas = new Map();
+
         this.loadAreas();
     }
 
@@ -32,6 +40,13 @@ class AreasManager {
         }
     }
 
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {number} idEnemy 
+     * @param {number} perception 
+     * @returns {boolean}
+     */
     canIFightThisMonster(idArea, idEnemy, perception) {
         //let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND idMonstre = " + idEnemy);
         let monsterID = this.areas.get(idArea).getMonsterId(idEnemy);
@@ -46,11 +61,20 @@ class AreasManager {
         return false;
     }
 
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {string} serviceName 
+     */
     getService(idArea, serviceName) {
         return this.areas.get(idArea).getService(serviceName);
     }
 
-    // idEnemy doit être valide !!
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {number} idEnemy 
+     */
     selectRandomMonsterIn(idArea, idEnemy) {
         /*let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND NOT idMonstre = " + idEnemy + " ORDER BY RAND() LIMIT 1;");
         if (res.length > 0) {
@@ -60,16 +84,38 @@ class AreasManager {
         return this.areas.get(idArea).getRandomMonster(idEnemy);
     }
 
-    // IdEnemy doit être valide !!
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {number} idEnemy 
+     */
     getMonsterIdIn(idArea, idEnemy) {
         return this.areas.get(idArea).getMonsterId(idEnemy);
     }
 
-    // Return string embed discord
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {string} lang 
+     */
     seeThisArea(idArea, lang) {
         return this.areas.get(idArea).toStr(lang);
     }
 
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {string} lang 
+     */
+    seeConquestOfThisArea(idArea, lang) {
+        return this.areas.get(idArea).conquestToStr(lang);
+    }
+
+    /**
+     * 
+     * @param {number} idArea 
+     * @param {Character} character 
+     */
     addOnePlayer(idArea, character) {
         this.areas.get(idArea).addOnePlayer(character);
     }
@@ -147,8 +193,8 @@ class AreasManager {
         return this.areas.get(idArea).name;
     }
 
-    getPlayersOf(idArea, page, connectedUsers, lang) {
-        return this.areas.get(idArea).getPlayers(page, connectedUsers, lang);
+    getPlayersOf(idArea, page, lang) {
+        return this.areas.get(idArea).getPlayers(page, lang);
     }
 
     getResources(idArea) {
