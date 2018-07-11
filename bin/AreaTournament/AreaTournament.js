@@ -37,7 +37,7 @@ class AreaTournament {
         date.setUTCHours(0);
         date.setUTCDate(date.getUTCDate() + 1);
         let res = conn.query("SELECT nextTournament FROM conquesttournamentinfo WHERE idArea = ?", [idArea])[0];
-        if(res.nextTournament != null) {
+        if(res && res.nextTournament != null) {
             date.setTime(res.nextTournament);
         }
         return date;
@@ -51,7 +51,10 @@ class AreaTournament {
         let actualDate = new Date();
         let date = AreaTournament.getNextTournament(this.idArea);
         console.log("Tournament schedule for : " + date.toUTCString() + " For the area : " + this.idArea);
-        conn.query("UPDATE conquesttournamentinfo SET nextTournament = ? WHERE idArea = ?;", [date.getTime(), this.idArea]);
+        /*console.log(date.getTime());
+        console.log((date.getTime() > actualDate.getTime() ? date.getTime() - actualDate.getTime() : 1000));*/
+        //process.exit();
+        conn.query("UPDATE conquesttournamentinfo SET nextTournament = ? WHERE idArea = ?;", [null, this.idArea]);
         setTimeout(() => {            
             this.startTournament(); 
         }, (date.getTime() > actualDate.getTime() ? date.getTime() - actualDate.getTime() : 1000));
@@ -65,7 +68,7 @@ class AreaTournament {
         this.isStarted = true;
         let inscriptions = conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idArea = ?", [this.idArea]);
         if(inscriptions.length == 0) {
-            console.log("Area : " + this.idArea + ", No guilds registered, abort start next hour");
+            console.log("Area : " + this.idArea + ", No guilds registered, mission abort ! ");
             this.scheduleTournament();
             return;
         }
