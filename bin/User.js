@@ -13,7 +13,7 @@ class User {
         this.id = id;
         this.character = new Character();
         this.avatar = "";
-        this.username = username.replace(/[\u0800-\uFFFF]/g, '');
+        this.username = username;//username.replace(/[\u0800-\uFFFF]/g, '');
         this.isNew = false;
 
         this.preferences = {
