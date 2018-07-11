@@ -163,7 +163,7 @@
     "owned_by" : "Propriétaire",
     "monster_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s",
     "conquest" : "Conquête",
-    "conquest_next" : "Prochaine conquête de la zone : %s\nNombre de guildes inscrites : %d",
+    "conquest_next" : "Prochaine conquête de la zone :\n- %s\n- Nombre de guildes inscrites : %d",
     "conquest_ongoing" : "Conquête de zone en cours"
   },
   "resources" : {
@@ -382,7 +382,7 @@
      "areas_title" : "Zones",
      "area" : "Affiche les informations de la zone dans laquelle vous vous trouvez",
      "areas" : "Affiche toutes les zones",
-     "areatournament" : "Affiche le prochain le tournoi de la zone",
+     "areaconquest" : "Affiche le prochain le tournoi de la zone",
      "areaplayers" : "Affiche les joueurs de la zone",
      "travel" : "Permet de voyager à la zone areaID",
 

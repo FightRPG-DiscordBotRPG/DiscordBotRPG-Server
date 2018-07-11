@@ -164,7 +164,7 @@
     "owned_by" : "Owned by",
     "monster_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s",
     "conquest" : "Conquest",
-    "conquest_next" : "Next conquest : %s\nNumber of guilds enrolled : %d",
+    "conquest_next" : "Next conquest :\n- %s\n- Number of guilds enrolled : %d",
     "conquest_ongoing" : "Conquest ongoing"
   },
   "resources" : {
@@ -383,7 +383,7 @@
      "areas_title" : "Areas",
      "area" : "Shows the information of the area in which you are",
      "areas" : "Shows every areas",
-     "areatournament" : "Show the next conquest for this area",
+     "areaconquest" : "Show the next conquest for this area",
      "areaplayers" : "Shows the players in the zone",
      "travel" : "Allows you to travel to the area areaID",
 
