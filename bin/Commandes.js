@@ -1488,7 +1488,7 @@ class Commandes {
                     "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
                     "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
                     "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
-                    "::areatournament : " + Translator.getString(lang, "help_panel", "areatournament") + "\n" +
+                    "::areaconquest : " + Translator.getString(lang, "help_panel", "areaconquest") + "\n" +
                     "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
                     "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
                 break;
