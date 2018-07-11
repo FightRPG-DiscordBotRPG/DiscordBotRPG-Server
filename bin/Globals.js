@@ -94,8 +94,8 @@ var Globals = {
     "resetStatsPricePerLevel": 250,
     "guilds": {
         "maxLevel": 10,
-        "basePriceLevel": 100000,
-        "multBasePricePerLevel" : 1.5,
+        "basePriceLevel": 20000,
+        "multBasePricePerLevel" : 5,
         "baseMembers": 5,
         "membersPerLevels": 5,
         "maxApplies" : 5,
