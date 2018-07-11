@@ -847,7 +847,7 @@ class Commandes {
 
                 case "grp":
                     if (group != null) {
-                        msg = group.toStr();
+                        msg = group.toStr(lang);
                     } else {
                         msg = Translator.getString(lang, "errors", "group_not_in_group");
                     }
