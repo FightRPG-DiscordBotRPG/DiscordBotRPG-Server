@@ -2,10 +2,19 @@ const Fight = require("./Fight");
 const Globals = require("../Globals");
 const LootSystem = require("../LootSystem");
 const Translator = require("../Translator/Translator");
+const Monstre = require("../Monstre");
+const Character = require("../Character");
+const Guild = require("../Guild");
+const Area = require("../Areas/Area");
 
 
 class FightPvE extends Fight {
 
+    /**
+     * 
+     * @param {Character} entities1 
+     * @param {Monstre} entities2 
+     */
     constructor(entities1, entities2) {
         super(entities1, entities2);
     }
@@ -53,25 +62,27 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
+            let areaBonuses = this.entities[0][0].getArea().getXpAndDropBonusValue();
 
             for (let i in this.entities[0]) {
                 let actualLevel = this.entities[0][i].getLevel();
+
+                
 
                 // Add exp and money
                 let xp = 0;
                 let diffLevelEnemy = this.calMultDiffLevel(avgLevelEnemies, actualLevel);
 
                 let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
-                money = Math.round(money);
+                money = Math.round(money * (areaBonuses["gold_drop"].getPercentageValue() + 1));
                 this.summary.goldGained[this.entities[0][i].name] = money;
                 totalMoney += money;
 
                 this.entities[0][i].addMoney(money);
-
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.5 ? 1.5 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (1 + this.entities[0][i].getStat("wisdom") / 100));
+                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 100 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[this.entities[0][i].name] = xp;
                     this.entities[0][i].addExp(xp);
@@ -100,8 +111,8 @@ class FightPvE extends Fight {
                 let lootSystem = new LootSystem();
                 /*console.log(this.entities[0][i].name);
                 console.log(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus());*/
-                let loot = lootSystem.loot(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus());
-                let okLoot = lootSystem.isTheLootExistForThisArea(this.entities[0][i].area, loot);
+                let loot = lootSystem.loot(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus() + areaBonuses["gold_drop"].getPercentage());
+                let okLoot = lootSystem.isTheLootExistForThisArea(this.entities[0][i].getIdArea(), loot);
                 if (okLoot) {
                     lootSystem.getLoot(this.entities[0][i], loot, avgLevelEnemies);
                     //add rarity to sumary
@@ -131,10 +142,16 @@ class FightPvE extends Fight {
                 }
 
             }
-
+            /**
+             * @type {Area}
+             */
             this.summary.xp = totalXp;
-            this.summary.money = totalMoney;
-
+            this.summary.money = totalMoney * 0.95;
+            let ownerid = this.entities[0][0].getArea().getOwnerID();
+            if(ownerid != null) {
+                Guild.addMoney(ownerid, totalMoney * 0.05);
+            }
+            
 
         }
 
