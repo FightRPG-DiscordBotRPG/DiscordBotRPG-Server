@@ -183,7 +183,7 @@ class AreasManager {
     // Update nbr players when a player travel to another location
     updateTravel(character, toArea) {
 
-        this.areas.get(character.area).removeOnePlayer(character);
+        this.areas.get(character.getIdArea()).removeOnePlayer(character);
         this.areas.get(toArea).addOnePlayer(character);
     }
 
@@ -223,7 +223,9 @@ class AreasManager {
         return this.areas.get(idArea).haveOwner();
     }
 
-
+    getArea(idArea) {
+        return this.areas.get(idArea);
+    }
 
     /*
      * API
