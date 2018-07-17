@@ -99,6 +99,11 @@ class AreaTournament {
      * then reset it
      */
     endTournament() {
+        let oldOwner = Area.staticGetOwnerID(this.idArea);
+        if(oldOwner != this.rounds[this.maxRounds].winners[0]) {
+            Area.resetBonuses(this.idArea);
+            Area.oneLessLevel(this.idArea);
+        }
         Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
         console.log("Winner of the area : " + this.idArea + " is " + conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]])[0].nom);
         this.resetTournament();
