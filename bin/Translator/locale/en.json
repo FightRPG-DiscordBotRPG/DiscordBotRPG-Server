@@ -2,6 +2,7 @@
   "errors" : {
     "generic" : "You can't do that right now",
     "generic_tired" : "You are tired. Wait %d seconds then try again",
+    "generic_cant_do_that" : "You can't do that",
     "you_cant_claim" : "You can't claim this area",
     "you_have_to_be_in_a_guild" : "You must be in a guild to do this",
     "you_dont_have_right_to_change_announcement" : "You don't have the right to change the announcement of the guild",
@@ -42,7 +43,13 @@
     "guild_already_enroll_in_tournament" : "You guild is already enrolled in a conquest",
     "guild_tournament_started_generic" : "Since the conquest have already started, you can't do that now",
     "guild_not_enrolled_in_tournament" : "Your guild is not enrolled in an conquest",
+    "guild_dont_own_this_area" : "Your guild is not the owner of this area",
+    "guild_dont_have_permission_to_levelup_area" : "You don't have the right to level up an area owned by your guild",
     
+    "area_at_max_level" : "The area is at the maximum level",
+    "area_bonus_not_available" : "This bonus is not available in this area",
+    "area_dont_have_enough_stat_points" : "You can't allocate this amount of points to this area",
+
     "collect_enter_id_to_collect" : "Please enter the id of the resource to collect",
     "collect_tired_wait_x_seconds" : "You are too tired to collect these resources, you still have to wait: %s seconds",
     "collect_dont_have_required_level" : "You don't have the required crafting level to collect this resource, you must be at least level %d",
@@ -167,7 +174,10 @@
     "conquest" : "Conquest",
     "conquest_next" : "Next conquest :\n- %s\n- Number of guilds enrolled : %d",
     "conquest_ongoing" : "Conquest ongoing",
-    "area_progression" : "Area progression"
+    "area_progression" : "Area progression",
+    "level_up" : "The area has level up",
+    "bonus_list_header" : "Identifier => Refers to",
+    "up_stat" : "The bonus %s have gained %d points"
   },
   "bonuses" : {
     "bonuses" : "Bonuses",
@@ -176,6 +186,7 @@
     "xp_craft" : "Craft XP",
     "gold_drop" : "Gold Drop",
     "item_drop" : "Item Drop",
+    "collect_drop" : "Collect Drop",
     "no_bonuses" : "No available bonuses"
   },
   "resources" : {
@@ -194,7 +205,7 @@
 
     "collected_x_resource" : "You've collected %d %s",
     "resource_dont_exist" : "You don't see this resource anywhere",
-    "collect_gain_xp" : "You've gain %d XP to your crafting job",
+    "collect_gain_xp" : "You've gain a total of %d XP (with %d XP bonus thanks to the area) to your crafting job",
     "job_level_up" : "You've gain %d level to your crafting job",
     "job_level_up_plur" : "You've gain %d levels to your crafting job"
   },
@@ -244,7 +255,8 @@
     "nobody_ask_to_join_your_guild" : "No one applied to join your guild",
     "nothing_to_print" : "Nothing to see",
     "enroll" : "Your guild is now enrolled for the next conquest in this area",
-    "unenroll" : "Your guild is now unenrolled from the conquest in this area"
+    "unenroll" : "Your guild is now unenrolled from the conquest in this area",
+    "you_paid_x" : "Votre guilde a payé %dG"
   },
   "inventory_equipment" : {
     "item_equiped" : "Your item is now equipped",
@@ -395,7 +407,10 @@
      "area" : "Shows the information of the area in which you are",
      "areas" : "Shows every areas",
      "areaconquest" : "Show the next conquest for this area",
+     "arealevelup" : "Level up the area that your guild possess (you must be in this area)",
+     "areabonuseslist" : "Show the identifiers list related to area bonuses",
      "areaplayers" : "Shows the players in the zone",
+     "areaupbonus" : "Up one the available bonuses",
      "travel" : "Allows you to travel to the area areaID",
 
      "guilds_title" : "Guilds",
