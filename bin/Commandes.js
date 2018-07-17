@@ -72,8 +72,9 @@ class Commandes {
                 this.connectedUsers[authorIdentifier].loadUser();
 
                 this.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
+                this.connectedUsers[authorIdentifier].character.setArea(this.areasManager.getArea(this.connectedUsers[authorIdentifier].character.idArea));
 
-                this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character);
+                this.areasManager.addOnePlayer(this.connectedUsers[authorIdentifier].character.getIdArea(), this.connectedUsers[authorIdentifier].character);
 
                 this.nbrConnectedUsers++;
 
@@ -94,8 +95,8 @@ class Commandes {
             let group = this.connectedUsers[authorIdentifier].character.group;
             let lang = this.connectedUsers[authorIdentifier].getLang();
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-            let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "marketplace");
-            let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.area, "craftingbuilding");
+            let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
+            let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
             console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
             if (this.connectedUsers[authorIdentifier].isNew) {
                 message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
@@ -200,11 +201,15 @@ class Commandes {
                                         nb = this.connectedUsers[authorIdentifier].character.getAmountOfThisItem(toPlaceIdItem);
                                         if (nb >= nbOfItemsToPlace) {
                                             if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(toPlaceIdItem)) {
-                                                if (this.areasManager.haveOwner(this.connectedUsers[authorIdentifier].character.area)) {
-                                                    if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(priceToPlace * marketplace.getTax())) {
+                                                if (this.connectedUsers[authorIdentifier].character.getArea().haveOwner()) {
+                                                    let marketplaceTax = priceToPlace * marketplace.getTax();
+                                                    if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(marketplaceTax)) {
                                                         // enlever la taxe
                                                         this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
-                                                        msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                                        this.connectedUsers[authorIdentifier].character.removeMoney(marketplaceTax);
+                                                        Guild.addMoney(this.connectedUsers[authorIdentifier].character.getArea().getOwnerID(), marketplaceTax);
+                                                        msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed")) + "\n";
+                                                        msg += Translator.getString(lang, "marketplace", "you_paid_tax", [marketplaceTax]);
                                                     } else {
                                                         msg = Translator.getString(lang, "errors", "marketplace_not_enough_to_pay_tax");
                                                     }
@@ -215,22 +220,18 @@ class Commandes {
                                             } else {
                                                 msg = Translator.getString(lang, "errors", "marketplace_favorite_sell_impossible");
                                             }
-
-
                                         } else {
-                                            msg =Translator.getString(lang, "errors", "marketplace_not_this_number_of_item");
+                                            msg = Translator.getString(lang, "errors", "marketplace_not_this_number_of_item");
                                         }
                                     } else {
-                                        msg =Translator.getString(lang, "errors", "marketplace_nb_of_item_not_ok");
+                                        msg = Translator.getString(lang, "errors", "marketplace_nb_of_item_not_ok");
                                     }
                                 } else {
-                                    msg =Translator.getString(lang, "errors", "marketplace_price_forgotten");
+                                    msg = Translator.getString(lang, "errors", "marketplace_price_forgotten");
                                 }
-
                             } else {
                                 msg = Translator.getString(lang, "errors", "marketplace_dont_have_object");
                             }
-
                         } else {
                             msg = Translator.getString(lang, "errors", "marketplace_id_item_forgotten");
                         }
@@ -341,7 +342,7 @@ class Commandes {
 /*
                 case "claim":
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
-                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.area, this.connectedUsers[authorIdentifier].character.idGuild, lang)
+                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.getIdArea(), this.connectedUsers[authorIdentifier].character.idGuild, lang)
                     } else {
                         err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                     }
@@ -668,8 +669,8 @@ class Commandes {
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         if(!this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                            if(!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.area)) {
-                                this.connectedGuilds[tGuildId].enroll(this.connectedUsers[authorIdentifier].character.area);
+                            if(!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
+                                this.connectedGuilds[tGuildId].enroll(this.connectedUsers[authorIdentifier].character.getIdArea());
                                 msg = Translator.getString(lang, "guild", "enroll");
                             } else {
                                 msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
@@ -859,12 +860,12 @@ class Commandes {
                         if (group.leader === this.connectedUsers[authorIdentifier]) {
                             if (!group.doingSomething) {
                                 if (group.allInSameArea()) {
-                                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                                         if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
                                             let grpEnemies = [];
-                                            grpEnemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemyGroup);
+                                            grpEnemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemyGroup);
                                             if (grpEnemies == null) {
-                                                grpEnemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemyGroup);
+                                                grpEnemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemyGroup);
                                             }
                                             this.fightManager._fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
                                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
@@ -925,7 +926,7 @@ class Commandes {
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
                     }
-                    msg = this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.area, apPage, lang);
+                    msg = this.areasManager.getPlayersOf(this.connectedUsers[authorIdentifier].character.getIdArea(), apPage, lang);
                     break;
 
                 case "active":
@@ -944,8 +945,8 @@ class Commandes {
                     let idToCollect = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                         if (idToCollect && Number.isInteger(idToCollect)) {
-                            let resourceToCollect = this.areasManager.getResource(this.connectedUsers[authorIdentifier].character.area, idToCollect);
-                            //idToCollect = this.areasManager.getResourceId(this.connectedUsers[authorIdentifier].character.area, idToCollect);
+                            let resourceToCollect = this.areasManager.getResource(this.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
+                            //idToCollect = this.areasManager.getResourceId(this.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
                             if (resourceToCollect) {
                                 if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
                                     this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
@@ -1147,7 +1148,7 @@ class Commandes {
                     numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
                     //console.log(numberOfItemsToSell);
                     msg = "";
-                    if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                    if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
                             if(this.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
                                 if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
@@ -1175,7 +1176,7 @@ class Commandes {
                     break;
 
                 case "sellall":
-                    if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                    if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         let allSelled = this.connectedUsers[authorIdentifier].character.sellAllInventory();
                         if (allSelled > 0) {
                             msg = Translator.getString(lang, "economic", "sell_all_for_x", [allSelled]);
@@ -1257,7 +1258,7 @@ class Commandes {
                     //this.debug(message);
 
                     //message.channel.send(msg);
-                    //message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.area));
+                    //message.channel.send(this.areasManager.getResources(this.connectedUsers[authorIdentifier].character.getIdArea()));
                     //this.connectedUsers[authorIdentifier].character.inv.addToInventory(1);
                     //this.connectedUsers[authorIdentifier].character.equipement.totalStats();
                     //console.log(this.connectedUsers[authorIdentifier].character.equipement);
@@ -1303,14 +1304,14 @@ class Commandes {
                 case "fight":
                     //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, messageArray[1]);
                     let idEnemy = parseInt(messageArray[1], 10);
-                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         if (idEnemy != undefined && Number.isInteger(idEnemy)) {
-                            let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.area, idEnemy, this.connectedUsers[authorIdentifier].character.getStat("perception"));
+                            let canIFightTheMonster = this.areasManager.canIFightThisMonster(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy, this.connectedUsers[authorIdentifier].character.getStat("perception"));
                             let enemies = [];
                             if (!canIFightTheMonster) {
-                                enemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
+                                enemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy);
                             } else {
-                                enemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.area, idEnemy);
+                                enemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy);
                             }
                             this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], enemies, message, canIFightTheMonster, lang);
                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
@@ -1325,7 +1326,7 @@ class Commandes {
                     break;
 
                 case "area":
-                    msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.area, lang);
+                    msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                     break;
 
                 case "areas":
@@ -1333,26 +1334,27 @@ class Commandes {
                     break;
 
                 case "areaconquest":
-                    //msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.area);
-                    msg = this.areasManager.seeConquestOfThisArea(this.connectedUsers[authorIdentifier].character.area, lang);
+                    //msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.getIdArea());
+                    msg = this.areasManager.seeConquestOfThisArea(this.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                     break;
 
                 case "travel":
                     let wantedAreaToTravel = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                         if (this.areasManager.exist(wantedAreaToTravel)) {
-                            if (wantedAreaToTravel == this.connectedUsers[authorIdentifier].character.area) {
+                            if (wantedAreaToTravel == this.connectedUsers[authorIdentifier].character.getIdArea()) {
                                 msg = Translator.getString(lang, "errors", "travel_already_here");
                             } else {
 
                                 // Update le compte de joueurs
                                 this.areasManager.updateTravel(this.connectedUsers[authorIdentifier].character, wantedAreaToTravel);
+                                wantedAreaToTravel = this.areasManager.getArea(wantedAreaToTravel);
 
                                 // change de zone
                                 this.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel);
 
                                 // Messages
-                                msg = Translator.getString(lang, "travel", "travel_to_area", [this.areasManager.getNameOf(wantedAreaToTravel)]);
+                                msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.name]);
                                 msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                             }
 
@@ -1369,7 +1371,7 @@ class Commandes {
                     firstMention = mentions.first();
                     let idOtherPlayerCharacter = 0;
                     let mId = -1;
-                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.area)) {
+                    if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         // Ici on récupère l'id
                         if (firstMention) {
                             mId = firstMention.id;
