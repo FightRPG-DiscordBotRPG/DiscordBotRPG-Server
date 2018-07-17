@@ -20,15 +20,14 @@ class DungeonArea extends Area{
             "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
             "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
         );
-
-
+        
         return  res[0] ? res[0]["nomRarity"] : "None";
     }
 
     toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.name + " | " + this.levels + "|" + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.name + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "general", "description"), (this.desc ? this.desc : Translator.getString(lang, "area", "no_description")) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") + " **" + Translator.getString(lang, "rarities", this.getMaxItemQuality()) + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
             .setImage(this.image);
