@@ -290,8 +290,20 @@ class Guild {
         conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?", [number, idGuild]);
     }
 
+    /**
+     * 
+     * @param {number} number 
+     */
     addMoneyDirect(number) {
         conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?", [number, this.id]);
+    }
+
+    /**
+     * 
+     * @param {number} number 
+     */
+    removeMoneyDirect(number) {
+        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?", [number, this.id]);
     }
 
     /**
@@ -307,6 +319,16 @@ class Guild {
         }
         return false;
 
+    }
+
+    /**
+     * 
+     * @param {number} number 
+     */
+    haveThisMoney(number) {
+        this.loadMoney();
+        console.log(this.money + " -> " + number);
+        return this.money >= number;
     }
 
     /**
@@ -335,7 +357,10 @@ class Guild {
     }
 
     /**
-     * Return true if done else false
+     * 
+     * @param {number} idCharacter 
+     * @param {string} lang 
+     * @returns array empty if no errors
      */
     levelUp(idCharacter, lang) {
         let err = [];
@@ -367,7 +392,11 @@ class Guild {
         return Globals.guilds.basePriceLevel * this.level * Globals.guilds.multBasePricePerLevel;
     }
 
-    // Apppliance of ugild
+    /**
+     * 
+     * @param {number} page 
+     * @param {string} lang 
+     */
     getGuildAppliances(page, lang) {
         page = page <= 0 ? 1 : page;
         let idCharacterMaxLength = 10;
