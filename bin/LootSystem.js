@@ -90,7 +90,7 @@ class LootSystem {
     }
 
     getLoot(character, rarity, level) {
-        let res = conn.query("SELECT itemsbase.idBaseItem, itemsbase.idType FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = " + character.area + " AND itemsbase.idRarity = " + rarity + ";");
+        let res = conn.query("SELECT itemsbase.idBaseItem, itemsbase.idType FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = " + character.getIdArea() + " AND itemsbase.idRarity = " + rarity + ";");
         let r = Math.floor(Math.random() * res.length);
         let objectType = res[r]["idType"];
         let idItemBase = res[r]["idBaseItem"];
