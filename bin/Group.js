@@ -3,6 +3,7 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
 const Discord = require("discord.js");
+const User = require("./User");
 
 var nextID = 0;
 
@@ -11,8 +12,14 @@ class Group {
 	constructor(leader) {
 		leader.pendingPartyInvite = null;
 		this.id = nextID;
-		nextID++;
+        nextID++;
+        /**
+         * @type {Array<User>}
+         */
         this.players = {};
+        /**
+         * @type {Array<User>}
+         */
         this.pendingPlayers = {};
 		this.leader = leader;
 		this.doingSomething = false;
@@ -20,7 +27,7 @@ class Group {
 
     allInSameArea() {
         for (let i in this.players) {
-            if (this.players[i].character.area != this.leader.character.area) {
+            if (this.players[i].character.getArea() != this.leader.character.getArea()) {
                 return false;
             }
         }
