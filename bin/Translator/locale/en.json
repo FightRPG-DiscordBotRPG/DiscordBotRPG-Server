@@ -118,15 +118,16 @@
     "craft_done": "You have made the following item : \"%s\""
   },
   "marketplace" : {
-    "placed": "Votre objet à été mis en vente",
-    "placed_plur": "Vos objets ont été mis en vente",
-    "header_str": "Joueur - idObjet - Nom - Type - Niveau - Rareté - Puissance - Nombre - Prix",
-    "retrieve" : "Vous avez récupéré votre objet",
-    "retrieve_plur" : "Vous avez récupéré vos objets",
-    "you_sold_plur" : "Vous avez vendu %d objets pour %dG",
-    "you_sold" : "Vous avez vendu %d objet pour %dG",
-    "you_buy": "Vous avez acheté %d objet pour %dG",
-    "you_buy_plur" : "Vous avez acheté %d objets pour %dG"
+    "placed": "Your item is now on sale",
+    "placed_plur": "Your items is now on sale",
+    "header_str": "Player - idItem - Name - Type - Level - Rarity - Power - Number - Unit Price",
+    "retrieve" : "You've recovered your item",
+    "retrieve_plur" : "You've recovered your items",
+    "you_sold_plur" : "You've selled %d items for %dG",
+    "you_sold" : "You've selled %d item for %dG",
+    "you_buy": "You've buyed %d item for %dG",
+    "you_buy_plur" : "You've buyed %d items for %dG",
+    "you_paid_tax"  : "You've paid %dG of taxes to place this item"
   },
   "group" : {
     "you_left" : "You left your group",
@@ -165,7 +166,17 @@
     "monster_group" : "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s",
     "conquest" : "Conquest",
     "conquest_next" : "Next conquest :\n- %s\n- Number of guilds enrolled : %d",
-    "conquest_ongoing" : "Conquest ongoing"
+    "conquest_ongoing" : "Conquest ongoing",
+    "area_progression" : "Area progression"
+  },
+  "bonuses" : {
+    "bonuses" : "Bonuses",
+    "xp_fight" : "Fight XP",
+    "xp_collect" : "Collect XP",
+    "xp_craft" : "Craft XP",
+    "gold_drop" : "Gold Drop",
+    "item_drop" : "Item Drop",
+    "no_bonuses" : "No available bonuses"
   },
   "resources" : {
     "wood"  : "Wood",

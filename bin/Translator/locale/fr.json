@@ -119,13 +119,14 @@
   "marketplace" : {
     "placed": "Votre objet à été mis en vente",
     "placed_plur": "Vos objets ont été mis en vente",
-    "header_str": "Joueur - idObjet - Nom - Type - Niveau - Rareté - Puissance - Nombre - Prix",
+    "header_str": "Joueur - idObjet - Nom - Type - Niveau - Rareté - Puissance - Nombre - Prix Unitaire",
     "retrieve" : "Vous avez récupéré votre objet",
     "retrieve_plur" : "Vous avez récupéré vos objets",
     "you_sold_plur" : "Vous avez vendu %d objets pour %dG",
     "you_sold" : "Vous avez vendu %d objet pour %dG",
     "you_buy": "Vous avez acheté %d objet pour %dG",
-    "you_buy_plur" : "Vous avez acheter %d objets pour %dG"
+    "you_buy_plur" : "Vous avez acheter %d objets pour %dG",
+    "you_paid_tax"  : "Vous avez payé %dG de taxe pour pouvoir mettre l'objet en vente"
   },
   "group" : {
     "you_left" : "Vous avez quitté votre groupe",
@@ -164,7 +165,17 @@
     "monster_group" : "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s",
     "conquest" : "Conquête",
     "conquest_next" : "Prochaine conquête de la zone :\n- %s\n- Nombre de guildes inscrites : %d",
-    "conquest_ongoing" : "Conquête de zone en cours"
+    "conquest_ongoing" : "Conquête de zone en cours",
+    "area_progression" : "Progression de la zone"
+  },
+  "bonuses" : {
+    "bonuses" : "Bonus",
+    "xp_fight" : "XP de combat",
+    "xp_collect" : "XP de récolte",
+    "xp_craft" : "XP de fabrication",
+    "gold_drop" : "Drop d'argent",
+    "item_drop" : "Drop d'objets",
+    "no_bonuses" : "Aucun bonus disponible"
   },
   "resources" : {
     "wood"  : "Bois",
