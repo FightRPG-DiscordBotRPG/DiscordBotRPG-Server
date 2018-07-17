@@ -375,7 +375,7 @@ class Area {
 
     statsAndLevelToStr() {
         let str = "```\n";
-        let res = conn.query("SELECT areas.AreaLevel as level, statPoints, price FROM areas INNER JOIN AreasLevels ON AreasLevels.idAreaLevel = areas.AreaLevel WHERE idArea = ?;", [this.id])[0];
+        let res = conn.query("SELECT areas.AreaLevel as level, statPoints, price FROM areas INNER JOIN areaslevels ON areaslevels.idAreaLevel = areas.AreaLevel WHERE idArea = ?;", [this.id])[0];
         str += "- Actual level : " + res.level + "\n";
         str += "- Points to distribute : " + res.statPoints + "\n";
         str += "- Price to next level : " + res.price + "\n";
