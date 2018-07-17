@@ -7,6 +7,7 @@ const AreaTournament = require("../AreaTournament/AreaTournament");
 const Discord = require("discord.js");
 const Character = require("../Character");
 const Item = require("../Item");
+const AreaBonus = require("./AreaBonus");
 
 class Area {
 
@@ -28,14 +29,21 @@ class Area {
          * @type {Array<MonstreGroupe>}
          */
         this.monsters = [];
+        /**
+         * @type {Array<Character>}
+         */
         this.characters = [];
+        /**
+         * @type {AreaBonus}
+         */
+        this.bonuses = [];
         this.maxItemRarity = "";
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
         //this.tournament = {};
         this.loadArea(id);
-        
+        this.statsAndLevelToStr();
     }
 
     loadArea(id) {
@@ -105,9 +113,6 @@ class Area {
         if (res[0]) {
             this.maxItemRarity = res[0]["nomRarity"];
         }
-
-        /*this.tournament = new AreaTournament(this);
-        this.tournament.scheduleTournament();*/
         
     }
 
@@ -258,6 +263,54 @@ class Area {
         return str;
     }
 
+    bonusesToStr(lang) {
+        let str = "```\n";
+        let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ?;", [this.id]);
+        let empty = true;
+        for(let o of res) {
+            if(o.value > 0) {
+                let bonus = new AreaBonus(o.idBonusTypes);
+                bonus.setValue(o.value);
+                str += bonus.toStr(lang) + "\n";
+                empty = false;
+            }
+        }
+
+        if(empty) {
+            str += Translator.getString(lang, "bonuses", "no_bonuses");
+        }
+        str += "```";
+
+        return str;
+    }
+
+    getXpAndDropBonusValue() {
+        let bonuses = {};
+        let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ? AND idBonusTypes;", [this.id]);;
+        for(let o of res) {
+            let bonus = new AreaBonus(o.idBonusTypes);
+            bonus.setValue(o.value);
+            bonuses[bonus.name] = bonus;
+        }
+        return bonuses;
+    }
+
+    getLevel() {
+        let r = conn.query("SELECT AreaLevel FROM areas WHERE idArea = ?;", [this.id])[0];
+        return r.AreaLevel;
+    }
+
+    statsAndLevelToStr() {
+        let str = "```\n";
+        let res = conn.query("SELECT areas.AreaLevel as level, statPoints, price FROM areas INNER JOIN AreasLevels ON AreasLevels.idAreaLevel = areas.AreaLevel WHERE idArea = ?;", [this.id])[0];
+        str += "- Actual level : " + res.level + "\n";
+        str += "- Points to distribute : " + res.statPoints + "\n";
+        str += "- Price to next level : " + res.price + "\n";
+        str += "```";
+
+        return str;
+    }
+
     /**
      * 
      * @param {number} indexResource 
@@ -278,6 +331,17 @@ class Area {
      */
     getService(serviceName) {
         return this.services[serviceName];
+    }
+
+    /**
+     * @returns {number} Null if no guilds
+     */
+    getOwnerID() {
+        let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [this.id]);
+        if(res[0]) {
+            return res[0].idGuild;
+        }
+        return null;
     }
 
     /**
@@ -375,7 +439,10 @@ class Area {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
             .setAuthor(this.name + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
-            .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```");
+            .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```")
+            .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(lang))
+            .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(lang))
+            ;
     }
 
     /**
