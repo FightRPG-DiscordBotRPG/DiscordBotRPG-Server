@@ -67,6 +67,6 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-INSERT INTO `bonustypes` (`idBonusTypes`, `nom`) VALUES (NULL, 'xp_fight'), (NULL, 'xp_collect'), (NULL, 'xp_craft'), (NULL, 'gold_drop'), (NULL, 'item_drop');
+INSERT INTO `bonustypes` (`idBonusTypes`, `nom`) VALUES (NULL, 'xp_fight'), (NULL, 'xp_collect'), (NULL, 'xp_craft'), (NULL, 'gold_drop'), (NULL, 'item_drop'), (NULL, 'collect_drop');
 INSERT INTO `areaslevels` (`idAreaLevel`, `price`) VALUES (NULL, '250000'), (NULL, '500000'), (NULL, '300000'), (NULL, '10000000');
 UPDATE areas SET AreaLevel = 1
