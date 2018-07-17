@@ -201,6 +201,7 @@ class Guild {
     }
 
     toStr(lang) {
+        this.loadMoney();
         let membersStr = "```";
         let rmStr = "";
         let roStr = "";
@@ -271,12 +272,37 @@ class Guild {
 
     /**
      * 
+     * @param {number} idGuild 
+     * @param {number} number 
+     */
+    static addMoney(idGuild, number) {
+        number = number > 0 ? number : -number;
+        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?", [number, idGuild]);
+    }
+
+    /**
+     * 
+     * @param {number} idGuild 
+     * @param {number} number 
+     */
+    static removeMoney(idGuild, number) {
+        number = number > 0 ? number : -number;
+        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?", [number, idGuild]);
+    }
+
+    addMoneyDirect(number) {
+        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?", [number, this.id]);
+    }
+
+    /**
+     * 
      * @param {Number} number > 0
      */
     addMoney(number) {
         if (number > 0) {
-            this.money += number;
-            this.saveMoney();
+            /*this.money += number;
+            this.saveMoney();*/
+            this.addMoneyDirect(number);
             return true;
         }
         return false;
@@ -289,7 +315,7 @@ class Guild {
      */
     removeMoney(number, idCharacter, lang) {
         let err = [];
-
+        this.loadMoney();
         if (this.money >= number && number > 0) {
             if (this.members[idCharacter].rank == 3) {
                 this.money -= number;
@@ -302,6 +328,10 @@ class Guild {
         }
 
         return err;
+    }
+
+    loadMoney() {
+        this.money = conn.query("SELECT argent FROM guilds WHERE idGuild = ?;", [this.id])[0].argent;
     }
 
     /**
