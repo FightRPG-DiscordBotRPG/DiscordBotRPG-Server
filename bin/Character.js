@@ -10,6 +10,7 @@ const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
 const Item = require("./Item");
 const PlayerCraft = require("./CraftSystem/PlayerCraft");
 const LootSystem = require("./LootSystem");
+const Area = require("./Areas/Area");
 
 class Character extends CharacterEntity {
 
@@ -22,7 +23,11 @@ class Character extends CharacterEntity {
         this.statPoints = 0;
         this.money = 0;
         this.canFightAt = 0;
-        this.area = 0;
+        this.idArea = 1;
+        /**
+         * @type {Area} Reference;
+         */
+        this.area;
         this.honorPoints = 0;
         this.idGuild = 0;
 
@@ -48,7 +53,7 @@ class Character extends CharacterEntity {
         this.stats.init(this.id);
         this.statPoints = 5;
         this.money = 100;
-        this.area = 1;
+        this.idArea = 1;
 
         //Load inv
         this.inv.loadInventory(this.id);
@@ -72,7 +77,7 @@ class Character extends CharacterEntity {
         this.craftSystem.load(this.id);
         this.statPoints = res["statPoints"];
         this.money = res["money"];
-        this.area = res["idArea"];
+        this.idArea = res["idArea"];
         this.honorPoints = res["honor"];
 
         //Load inv
@@ -95,15 +100,35 @@ class Character extends CharacterEntity {
     }
 
     saveArea() {
-        conn.query("UPDATE characters SET idArea = " + this.area + " WHERE idCharacter = " + this.id);
+        conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
-    changeArea(idArea) {
+    /**
+     * 
+     * @param {Area} area 
+     */
+    changeArea(area) {
         let baseTimeToWait = (Globals.basicWaitTimeAfterTravel - Math.floor(this.stats.constitution / 10)) * 1000;
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
-        this.area = idArea;
+        this.area = area;
         this.saveArea();
+    }
+
+    /**
+     * 
+     * @param {Area} area 
+     */
+    setArea(area) {
+        this.area = area;
+    }
+
+    getIdArea() {
+        return this.area.id;
+    }
+
+    getArea() {
+        return this.area;
     }
 
     // Group System
@@ -165,7 +190,7 @@ class Character extends CharacterEntity {
      * @returns {number} Stat value
      */
     getStat(statName) {
-        if (this.stats[statName] && this.equipement.stats[statName]) {
+        if (this.stats[statName] != null && this.equipement.stats[statName] != null) {
             return this.stats[statName] + this.equipement.stats[statName];
         }
         return 0;
