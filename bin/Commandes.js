@@ -1508,7 +1508,7 @@ class Commandes {
     // Return string or embed
     helpPanel(lang, page) {
         let str = "";
-        let maxPage = 4;
+        let maxPage = 5;
         page = page && page > 0 && page <= maxPage ? page : 1;
 
         switch (page) {
@@ -1542,6 +1542,7 @@ class Commandes {
                 break;
             case 2:
                 str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
                     "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
                     "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
