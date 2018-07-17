@@ -88,7 +88,7 @@ class Commandes {
                     }
                 }
 
-                
+
 
             }
 
@@ -97,6 +97,8 @@ class Commandes {
             let pending = this.connectedUsers[authorIdentifier].character.pendingPartyInvite;
             let marketplace = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
             let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
+            let currentArea = this.connectedUsers[authorIdentifier].character.getArea();
+
             console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
             if (this.connectedUsers[authorIdentifier].isNew) {
                 message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
@@ -108,10 +110,10 @@ class Commandes {
             // Detect Commands
             switch (command) {
                 /*
-                *   Craft
-                */
-                case "craftlist": 
-                    if(craftingbuilding != null) {
+                 *   Craft
+                 */
+                case "craftlist":
+                    if (craftingbuilding != null) {
                         msg = craftingbuilding.craftingListToEmbed(messageArray[1], lang);
                     } else {
                         msg = Translator.getString(lang, "errors", "craft_no_building");
@@ -119,7 +121,7 @@ class Commandes {
                     break;
 
                 case "craftshow":
-                    if(craftingbuilding != null) {
+                    if (craftingbuilding != null) {
                         msg = craftingbuilding.craftToEmbed(messageArray[1], lang);
                     } else {
                         msg = Translator.getString(lang, "errors", "craft_no_building");
@@ -127,30 +129,33 @@ class Commandes {
                     break;
 
                 case "craft":
-                    if(craftingbuilding != null) {
+                    if (craftingbuilding != null) {
                         // ToCraft = Craft type
-                        if(this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                        if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                             let toCraft = craftingbuilding.getCraft(messageArray[1]);
-                            if(toCraft) {
-                                if(this.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
-                                    if(this.connectedUsers[authorIdentifier].character.craft(toCraft)) {
+                            if (toCraft) {
+                                if (this.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
+                                    if (this.connectedUsers[authorIdentifier].character.craft(toCraft)) {
                                         msg = Translator.getString(lang, "craft", "craft_done", [toCraft.itemInfo.name]) + "\n";
-    
+
                                         this.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
-    
+
                                         // Seulement s'il n'est pas niveau max
-                                        if(this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                        if (this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                            let craftBonus = currentArea.getAllBonuses().xp_craft;
                                             let craftXP = CraftSystem.getXP(this.connectedUsers[authorIdentifier].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), this.connectedUsers[authorIdentifier].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
-    
-                                            let craftCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(craftXP);
-        
-                                            msg += Translator.getString(lang, "resources", "collect_gain_xp", [craftXP]) + "\n";
-        
-                                            if(craftCraftUP > 0) {
-                                                msg +=  Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
+                                            let craftXPBonus = craftBonus.getPercentageValue() * craftXP;
+                                            let totalCraftXP = craftXP + craftXPBonus;
+
+                                            let craftCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(totalCraftXP);
+
+                                            msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCraftXP, craftXPBonus]) + "\n";
+
+                                            if (craftCraftUP > 0) {
+                                                msg += Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
                                             }
                                         }
-                                        
+
                                     } else {
                                         msg = Translator.getString(lang, "errors", "craft_dont_have_required_items");
                                     }
@@ -166,12 +171,12 @@ class Commandes {
                     } else {
                         msg = Translator.getString(lang, "errors", "craft_no_building");
                     }
-                    break;  
+                    break;
 
 
-                /*
-                *   Marketplace
-                */
+                    /*
+                     *   Marketplace
+                     */
 
                 case "mkmylist":
                     if (marketplace != null) {
@@ -200,14 +205,14 @@ class Commandes {
                                         // nb = amount of player items
                                         nb = this.connectedUsers[authorIdentifier].character.getAmountOfThisItem(toPlaceIdItem);
                                         if (nb >= nbOfItemsToPlace) {
-                                            if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(toPlaceIdItem)) {
-                                                if (this.connectedUsers[authorIdentifier].character.getArea().haveOwner()) {
+                                            if (!this.connectedUsers[authorIdentifier].character.isItemFavorite(toPlaceIdItem)) {
+                                                if (currentArea.haveOwner()) {
                                                     let marketplaceTax = priceToPlace * marketplace.getTax();
                                                     if (this.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(marketplaceTax)) {
                                                         // enlever la taxe
                                                         this.connectedUsers[authorIdentifier].character.sellToMarketplace(marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
                                                         this.connectedUsers[authorIdentifier].character.removeMoney(marketplaceTax);
-                                                        Guild.addMoney(this.connectedUsers[authorIdentifier].character.getArea().getOwnerID(), marketplaceTax);
+                                                        Guild.addMoney(currentArea.getOwnerID(), marketplaceTax);
                                                         msg = Translator.getString(lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed")) + "\n";
                                                         msg += Translator.getString(lang, "marketplace", "you_paid_tax", [marketplaceTax]);
                                                     } else {
@@ -336,27 +341,74 @@ class Commandes {
                         msg = Translator.getString(lang, "errors", "marketplace_not_exist");
                     }
                     break;
-                /*
-                *   CONQUEST
-                */
-/*
-                case "claim":
-                    if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
-                        err = this.areasManager.claim(this.connectedUsers[authorIdentifier].character.getIdArea(), this.connectedUsers[authorIdentifier].character.idGuild, lang)
-                    } else {
-                        err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
-                    }
+                    /*
+                     *   CONQUEST
+                     */
 
-                    if (err[0]) {
-                        msg = err[0];
+                case "arealevelup":
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (currentArea.getOwnerID() === tGuildId) {
+                        if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
+                            if (!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
+                                if (!currentArea.isMaxLevel()) {
+                                    let toLevelUpArea = currentArea.getPriceNextLevel();
+                                    if (this.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
+                                        currentArea.levelUp();
+                                        this.connectedGuilds[tGuildId].removeMoneyDirect(toLevelUpArea);
+                                        msg = Translator.getString(lang, "area", "level_up") + "\n";
+                                        msg += Translator.getString(lang, "guild", "you_paid_x", [toLevelUpArea]);
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "guild_you_dont_have_enough_money");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "area_at_max_level");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "guild_dont_have_permission_to_levelup_area");
+                        }
                     } else {
-                        msg = Translator.getString(lang, "area", "you_claimed");
+                        msg = Translator.getString(lang, "errors", "guild_dont_own_this_area");
                     }
-                    break;*/
+                    break;
 
-                /*
-                *   GUILDS
-                */
+                case "areaupbonus":
+                    tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
+                    if (currentArea.getOwnerID() === tGuildId) {
+                        if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
+                            if (!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
+                                if (currentArea.isBonusAvailable(messageArray[1])) {
+                                    messageArray[2] = messageArray[2] != null ? Number.parseInt(messageArray[2]) : 1000;
+                                    messageArray[2] = messageArray[2] > 0 ? messageArray[2] : 1000;
+                                    if (currentArea.haveThisAmountOfStatPoints(messageArray[2])) {
+                                        currentArea.upStat(messageArray[1], messageArray[2]);
+                                        msg = Translator.getString(lang, "area", "up_stat", [Translator.getString(lang, "bonuses", messageArray[1]), messageArray[2]]);
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "area_dont_have_enough_stat_points");
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "area_bonus_not_available");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "generic_cant_do_that");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "guild_dont_own_this_area");
+                    }
+                    break;
+
+                case "areabonuseslist":
+                    msg = currentArea.listOfBonusesToStr(lang);
+                    break;
+
+                    /*
+                     *   GUILDS
+                     */
 
                 case "guild":
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
@@ -400,31 +452,28 @@ class Commandes {
                 case "gdisband":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        if(this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                            if(this.connectedGuilds[tGuildId].isTournamentStarted() == 1) {
+                        if (this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if (this.connectedGuilds[tGuildId].isTournamentStarted() == 1) {
                                 msg = Translator.getString(lang, "errors", "guild_tournament_started");
                             } else {
                                 this.areasManager.unclaimAll(tGuildId);
                                 this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                                 delete this.connectedGuilds[tGuildId];
-                                msg = Translator.getString(lang, "guild", "guild_disband"); 
+                                msg = Translator.getString(lang, "guild", "guild_disband");
                             }
-                            
+
                         } else {
                             this.areasManager.unclaimAll(tGuildId);
                             this.connectedGuilds[tGuildId].disband(this.connectedUsers);
                             delete this.connectedGuilds[tGuildId];
-                            msg = Translator.getString(lang, "guild", "guild_disband"); 
+                            msg = Translator.getString(lang, "guild", "guild_disband");
                         }
 
-
-                        
-                        
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_disband");
                     }
                     break;
-                
+
 
                 case "gapply":
                     messageArray[1] = parseInt(messageArray[1], 10);
@@ -469,7 +518,7 @@ class Commandes {
                         } else {
                             err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                         }
- 
+
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_enter_id_to_add");
                     }
@@ -575,7 +624,7 @@ class Commandes {
                     } else {
                         err.push(Translator.getString(lang, "errors", "you_have_to_be_in_a_guild"));
                     }
-                    
+
                     if (err.length > 0) {
                         msg = err[0];
                     } else {
@@ -665,11 +714,11 @@ class Commandes {
                     }
                     break;
 
-                case "genroll": 
+                case "genroll":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        if(!this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                            if(!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
+                        if (!this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if (!AreaTournament.haveStartedByIdArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                                 this.connectedGuilds[tGuildId].enroll(this.connectedUsers[authorIdentifier].character.getIdArea());
                                 msg = Translator.getString(lang, "guild", "enroll");
                             } else {
@@ -678,17 +727,17 @@ class Commandes {
                         } else {
                             msg = Translator.getString(lang, "errors", "guild_already_enroll_in_tournament");
                         }
-                        
+
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_enroll");
                     }
                     break;
 
-                case "gunenroll": 
+                case "gunenroll":
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        if(this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                            if(!AreaTournament.haveStartedByIdArea(this.connectedGuilds[tGuildId].getTournamentAreaEnrolled())) {
+                        if (this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                            if (!AreaTournament.haveStartedByIdArea(this.connectedGuilds[tGuildId].getTournamentAreaEnrolled())) {
                                 this.connectedGuilds[tGuildId].unenroll();
                                 msg = Translator.getString(lang, "guild", "unenroll");
                             } else {
@@ -697,15 +746,15 @@ class Commandes {
                         } else {
                             msg = Translator.getString(lang, "errors", "guild_not_enrolled_in_tournament");
                         }
-                        
+
                     } else {
                         msg = Translator.getString(lang, "errors", "guild_have_to_be_gm_to_enroll");
                     }
                     break;
 
-                /*
-                * GROUP SYSTEM
-                */
+                    /*
+                     * GROUP SYSTEM
+                     */
                 case "grpmute":
                     this.connectedUsers[authorIdentifier].muteGroup(true);
                     msg = Translator.getString(lang, "group", "now_muted")
@@ -748,7 +797,7 @@ class Commandes {
                         msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
                     }
                     break;
-                
+
                 case "grpleave":
                     if (group != null) {
                         if (!group.doingSomething) {
@@ -800,7 +849,7 @@ class Commandes {
                             } else {
                                 msg = Translator.getString(lang, "errors", "group_cant_invite_more_than", [5]);
                             }
-                            
+
                         } else {
                             msg = Translator.getString(lang, "errors", "group_occupied");
                         }
@@ -837,7 +886,7 @@ class Commandes {
                         if (pending != null) {
                             pending.playerDeclinedBroadcast(this.connectedUsers[authorIdentifier], message.client);
                             this.connectedUsers[authorIdentifier].character.pendingPartyInvite = null;
-                            msg = Translator.getString(lang, "group" , "you_declined");
+                            msg = Translator.getString(lang, "group", "you_declined");
                         } else {
                             msg = Translator.getString(lang, "errors", "group_you_dont_receive_invitation");
                         }
@@ -891,9 +940,9 @@ class Commandes {
                     }
                     break;
 
-                /*
-                * OTHER
-                */
+                    /*
+                     * OTHER
+                     */
 
                 case "lang":
                     if (messageArray[1]) {
@@ -912,7 +961,7 @@ class Commandes {
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
                         messageArray[1] = parseInt(messageArray[1]);
                         if (messageArray[1] && Number.isInteger(messageArray[1])) {
-                            if(tLootSystem.adminGetItem(this.connectedUsers[authorIdentifier].character, messageArray[1], messageArray[2])) {
+                            if (tLootSystem.adminGetItem(this.connectedUsers[authorIdentifier].character, messageArray[1], messageArray[2])) {
                                 msg = "Done";
                             } else {
                                 msg = "Something goes wrong !";
@@ -948,10 +997,11 @@ class Commandes {
                             let resourceToCollect = this.areasManager.getResource(this.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
                             //idToCollect = this.areasManager.getResourceId(this.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
                             if (resourceToCollect) {
-                                if(resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
+                                if (resourceToCollect.requiredLevel <= this.connectedUsers[authorIdentifier].character.getCraftLevel()) {
+                                    let collectBonuses = currentArea.getAllBonuses();
                                     this.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
                                     idToCollect = this.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                                    if(CraftSystem.haveCollectItem(this.connectedUsers[authorIdentifier].character.getStat("intellect"), resourceToCollect.idRarity)) {
+                                    if (CraftSystem.haveCollectItem(this.connectedUsers[authorIdentifier].character.getStat("intellect") + collectBonuses.collect_drop.getPercentage(), resourceToCollect.idRarity)) {
                                         if (idToCollect) {
                                             this.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
                                         } else {
@@ -964,20 +1014,22 @@ class Commandes {
                                     }
 
                                     // Si le joueur n'est pas max level en craft
-                                    if(this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                    if (this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
                                         let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
-                                        let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(collectXP);
-                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [collectXP]) + "\n";
-                                        if(collectCraftUP > 0) {
-                                            msg +=  Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                                        let collectXPBonus = collectBonuses.collect_xp.getPercentageValue() * collectXP;
+                                        let totalCollectXP = collectXP + collectXPBonus;
+                                        let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(totalCollectXP);
+                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
+                                        if (collectCraftUP > 0) {
+                                            msg += Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
                                         }
                                     }
-                                      
+
 
                                 } else {
                                     msg = Translator.getString(lang, "errors", "collect_dont_have_required_level", [resourceToCollect.requiredLevel]);
                                 }
-                                
+
                             } else {
                                 // error object don't exist
                                 msg = Translator.getString(lang, "resources", "resource_dont_exist");
@@ -1019,10 +1071,10 @@ class Commandes {
                     }
                     break;
 
-                case "itemfav": 
+                case "itemfav":
                     let idItemToFav = parseInt(messageArray[1], 10);
-                    if(idItemToFav !== undefined && Number.isInteger(idItemToFav)) {
-                        if(this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToFav)) {
+                    if (idItemToFav !== undefined && Number.isInteger(idItemToFav)) {
+                        if (this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToFav)) {
                             this.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToFav, true);
                             msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
                         } else {
@@ -1030,8 +1082,8 @@ class Commandes {
                         }
                     } else {
                         idItemToFav = this.getEquipableIDType(messageArray[1]);
-                        if(idItemToFav > 0) {
-                            if(this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToFav) != null) {
+                        if (idItemToFav > 0) {
+                            if (this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToFav) != null) {
                                 this.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToFav, true);
                                 msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
                             } else {
@@ -1043,10 +1095,10 @@ class Commandes {
                     }
                     break;
 
-                case "itemunfav": 
+                case "itemunfav":
                     let idItemToUnFav = parseInt(messageArray[1], 10);
-                    if(idItemToUnFav !== undefined && Number.isInteger(idItemToUnFav)) {
-                        if(this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToUnFav)) {
+                    if (idItemToUnFav !== undefined && Number.isInteger(idItemToUnFav)) {
+                        if (this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToUnFav)) {
                             this.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToUnFav, false);
                             msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
                         } else {
@@ -1054,8 +1106,8 @@ class Commandes {
                         }
                     } else {
                         idItemToUnFav = this.getEquipableIDType(messageArray[1]);
-                        if(idItemToUnFav > 0) {
-                            if(this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToUnFav) != null) {
+                        if (idItemToUnFav > 0) {
+                            if (this.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToUnFav) != null) {
                                 this.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToUnFav, false);
                                 msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
                             } else {
@@ -1080,7 +1132,7 @@ class Commandes {
                     }
                     break;
 
-                // Equip more than 1 item once
+                    // Equip more than 1 item once
                 case "equip":
                     let toEquip = parseInt(messageArray[1], 10);
                     msg = "";
@@ -1150,8 +1202,8 @@ class Commandes {
                     msg = "";
                     if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
-                            if(this.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
-                                if(!this.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
+                            if (this.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
+                                if (!this.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
                                     let itemValue = this.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
                                     if (itemValue > 0) {
                                         msg = numberOfItemsToSell == 1 ? Translator.getString(lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(lang, "economic", "sell_for_x_plural", [itemValue]);
@@ -1191,8 +1243,7 @@ class Commandes {
                 case "xp":
                     if (Globals.admins.indexOf(authorIdentifier) > -1) {
 
-                        if (this.connectedUsers[authorIdentifier].character.getLevel() < Globals.maxLevel)
-                        {
+                        if (this.connectedUsers[authorIdentifier].character.getLevel() < Globals.maxLevel) {
                             let value = parseInt(messageArray[1], 10);
                             if (!value && !Number.isInteger(value)) {
                                 value = 1;
@@ -1268,23 +1319,23 @@ class Commandes {
                         /*let monsters1 = [new Monster(20), new Monster(10), new Monster(12)];
                         let monsters2 = [new Monster(19), new Monster(15), new Monster(11)];*/
 
-                       /* let monsters1 = [new Monster(20)];
-                        let monsters2 = [new Monster(20)];
+                        /* let monsters1 = [new Monster(20)];
+                         let monsters2 = [new Monster(20)];
 
-                        monsters1[0].stats.intellect = 0;
-                        //monsters1[1].stats.intellect = 4;
-                        //monsters1[2].stats.intellect = 2;
+                         monsters1[0].stats.intellect = 0;
+                         //monsters1[1].stats.intellect = 4;
+                         //monsters1[2].stats.intellect = 2;
 
-                        monsters2[0].stats.intellect = 9;
-                        //monsters2[1].stats.intellect = 1;
-                        //monsters2[2].stats.intellect = 5;
+                         monsters2[0].stats.intellect = 9;
+                         //monsters2[1].stats.intellect = 1;
+                         //monsters2[2].stats.intellect = 5;
 
-                        //console.log(monsters2[0].stats);
+                         //console.log(monsters2[0].stats);
 
 
 
-                        let f = new Fight(monsters1, monsters2);
-                        console.log(f.summary);*/
+                         let f = new Fight(monsters1, monsters2);
+                         console.log(f.summary);*/
                         //console.log(this.connectedUsers[authorIdentifier].username);
                     }
                     break;
@@ -1405,11 +1456,11 @@ class Commandes {
                     if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
                         let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
                         if (done) {
-                            msg = Translator.getString(lang, "character", "attribute_up_to", [this.getToStrShort(messageArray[1]), this.connectedUsers[authorIdentifier].character.stats[this.getToStrShort(messageArray[1])]])
-                                + "." + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ?
+                            msg = Translator.getString(lang, "character", "attribute_up_to", [this.getToStrShort(messageArray[1]), this.connectedUsers[authorIdentifier].character.stats[this.getToStrShort(messageArray[1])]]) +
+                                "." + (this.connectedUsers[authorIdentifier].character.statPoints > 1 ?
                                     Translator.getString(lang, "character", "attribute_x_points_available_plural", [this.connectedUsers[authorIdentifier].character.statPoints]) :
                                     Translator.getString(lang, "character", "attribute_x_points_available", [this.connectedUsers[authorIdentifier].character.statPoints]));
-                            
+
                         } else {
                             msg = Translator.getString(lang, "errors", "character_you_cant_distribute_this_amount_of_points");
                         }
@@ -1423,19 +1474,21 @@ class Commandes {
                     msg = `${saltEmoji}`;
                     break;
 
-                case "emojiList" :
+                case "emojiList":
                     const emojiList = message.guild.emojis.map(e => e.toString()).join(" ");
                     msg = emojiList;
                     break;
 
-                /*case "token":
-                    msg = "Hi, you have requested your unique token to use our Mobile/Web App.\n Do not share this token with anyone.\n Your token is : " + this.connectedUsers[authorIdentifier].getToken();
-                    message.author.send(msg);
-                    break;*/
+                    /*case "token":
+                        msg = "Hi, you have requested your unique token to use our Mobile/Web App.\n Do not share this token with anyone.\n Your token is : " + this.connectedUsers[authorIdentifier].getToken();
+                        message.author.send(msg);
+                        break;*/
             }
 
             msg != "" ? message.channel.send(msg).catch((error) => {
-                message.author.send(error.message).catch((e) => {console.log(e)});
+                message.author.send(error.message).catch((e) => {
+                    console.log(e)
+                });
             }) : null;
         }
 
@@ -1485,16 +1538,21 @@ class Commandes {
                     "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
                     "::grpfight <monsterID> : " + Translator.getString(lang, "help_panel", "grpfight") + "\n" +
                     "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
-                    "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n" +
-
+                    "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n";
+                break;
+            case 2:
+                str = "```apache\n" +
                     "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
                     "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
                     "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
                     "::areaconquest : " + Translator.getString(lang, "help_panel", "areaconquest") + "\n" +
+                    "::arealevelup : " + Translator.getString(lang, "help_panel", "arealevelup") + "\n" +
+                    "::areabonuseslist : " + Translator.getString(lang, "help_panel", "areabonuseslist") + "\n" +
                     "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
+                    "::areaupbonus <bonus_identifier> <pts_to_allocate> : " + Translator.getString(lang, "help_panel", "areaupbonus") + "\n" +
                     "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
                 break;
-            case 2:
+            case 3:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
@@ -1516,7 +1574,7 @@ class Commandes {
 
 
                 break;
-            case 3:
+            case 4:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "groups_title") + "]\n" +
@@ -1539,7 +1597,7 @@ class Commandes {
                     "::mksee <idItem> : " + Translator.getString(lang, "help_panel", "mksee") + "\n";
                 break;
 
-                case 4:
+            case 5:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "craft_title") + "]\n" +
@@ -1604,7 +1662,7 @@ class Commandes {
                 stat = "dexterity";
                 break;
 
-            // Secondaires
+                // Secondaires
 
             case "cha":
                 stat = "charisma";
