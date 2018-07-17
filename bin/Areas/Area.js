@@ -295,6 +295,20 @@ class Area {
         return bonuses;
     }
 
+    resetBonuses() {
+        conn.query("UPDATE areasbonuses SET value = 0 WHERE idArea = ?", [this.id]);
+        conn.query("UPDATE areas SET areas.statPoints = 5 * areas.AreaLevel WHERE idArea = ?", [this.id]);
+    }
+
+    static resetBonuses(idArea) {
+        conn.query("UPDATE areasbonuses SET value = 0 WHERE idArea = ?", [idArea]);
+        conn.query("UPDATE areas SET areas.statPoints = 5 * areas.AreaLevel WHERE idArea = ?", [idArea]);
+    }
+
+    static oneLessLevel(idArea) {
+        conn.query("UPDATE areas SET areas.AreaLevel = IF(areas.AreaLevel > 1, areas.AreaLevel - 1, 1) WHERE areas.idArea = ?;", [idArea]);
+    }
+
     getLevel() {
         let r = conn.query("SELECT AreaLevel FROM areas WHERE idArea = ?;", [this.id])[0];
         return r.AreaLevel;
@@ -338,6 +352,14 @@ class Area {
      */
     getOwnerID() {
         let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [this.id]);
+        if(res[0]) {
+            return res[0].idGuild;
+        }
+        return null;
+    }
+
+    staticGetOwnerID(idArea) {
+        let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [idArea]);
         if(res[0]) {
             return res[0].idGuild;
         }
