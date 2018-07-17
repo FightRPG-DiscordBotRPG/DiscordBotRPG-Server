@@ -62,7 +62,7 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
-            let areaBonuses = this.entities[0][0].getArea().getXpAndDropBonusValue();
+            let areaBonuses = this.entities[0][0].getArea().getAllBonuses();
 
             for (let i in this.entities[0]) {
                 let actualLevel = this.entities[0][i].getLevel();
@@ -146,10 +146,10 @@ class FightPvE extends Fight {
              * @type {Area}
              */
             this.summary.xp = totalXp;
-            this.summary.money = totalMoney * 0.95;
+            this.summary.money = Math.round(totalMoney * 0.95);
             let ownerid = this.entities[0][0].getArea().getOwnerID();
             if(ownerid != null) {
-                Guild.addMoney(ownerid, totalMoney * 0.05);
+                Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
             }
             
 
