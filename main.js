@@ -7,12 +7,15 @@ const Globals = require("./bin/Globals.js");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
 const conf = require("./conf/conf");
+const DatabaseInitializer = require("./bin/DatabaseInitializer");
 
 
 var bot = new Discord.Client();
 var prefix = "::";
 
 process.on('unhandledRejection', up => { throw up });
+
+DatabaseInitializer.initialize();
 
 console.log("Bot Starting ...");
 
