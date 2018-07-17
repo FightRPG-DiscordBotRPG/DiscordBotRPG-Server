@@ -42,8 +42,8 @@ class Area {
         this.players = [];
         this.services = {};
         //this.tournament = {};
+        this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
         this.loadArea(id);
-        this.statsAndLevelToStr();
     }
 
     loadArea(id) {
@@ -263,6 +263,18 @@ class Area {
         return str;
     }
 
+    /**
+     * 
+     * @param {string} bonusName 
+     */
+    isBonusAvailable(bonusName) {
+        return this.authorizedBonuses.indexOf(bonusName) >= 0;
+    }
+
+    /**
+     * 
+     * @param {string} lang 
+     */
     bonusesToStr(lang) {
         let str = "```\n";
         let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ?;", [this.id]);
@@ -284,7 +296,10 @@ class Area {
         return str;
     }
 
-    getXpAndDropBonusValue() {
+    /**
+     * @returns {Array<AreaBonus>} More like an object with name of bonus as key
+     */
+    getAllBonuses() {
         let bonuses = {};
         let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ? AND idBonusTypes;", [this.id]);;
         for(let o of res) {
@@ -309,9 +324,53 @@ class Area {
         conn.query("UPDATE areas SET areas.AreaLevel = IF(areas.AreaLevel > 1, areas.AreaLevel - 1, 1) WHERE areas.idArea = ?;", [idArea]);
     }
 
+    /**
+     * @return {number}
+     */
     getLevel() {
-        let r = conn.query("SELECT AreaLevel FROM areas WHERE idArea = ?;", [this.id])[0];
-        return r.AreaLevel;
+        return conn.query("SELECT AreaLevel as level FROM areas WHERE idArea = ?;", [this.id])[0].level;
+    }
+
+    levelUp() {
+        conn.query("UPDATE areas SET AreaLevel = IF(areas.AreaLevel < (SELECT MAX(idAreaLevel) FROM areaslevels), AreaLevel + 1, AreaLevel), statPoints = statPoints + 5 WHERE areas.idArea = ?", [this.id]);
+    }
+
+    getPriceNextLevel() {
+        return conn.query("SELECT price FROM areaslevels INNER JOIN areas ON areas.AreaLevel = areaslevels.idAreaLevel WHERE areas.idArea = ?;", [this.id])[0].price;
+    }
+
+    isMaxLevel() {
+        let maxLevel = conn.query("SELECT MAX(idAreaLevel) as maxLevel FROM areaslevels")[0].maxLevel;
+        return maxLevel <= this.getLevel();
+    }
+
+    haveThisAmountOfStatPoints(number) {
+        let statPoints = conn.query("SELECT statPoints FROM areas WHERE idArea = ?;", [this.id])[0].statPoints;
+        return number <= statPoints;
+    }
+
+    /**
+     * 
+     * @param {string} statName 
+     * @param {number} number 
+     */
+    upStat(statName, number) {
+        conn.query("UPDATE areasbonuses INNER JOIN bonustypes ON bonustypes.idBonusTypes = areasbonuses.idBonusTypes SET areasbonuses.value = areasbonuses.value + ? WHERE bonustypes.nom = ? AND areasbonuses.idArea = ?", [number, statName, this.id]);
+        conn.query("UPDATE areas SET statPoints = statPoints - ? WHERE idArea = ?;", [number, this.id]);
+    }
+
+    /**
+     * 
+     * @param {string} lang 
+     */
+    listOfBonusesToStr(lang) {
+        let str = "```\n";
+        str += Translator.getString(lang, "area", "bonus_list_header") + "\n\n";
+        for(let bonus of this.authorizedBonuses) {
+            str += bonus + " => " + Translator.getString(lang, "bonuses", bonus) + "\n";
+        }
+        str += "```";
+        return str;
     }
 
     statsAndLevelToStr() {

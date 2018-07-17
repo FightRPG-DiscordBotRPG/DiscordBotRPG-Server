@@ -16,6 +16,7 @@ class CityArea extends Area {
             "craftingbuilding" : new CraftingBuilding()
         }
 
+        this.authorizedBonuses = ["xp_craft"];
         this.services.marketplace.loadMakerplace(this.id);
         this.services.craftingbuilding.load(this.id);
     }
