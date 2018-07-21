@@ -990,6 +990,22 @@ class Commandes {
                     }
                     break;
 
+                case "mutefor":
+                    if (Globals.admins.indexOf(authorIdentifier) > -1) {
+                        if (messageArray[1] != null) {
+                            let muteTime = 100;
+                            if(messageArray[2] != null) {
+                                muteTime = messageArray[2];
+                            }
+
+                            if(this.connectedUsers[messageArray[1]]) {
+                                this.connectedUsers[messageArray[1]].character.waitForNextFight(muteTime * 1000);
+                                msg = "User muted for " + muteTime + " seconds";
+                            }
+                        }
+                    }
+                    break;
+
                 case "collect":
                     let idToCollect = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
@@ -1016,7 +1032,7 @@ class Commandes {
                                     // Si le joueur n'est pas max level en craft
                                     if (this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
                                         let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, this.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
-                                        let collectXPBonus = collectBonuses.collect_xp.getPercentageValue() * collectXP;
+                                        let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
                                         let totalCollectXP = collectXP + collectXPBonus;
                                         let collectCraftUP = this.connectedUsers[authorIdentifier].character.addCraftXP(totalCollectXP);
                                         msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
