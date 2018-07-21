@@ -10,6 +10,9 @@ class CharacterInventory {
     constructor(id) {
         this.id = id;
         //this.objects = {};
+        /**
+         * @type {Array<Item>}
+         */
         this.objects = [];
     }
 
@@ -86,6 +89,10 @@ class CharacterInventory {
             this.objects[idEmplacement].deleteItem();
         }
         delete this.objects[idEmplacement];
+        this.reorderInventory();
+    }
+
+    reorderInventory() {
         this.objects = this.objects.filter(val => val);
     }
 
@@ -112,7 +119,7 @@ class CharacterInventory {
 
 
 
-        this.objects = this.objects.filter(val => val);
+        this.reorderInventory();
         if (empty) {
             return false;
         } else {
