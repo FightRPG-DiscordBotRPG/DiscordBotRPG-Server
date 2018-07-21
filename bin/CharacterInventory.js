@@ -4,6 +4,7 @@ const Globals = require("./Globals.js");
 const Item = require("./Item.js");
 const Discord = require("discord.js");
 const Translator = require("./Translator/Translator");
+const Stats = require("./Stats/Stats");
 
 class CharacterInventory {
     // Discord User Info
@@ -117,8 +118,6 @@ class CharacterInventory {
 
         }
 
-
-
         this.reorderInventory();
         if (empty) {
             return false;
@@ -137,7 +136,11 @@ class CharacterInventory {
         return value;
     }
 
-    // Affichage
+    /**
+     * 
+     * @param {number} page 
+     * @param {string} lang 
+     */
     toStr(page, lang) {
         page = page ? page - 1 : 0;
         let str = "```";
@@ -178,8 +181,10 @@ class CharacterInventory {
     }
 
     /**
-     * Send string to show - supposing idEmplacement valid
-     * @param {any} idEmplacement
+     * 
+     * @param {number} idEmplacement 
+     * @param {Stats} compareStats 
+     * @param {string} lang 
      */
     seeThisItem(idEmplacement, compareStats, lang) {
         let embed = new Discord.RichEmbed()
@@ -194,7 +199,7 @@ class CharacterInventory {
 
     /**
      * To Know if this emplacement is used
-     * @param {any} itemId
+     * @param {number} itemId
      * @returns {boolean}
      */
     doIHaveThisItem(itemId) {
