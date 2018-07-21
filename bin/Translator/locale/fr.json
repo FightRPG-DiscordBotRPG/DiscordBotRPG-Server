@@ -204,7 +204,7 @@
 
     "collected_x_resource" : "Vous avez récolté %d %s",
     "resource_dont_exist" : "Vous ne voyez cette ressource nulle part",
-    "collect_gain_xp" : "Vous avez gagné un totla de %d XP (Dont %d XP bonus dûe à la zone) à votre métier de craft",
+    "collect_gain_xp" : "Vous avez gagné un total de %d XP (Dont %d XP bonus dûe à la zone) à votre métier de craft",
     "job_level_up" : "Vous avez gagné %d niveau à votre métier de craft",
     "job_level_up_plur" : "Vous avez gagné %d niveaux à votre métier de craft"
   },
