@@ -417,7 +417,7 @@ class Area {
         return null;
     }
 
-    staticGetOwnerID(idArea) {
+    static staticGetOwnerID(idArea) {
         let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [idArea]);
         if(res[0]) {
             return res[0].idGuild;
