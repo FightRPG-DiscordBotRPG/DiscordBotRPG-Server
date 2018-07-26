@@ -128,6 +128,7 @@ class Fight {
         }
 
         defender.actualHP -= damage;
+        damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
         defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
