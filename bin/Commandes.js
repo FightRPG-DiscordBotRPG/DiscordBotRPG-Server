@@ -14,6 +14,8 @@ const Translator = require("./Translator/Translator");
 const CraftSystem = require("./CraftSystem/CraftSystem");
 const AreaTournament = require("./AreaTournament/AreaTournament");
 const PStatistics = require("./Achievement/PStatistics");
+const Craft = require("./CraftSystem/Craft");
+const Item = require("./Item");
 
 class Commandes {
 
@@ -136,6 +138,9 @@ class Commandes {
                     if (craftingbuilding != null) {
                         // ToCraft = Craft type
                         if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                            /**
+                             * @type {Craft}
+                             */
                             let toCraft = craftingbuilding.getCraft(messageArray[1]);
                             if (toCraft) {
                                 if (this.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
@@ -144,6 +149,7 @@ class Commandes {
 
                                         this.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
 
+                                        PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
                                         // Seulement s'il n'est pas niveau max
                                         if (this.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
                                             let craftBonus = currentArea.getAllBonuses().xp_craft;
@@ -1070,6 +1076,9 @@ class Commandes {
                                             let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
                                             this.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
                                         }
+
+                                        PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", 1);
+
                                         msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
                                     } else {
                                         msg = Translator.getString(lang, "resources", "not_collected") + "\n";
