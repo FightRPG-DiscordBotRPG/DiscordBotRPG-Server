@@ -151,7 +151,7 @@ class FightPvE extends Fight {
                         drop: rarityName,
                     });
 
-                    PStatistics.incrStat(entity.id, "item_" + rarityName + "_loot", 1);
+                    PStatistics.incrStat(entity.id, "items_" + rarityName + "_loot", 1);
                 }
 
                 for(let monster of this.entities[1]) {
@@ -183,12 +183,11 @@ class FightPvE extends Fight {
 
     async PStatsDamageDandT() {
         for(let round of this.summary.rounds) {
-            let damage = round.defenderHP - round.damage <= 0 ? round.defenderHP : round.damage;
             // 0 = player who attack
             if(round.roundEntitiesIndex == 0) {
-                PStatistics.incrStat(round.attackerId, "damage_done", damage);
+                PStatistics.incrStat(round.attackerId, "damage_done", round.damage);
             } else {
-                PStatistics.incrStat(round.defenderId, "damage_taken", damage);
+                PStatistics.incrStat(round.defenderId, "damage_taken", round.damage);
             }
         }
     }
