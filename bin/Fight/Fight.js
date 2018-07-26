@@ -1,3 +1,4 @@
+const WorldEntity = require("../WorldEntity");
 class Fight {
     /**
      * Classe de gestion d'un combat
@@ -7,6 +8,9 @@ class Fight {
      */
 
     constructor(entities1, entities2) {
+        /**
+         * @type {Array<WorldEntity>}
+         */
         this.entities = [
             entities1,
             entities2
@@ -79,6 +83,8 @@ class Fight {
             roundEntitiesIndex: indexEntities,
             attackerName: attacker.name,
             defenderName: defender.name,
+            attackerId: attacker.id,
+            defenderId: defender.id,
             critical: critical,
             stun: stun,
             damage: damage,
