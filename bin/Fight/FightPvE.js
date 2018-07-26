@@ -6,12 +6,12 @@ const Monstre = require("../Monstre");
 const Character = require("../Character");
 const Guild = require("../Guild");
 const Area = require("../Areas/Area");
+const PStatistics = require("../Achievement/PStatistics");
 
 
 class FightPvE extends Fight {
 
     /**
-     * 
      * @param {Character} entities1 
      * @param {Monstre} entities2 
      */
@@ -65,6 +65,13 @@ class FightPvE extends Fight {
             let areaBonuses = this.entities[0][0].getArea().getAllBonuses();
 
             for (let i in this.entities[0]) {
+                let entity = this.entities[0][i];
+
+                this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
+
+                // Stat for statistics system 
+                PStatistics.incrStat(entity.id, "pvefights_victories", 1);
+
                 let actualLevel = this.entities[0][i].getLevel();
 
                 
@@ -78,7 +85,11 @@ class FightPvE extends Fight {
                 this.summary.goldGained[this.entities[0][i].name] = money;
                 totalMoney += money;
 
+
                 this.entities[0][i].addMoney(money);
+                PStatistics.incrStat(entity.id, "gold_dropped", money);
+
+
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.5 ? 1.5 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
@@ -139,12 +150,16 @@ class FightPvE extends Fight {
                         name: this.entities[0][i].name,
                         drop: rarityName,
                     });
+
+                    PStatistics.incrStat(entity.id, "item_" + rarityName + "_loot", 1);
+                }
+
+                for(let monster of this.entities[1]) {
+                    PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);
                 }
 
             }
-            /**
-             * @type {Area}
-             */
+
             this.summary.xp = totalXp;
             this.summary.money = Math.round(totalMoney * 0.95);
             let ownerid = this.entities[0][0].getArea().getOwnerID();
@@ -153,11 +168,28 @@ class FightPvE extends Fight {
             }
             
 
+        } else {
+            for (let entity of this.entities[0]) {
+                // 2.5 Seconds per round * 1000 => ms
+                entity.waitForNextFight(this.summary.rounds.length * 2500);
+                PStatistics.incrStat(entity.id, "pvefights_defeats", 1);
+            }
         }
 
-        for (let i in this.entities[0]) {
-            // 2.5 Seconds per round * 1000 => ms
-            this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
+        this.PStatsDamageDandT();
+
+
+    }
+
+    async PStatsDamageDandT() {
+        for(let round of this.summary.rounds) {
+            let damage = round.defenderHP - round.damage <= 0 ? round.defenderHP : round.damage;
+            // 0 = player who attack
+            if(round.roundEntitiesIndex == 0) {
+                PStatistics.incrStat(round.attackerId, "damage_done", damage);
+            } else {
+                PStatistics.incrStat(round.defenderId, "damage_taken", damage);
+            }
         }
     }
 

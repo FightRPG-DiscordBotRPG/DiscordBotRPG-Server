@@ -13,6 +13,7 @@ const Monster = require("./Monstre");
 const Translator = require("./Translator/Translator");
 const CraftSystem = require("./CraftSystem/CraftSystem");
 const AreaTournament = require("./AreaTournament/AreaTournament");
+const PStatistics = require("./Achievement/PStatistics");
 
 class Commandes {
 
@@ -113,6 +114,7 @@ class Commandes {
                  *   Craft
                  */
                 case "craftlist":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
                     if (craftingbuilding != null) {
                         msg = craftingbuilding.craftingListToEmbed(messageArray[1], lang);
                     } else {
@@ -121,6 +123,7 @@ class Commandes {
                     break;
 
                 case "craftshow":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
                     if (craftingbuilding != null) {
                         msg = craftingbuilding.craftToEmbed(messageArray[1], lang);
                     } else {
@@ -129,6 +132,7 @@ class Commandes {
                     break;
 
                 case "craft":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
                     if (craftingbuilding != null) {
                         // ToCraft = Craft type
                         if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
@@ -179,6 +183,7 @@ class Commandes {
                      */
 
                 case "mkmylist":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     if (marketplace != null) {
                         msg = marketplace.showCharacterOrders(this.connectedUsers[authorIdentifier].character.id, messageArray[1] ? messageArray[1] : 1, lang);
                     } else {
@@ -187,6 +192,7 @@ class Commandes {
                     break;
 
                 case "mkplace":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     let toPlaceIdItem = parseInt(messageArray[1], 10);
                     let nbOfItemsToPlace = parseInt(messageArray[2], 10);
                     let priceToPlace = parseInt(messageArray[3], 10);
@@ -246,6 +252,7 @@ class Commandes {
                     break;
 
                 case "mkcancel":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     let idOrderToCancel = parseInt(messageArray[1], 10);
                     if (marketplace != null) {
                         if (idOrderToCancel != null && Number.isInteger(idOrderToCancel)) {
@@ -269,6 +276,7 @@ class Commandes {
                     break;
 
                 case "mkbuy":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     let idOrderToBuy = parseInt(messageArray[1], 10);
                     let numberOrderToBuy = parseInt(messageArray[2], 10);
                     if (marketplace != null) {
@@ -290,6 +298,9 @@ class Commandes {
                                         } else {
                                             conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
                                         }
+                                        
+                                        PStatistics.incrStat(orderToBuy.idCharacter, "gold_marketplace", orderToBuy.price * numberOrderToBuy);
+
                                         msg = Translator.getString(lang, "marketplace", numberOrderToBuy > 1 ? "you_buy_plur" : "you_buy", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]);
                                     } else {
                                         msg = Translator.getString(lang, "errors", "marketplace_not_enough_money");
@@ -310,6 +321,7 @@ class Commandes {
 
 
                 case "mksearch":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     let mksearch = message.content.split(this.prefix + "mksearch");
                     mksearch = [].concat.apply([], mksearch[1].split('"').map(function (v, i) {
                         return i % 2 ? v : v.split(' ')
@@ -322,6 +334,7 @@ class Commandes {
                     break;
 
                 case "mkshow":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     if (marketplace != null) {
                         msg = marketplace.showAll(messageArray[1], lang);
                     } else {
@@ -330,6 +343,7 @@ class Commandes {
                     break;
 
                 case "mksee":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
                     if (marketplace != null) {
                         let mkToSeeOrder = marketplace.getThisOrder(messageArray[1]);
                         if (mkToSeeOrder != null) {
@@ -346,6 +360,7 @@ class Commandes {
                      */
 
                 case "arealevelup":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (currentArea.getOwnerID() === tGuildId) {
                         if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
@@ -375,6 +390,7 @@ class Commandes {
                     break;
 
                 case "areaupbonus":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (currentArea.getOwnerID() === tGuildId) {
                         if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
@@ -403,6 +419,7 @@ class Commandes {
                     break;
 
                 case "areabonuseslist":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     msg = currentArea.listOfBonusesToStr(lang);
                     break;
 
@@ -411,6 +428,7 @@ class Commandes {
                      */
 
                 case "guild":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     if (this.connectedUsers[authorIdentifier].character.isInGuild()) {
                         msg = this.connectedGuilds[this.connectedUsers[authorIdentifier].character.idGuild].toStr(lang);
                     } else {
@@ -419,6 +437,7 @@ class Commandes {
                     break;
 
                 case "gcreate":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     if (messageArray[1]) {
                         // Si le joueur n'a pas de guilde
                         if (this.connectedUsers[authorIdentifier].character.idGuild == 0) {
@@ -450,6 +469,7 @@ class Commandes {
                     break;
 
                 case "gdisband":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         if (this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
@@ -476,6 +496,7 @@ class Commandes {
 
 
                 case "gapply":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (Number.isInteger(messageArray[1])) {
@@ -495,6 +516,7 @@ class Commandes {
                     break;
 
                 case "gaccept":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
 
@@ -525,6 +547,7 @@ class Commandes {
                     break;
 
                 case "gapplies":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);                    
                     apPage = parseInt(messageArray[1], 10);
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
@@ -538,6 +561,7 @@ class Commandes {
                     break;
 
                 case "gapplyremove":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
 
@@ -566,6 +590,7 @@ class Commandes {
                     break;
 
                 case "gappliesremove":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
 
                     if (tGuildId > 0) {
@@ -582,6 +607,7 @@ class Commandes {
                     break;
 
                 case "guilds":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     apPage = parseInt(messageArray[1], 10);
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
@@ -590,6 +616,7 @@ class Commandes {
                     break;
 
                 case "gremove":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
@@ -613,6 +640,7 @@ class Commandes {
                     break;
 
                 case "gmod":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     // idMembre,rank
                     messageArray[1] = parseInt(messageArray[1], 10);
                     messageArray[2] = parseInt(messageArray[2], 10);
@@ -634,6 +662,7 @@ class Commandes {
 
 
                 case "gannounce":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
                         err = this.connectedGuilds[tGuildId].setMessage(this.connectedUsers[authorIdentifier].character.id, this.getArgsString(messageArray), lang);
@@ -649,6 +678,7 @@ class Commandes {
                     break;
 
                 case "gaddmoney":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);                    
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
@@ -678,6 +708,7 @@ class Commandes {
                     break;
 
                 case "gremovemoney":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     messageArray[1] = parseInt(messageArray[1], 10);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (messageArray[1] || Number.isInteger(messageArray[1])) {
@@ -700,6 +731,7 @@ class Commandes {
 
 
                 case "glevelup":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);                    
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0) {
                         err = this.connectedGuilds[tGuildId].levelUp(this.connectedUsers[authorIdentifier].character.id, lang);
@@ -715,6 +747,7 @@ class Commandes {
                     break;
 
                 case "genroll":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);                
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         if (!this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
@@ -734,6 +767,7 @@ class Commandes {
                     break;
 
                 case "gunenroll":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_guilds", 1);
                     tGuildId = this.connectedUsers[authorIdentifier].character.idGuild;
                     if (tGuildId > 0 && this.connectedGuilds[tGuildId].members[this.connectedUsers[authorIdentifier].character.id].rank === 3) {
                         if (this.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
@@ -756,16 +790,19 @@ class Commandes {
                      * GROUP SYSTEM
                      */
                 case "grpmute":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     this.connectedUsers[authorIdentifier].muteGroup(true);
                     msg = Translator.getString(lang, "group", "now_muted")
                     break;
 
                 case "grpunmute":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     this.connectedUsers[authorIdentifier].muteGroup(false);
                     msg = Translator.getString(lang, "group", "now_unmuted");
                     break;
 
                 case "grpkick":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     if (messageArray[1]) {
                         if (group != null) {
                             if (!group.doingSomething) {
@@ -799,6 +836,7 @@ class Commandes {
                     break;
 
                 case "grpleave":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     if (group != null) {
                         if (!group.doingSomething) {
                             group.playerLeave(this.connectedUsers[authorIdentifier], message.client);
@@ -812,6 +850,7 @@ class Commandes {
                     break;
 
                 case "grpinvite":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     firstMention = mentions.first();
                     // Si pas dans un groupe le créer
                     if (group == null) {
@@ -860,6 +899,7 @@ class Commandes {
                     break;
 
                 case "grpaccept":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     if (group == null) {
                         if (pending != null) {
                             if (!pending.doingSomething) {
@@ -882,6 +922,7 @@ class Commandes {
                     break;
 
                 case "grpdecline":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     if (group == null) {
                         if (pending != null) {
                             pending.playerDeclinedBroadcast(this.connectedUsers[authorIdentifier], message.client);
@@ -896,6 +937,7 @@ class Commandes {
                     break;
 
                 case "grp":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
                     if (group != null) {
                         msg = group.toStr(lang);
                     } else {
@@ -904,6 +946,7 @@ class Commandes {
                     break;
 
                 case "grpfight":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
                     let idEnemyGroup = parseInt(messageArray[1], 10);
                     if (group != null) {
                         if (group.leader === this.connectedUsers[authorIdentifier]) {
@@ -945,6 +988,7 @@ class Commandes {
                      */
 
                 case "lang":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_other", 1);
                     if (messageArray[1]) {
                         if (Translator.isLangExist(messageArray[1])) {
                             this.connectedUsers[authorIdentifier].changeLang(messageArray[1]);
@@ -971,6 +1015,7 @@ class Commandes {
                     break;
 
                 case "areaplayers":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     apPage = parseInt(messageArray[1], 10);
                     if (!apPage || !Number.isInteger(apPage)) {
                         apPage = 1;
@@ -1007,6 +1052,7 @@ class Commandes {
                     break;
 
                 case "collect":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
                     let idToCollect = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                         if (idToCollect && Number.isInteger(idToCollect)) {
@@ -1059,6 +1105,7 @@ class Commandes {
                     break;
 
                 case "item":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     let idItemToSee = parseInt(messageArray[1], 10);
                     doIHaveThisItem = false;
                     if (idItemToSee !== undefined && Number.isInteger(idItemToSee)) {
@@ -1088,6 +1135,7 @@ class Commandes {
                     break;
 
                 case "itemfav":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     let idItemToFav = parseInt(messageArray[1], 10);
                     if (idItemToFav !== undefined && Number.isInteger(idItemToFav)) {
                         if (this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToFav)) {
@@ -1112,6 +1160,7 @@ class Commandes {
                     break;
 
                 case "itemunfav":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     let idItemToUnFav = parseInt(messageArray[1], 10);
                     if (idItemToUnFav !== undefined && Number.isInteger(idItemToUnFav)) {
                         if (this.connectedUsers[authorIdentifier].character.haveThisObject(idItemToUnFav)) {
@@ -1138,6 +1187,7 @@ class Commandes {
 
                 case "inv":
                 case "inventory":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     let invPage = parseInt(messageArray[1], 10);
                     msg = "";
                     if (invPage && Number.isInteger(invPage)) {
@@ -1150,6 +1200,7 @@ class Commandes {
 
                     // Equip more than 1 item once
                 case "equip":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_equipment", 1);  
                     let toEquip = parseInt(messageArray[1], 10);
                     msg = "";
                     //console.log((toEquip));
@@ -1179,6 +1230,7 @@ class Commandes {
                     break;
 
                 case "unequip":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_equipment", 1);
                     let toUnequip = this.getEquipableIDType(messageArray[1]);
                     msg = "";
                     if (toUnequip != -1 && Number.isInteger(toUnequip)) {
@@ -1198,10 +1250,12 @@ class Commandes {
 
                 case "equipList":
                 case "equipment":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_equipment", 1);
                     msg = "```" + this.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```";
                     break;
 
                 case "reset":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_character", 1);
                     if (this.connectedUsers[authorIdentifier].character.resetStats()) {
                         msg = Translator.getString(lang, "character", "reset_done");
                     } else {
@@ -1211,6 +1265,7 @@ class Commandes {
                     break;
 
                 case "sell":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     let sellIdItem = parseInt(messageArray[1], 10);
                     let numberOfItemsToSell = parseInt(messageArray[2], 10);
                     numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
@@ -1244,6 +1299,7 @@ class Commandes {
                     break;
 
                 case "sellall":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
                     if (this.areasManager.canISellToThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
                         let allSelled = this.connectedUsers[authorIdentifier].character.sellAllInventory();
                         if (allSelled > 0) {
@@ -1357,18 +1413,22 @@ class Commandes {
                     break;
 
                 case "leaderboard":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_character", 1);
                     msg = Leaderboard.playerLeaderboardToStr(this.connectedUsers[authorIdentifier].character.id);
                     break;
 
                 case "info":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_character", 1);
                     msg = this.connectedUsers[authorIdentifier].infoPanel();
                     break;
 
                 case "help":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_other", 1);
                     msg = this.helpPanel(lang, parseInt(messageArray[1], 10));
                     break;
 
                 case "fight":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
                     //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, messageArray[1]);
                     let idEnemy = parseInt(messageArray[1], 10);
                     if (this.areasManager.canIFightInThisArea(this.connectedUsers[authorIdentifier].character.getIdArea())) {
@@ -1393,19 +1453,23 @@ class Commandes {
                     break;
 
                 case "area":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     msg = this.areasManager.seeThisArea(this.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                     break;
 
                 case "areas":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     msg = this.areasManager.seeAllAreas(lang);
                     break;
 
                 case "areaconquest":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     //msg = AreaTournament.toDiscordEmbed(this.connectedUsers[authorIdentifier].character.getIdArea());
                     msg = this.areasManager.seeConquestOfThisArea(this.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                     break;
 
                 case "travel":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
                     let wantedAreaToTravel = parseInt(messageArray[1], 10);
                     if (this.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                         if (this.areasManager.exist(wantedAreaToTravel)) {
@@ -1435,6 +1499,7 @@ class Commandes {
 
 
                 case "arena":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
                     firstMention = mentions.first();
                     let idOtherPlayerCharacter = 0;
                     let mId = -1;
@@ -1469,6 +1534,7 @@ class Commandes {
                     break;
 
                 case "up":
+                    PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_character", 1);
                     if (this.authorizedAttributes.indexOf(messageArray[1]) !== -1) {
                         let done = this.connectedUsers[authorIdentifier].character.upStat(messageArray[1], messageArray[2]);
                         if (done) {

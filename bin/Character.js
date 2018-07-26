@@ -11,6 +11,7 @@ const Item = require("./Item");
 const PlayerCraft = require("./CraftSystem/PlayerCraft");
 const LootSystem = require("./LootSystem");
 const Area = require("./Areas/Area");
+const PStatistics = require("./Achievement/PStatistics");
 
 class Character extends CharacterEntity {
 
@@ -115,6 +116,7 @@ class Character extends CharacterEntity {
         this.canFightAt = Date.now() + baseTimeToWait;
         this.area = area;
         this.saveArea();
+        PStatistics.incrStat(this.id, "travels", 1);
     }
 
     /**
@@ -350,6 +352,7 @@ class Character extends CharacterEntity {
         let value = this.inv.getAllInventoryValue();
         this.inv.deleteAllFromInventory();
         this.addMoney(value);
+        PStatistics.incrStat(this.id, "gold_sell", value);
         return value;
     }
 
