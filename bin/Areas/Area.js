@@ -21,9 +21,7 @@ class Area {
         //this.nbrPlayers = 0;
         this.owner = 0;
         this.fightPossible = false;
-        /**
-         * @type {Array<Item>}
-         */
+
         this.resources = [];
         /**
          * @type {Array<MonstreGroupe>}
