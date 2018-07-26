@@ -70,5 +70,8 @@ INSERT INTO `statisticsbases` (`idStatisticBase`, `name`) VALUES
 (NULL, 'commands_inventory'), (NULL, 'commands_equipment'), (NULL, 'commands_character'),
 (NULL, 'commands_fights'), (NULL, 'commands_areas'), (NULL, 'commands_groups'), 
 (NULL, 'commands_hdv'), (NULL, 'commands_job'), (NULL, 'commands_other'), (NULL, 'commands_guilds')
+
+(NULL, 'items_common_collected'), (NULL, 'items_rare_collected'), (NULL, 'items_superior_collected'),
+(NULL, 'items_epic_collected'), (NULL, 'items_legendary_collected'),
 ;
 
