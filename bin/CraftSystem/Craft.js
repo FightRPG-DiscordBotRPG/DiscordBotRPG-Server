@@ -84,6 +84,13 @@ class Craft {
         return this.itemInfo.idRarity <= buildingRarityLevel;
     }
 
+    /**
+     * @returns {string}
+     */
+    getRarity() {
+        return this.itemInfo.rarity;
+    }
+
 }
 
 module.exports = Craft;
