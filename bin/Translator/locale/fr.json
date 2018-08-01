@@ -115,7 +115,11 @@
     "craft_dont_exist" : "Cette recette n'est pas disponible",
     "craft_dont_have_required_level": "Vous n'avez pas le niveau minimum de fabrication requis pour fabriquer cet objet, vous devez être au moins niveau : %d",
     "craft_dont_have_required_items": "Vous n'avez pas toutes les ressources requises pour fabriquer cet objet",
-    "craft_tired_wait_x_seconds" : "Vous êtes trop fatigué pour fabriquer des objets vous devez encore attendre : %s secondes"
+    "craft_tired_wait_x_seconds" : "Vous êtes trop fatigué pour fabriquer des objets vous devez encore attendre : %s secondes",
+
+    "prefix_max_length" : "Le prefix ne doit pas dépasser %d caractères",
+    "prefix_undefined" : "Le prefix doit au moins contenir 1 caractère",
+    "prefix_not_owner_server" : "Vous devez posséder ce server pour changer le prefix"
   },
   "craft" : {
     "header_required" : "Nom - Type - Sous-Type - Rareté - Nombre",
@@ -341,6 +345,13 @@
      "en" : "Anglais",
      "list_of_languages" : "Liste des langues disponibles (utilisez le nom raccourci pour changer votre langue)",
      "lang_changed" : "Langue modifiée avec succès, le bot vous répondra desormais en %s"
+   },
+   "other" : {
+    "loading_character" : "Chargement de votre personnage",
+    "character_loaded" : "Votre personnage a bien été chargé !",
+    "prefix_changed" : "Prefix changé",
+    "old_prefix" : "Ancien prefix",
+    "new_prefix" : "Nouveau prefix"
    },
    "item_types" : {
      "weapon" : "Arme",
