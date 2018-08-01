@@ -26,6 +26,8 @@ class Commandes {
     constructor(prefix) {
         this.prefix = prefix != null ? prefix : "::";
         this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
+        this.prefixes = {};
+
         /**
          * @type {Array<User>}
          */
@@ -38,6 +40,22 @@ class Commandes {
          * @type {AreasManager}
          */
         this.areasManager;
+
+        this.loadPrefixes();
+    }
+
+    loadPrefixes() {
+        let prefixes = conn.query("SELECT idServer, serverPrefix FROM serversstats");
+        for(let result of prefixes) {
+            this.prefixes[result.idServer] = result.serverPrefix;
+        }
+    }
+
+    getPrefix(idServer) {
+        if(this.prefixes[idServer]) {
+            return this.prefixes[idServer];
+        }
+        return this.prefix;
     }
 
     updateConnectedUsers() {
@@ -46,9 +64,16 @@ class Commandes {
         }
     }
 
-    reactTo(message) {
+    prefixChange(idServer, newPrefix) {
+        this.prefixes[idServer] = newPrefix;
+        conn.query("UPDATE serversstats SET serverPrefix = ? WHERE idServer = ?", [newPrefix, idServer]);
+    }
+
+    async reactTo(message) {
         let messageArray = message.content.split(" ");
-        let command = messageArray[0].split(this.prefix)[1];
+        let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
+        //console.log(this.getPrefix(message.guild ? message.guild.id : null));
+        let command = messageArray[0].split(prefix)[1];
         let tLootSystem = new LootSystem();
         let uIDGuild;
         let tGuildId = 0;
@@ -59,7 +84,10 @@ class Commandes {
         let temp;
         let doIHaveThisItem = false;
 
-        if (command !== undefined && !message.author.bot && message.content.startsWith(this.prefix)) {
+        if (command !== undefined && !message.author.bot && message.content.startsWith(prefix)) {
+            /*console.log("Split with prefix : " + prefix);
+            console.log("Command result : " + command);*/
+
             if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
                 return;
             }
@@ -70,6 +98,11 @@ class Commandes {
             let msg = "";
             // Init connection
             if (!this.connectedUsers[authorIdentifier]) {
+                let characterLoadingMessage = null;
+                try {
+                    characterLoadingMessage = await message.channel.send("<a:loading:393852367751086090> " + Translator.getString("en", "other", "loading_character"));
+                } catch(err) {}
+
                 // Load User
                 this.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag);
                 this.connectedUsers[authorIdentifier].loadUser();
@@ -90,8 +123,11 @@ class Commandes {
                         this.connectedGuilds[this.connectedUsers[authorIdentifier].character.idGuild].loadGuild(this.connectedUsers[authorIdentifier].character.idGuild);
                     }
                 }
-
-
+                if(characterLoadingMessage != null) {
+                    try{
+                        characterLoadingMessage.edit("<:check:314349398811475968> " + Translator.getString(this.connectedUsers[authorIdentifier].getLang(), "other", "character_loaded"));
+                    } catch(err) {}
+                }
 
             }
 
@@ -102,13 +138,12 @@ class Commandes {
             let craftingbuilding = this.areasManager.getService(this.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
             let currentArea = this.connectedUsers[authorIdentifier].character.getArea();
 
-            console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"")
+            //console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"");
+            PStatistics.logCommand(authorIdentifier, command, Date.now());
             if (this.connectedUsers[authorIdentifier].isNew) {
                 message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink]));
                 this.connectedUsers[authorIdentifier].isNew = false;
             }
-
-
 
             // Detect Commands
             switch (command) {
@@ -328,7 +363,7 @@ class Commandes {
 
                 case "mksearch":
                     PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_hdv", 1);
-                    let mksearch = message.content.split(this.prefix + "mksearch");
+                    let mksearch = message.content.split(prefix + "mksearch");
                     mksearch = [].concat.apply([], mksearch[1].split('"').map(function (v, i) {
                         return i % 2 ? v : v.split(' ')
                     })).filter(Boolean);
@@ -813,7 +848,7 @@ class Commandes {
                         if (group != null) {
                             if (!group.doingSomething) {
                                 if (group.leader == this.connectedUsers[authorIdentifier]) {
-                                    let grptokick = message.content.split(this.prefix + "grpkick ")[1];
+                                    let grptokick = message.content.split(prefix + "grpkick ")[1];
                                     if (grptokick != this.connectedUsers[authorIdentifier].username) {
                                         if (group.kick(grptokick, message.client)) {
                                             msg = Translator.getString(lang, "group", "user_kicked", [grptokick]);
@@ -1418,6 +1453,35 @@ class Commandes {
                          let f = new Fight(monsters1, monsters2);
                          console.log(f.summary);*/
                         //console.log(this.connectedUsers[authorIdentifier].username);
+                        /*
+                        async function choixSi(msg) {
+                            let poursouffleEmoji = "403148210295537664";
+                            let poursouffleRole = "453547108004528139";
+                        
+                            let tempMsg = await msg.channel.send("Fait ton choix");
+                            await tempMsg.react(poursouffleEmoji);
+                        
+                            const filter = (reaction, user) => {
+                                return [poursouffleEmoji].includes(reaction.emoji.id) && user.id === msg.author.id;
+                            };
+                            
+                        
+                            const collected = await tempMsg.awaitReactions(filter, {max : 1, time:5000});
+                            const reaction = collected.first();
+                        
+                            console.log(reaction.emoji.id + " == " + poursouffleEmoji);
+                            switch(reaction.emoji.id) {
+                                case poursouffleEmoji:
+                                    msg.member.addRole(poursouffleRole).catch((e) => console.log(e));
+                                    break;
+                            }
+                        
+                            msg.delete();
+                            tempMsg.delete();
+                        
+                        }
+                        
+                        choixSi(msg);*/
                     }
                     break;
 
@@ -1566,8 +1630,33 @@ class Commandes {
                     break;
 
                 case "emojiList":
-                    const emojiList = message.guild.emojis.map(e => e.toString()).join(" ");
-                    msg = emojiList;
+                    if(message.guild) {
+                        const emojiList = message.guild.emojis.map(e => e.toString()).join(" ");
+                        msg = emojiList;
+                    }
+                    break;
+
+                case "prefix":
+                    if(message.guild && message.author.id === message.guild.ownerID) {
+                        if(messageArray[1]) {
+                            if(messageArray[1].length <= 10) {
+                                let oldPrefix = this.getPrefix(message.guild.id);
+                                this.prefixChange(message.guild.id, messageArray[1]);
+                                msg = new Discord.RichEmbed()
+                                .setColor([0, 128, 128])
+                                .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
+                                .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
+                                .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(message.guild.id))
+                                ;
+                            } else {
+                                msg = Translator.getString(lang, "errors", "prefix_max_length", [10]);
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "prefix_undefined");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "prefix_not_owner_server");
+                    }
                     break;
 
                     /*case "token":
