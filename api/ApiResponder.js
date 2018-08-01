@@ -47,7 +47,7 @@ app.use(limiter);
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', api);
 
-console.log(path.join(__dirname, '../public'));
+//console.log(path.join(__dirname, '../public'));
 
 
 
