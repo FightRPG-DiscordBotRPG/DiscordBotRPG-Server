@@ -18,7 +18,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`CharactersStatistics` (
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersstatistics` (
   `idStatisticBase` INT(10) UNSIGNED NOT NULL,
   `idCharacter` INT(10) UNSIGNED NOT NULL,
   `value` BIGINT(19) UNSIGNED NOT NULL DEFAULT 0,
@@ -69,9 +69,9 @@ INSERT INTO `statisticsbases` (`idStatisticBase`, `name`) VALUES
 
 (NULL, 'commands_inventory'), (NULL, 'commands_equipment'), (NULL, 'commands_character'),
 (NULL, 'commands_fights'), (NULL, 'commands_areas'), (NULL, 'commands_groups'), 
-(NULL, 'commands_hdv'), (NULL, 'commands_job'), (NULL, 'commands_other'), (NULL, 'commands_guilds')
+(NULL, 'commands_hdv'), (NULL, 'commands_job'), (NULL, 'commands_other'), (NULL, 'commands_guilds'),
 
 (NULL, 'items_common_collected'), (NULL, 'items_rare_collected'), (NULL, 'items_superior_collected'),
-(NULL, 'items_epic_collected'), (NULL, 'items_legendary_collected'),
+(NULL, 'items_epic_collected'), (NULL, 'items_legendary_collected')
 ;
 
