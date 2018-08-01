@@ -15,6 +15,13 @@ class PStatistics extends Statistics {
         conn.query("UPDATE charactersstatistics INNER JOIN statisticsbases ON statisticsbases.idStatisticBase = charactersstatistics.idStatisticBase SET value = ? WHERE idCharacter = ? AND statisticsbases.name = ?;", [number, idCharacter, statName]);
     }
 
+    static async logCommand(userid, command, timestamp) {
+        if(timestamp == null) {
+            timestamp = Date.now();
+        }
+        conn.query("INSERT INTO commandslogs VALUES(NULL, ?, ?, ?);", [userid, command == null || command == "" ? "unknown" : command, timestamp]);
+    }
+
 
 }
 
