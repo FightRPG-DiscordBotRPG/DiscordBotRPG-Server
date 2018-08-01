@@ -6,6 +6,7 @@ const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");
 const Translator = require("./Translator/Translator");
+const DatabaseInitializer = require("./DatabaseInitializer");
 
 class User {
     // Discord User Info
@@ -38,6 +39,7 @@ class User {
         }
         conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`, `token`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "');");
         conn.query("INSERT INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
+        DatabaseInitializer.PStats();
     }
 
     // Load user from DB
