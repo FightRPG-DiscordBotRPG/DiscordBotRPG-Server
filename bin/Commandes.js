@@ -85,6 +85,7 @@ class Commandes {
         let doIHaveThisItem = false;
 
         if (command !== undefined && !message.author.bot && message.content.startsWith(prefix)) {
+            //console.log("[" + new Date().toLocaleString() + "] User : " + message.author.username + " Attemp command : \"" + command + "\"");
             /*console.log("Split with prefix : " + prefix);
             console.log("Command result : " + command);*/
 
@@ -1000,7 +1001,7 @@ class Commandes {
                                             if (grpEnemies == null) {
                                                 grpEnemies = this.areasManager.selectRandomMonsterIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemyGroup);
                                             }
-                                            this.fightManager._fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
+                                            this.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
                                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
                                         } else {
                                             // Error Message
@@ -1513,7 +1514,7 @@ class Commandes {
                             } else {
                                 enemies = this.areasManager.getMonsterIdIn(this.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy);
                             }
-                            this.fightManager._fightPvE([this.connectedUsers[authorIdentifier].character], enemies, message, canIFightTheMonster, lang);
+                            this.fightManager.fightPvE([this.connectedUsers[authorIdentifier].character], enemies, message, canIFightTheMonster, lang);
                             //this.fightManager.fightPvE(this.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
 
                         } else {
@@ -1592,7 +1593,7 @@ class Commandes {
                         // Ici on lance le combat si possible
                         if (this.connectedUsers[mId]) {
                             if (authorIdentifier !== mId) {
-                                this.fightManager.fightPvP(this.connectedUsers[authorIdentifier], this.connectedUsers[mId], message, lang);
+                                this.fightManager.fightPvP([this.connectedUsers[authorIdentifier].character], [this.connectedUsers[mId].character], message, lang);
                             } else {
                                 msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself");
                             }
