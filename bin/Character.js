@@ -510,6 +510,10 @@ class Character extends CharacterEntity {
     }
 
     // GetSpecial
+    getHonor() {
+        return this.honorPoints;
+    }
+
     getLevel() {
         return this.levelSystem.actualLevel;
     }
