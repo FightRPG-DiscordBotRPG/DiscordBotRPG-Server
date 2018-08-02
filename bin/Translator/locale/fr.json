@@ -119,7 +119,7 @@
 
     "prefix_max_length" : "Le prefix ne doit pas dépasser %d caractères",
     "prefix_undefined" : "Le prefix doit au moins contenir 1 caractère",
-    "prefix_not_owner_server" : "Vous devez posséder ce server pour changer le prefix"
+    "prefix_not_owner_server" : "Vous devez posséder ce serveur pour changer le prefix"
   },
   "craft" : {
     "header_required" : "Nom - Type - Sous-Type - Rareté - Nombre",
