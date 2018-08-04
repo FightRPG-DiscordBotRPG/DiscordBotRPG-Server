@@ -126,7 +126,7 @@ class Commandes {
                 }
                 if(characterLoadingMessage != null) {
                     try{
-                        characterLoadingMessage.edit("<:check:314349398811475968> " + Translator.getString(this.connectedUsers[authorIdentifier].getLang(), "other", "character_loaded"));
+                        await characterLoadingMessage.edit("<:check:314349398811475968> " + Translator.getString(this.connectedUsers[authorIdentifier].getLang(), "other", "character_loaded"));
                     } catch(err) {}
                 }
 
