@@ -112,7 +112,6 @@ bot.on('message', (message) => {
         message.channel.send(msgError);
     }
     
-
 });
 
 bot.on('guildCreate', (guild) => {
@@ -135,6 +134,6 @@ bot.on('guildDelete', () => {
 
 
 // Load api after all 
-//const ApiResponder = require("./api/ApiResponder.js");
+const ApiResponder = require("./api/ApiResponder.js");
 
 
