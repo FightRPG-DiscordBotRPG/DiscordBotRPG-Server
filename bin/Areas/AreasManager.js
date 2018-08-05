@@ -8,6 +8,7 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Area = require("../Areas/Area");
 const Character = require("../Character");
+const Graph = require('node-dijkstra')
 
 
 class AreasManager {
@@ -19,7 +20,10 @@ class AreasManager {
          */
         this.areas = new Map();
 
+        this.paths = new Graph();
+
         this.loadAreas();
+        this.loadPaths();
     }
 
     loadAreas() {
@@ -38,6 +42,36 @@ class AreasManager {
             }
             
         }
+    }
+
+    loadPaths() {
+        let res = conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
+        for(let area of res) {
+            let paths = conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
+            let node = {};
+            for(let path of paths) {
+                //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
+                node[path.idArea2] = path.time;
+            }
+            this.paths.addNode(area.idArea1.toString(), node);
+        }
+    }
+
+    /**
+     * 
+     * @param {string} from 
+     * @param {string} to 
+     */
+    getPathCosts(from, to) {
+        let path = this.paths.path(from.toString(), to.toString(), {cost:true});
+        
+        let toReturn = {
+            timeToWait : path.cost,
+            goldPrice : 0
+        }
+        /*console.log(from + " -> " + to);
+        console.log(toReturn);*/
+        return toReturn;
     }
 
     /**
@@ -159,7 +193,12 @@ class AreasManager {
 
         }
         str += "```";
-        return str;
+
+        return new Discord.RichEmbed()
+        .setColor([0, 255, 0])
+        .setAuthor(Translator.getString(lang, "area", "areas"))
+        .addField(Translator.getString(lang, "area", "list"), str)
+        .setImage("https://image.ibb.co/nKdAGK/map_base.png");
     }
 
     canISellToThisArea(idArea) {
@@ -182,7 +221,6 @@ class AreasManager {
 
     // Update nbr players when a player travel to another location
     updateTravel(character, toArea) {
-
         this.areas.get(character.getIdArea()).removeOnePlayer(character);
         this.areas.get(toArea).addOnePlayer(character);
     }
