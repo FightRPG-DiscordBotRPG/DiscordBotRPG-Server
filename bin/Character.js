@@ -108,10 +108,10 @@ class Character extends CharacterEntity {
      * 
      * @param {Area} area 
      */
-    changeArea(area) {
+    changeArea(area, waitTime=Globals.basicWaitTimeAfterTravel) {
         let conReduction = Math.floor(this.getStat("constitution") / 20);
-        conReduction = conReduction > Globals.basicWaitTimeAfterTravel / 2 ? Globals.basicWaitTimeAfterTravel / 2 : conReduction;
-        let baseTimeToWait = (Globals.basicWaitTimeAfterTravel - conReduction) * 1000;
+        conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
+        let baseTimeToWait = (waitTime - conReduction) * 1000;
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
         this.area = area;
