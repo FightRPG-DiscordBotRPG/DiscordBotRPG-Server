@@ -64,10 +64,10 @@
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "version": "1.0.2"
     },
-    "dblapi.js": "^2.1.0",
+    "dblapi.js": "^2.2.0",
     "discord.js": "^11.3.2",
     "express": "^4.16.3",
-    "express-rate-limit": "^2.11.0",
+    "express-rate-limit": "^2.12.1",
     "get-port": {
       "integrity": "sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=",
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
@@ -127,7 +127,8 @@
       "resolved": "https://registry.npmjs.org/mysql/-/mysql-2.15.0.tgz",
       "version": "2.15.0"
     },
-    "nodemon": "^1.17.5",
+    "node-dijkstra": "^2.5.0",
+    "nodemon": "^1.18.3",
     "object-sizeof": "^1.2.0",
     "pify": {
       "integrity": "sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=",
