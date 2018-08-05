@@ -297,7 +297,15 @@
   },
    "travel" : {
      "travel_to_area" : "You travelled to an area called: %s",
-     "travel_to_area_exhaust" : "You are tired, you will have to wait %d seconds before doing something again"
+     "travel_to_area_exhaust" : "You are tired, you will have to wait %d seconds before doing something again",
+     "travel_planning" : "Planning",
+     "wait_time_title" : "Expected wait time",
+     "wait_time_body" : "%d seconds",
+     "gold_price_title" : "Expected gold cost",
+     "gold_price_body" : "%d G",
+     "sure_to_travel_title" : "Are you sure you want to travel ?",
+     "sure_to_travel_body" : "%s => Yes\n%s => No",
+     "travel_cancel" : "You've cancelled your trip"
    },
    "fight_pve" : {
      "ganked_by_monster" : "You weren't stealthy enough, a monster is attacking you! (You need more perception)",

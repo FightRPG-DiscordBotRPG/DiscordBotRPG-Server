@@ -296,7 +296,15 @@
   },
    "travel" : {
      "travel_to_area" : "Vous avez voyagé vers la zone : %s",
-     "travel_to_area_exhaust" : "Vous êtes fatigué vous allez devoir attendre %d secondes avant de pouvoir refaire une action"
+     "travel_to_area_exhaust" : "Vous êtes fatigué vous allez devoir attendre %d secondes avant de pouvoir refaire une action",
+     "travel_planning" : "Planification du voyage",
+     "wait_time_title" : "Temps de fatigue attendu",
+     "wait_time_body" : "%d secondes",
+     "gold_price_title" : "Coût en G attendu",
+     "gold_price_body" : "%d G",
+     "sure_to_travel_title" : "Êtes-vous sûr de vouloir voyager ?",
+     "sure_to_travel_body" : "%s => Oui\n%s => Non",
+     "travel_cancel" : "Vous avez annulé votre voyage"
    },
    "fight_pve" : {
      "ganked_by_monster" : "Vous n'avez pas été assez discret, vous vous faites attaquer par un monstre ! (Il vous faut plus de perception)",
