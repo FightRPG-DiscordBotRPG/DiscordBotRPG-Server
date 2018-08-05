@@ -16,6 +16,7 @@ const AreaTournament = require("./AreaTournament/AreaTournament");
 const PStatistics = require("./Achievement/PStatistics");
 const Craft = require("./CraftSystem/Craft");
 const Item = require("./Item");
+const Emojis = require("./Emojis");
 
 class Commandes {
 
@@ -1550,17 +1551,56 @@ class Commandes {
                             if (wantedAreaToTravel == this.connectedUsers[authorIdentifier].character.getIdArea()) {
                                 msg = Translator.getString(lang, "errors", "travel_already_here");
                             } else {
+                                
+                                let costs = this.areasManager.getPathCosts(this.connectedUsers[authorIdentifier].character.getIdArea(), wantedAreaToTravel);
+                                let checkEmoji = Emojis.getID("vmark");
+                                let xmarkEmoji = Emojis.getID("xmark");
+                                let tempMsg = await message.channel.send(new Discord.RichEmbed()
+                                .setColor([0, 255, 0])
+                                .setAuthor(Translator.getString(lang, "travel", "travel_planning"))
+                                .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [costs.timeToWait]), true)
+                                .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
+                                .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
+                                );
+                                await Promise.all([
+                                    tempMsg.react(checkEmoji),
+                                    tempMsg.react(xmarkEmoji)
+                                ]).catch(e => null);
 
-                                // Update le compte de joueurs
-                                this.areasManager.updateTravel(this.connectedUsers[authorIdentifier].character, wantedAreaToTravel);
-                                wantedAreaToTravel = this.areasManager.getArea(wantedAreaToTravel);
+                                const filter = (reaction, user) => {
+                                    return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                                };
 
-                                // change de zone
-                                this.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel);
 
-                                // Messages
-                                msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.name]);
-                                msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                const collected = await tempMsg.awaitReactions(filter, {
+                                    max: 1,
+                                    time: 10000
+                                });
+                                const reaction = collected.first();
+                                if(reaction != null) {
+                                    switch (reaction.emoji.id) {
+                                        case checkEmoji:
+                                            // Update le compte de joueurs
+                                            this.areasManager.updateTravel(this.connectedUsers[authorIdentifier].character, wantedAreaToTravel);
+                                            wantedAreaToTravel = this.areasManager.getArea(wantedAreaToTravel);
+    
+                                            // change de zone
+                                            this.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, this.areasManager.getPathCosts(this.connectedUsers[authorIdentifier].character.getIdArea(), messageArray[1]).timeToWait);
+    
+                                            // Messages
+                                            msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.name]);
+                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((this.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                            break;
+    
+                                        case xmarkEmoji:
+                                            msg = Translator.getString(lang, "travel", "travel_cancel");
+                                            break;
+                                    }
+                                }
+                            
+                                tempMsg.delete().catch(e => null);
+
+                                
                             }
 
                         } else {
@@ -1666,7 +1706,7 @@ class Commandes {
                         break;*/
             }
 
-            msg != "" ? message.channel.send(msg).catch((error) => {
+            msg != null && msg != "" ? message.channel.send(msg).catch((error) => {
                 message.author.send(error.message).catch((e) => {
                     console.log(e)
                 });
