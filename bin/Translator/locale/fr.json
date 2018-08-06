@@ -180,7 +180,9 @@
     "area_progression" : "Progression de la zone",
     "level_up" : "La zone a gagné un niveau",
     "bonus_list_header" : "Identifiant => Correspondance",
-    "up_stat" : "Le bonus %s gagne %d points"
+    "up_stat" : "Le bonus %s gagne %d points",
+    "areas" : "Zones",
+    "list" : "Liste des zones"
   },
   "bonuses" : {
     "bonuses" : "Bonus",

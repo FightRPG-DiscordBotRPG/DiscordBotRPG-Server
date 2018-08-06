@@ -181,7 +181,9 @@
     "area_progression" : "Area progression",
     "level_up" : "The area has level up",
     "bonus_list_header" : "Identifier => Refers to",
-    "up_stat" : "The bonus %s have gained %d points"
+    "up_stat" : "The bonus %s have gained %d points",
+    "areas" : "Areas",
+    "list" : "List of areas"
   },
   "bonuses" : {
     "bonuses" : "Bonuses",
