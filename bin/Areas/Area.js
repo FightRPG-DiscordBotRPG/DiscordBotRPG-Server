@@ -18,6 +18,7 @@ class Area {
         this.image = "";
         this.levels = "";
         this.areaType = "";
+        this.idRegion = 0;
         //this.nbrPlayers = 0;
         this.owner = 0;
         this.fightPossible = false;
@@ -45,9 +46,8 @@ class Area {
     }
 
     loadArea(id) {
-        let res = conn.query("SELECT AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM areas " +
-            "INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType " +
-            "WHERE idArea = " + id)[0];
+        let res = conn.query("SELECT idRegion, AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea WHERE areas.idArea = ?", [id])[0];
+        this.idRegion = res["idRegion"];
         this.name = res["AreaName"];
         this.desc = res["AreaDesc"];
         this.image = res["AreaImage"];

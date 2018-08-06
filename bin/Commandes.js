@@ -1534,7 +1534,7 @@ class Commandes {
 
                 case "areas":
                     PStatistics.incrStat(this.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
-                    msg = this.areasManager.seeAllAreas(lang);
+                    msg = this.areasManager.seeAllAreasInThisRegion(currentArea, lang);
                     break;
 
                 case "areaconquest":

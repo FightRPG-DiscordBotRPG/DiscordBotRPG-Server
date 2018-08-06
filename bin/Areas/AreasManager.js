@@ -8,7 +8,8 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Area = require("../Areas/Area");
 const Character = require("../Character");
-const Graph = require('node-dijkstra')
+const Graph = require('node-dijkstra');
+const Region = require("./Region");
 
 
 class AreasManager {
@@ -19,15 +20,27 @@ class AreasManager {
          * @type {Map<any, Area>}
          */
         this.areas = new Map();
+        /**
+         * @type {Array<Region>}
+         */
+        this.regions = {};
 
         this.paths = new Graph();
 
+        this.loadRegions();
         this.loadAreas();
         this.loadPaths();
     }
 
+    loadRegions() {
+        let res = conn.query("SELECT idRegion FROM regions");
+        for(let region of res) {
+            this.regions[region.idRegion] = new Region(region.idRegion);
+        }
+    }
+
     loadAreas() {
-        let res = conn.query("SELECT idArea, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType ORDER BY AreaLevels ASC");
+        let res = conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea ORDER BY AreaLevels ASC");
         for (let i in res) {
             switch (res[i].NomAreaType) {
                 case "wild":
@@ -40,8 +53,9 @@ class AreasManager {
                     this.areas.set(res[i].idArea, new DungeonArea(res[i].idArea));
                     break;
             }
-            
+            this.regions[res[i].idRegion].addArea(this.areas.get(res[i].idArea));
         }
+
     }
 
     loadPaths() {
@@ -199,6 +213,10 @@ class AreasManager {
         .setAuthor(Translator.getString(lang, "area", "areas"))
         .addField(Translator.getString(lang, "area", "list"), str)
         .setImage("https://image.ibb.co/nKdAGK/map_base.png");
+    }
+
+    seeAllAreasInThisRegion(area, lang) {
+        return this.regions[area.idRegion].seeAreas(lang);
     }
 
     canISellToThisArea(idArea) {
