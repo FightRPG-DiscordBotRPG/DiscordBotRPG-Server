@@ -327,7 +327,6 @@ class Guild {
      */
     haveThisMoney(number) {
         this.loadMoney();
-        console.log(this.money + " -> " + number);
         return this.money >= number;
     }
 
@@ -364,7 +363,7 @@ class Guild {
      */
     levelUp(idCharacter, lang) {
         let err = [];
-
+        this.loadMoney();
         if (this.members[idCharacter].rank >= 2) {
             if (this.level < Globals.guilds.maxLevel) {
                 if (this.money >= this.getNextLevelPrice()) {
@@ -373,7 +372,7 @@ class Guild {
                     this.level += 1;
                     this.saveLevel();
                 } else {
-                    err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice()]));
+                    err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice() - this.money]));
                 }
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_already_max_level"));
