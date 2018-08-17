@@ -242,18 +242,21 @@ class Area {
         let perPage = 10;
         let str = "```";
         str += Translator.getString(lang, "area", "list_of_players_in_area", [this.name]) + "\n\n";
-        let maxPage = Math.ceil(this.players.length/perPage);
+        let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ?", [this.id])[0]["COUNT(*)"] / perPage);;
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
+        
         let indexPage = (page - 1) * perPage;
-        if (this.players.length > indexPage) {
-            for (let i = indexPage; i < ((indexPage + perPage) < this.players.length ? (indexPage + perPage) : this.players.length); i++) {
-                let cha = this.players[i];
-                str += Translator.getString(lang, "area", "player", [cha.id, cha.name, cha.getLevel()]) + "\n\n";
+
+        let players = conn.query("SELECT characters.idCharacter, users.userName, levels.actualLevel FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter INNER JOIN levels ON levels.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ? ORDER BY actualLevel DESC LIMIT ? OFFSET ?;", [this.id, perPage, indexPage]);
+
+        if (players.length > indexPage) {
+            for (let player of players) {
+                str += Translator.getString(lang, "area", "player", [player.idCharacter, player.userName, player.actualLevel]) + "\n\n";
             }
         } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page");
+            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n";
         }
 
         str += "\n"+ Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
