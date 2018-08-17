@@ -1,6 +1,6 @@
 'use strict';
 const conn = require("../conf/mysql.js");
-const StatsPlayer = require("./Stats/StatsPlayer.js");
+const StatsPlayer = require("./Stats/StatsPlayer");
 const LevelSystem = require("./LevelSystem.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
@@ -510,6 +510,11 @@ class Character extends CharacterEntity {
     }
 
     // GetSpecial
+    getStatPoints() {
+        return this.statPoints;
+        //return conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]);
+    }
+
     getHonor() {
         return this.honorPoints;
     }
