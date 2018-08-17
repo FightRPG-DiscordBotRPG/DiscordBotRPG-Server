@@ -5,10 +5,12 @@
     "\\bin",
     "\\bin\\Areas",
     "\\bin\\Fight",
+    "\\bin\\Marketplace",
     "\\bin\\Stats",
     "\\bin\\Translator",
+    "\\bin\\Translator\\locale",
     "\\conf"
   ],
-  "SelectedNode": "\\bin\\Translator\\Translator.js",
+  "SelectedNode": "\\bin\\Marketplace\\Marketplace.js",
   "PreviewInSolutionExplorer": false
 }
