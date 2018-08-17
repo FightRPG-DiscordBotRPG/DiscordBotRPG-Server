@@ -100,7 +100,7 @@ class AdminModule extends GModule {
 
             case "xp":
                 if (Globals.connectedUsers[authorIdentifier].character.getLevel() < Globals.maxLevel) {
-                    let value = parseInt(messageArray[1], 10);
+                    let value = parseInt(args[0], 10);
                     if (!value && !Number.isInteger(value)) {
                         value = 1;
                     }
@@ -120,7 +120,7 @@ class AdminModule extends GModule {
                 break;
 
             case "gold":
-                let value = parseInt(messageArray[1], 10);
+                let value = parseInt(args[0], 10);
                 if (!value && !Number.isInteger(value)) {
                     value = 1;
                 }

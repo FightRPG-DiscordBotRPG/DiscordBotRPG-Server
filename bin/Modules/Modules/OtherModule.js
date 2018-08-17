@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["command1"];
+        this.commands = ["lang", "help"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
