@@ -6,6 +6,7 @@ const conn = require("../../conf/mysql");
 const Discord = require("discord.js");
 const User = require("../User");
 const Guild = require("../Guild");
+const PStatistics = require("../Achievement/PStatistics");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -225,7 +226,7 @@ class ModuleHandler extends GModule {
 
     async connectUser(message) {
         let authorIdentifier = message.author.id;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
+        let lang;
         if (!Globals.connectedUsers[authorIdentifier]) {
             let characterLoadingMessage = null;
             try {
@@ -243,6 +244,8 @@ class ModuleHandler extends GModule {
 
             //console.log(sizeof(Globals.connectedUsers));
 
+            lang = Globals.connectedUsers[authorIdentifier].getLang();
+
             // Load Guild
             if (Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
                 if (!Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild]) {
@@ -256,7 +259,11 @@ class ModuleHandler extends GModule {
                 } catch (err) {}
             }
 
+        } else {
+            lang = Globals.connectedUsers[authorIdentifier].getLang();
         }
+
+        
 
         if (Globals.connectedUsers[authorIdentifier].isNew) {
             message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink])).catch((e) => {
