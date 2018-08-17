@@ -37,8 +37,8 @@ class User {
             nToken = Crypto.randomBytes(16).toString('hex');
             res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
-        conn.query("INSERT INTO `users` (`idUser`, `idCharacter`, `userName`, `token`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "');");
-        conn.query("INSERT INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
+        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "', true);");
+        conn.query("INSERT IGNORE INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
         DatabaseInitializer.PStats();
     }
 
@@ -47,12 +47,12 @@ class User {
     loadUser() {
         let res = conn.query("SELECT * FROM users WHERE idUser = " + this.id);
         if (res.length === 0) {
-            // S'il n'existe pas on le cr�e
+            // S'il n'existe pas on le crée
             this.init();
         } else {
             // Sinon on le load
             this.character.loadCharacter(res[0]["idCharacter"]);
-            conn.query("UPDATE users SET username = ? WHERE idUser = ?", [this.username, this.id]);
+            conn.query("UPDATE users SET username = ?, isConnected = true WHERE idUser = ?", [this.username, this.id]);
             //this.username = res[0]["userName"];
             this.character.name = this.username;
 
@@ -87,30 +87,32 @@ class User {
     }
 
     changeLang(lang) {
-        this.preferences.lang = lang;
         conn.query("UPDATE userspreferences SET lang = ? WHERE idUser = ?", [lang, this.id]);
     }
 
     getLang() {
         return this.preferences.lang;
+        //return conn.query("SELECT lang FROM userspreferences WHERE idUser = ?", [this.id])[0]["lang"];
     }
 
     isGroupMuted() {
         return this.preferences.groupmute;
+        //return conn.query("SELECT groupmute FROM userspreferences WHERE idUser = ?", [this.id])[0]["groupmute"];
     }
 
     isMarketplaceMuted() {
         return this.preferences.marketplacemute;
+        //return conn.query("SELECT marketplacemute FROM userspreferences WHERE idUser = ?", [this.id])[0]["marketplacemute"];
     }
 
     muteGroup(bool) {
-        bool == true ? this.preferences.groupmute = true : this.preferences.groupmute = false;
-        conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [this.preferences.groupmute, this.id]);
+        this.preferences.groupmute = bool;
+        //conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [bool, this.id]);
     }
 
     muteMarketplace(bool) {
-        bool == true ? this.preferences.marketplacemute = true : this.preferences.marketplacemute = false;
-        conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?", [this.preferences.groupmute, this.id]);
+        this.preferences.marketplacemute = bool;
+        conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?", [bool, this.id]);
     }
 
     marketTell(str) {
@@ -125,7 +127,7 @@ class User {
 
     //Affichage
     infoPanel() {
-        let statPointsPlur = this.character.statPoints > 1 ? "s" : "";
+        let statPointsPlur = this.character.getStatPoints() > 1 ? "s" : "";
         let xpProgressBar = new ProgressBar();
         let xpBar = "";
         let xpOn = "";
