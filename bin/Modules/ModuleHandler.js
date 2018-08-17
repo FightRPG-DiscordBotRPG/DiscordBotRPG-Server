@@ -46,7 +46,7 @@ class ModuleHandler extends GModule {
         let authorIdentifier = message.author.id;
         let isAdmin = Globals.admins.indexOf(message.author.id) > -1;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
-        if(!message.content.startsWith(prefix)) return;
+        if (!message.content.startsWith(prefix)) return;
 
         let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
             return i % 2 ? v : v.split(' ')
@@ -62,37 +62,43 @@ class ModuleHandler extends GModule {
 
             // exec module corresponding to command
             await this.executeCommand(message, command, args);
-            
+
 
             switch (command) {
                 case "prefix":
                     msg = this.prefixCommand(message, command, args, "en");
                     break;
                 case "load_module":
-                    if(isAdmin) {
-                        if(this.loadModule(args[0])) {
+                    if (isAdmin) {
+                        if (this.loadModule(args[0])) {
                             msg = "Module " + args[0] + " loaded successfully !";
                         } else {
                             msg = "An error occured when loading the module, module may not exist or can't be reloaded";
                         }
-                    }   
+                    }
                     break;
                 case "disable_module":
-                    if(isAdmin) {
-                        if(this.disableModule(args[0])) {
+                    if (isAdmin) {
+                        if (this.disableModule(args[0])) {
                             msg = "Module " + args[0] + " disabled successfully !";
                         } else {
                             msg = "This module doesn't exist";
                         }
                     }
                     break;
-                case "enable_module": 
+                case "enable_module":
                     if (isAdmin) {
                         if (this.enableModule(args[0])) {
                             msg = "Module " + args[0] + " enabled successfully !";
                         } else {
                             msg = "This module doesn't exist";
                         }
+                    }
+                    break;
+                case "load_all_modules":
+                    if (isAdmin) {
+                        this.loadAllModules();
+                        msg = "Done, check console for errors / warning";
                     }
                     break;
             }
@@ -102,13 +108,13 @@ class ModuleHandler extends GModule {
     }
 
     loadModule(moduleName) {
-        if(moduleName != null) {
+        if (moduleName != null) {
             moduleName = moduleName.split(".")[0];
-            if(fs.existsSync(__dirname + "/Modules/" + moduleName + ".js")) {
-                if(this.modules[moduleName] != null) {
-                    if(this.modules[moduleName].isReloadable) {
-                        for(let cmd of this.modules[moduleName].commands) {
-                            if(this.commandsReact[cmd]) delete this.commandsReact[cmd];
+            if (fs.existsSync(__dirname + "/Modules/" + moduleName + ".js")) {
+                if (this.modules[moduleName] != null) {
+                    if (this.modules[moduleName].isReloadable) {
+                        for (let cmd of this.modules[moduleName].commands) {
+                            if (this.commandsReact[cmd]) delete this.commandsReact[cmd];
                         }
                         delete this.modules[moduleName];
                         delete require.cache[require.resolve("./Modules/" + moduleName + ".js")];
@@ -117,11 +123,11 @@ class ModuleHandler extends GModule {
                 } else {
                     // new module
                     let moduleObject = require("./Modules/" + moduleName);
-                    if(moduleObject != null && typeof(moduleObject) == "function") {
+                    if (moduleObject != null && typeof (moduleObject) == "function") {
                         let mod = new moduleObject();
-                        if(mod.isModule) {
+                        if (mod.isModule) {
                             this.modules[moduleName] = mod;
-                            for(let cmd of mod.commands) {
+                            for (let cmd of mod.commands) {
                                 this.commandsReact[cmd] = mod;
                             }
                             return true;
@@ -140,17 +146,16 @@ class ModuleHandler extends GModule {
     }
 
     prefixCommand(message, command, args, lang) {
-        if(message.guild && message.author.id === message.guild.ownerID) {
-            if(args[0]) {
-                if(args[0].length <= 10) {
+        if (message.guild && message.author.id === message.guild.ownerID) {
+            if (args[0]) {
+                if (args[0].length <= 10) {
                     let oldPrefix = this.getPrefix(message.guild.id);
                     this.prefixChange(message.guild.id, args[0]);
                     return new Discord.RichEmbed()
-                    .setColor([0, 128, 128])
-                    .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
-                    .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
-                    .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(message.guild.id))
-                    ;
+                        .setColor([0, 128, 128])
+                        .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
+                        .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
+                        .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(message.guild.id));
                 } else {
                     return Translator.getString(lang, "errors", "prefix_max_length", [10]);
                 }
@@ -182,9 +187,9 @@ class ModuleHandler extends GModule {
     }
 
     disableModule(moduleName) {
-        if(moduleName != null) {
+        if (moduleName != null) {
             moduleName = moduleName.split(".")[0];
-            if(this.modules[moduleName] != null) {
+            if (this.modules[moduleName] != null) {
                 this.modules[moduleName].isActive = false;
                 return true;
             }
@@ -193,9 +198,9 @@ class ModuleHandler extends GModule {
     }
 
     enableModule(moduleName) {
-        if(moduleName != null) {
+        if (moduleName != null) {
             moduleName = moduleName.split(".")[0];
-            if(this.modules[moduleName] != null) {
+            if (this.modules[moduleName] != null) {
                 this.modules[moduleName].isActive = true;
                 return true;
             }
@@ -205,15 +210,15 @@ class ModuleHandler extends GModule {
 
     async executeCommand(message, command, args) {
         let mod = this.commandsReact[command];
-        if(mod != null) {
-            if(mod.isActive) {
-                try{
+        if (mod != null) {
+            if (mod.isActive) {
+                try {
                     await mod.run(message, command, args);
                 } catch (err) {
                     mod.isActive = false;
                     throw err;
                 }
-                
+
             }
         }
     }
@@ -225,7 +230,7 @@ class ModuleHandler extends GModule {
             let characterLoadingMessage = null;
             try {
                 characterLoadingMessage = await message.channel.send("<a:loading:393852367751086090> " + Translator.getString("en", "other", "loading_character"));
-            } catch(err) {}
+            } catch (err) {}
 
             // Load User
             Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag);
@@ -245,16 +250,18 @@ class ModuleHandler extends GModule {
                     Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild].loadGuild(Globals.connectedUsers[authorIdentifier].character.idGuild);
                 }
             }
-            if(characterLoadingMessage != null) {
-                try{
+            if (characterLoadingMessage != null) {
+                try {
                     await characterLoadingMessage.edit("<:check:314349398811475968> " + Translator.getString(lang, "other", "character_loaded"));
-                } catch(err) {}
+                } catch (err) {}
             }
 
         }
 
         if (Globals.connectedUsers[authorIdentifier].isNew) {
-            message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink])).catch((e) => {console.log(e)});
+            message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink])).catch((e) => {
+                console.log(e)
+            });
             Globals.connectedUsers[authorIdentifier].isNew = false;
         }
 

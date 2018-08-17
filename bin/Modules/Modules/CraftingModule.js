@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class CraftinModule extends GModule {
     constructor() {
         super();
-        this.commands = ["craftlist", "craftshow", "craft"];
+        this.commands = ["craftlist", "craftshow", "craft", "collect"];
         this.startLoading("Crafting");
         this.init();
         this.endLoading("Crafting");
@@ -112,6 +112,61 @@ class CraftinModule extends GModule {
                     }
                 } else {
                     msg = Translator.getString(lang, "errors", "craft_no_building");
+                }
+                break;
+            case "collect":
+                PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
+                let idToCollect = parseInt(args[0], 10);
+                if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                    if (idToCollect && Number.isInteger(idToCollect)) {
+                        let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
+                        //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
+                        if (resourceToCollect) {
+                            if (resourceToCollect.requiredLevel <= Globals.connectedUsers[authorIdentifier].character.getCraftLevel()) {
+                                let collectBonuses = currentArea.getAllBonuses();
+                                Globals.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
+                                idToCollect = Globals.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+                                if (CraftSystem.haveCollectItem(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") + collectBonuses.collect_drop.getPercentage(), resourceToCollect.idRarity)) {
+                                    if (idToCollect) {
+                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+                                    } else {
+                                        let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
+                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                    }
+
+                                    PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", 1);
+
+                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
+                                } else {
+                                    msg = Translator.getString(lang, "resources", "not_collected") + "\n";
+                                }
+
+                                // Si le joueur n'est pas max level en craft
+                                if (Globals.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
+                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                    let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
+                                    let totalCollectXP = collectXP + collectXPBonus;
+                                    let collectCraftUP = Globals.connectedUsers[authorIdentifier].character.addCraftXP(totalCollectXP);
+                                    msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
+                                    if (collectCraftUP > 0) {
+                                        msg += Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                                    }
+                                }
+
+
+                            } else {
+                                msg = Translator.getString(lang, "errors", "collect_dont_have_required_level", [resourceToCollect.requiredLevel]);
+                            }
+
+                        } else {
+                            // error object don't exist
+                            msg = Translator.getString(lang, "resources", "resource_dont_exist");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "collect_enter_id_to_collect");
+                    }
+                } else {
+                    msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
                 }
                 break;
         }

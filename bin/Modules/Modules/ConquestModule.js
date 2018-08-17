@@ -48,6 +48,8 @@ class ConquestModule extends GModule {
         let temp;
         let doIHaveThisItem = false;
 
+        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
+
         switch (command) {
             case "arealevelup":
                 tGuildId = Globals.connectedUsers[authorIdentifier].character.idGuild;
@@ -111,7 +113,6 @@ class ConquestModule extends GModule {
                 break;
 
             case "areaconquest":
-                //msg = AreaTournament.toDiscordEmbed(Globals.connectedUsers[authorIdentifier].character.getIdArea());
                 msg = Globals.areasManager.seeConquestOfThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                 break;
         }

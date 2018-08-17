@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
