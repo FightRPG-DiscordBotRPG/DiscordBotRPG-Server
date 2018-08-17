@@ -1,6 +1,4 @@
-'use strict';
 const Globals = require("./bin/Globals.js");
-const Commandes = require("./bin/Commandes.js")
 const Discord = require("discord.js");
 const Key = require("./conf/botkey.js");
 const FightManager = require("./bin/FightManager");
@@ -12,7 +10,6 @@ const ModuleHandler = require("./bin/Modules/ModuleHandler");
 
 
 var bot = new Discord.Client();
-var prefix = "::";
 
 var timeStart = Date.now();
 let syncStartWith = Date.now();
@@ -82,24 +79,13 @@ Globals.fightManager = new FightManager();
 console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 Globals.discordClient = bot;
 
-syncStartWith = Date.now();
-console.log("Loading Commands module...");
-var ChatReceiver = new Commandes(prefix);
-console.log("Commands module loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
 console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
 
-ChatReceiver.bot = bot;
-ChatReceiver.fightManager = Globals.fightManager;
-ChatReceiver.connectedUsers = connectedUsers;
-ChatReceiver.connectedGuilds = connectedGuilds;
-ChatReceiver.areasManager = Globals.areasManager;
 
 
 
 bot.on('message', async (message) => {
     try {
-        //await ChatReceiver.reactTo(message);
         await moduleHandler.run(message);
     } catch (err) {
         let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
@@ -137,6 +123,6 @@ bot.on('guildDelete', () => {
 
 
 // Load api after all 
-//const ApiResponder = require("./api/ApiResponder.js");
+const ApiResponder = require("./api/ApiResponder.js");
 
 
