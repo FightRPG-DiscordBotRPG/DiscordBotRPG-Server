@@ -1,37 +1,83 @@
 'use strict';
 const Commandes = require("./bin/Commandes.js")
-const Globals = require("./bin/Globals.js");
 const Discord = require("discord.js");
 const Key = require("./conf/botkey.js");
+const FightManager = require("./bin/FightManager");
+const Globals = require("./bin/Globals.js");
+const crypto = require("crypto");
+const AreasManager = require("./bin/Areas/AreasManager.js");
+const conf = require("./conf/conf");
+const DatabaseInitializer = require("./bin/DatabaseInitializer");
+
+const redis = require("redis");
+var redisClient = redis.createClient();
 
 var bot = new Discord.Client();
+var prefix = "::";
+
+let timeStart = Date.now();
+let syncStartWith = Date.now();
+let totalGameStartTime = Date.now();
 
 console.log("Bot Starting ...");
+
+//console.log(Globals);
+
 bot.on("ready", () => {
-    /*bot.user.setPresence({
+    console.log("Bot Connected");
+    
+    bot.user.setPresence({
         game: {
-            name: "Aucun Joueur !",
+            name: "On " + bot.guilds.size + " guilds !",
         },
-    });*/
+    });
 
-    console.log("Bot Ready");
+    
+    if(conf.env === "prod") {
+        const DBL = require("dblapi.js");
+        const dbl = new DBL(conf.discordbotskey, bot);
+
+        setInterval(() => {
+            console.log("Sending stats to https://discordbots.org/ ...");
+            dbl.postStats(bot.guilds.size);
+            console.log("Data sent");
+        }, 1800000);
+    }
+    
+    console.log("Loading servers stats ...");
+    DatabaseInitializer.serversStats(bot.guilds);
+    console.log("Servers stats loaded");
+
+    console.log("Bot ready");
+    console.log("Bot load finished, took : " + ((Date.now() - timeStart) / 1000) + " seconds");
+
 });
-bot.login(Key);
-var ChatReceiver = new Commandes("::");
 
-ChatReceiver.bot = Globals.bot;
-ChatReceiver.fightManager = Globals.fightManager;
-ChatReceiver.connectedUsers = Globals.connectedUsers;
-ChatReceiver.nbrConnectedUsers = 0;
-ChatReceiver.connectedGuilds = Globals.connectedGuilds;
-ChatReceiver.areasManager = Globals.areasManager;
+// Key Don't open
+bot.login(Key);
+
+// UNDER CONSTRUCTION SUBJECT TO CHANGE
+
 Globals.discordClient = bot;
 
+syncStartWith = Date.now();
+console.log("Loading Commands module...");
+var ChatReceiver = new Commandes(prefix);
+console.log("Commands module loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+console.log("Game Loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
+
+ChatReceiver.bot = bot;
+ChatReceiver.fightManager = Globals.fightManager;
+ChatReceiver.connectedUsers = Globals.connectedUsers;
+ChatReceiver.connectedGuilds = Globals.connectedGuilds;
+ChatReceiver.areasManager = Globals.areasManager;
+console.log(Globals.areasManager);
 
 
 bot.on('message', (message) => {
     try {
-        console.log(Globals);
+        console.log(message.client.shard.id);
         ChatReceiver.reactTo(message);
     } catch (err) {
         let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
@@ -46,6 +92,29 @@ bot.on('message', (message) => {
         console.log(err);
         message.channel.send(msgError);
     }
-
-
+    
 });
+
+bot.on('guildCreate', (guild) => {
+    bot.user.setPresence({
+        game: {
+            name: "On " + bot.guilds.size + " guilds !",
+        },
+    });
+    DatabaseInitializer.newGuild(guild);
+});
+
+bot.on('guildDelete', () => {
+    bot.user.setPresence({
+        game: {
+            name: "On " + bot.guilds.size + " guilds !",
+        },
+    });
+});
+
+
+
+// Load api after all 
+//const ApiResponder = require("./api/ApiResponder.js");
+
+
