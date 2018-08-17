@@ -6,6 +6,7 @@ class DatabaseInitializer {
         DatabaseInitializer.citiesMarketplaces();
         DatabaseInitializer.areaBonuses();
         DatabaseInitializer.PStats();
+        DatabaseInitializer.disconnectUsers();
     }
 
     static citiesMarketplaces() {
@@ -18,6 +19,10 @@ class DatabaseInitializer {
 
     static PStats() {
         conn.query("INSERT IGNORE INTO `charactersstatistics`(`idStatisticBase`, `idCharacter`, `value`) SELECT statisticsbases.idStatisticBase, characters.idCharacter, 0 as value FROM statisticsbases JOIN characters");
+    }
+
+    static disconnectUsers() {
+        conn.query("UPDATE users SET isConnected = false");
     }
 
     static serversStats(guilds) {
