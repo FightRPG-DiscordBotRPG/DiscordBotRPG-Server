@@ -1,6 +1,4 @@
-'use strict';
 const conn = require("../conf/mysql.js");
-
 
 let maxLevel = conn.query("SELECT COUNT(*) FROM levelsrequire")[0]["COUNT(*)"];
 let maxStatsId = conn.query("SELECT COUNT(*) FROM stats")[0]["COUNT(*)"];
@@ -105,11 +103,28 @@ var Globals = {
     "help": {
         "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
     },
+    /**
+     * @type {Array<User>}
+     */
     "connectedUsers": {},
+    /**
+     * @type {Array<Guild> }
+     */
     "connectedGuilds": {},
+    /**
+     * @type {AreasManager}
+     */
     "areasManager": {},
+    /**
+     * @type {FightManager}
+     */
     "fightManager": {}
 }
 
 module.exports = Globals;
 
+
+const User = require("./User");
+const Guild = require("./Guild");
+const FightManager = require("./FightManager");
+const AreasManager = require("./Areas/AreasManager");
