@@ -217,6 +217,7 @@ class ModuleHandler extends GModule {
                     await mod.run(message, command, args);
                 } catch (err) {
                     mod.isActive = false;
+                    message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString());
                     throw err;
                 }
 
@@ -239,10 +240,6 @@ class ModuleHandler extends GModule {
 
             Globals.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
             Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
-
-            Globals.areasManager.addOnePlayer(Globals.connectedUsers[authorIdentifier].character.getIdArea(), Globals.connectedUsers[authorIdentifier].character);
-
-            //console.log(sizeof(Globals.connectedUsers));
 
             lang = Globals.connectedUsers[authorIdentifier].getLang();
 
