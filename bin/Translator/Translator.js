@@ -1,5 +1,6 @@
 const fs = require("fs");
 const util = require("util");
+const conn = require("../../conf/mysql");
 
 class Translator {
     
@@ -9,9 +10,9 @@ class Translator {
      * @param {String} type 
      * @param {String} name 
      * @param {Array} args 
-     * @returns {String} Translated String
+     * @returns {String} Translated String / Or null
      */
-    static getString(lang, type, name, args) {
+    static getString(lang, type, name, args, returnNull=false) {
         if (!this.translations[lang]) {
             lang = "en";
         }
@@ -23,7 +24,8 @@ class Translator {
             return util.format.apply(util, args);
         }
 
-        return lang + " | " + type + " | " + name;
+
+        return returnNull ? null : lang + " | " + type + " | " + name;
 
     }
 
@@ -71,11 +73,25 @@ class Translator {
             this.nbOfTranslations++;
         }
     }
+
+    static loadItemsBases() {
+        let res = conn.query("SELECT * FROM localizationitems");
+        let languages = conn.query("SELECT * FROM languages");
+        for(let language of languages) {
+            this.translations[language.lang]["itemsNames"] = {};
+            this.translations[language.lang]["itemsDesc"] = {};
+        }
+
+        for(let trad of res) {
+            this.translations[trad.lang]["itemsNames"][trad.idBaseItem] = trad.nameItem;
+            this.translations[trad.lang]["itemsDesc"][trad.idBaseItem] = trad.descItem != "" ? trad.descItem : null;
+        }
+    }
 }
 
 Translator.translations = {};
 Translator.nbOfTranslations = 0;
 Translator.loadSync();
-
+Translator.loadItemsBases();
 
 module.exports = Translator;

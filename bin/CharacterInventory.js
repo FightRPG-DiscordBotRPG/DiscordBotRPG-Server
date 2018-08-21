@@ -188,10 +188,10 @@ class CharacterInventory {
      */
     seeThisItem(idEmplacement, compareStats, lang) {
         let embed = new Discord.RichEmbed()
-            .setAuthor(this.objects[idEmplacement].name + (this.objects[idEmplacement].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
+            .setAuthor(this.objects[idEmplacement].getName(lang) + (this.objects[idEmplacement].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
             .setColor(this.objects[idEmplacement].rarityColor)
             .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " (" + Translator.getString(lang, "item_sous_types", this.objects[idEmplacement].sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[idEmplacement].getPower() + "%"
-            , this.objects[idEmplacement].desc != null && this.objects[idEmplacement].desc != "" ? this.objects[idEmplacement].desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            , this.objects[idEmplacement].getDesc(lang))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang));
         
         return embed;
@@ -256,8 +256,13 @@ class CharacterInventory {
     }
 
     getIdOfThisIdBase(idBaseItem) {
+        /*let item = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;" , [idBaseItem, this.id]);
+        if(item[0] != null) {
+            return item[0].idItem;
+        }
+        return null;*/
+
         for (let i in this.objects) {
-            //console.log("This " + this.objects[i].idBaseItem + " vs " + idBaseItem)
             if (this.objects[i].idBaseItem === idBaseItem) {
                 return this.objects[i].id;
             }
