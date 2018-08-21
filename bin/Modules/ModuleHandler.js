@@ -220,7 +220,8 @@ class ModuleHandler extends GModule {
                     message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString());
                     throw err;
                 }
-
+            } else {
+                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.");
             }
         }
     }
