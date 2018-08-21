@@ -3,9 +3,8 @@ const conn = require("../../conf/mysql.js");
 const Area = require("./Area");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
-const AreaTournament = require("../AreaTournament/AreaTournament");
 
-class WildArea extends Area{
+class WildArea extends Area {
 
     constructor(id) {
         super(id, id);
