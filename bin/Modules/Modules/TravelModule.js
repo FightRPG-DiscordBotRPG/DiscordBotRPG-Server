@@ -96,7 +96,6 @@ class TravelModule extends GModule {
                                 switch (reaction.emoji.id) {
                                     case checkEmoji:
                                         // Update le compte de joueurs
-                                         Globals.areasManager.updateTravel(Globals.connectedUsers[authorIdentifier].character, wantedAreaToTravel);
                                         wantedAreaToTravel =  Globals.areasManager.getArea(wantedAreaToTravel);
 
                                         // change de zone
