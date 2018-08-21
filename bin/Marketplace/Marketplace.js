@@ -40,21 +40,23 @@ class Marketplace {
         return { res: res, maxPage: maxPage, page: page };
     }
 
-    getAllOrdersCorrespondingTo(itemName, level, page) {
+    getAllOrdersCorrespondingTo(itemName, level, page, lang) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 5;
 
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ?`,
-            [this.id, itemName, level])[0]["COUNT(*)"] / perPage);
+                                INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ?`,
+            [lang, this.id, itemName, level])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let res = conn.query(`SELECT * FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                WHERE marketplacesorders.idMarketplace = ? AND instr(itemsbase.nomItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
-            [this.id, itemName, level, perPage, (page - 1) * perPage]);
+                                INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
+            [lang, this.id, itemName, level, perPage, (page - 1) * perPage]);
 
         return { res: res, maxPage: maxPage, page: page };
     }
@@ -92,7 +94,7 @@ class Marketplace {
     }
 
     showSearchOrder(itemName, level, page, lang) {
-        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page));
+        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
         return this.createShow(res, lang);
     }
 
@@ -125,10 +127,10 @@ class Marketplace {
         let item = new Item(idItem);
         let compareStats = item.equipable ? character.equipement.objects[this.getEquipableIDType(item.typeName)].stats : null;
         return new Discord.RichEmbed()
-            .setAuthor(item.name, Globals.addr + "images/items/" + item.image + ".png")
+            .setAuthor(item.getName(lang), Globals.addr + "images/items/" + item.image + ".png")
             .setColor(item.rarityColor)
             .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%"
-            , item.desc != "" && item.desc != null ? item.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+            , item.getDesc(lang))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
     }
 

@@ -51,7 +51,8 @@ class CraftingBuilding {
         let crafts = res.res;
         if (crafts.length > 0) {
             for (let craft of crafts) {
-                str += craft.idCraftItem + " - " + craft.nomItem + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
+                str += craft.idCraftItem + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
             }
             str += "\n";
         } else {

@@ -12,7 +12,7 @@ class Craft {
     }
 
     load(id) {
-        let res = conn.query(`SELECT DISTINCT nomItem, itemsbase.idRarity, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, itemsbase.idBaseItem FROM craftitemsneeded 
+        let res = conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, itemsbase.idBaseItem FROM craftitemsneeded 
         INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
         INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
         INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -25,8 +25,6 @@ class Craft {
             this.exist = true;
             this.itemInfo = {
                 idBase: res.idBaseItem,
-                name: res.nomItem,
-                desc: res.descItem,
                 image: res.imageItem,
                 typename: res.nomType,
                 stypename: res.nomSousType,
@@ -37,7 +35,7 @@ class Craft {
                 minLevel: res.minLevel,
             }
 
-            res = conn.query(`SELECT nomItem, descItem, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
+            res = conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
             INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
             INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitemsneeded.NeededItem
             INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -48,7 +46,6 @@ class Craft {
             for(let item of res) {
                 this.requiredItems.push({
                     idBase: item.idBaseItem,
-                    name: item.nomItem,
                     typename: item.nomType,
                     stypename: item.nomSousType,
                     rarity: item.nomRarity,
@@ -59,11 +56,13 @@ class Craft {
     }
 
     toEmbed(lang) {
+        let desc = Translator.getString(lang, "itemsDesc", this.itemInfo.idBase);
+        let itemName = Translator.getString(lang, "itemsNames", this.itemInfo.idBase);
         let embed = new Discord.RichEmbed()
-                .setAuthor(this.itemInfo.name, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
+                .setAuthor(itemName, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
                 .setColor(this.itemInfo.rarityColor)
                 .addField(Translator.getString(lang, "item_types", this.itemInfo.typename) + " (" + Translator.getString(lang, "item_sous_types", this.itemInfo.stypename) + ")" + " | " + Translator.getString(lang, "rarities", this.itemInfo.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.itemInfo.minLevel + "-" + this.itemInfo.maxLevel + " | "
-                , this.itemInfo.desc != "" && this.itemInfo.desc != null ? this.itemInfo.desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                , desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
                 .addField(Translator.getString(lang, "craft", "needed_items"), this.requiredItemsToStr(lang));
         return embed;
     }
@@ -72,8 +71,9 @@ class Craft {
         let str = "```\n" + Translator.getString(lang, "craft", "header_required") + "\n";
 
         for(let item of this.requiredItems) {
+            let itemName = Translator.getString(lang, "itemsName", item.idBase);
             str += "\n";
-            str += item.name + " - " + Translator.getString(lang, "item_types", item.typename) + " - " + Translator.getString(lang, "item_sous_types", item.stypename) + " - " + Translator.getString(lang, "rarities", item.rarity) + " - x" + item.number;
+            str += itemName + " - " + Translator.getString(lang, "item_types", item.typename) + " - " + Translator.getString(lang, "item_sous_types", item.stypename) + " - " + Translator.getString(lang, "rarities", item.rarity) + " - x" + item.number;
         }
 
         str += "```";
