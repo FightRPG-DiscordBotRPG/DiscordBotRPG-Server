@@ -87,6 +87,7 @@ class User {
     }
 
     changeLang(lang) {
+        this.preferences.lang = lang;
         conn.query("UPDATE userspreferences SET lang = ? WHERE idUser = ?", [lang, this.id]);
     }
 
@@ -107,7 +108,7 @@ class User {
 
     muteGroup(bool) {
         this.preferences.groupmute = bool;
-        //conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [bool, this.id]);
+        conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [bool, this.id]);
     }
 
     muteMarketplace(bool) {
