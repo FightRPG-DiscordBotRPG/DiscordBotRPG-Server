@@ -77,7 +77,7 @@ class CraftinModule extends GModule {
                         if (toCraft) {
                             if (Globals.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
                                 if (Globals.connectedUsers[authorIdentifier].character.craft(toCraft)) {
-                                    msg = Translator.getString(lang, "craft", "craft_done", [toCraft.itemInfo.name]) + "\n";
+                                    msg = Translator.getString(lang, "craft", "craft_done", [Translator.getString(lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n";
 
                                     Globals.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
 
