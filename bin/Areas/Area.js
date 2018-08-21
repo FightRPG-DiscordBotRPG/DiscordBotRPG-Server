@@ -1,12 +1,9 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
-const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 const Discord = require("discord.js");
-const Character = require("../Character");
-const Item = require("../Item");
 const AreaBonus = require("./AreaBonus");
 
 class Area {
@@ -28,10 +25,6 @@ class Area {
          * @type {Array<MonstreGroupe>}
          */
         this.monsters = [];
-        /**
-         * @type {Array<Character>}
-         */
-        this.characters = [];
         /**
          * @type {AreaBonus}
          */
@@ -55,7 +48,7 @@ class Area {
         this.areaType = res["NomAreaType"];
         //this.nbrPlayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
 
-        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemsbase.nomItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, areasresources.requiredLevel, itemsbase.idRarity " +
+        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, areasresources.requiredLevel, itemsbase.idRarity " +
             "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
             "INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType " +
             "INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType " +
@@ -116,26 +109,6 @@ class Area {
 
     /**
      * 
-     * @param {Character} character 
-     */
-    addOnePlayer(character) {
-        this.players.push(character);
-        this.players.sort((a, b) => b.getLevel() - a.getLevel());
-        //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
-    }
-
-    /**
-     * 
-     * @param {Character} character 
-     */
-    removeOnePlayer(character) {
-        this.players.splice(this.players.indexOf(character), 1);
-        this.players.sort((a, b) => b.getLevel() - a.getLevel());
-        //this.players.sort((a, b) => { a.name > b.name ? 1 : (b.name > a.name ? - 1 : 0) })
-    }
-
-    /**
-     * 
      * @param {string} lang 
      */
     getMonsters(lang) {
@@ -175,7 +148,7 @@ class Area {
         for (let i = 0; i < this.resources.length; i++) {
             // On créer d'abord la vue de l'objet
             //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
-            tempString = Translator.getString(lang, "area", "resource", [i + 1, this.resources[i]["nomItem"], Translator.getString(lang, "rarities", this.resources[i]["nomRarity"])]) + "\n\n";
+            tempString = Translator.getString(lang, "area", "resource", [i + 1, Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem), Translator.getString(lang, "rarities", this.resources[i]["nomRarity"])]) + "\n\n";
 
             switch (this.resources[i]["nomSousType"]) {
                 case "wood":
