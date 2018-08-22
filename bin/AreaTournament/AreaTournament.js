@@ -1,7 +1,6 @@
 const conn = require("../../conf/mysql");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
-const Area = require("../Areas/Area");
 const AreaTournamentRound = require("./AreaTournamentRound");
 
 
@@ -95,23 +94,7 @@ class AreaTournament {
 
     }
 
-    /**
-     * End Tournament
-     * then reset it
-     */
-    endTournament() {
-        let oldOwner = Area.staticGetOwnerID(this.idArea);
-        if(oldOwner != this.rounds[this.maxRounds].winners[0]) {
-            Area.resetBonuses(this.idArea);
-            Area.oneLessLevel(this.idArea);
-        }
-        Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
-        console.log("Winner of the area : " + this.idArea + " is " + conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]])[0].nom);
-        this.resetTournament();
-        this.scheduleTournament();
-        this.resetInscriptions();
-        this.resetTimer();
-    }
+
 
 
     /**
@@ -210,3 +193,24 @@ class AreaTournament {
 }
 
 module.exports = AreaTournament;
+
+// Prevent cyclic bullshit from nodejs
+const Area = require("../Areas/Area");
+
+    /**
+     * End Tournament
+     * then reset it
+     */
+    AreaTournament.endTournament = () => {
+        let oldOwner = Area.staticGetOwnerID(this.idArea);
+        if(oldOwner != this.rounds[this.maxRounds].winners[0]) {
+            Area.resetBonuses(this.idArea);
+            Area.oneLessLevel(this.idArea);
+        }
+        Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
+        console.log("Winner of the area : " + this.idArea + " is " + conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]])[0].nom);
+        this.resetTournament();
+        this.scheduleTournament();
+        this.resetInscriptions();
+        this.resetTimer();
+    };

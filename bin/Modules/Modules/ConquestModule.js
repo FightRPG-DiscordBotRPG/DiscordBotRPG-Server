@@ -49,7 +49,6 @@ class ConquestModule extends GModule {
         let doIHaveThisItem = false;
 
         PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
-
         switch (command) {
             case "arealevelup":
                 tGuildId = Globals.connectedUsers[authorIdentifier].character.idGuild;
