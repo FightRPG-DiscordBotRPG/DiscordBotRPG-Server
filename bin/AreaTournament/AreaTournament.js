@@ -1,8 +1,9 @@
 const conn = require("../../conf/mysql");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
-const AreaTournamentRound = require("./AreaTournamentRound");
 const Area = require("../Areas/Area");
+const AreaTournamentRound = require("./AreaTournamentRound");
+
 
 class AreaTournament {
     /**
