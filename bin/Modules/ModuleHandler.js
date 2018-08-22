@@ -115,9 +115,9 @@ class ModuleHandler extends GModule {
 
     getDisabledModules() {
         let cmds = "";
-        for(let m of this.modules) {
-            if(!m.isActive) {
-                cmds += m.commands.toString() + "\n";
+        for(let m in this.modules) {
+            if(!this.modules[m].isActive) {
+                cmds += this.modules[m].commands.toString() + "\n";
             }
         }
         return cmds != "" ? cmds : "Tous les modules fonctionnent";
