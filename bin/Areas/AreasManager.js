@@ -6,8 +6,6 @@ const DungeonArea = require("./DungeonArea");
 const Globals = require("../Globals.js");
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
-const Area = require("../Areas/Area");
-const Character = require("../Character");
 const Graph = require('node-dijkstra');
 const Region = require("./Region");
 
@@ -16,15 +14,8 @@ class AreasManager {
 
 
     constructor() {
-        /**
-         * @type {Map<any, Area>}
-         */
         this.areas = new Map();
-        /**
-         * @type {Array<Region>}
-         */
         this.regions = {};
-
         this.paths = new Graph();
 
         this.loadRegions();
@@ -157,19 +148,6 @@ class AreasManager {
      */
     seeConquestOfThisArea(idArea, lang) {
         return this.areas.get(idArea).conquestToStr(lang);
-    }
-
-    /**
-     * 
-     * @param {number} idArea 
-     * @param {Character} character 
-     */
-    addOnePlayer(idArea, character) {
-        this.areas.get(idArea).addOnePlayer(character);
-    }
-
-    removeOnePlayer(idArea, character) {
-        this.areas.get(idArea).removeOnePlayer(character);
     }
 
     seeAllAreas(lang) {
