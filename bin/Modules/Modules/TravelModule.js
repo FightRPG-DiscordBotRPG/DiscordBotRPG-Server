@@ -116,10 +116,7 @@ class TravelModule extends GModule {
                                         break;
                                 }
                             }
-
                             tempMsg.delete().catch(e => null);
-
-
                         }
 
                     } else {
