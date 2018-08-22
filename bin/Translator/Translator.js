@@ -23,10 +23,11 @@ class Translator {
             args.unshift(this.translations[lang][type][name]);
             return util.format.apply(util, args);
         }
-
+        if(lang != "en") {
+            return this.getString("en", type, name, args, returnNull);
+        }
 
         return returnNull ? null : lang + " | " + type + " | " + name;
-
     }
 
     /**
@@ -87,11 +88,55 @@ class Translator {
             this.translations[trad.lang]["itemsDesc"][trad.idBaseItem] = trad.descItem != "" ? trad.descItem : null;
         }
     }
+
+    static loadAreasBases() {
+        let res = conn.query("SELECT * FROM localizationareas");
+        let languages = conn.query("SELECT * FROM languages");
+        for(let language of languages) {
+            this.translations[language.lang]["areasNames"] = {};
+            this.translations[language.lang]["areasDesc"] = {};
+        }
+        for(let trad of res) {
+            this.translations[trad.lang]["areasNames"][trad.idArea] = trad.nameArea;
+            this.translations[trad.lang]["areasDesc"][trad.idArea] = trad.descArea != "" ? trad.descArea : null;
+        }
+    }
+
+    static loadRegionsBases() {
+        let res = conn.query("SELECT * FROM localizationregions");
+        let languages = conn.query("SELECT * FROM languages");
+        for(let language of languages) {
+            this.translations[language.lang]["regionsNames"] = {};
+            this.translations[language.lang]["regionsImages"] = {};
+        }
+        for(let trad of res) {
+            this.translations[trad.lang]["regionsNames"][trad.idRegion] = trad.nameRegion;
+            this.translations[trad.lang]["regionsImages"][trad.idRegion] = trad.imageRegion;
+        }
+    }
+
+    static loadMonstersBases() {
+        let res = conn.query("SELECT * FROM localizationmonsters");
+        let languages = conn.query("SELECT * FROM languages");
+        for(let language of languages) {
+            this.translations[language.lang]["monstersNames"] = {};
+        }
+        for(let trad of res) {
+            this.translations[trad.lang]["monstersNames"][trad.idMonstre] = trad.nameMonster;
+        }
+    }
 }
 
 Translator.translations = {};
 Translator.nbOfTranslations = 0;
 Translator.loadSync();
 Translator.loadItemsBases();
+Translator.loadAreasBases();
+Translator.loadRegionsBases();
+Translator.loadMonstersBases();
+
+/*
+var sizeof = require('object-sizeof');
+console.log(sizeof(Translator.translations));*/
 
 module.exports = Translator;

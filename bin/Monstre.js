@@ -3,6 +3,7 @@ const conn = require("../conf/mysql.js");
 const StatsMonstres = require("./Stats/StatsMonstres");
 const Globals = require("./Globals.js");
 const WorldEntity = require("./WorldEntity.js");
+const Translator = require("./Translator/Translator");
 
 class Monstre extends WorldEntity {
 
@@ -12,7 +13,7 @@ class Monstre extends WorldEntity {
 
 
         this.id = id;
-        this.name = "";
+        this.name = "g_monster";
         this.actualHP = 0;
         this.maxHP = 0;
         this.level = 0;
@@ -32,7 +33,7 @@ class Monstre extends WorldEntity {
     loadMonster() {
         let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
         this.difficulty = Globals.mDifficulties[tDifficulty];
-        let res = conn.query("SELECT DISTINCT name, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = " + this.id)[0];
+        let res = conn.query("SELECT DISTINCT avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = " + this.id)[0];
         let bonus = 1;
         this.type = res["nom"];
 
@@ -52,10 +53,17 @@ class Monstre extends WorldEntity {
 
 
         this.level = res["avglevel"];
-        this.name = res["name"];
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.level, 2))) / 6 * bonus);
         this.money = Math.round((Math.random() * (this.level * 2 - this.level) + this.level) * bonus);
+    }
+
+    getName(lang="en") {
+        return Translator.getString(lang, "monstersNames", this.id);
+    }
+
+    static getName(id, lang="en") {
+        return Translator.getString(lang, "monstersNames", id);
     }
 
 }

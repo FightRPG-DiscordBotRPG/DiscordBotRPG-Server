@@ -1,16 +1,12 @@
 'use strict';
 const conn = require("../conf/mysql.js");
-const StatsPlayer = require("./Stats/StatsPlayer");
-const LevelSystem = require("./LevelSystem.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
-const CharacterEquipement = require("./CharacterEquipement.js");
 const CharacterEntity = require("./Entities/CharacterEntity");
 const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
 const Item = require("./Item");
 const PlayerCraft = require("./CraftSystem/PlayerCraft");
 const LootSystem = require("./LootSystem");
-const Area = require("./Areas/Area");
 const PStatistics = require("./Achievement/PStatistics");
 
 class Character extends CharacterEntity {
@@ -25,9 +21,6 @@ class Character extends CharacterEntity {
         this.money = 0;
         this.canFightAt = 0;
         this.idArea = 1;
-        /**
-         * @type {Area} Reference;
-         */
         this.area;
         this.honorPoints = 0;
         this.idGuild = 0;
@@ -104,10 +97,6 @@ class Character extends CharacterEntity {
         conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
-    /**
-     * 
-     * @param {Area} area 
-     */
     changeArea(area, waitTime=Globals.basicWaitTimeAfterTravel) {
         let conReduction = Math.floor(this.getStat("constitution") / 20);
         conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
@@ -119,10 +108,6 @@ class Character extends CharacterEntity {
         PStatistics.incrStat(this.id, "travels", 1);
     }
 
-    /**
-     * 
-     * @param {Area} area 
-     */
     setArea(area) {
         this.area = area;
     }

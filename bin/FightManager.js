@@ -7,6 +7,7 @@ const LootSystem = require("./LootSystem.js");
 const FightPvE = require("./Fight/FightPvE");
 const FightPvP = require("./Fight/FightPvP");
 const Translator = require("./Translator/Translator");
+const Monster = require("./Monstre");
 
 class FightManager {
     constructor() {
@@ -67,9 +68,9 @@ class FightManager {
 
             this.fights[message.author.id] = {
                 text: ["", "", ""],
-                fight: new FightPvE(users, enemies),
+                fight: new FightPvE(users, enemies, lang),
                 leftName: users.length > 1 ? "Players" : users[0].name,
-                rightName: enemies.length > 1 ? "Monsters" : enemies[0].name,
+                rightName: enemies.length > 1 ? "Monsters" : enemies[0].getName(lang),
                 summaryIndex: 0,
             };
             if (users.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
@@ -81,9 +82,9 @@ class FightManager {
             }
             if (!canIFightTheMonster) {
                 message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => message.author.send(e.message));
-                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [users[0].name, enemies[0].name]) + "\n\n";
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [users[0].name, enemies[0].getName(lang)]) + "\n\n";
             } else {
-                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [users[0].name, enemies[0].name]) + "\n\n";
+                this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [users[0].name, enemies[0].getName(lang)]) + "\n\n";
             }
             //console.log("Fight Initialized");
             message.channel.send(this.embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
@@ -145,12 +146,12 @@ class FightManager {
         if (ind < summary.rounds.length) {
 
             if (summary.rounds[ind].roundType == "Character") {
-                this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, Monster.getName(summary.rounds[ind].defenderId, lang), summary.rounds[ind].damage]) +
                     (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
                     (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
                     "\n\n", userid);
             } else if (summary.rounds[ind].roundType == "Monster") {
-                this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [Monster.getName(summary.rounds[ind].attackerId, lang), summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                     (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
                     (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
                     "\n\n", userid);
@@ -328,7 +329,7 @@ class FightManager {
             firstMaxHP = summary.rounds[ind].attackerMaxHP;
 
             second = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
-            secondName = summary.rounds[ind].defenderName;
+            secondName = Monster.getName(summary.rounds[ind].defenderId, lang);
             secondLevel = summary.rounds[ind].defenderLevel;
             secondActualHP = summary.rounds[ind].defenderHP;
             secondMaxHP = summary.rounds[ind].defenderMaxHP;
@@ -341,7 +342,7 @@ class FightManager {
             firstMaxHP = summary.rounds[ind].defenderMaxHP;
 
             second = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
-            secondName = summary.rounds[ind].attackerName;
+            secondName = Monster.getName(summary.rounds[ind].attackerId, lang);
             secondLevel = summary.rounds[ind].attackerLevel;
             secondActualHP = summary.rounds[ind].attackerHP;
             secondMaxHP = summary.rounds[ind].attackerMaxHP;

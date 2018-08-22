@@ -10,8 +10,6 @@ class Area {
 
     constructor(id) {
         this.id = id;
-        this.name = "";
-        this.desc = "";
         this.image = "";
         this.levels = "";
         this.areaType = "";
@@ -33,16 +31,13 @@ class Area {
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
-        //this.tournament = {};
         this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
         this.loadArea(id);
     }
 
     loadArea(id) {
-        let res = conn.query("SELECT idRegion, AreaName, AreaDesc, AreaImage, AreaLevels, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea WHERE areas.idArea = ?", [id])[0];
+        let res = conn.query("SELECT idRegion, AreaImage, AreaLevels, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea WHERE areas.idArea = ?", [id])[0];
         this.idRegion = res["idRegion"];
-        this.name = res["AreaName"];
-        this.desc = res["AreaDesc"];
         this.image = res["AreaImage"];
         this.levels = res["AreaLevels"];
         this.areaType = res["NomAreaType"];
@@ -65,13 +60,12 @@ class Area {
 
         // Load monsters
 
-        res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idArea = ?;", [this.id]);
+        res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idArea = ?;", [this.id]);
         //res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
         let arrOfMonstersGroup = {};
         for (let i in res) {
             let monsterLight = {
                 id: res[i]["idMonstre"],
-                name: res[i]["name"],
                 avglevel: res[i]["avglevel"],
                 type: res[i]["nom"],
                 number: res[i]["number"]
@@ -114,13 +108,10 @@ class Area {
     getMonsters(lang) {
         let str = "```";
         for (let i in this.monsters) {
-            //str += "ID : " + i + " | " + this.monsters[i]["name"] + " | Lv : " + this.monsters[i]["avglevel"] + " | Type : " + this.monsters[i]["type"] + "\n\n";
-            //str += Translator.getString(lang, "area", "monster", [i, this.monsters[i]["name"], this.monsters[i]["avglevel"], this.monsters[i]["type"]]) + "\n\n";
             if (this.monsters[i].numberOfMonsters > 1) {
-                //str += "Groupe de " + this.monsters[i].numberOfMonsters + " montres" + "\n\n";
-                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].name, this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].name, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
             }
         }
         str += "```";
@@ -214,7 +205,7 @@ class Area {
         page = page;
         let perPage = 10;
         let str = "```";
-        str += Translator.getString(lang, "area", "list_of_players_in_area", [this.name]) + "\n\n";
+        str += Translator.getString(lang, "area", "list_of_players_in_area", [this.getName(lang)]) + "\n\n";
         let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ?", [this.id])[0]["COUNT(*)"] / perPage);;
 
         page = page > maxPage || page <= 0 ? 1 : page;
@@ -358,6 +349,15 @@ class Area {
         return str;
     }
 
+    getName(lang="en") {
+        return Translator.getString(lang, "areasNames", this.id);
+    }
+
+    getDesc(lang="en") {
+        let desc = Translator.getString(lang, "areasDesc", this.id, [], true);
+        return desc != null ? desc : Translator.getString(lang, "areas", "no_description");
+    }
+
     /**
      * 
      * @param {number} indexResource 
@@ -493,7 +493,7 @@ class Area {
     conquestToStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.name + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.getName(lang) + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```")
             .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(lang))
             .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(lang))

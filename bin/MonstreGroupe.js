@@ -14,7 +14,6 @@ class MonstreGroup  {
 
         // Maximum here so we dont have to seek every time
         this.avglevel = 0;
-        this.name = "";
         this.type = "";
         this.numberOfMonsters = 0;
     }
@@ -51,6 +50,10 @@ class MonstreGroup  {
 
     getMonsters() {
         return this.enemiesObjetsToFight;
+    }
+
+    getName(lang) {
+        return Monstre.getName(this.monstersIDs[0], lang);
     }
 
 

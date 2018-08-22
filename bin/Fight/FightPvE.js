@@ -1,11 +1,7 @@
 const Fight = require("./Fight");
 const Globals = require("../Globals");
 const LootSystem = require("../LootSystem");
-const Translator = require("../Translator/Translator");
-const Monstre = require("../Monstre");
-const Character = require("../Character");
 const Guild = require("../Guild");
-const Area = require("../Areas/Area");
 const PStatistics = require("../Achievement/PStatistics");
 
 

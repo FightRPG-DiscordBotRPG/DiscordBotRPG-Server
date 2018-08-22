@@ -194,14 +194,14 @@ class AreasManager {
             switch (this.areas.get(key).areaType) {
                 case "wild":
                     //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "wild_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "wild_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
                 case "city":
                     //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
                 case "dungeon":
-                    str += Translator.getString(lang, "area", "dungeon_area", [this.areas.get(key).id, this.areas.get(key).name, this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "dungeon_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
             }
 
@@ -239,8 +239,8 @@ class AreasManager {
 
     // Single Getters for an area
 
-    getNameOf(idArea) {
-        return this.areas.get(idArea).name;
+    getNameOf(idArea, lang) {
+        return this.areas.get(idArea).getName(lang);
     }
 
     getPlayersOf(idArea, page, lang) {
