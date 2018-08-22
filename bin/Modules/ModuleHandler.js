@@ -15,11 +15,11 @@ class ModuleHandler extends GModule {
         this.prefixes = {};
         this.prefix = "::";
         /**
-         * @type {Array<Module>}
+         * @type {Array<GModule>}
          */
         this.modules = {};
         /**
-         * @type {Array<Module>}
+         * @type {Array<GModule>}
          */
         this.commandsReact = {};
         this.startLoading("ModuleHandler");
@@ -102,10 +102,25 @@ class ModuleHandler extends GModule {
                         msg = "Done, check console for errors / warning";
                     }
                     break;
+                case "disabled_modules":
+                    if(isAdmin) {
+                        msg = this.getDisabledModules();
+                    }
+                    break;
             }
 
             this.sendMessage(message, msg);
         }
+    }
+
+    getDisabledModules() {
+        let cmds = "";
+        for(let m of this.modules) {
+            if(!m.isActive) {
+                cmds += m.commands.toString() + "\n";
+            }
+        }
+        return cmds != "" ? cmds : "Tous les modules fonctionnent";
     }
 
     loadModule(moduleName) {
