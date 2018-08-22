@@ -52,22 +52,22 @@ class TravelModule extends GModule {
 
         switch (command) {
             case "area":
-                msg =  Globals.areasManager.seeThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea(), lang);
+                msg = Globals.areasManager.seeThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea(), lang);
                 break;
 
             case "areas":
-                msg =  Globals.areasManager.seeAllAreasInThisRegion(currentArea, lang);
+                msg = Globals.areasManager.seeAllAreasInThisRegion(currentArea, lang);
                 break;
 
             case "travel":
                 let wantedAreaToTravel = parseInt(args[0], 10);
                 if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
-                    if ( Globals.areasManager.exist(wantedAreaToTravel)) {
+                    if (Globals.areasManager.exist(wantedAreaToTravel)) {
                         if (wantedAreaToTravel == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
                             msg = Translator.getString(lang, "errors", "travel_already_here");
                         } else {
 
-                            let costs =  Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), wantedAreaToTravel);
+                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), wantedAreaToTravel);
                             let checkEmoji = Emojis.getID("vmark");
                             let xmarkEmoji = Emojis.getID("xmark");
                             let tempMsg = await message.channel.send(new Discord.RichEmbed()
@@ -95,15 +95,20 @@ class TravelModule extends GModule {
                             if (reaction != null) {
                                 switch (reaction.emoji.id) {
                                     case checkEmoji:
-                                        // Update le compte de joueurs
-                                        wantedAreaToTravel =  Globals.areasManager.getArea(wantedAreaToTravel);
+                                        if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                                            // Update le compte de joueurs
+                                            wantedAreaToTravel = Globals.areasManager.getArea(wantedAreaToTravel);
 
-                                        // change de zone
-                                        Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), args[0]).timeToWait);
+                                            // change de zone
+                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), args[0]).timeToWait);
 
-                                        // Messages
-                                        msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
-                                        msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                            // Messages
+                                            msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
+                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                        } else {
+                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                        }
+
                                         break;
 
                                     case xmarkEmoji:
@@ -130,7 +135,7 @@ class TravelModule extends GModule {
                 if (!apPage || !Number.isInteger(apPage)) {
                     apPage = 1;
                 }
-                msg =  Globals.areasManager.getPlayersOf(Globals.connectedUsers[authorIdentifier].character.getIdArea(), apPage, lang);
+                msg = Globals.areasManager.getPlayersOf(Globals.connectedUsers[authorIdentifier].character.getIdArea(), apPage, lang);
                 break;
         }
 
