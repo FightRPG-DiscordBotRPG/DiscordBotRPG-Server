@@ -189,19 +189,12 @@ class AreaTournament {
         return conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea])[0].total;
     }
 
-
-}
-
-module.exports = AreaTournament;
-
-// Prevent cyclic bullshit from nodejs
-const Area = require("../Areas/Area");
-
+    
     /**
      * End Tournament
      * then reset it
      */
-    AreaTournament.endTournament = () => {
+    endTournament() {
         let oldOwner = Area.staticGetOwnerID(this.idArea);
         if(oldOwner != this.rounds[this.maxRounds].winners[0]) {
             Area.resetBonuses(this.idArea);
@@ -213,4 +206,12 @@ const Area = require("../Areas/Area");
         this.scheduleTournament();
         this.resetInscriptions();
         this.resetTimer();
-    };
+    }
+
+
+}
+
+module.exports = AreaTournament;
+
+// Prevent cyclic bullshit from nodejs
+const Area = require("../Areas/Area");
