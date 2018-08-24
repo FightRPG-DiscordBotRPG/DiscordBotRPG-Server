@@ -101,7 +101,7 @@ class TravelModule extends GModule {
                                             wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
                                             // change de zone
-                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), parseInt(args[0], 10)).timeToWait);
+                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
 
                                             // Messages
                                             msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
