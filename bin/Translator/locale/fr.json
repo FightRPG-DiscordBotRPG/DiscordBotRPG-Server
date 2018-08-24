@@ -449,6 +449,7 @@
      "glevelup" : "Permet de faire monter de niveau la guilde.",
      "genroll" : "Inscrit votre guilde au tournoi de la zone dans laquelle vous vous trouvez",
      "gunenroll" : "Désinscrit votre guilde au tournoi auquel elle est inscrite",
+     "gmod" : "Change le rang du membre de la guilde (1 : Membre, 2 : Officier)",
 
      "other_title" : "Autres",
      "lang" : "Permet d'afficher la liste des langues disponibles",
