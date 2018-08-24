@@ -136,9 +136,9 @@ class OtherModule extends GModule {
                     "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
                     "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
                     "::genroll : " + Translator.getString(lang, "help_panel", "genroll") + "\n" +
-                    "::gunenroll : " + Translator.getString(lang, "help_panel", "gunenroll") + "\n";
-
-
+                    "::gunenroll : " + Translator.getString(lang, "help_panel", "gunenroll") + "\n" +
+                    "::gaccept <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
+                    "::gmod <playerID> <rank> : " + Translator.getString(lang, "help_panel", "gmod") + "\n";
                 break;
             case 4:
                 str = "```apache\n" +
