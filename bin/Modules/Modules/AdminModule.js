@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -135,6 +135,15 @@ class AdminModule extends GModule {
             case "resetfight":
                 Globals.connectedUsers[authorIdentifier].character.canFightAt = 0;
                 msg = "Reset Done";
+                break;
+            case "reload_translations":
+                Translator.nbOfTranslations = 0;
+                Translator.loadSync();
+                Translator.loadItemsBases();
+                Translator.loadAreasBases();
+                Translator.loadRegionsBases();
+                Translator.loadMonstersBases();
+                msg = "Translations reloaded";
                 break;
 
         }
