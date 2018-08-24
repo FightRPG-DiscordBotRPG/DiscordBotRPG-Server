@@ -215,6 +215,13 @@ class AreasManager {
         return false;
     }
 
+    existInRegion(idRegion, index) {
+        if(this.regions[idRegion]){
+            return this.regions[idRegion].exist(index);
+        }
+        return false;
+    }
+
     // Single Getters for an area
 
     getNameOf(idArea, lang) {
@@ -228,8 +235,13 @@ class AreasManager {
     getResources(idArea) {
         return this.areas.get(idArea).getResources();
     }
+
     getResource(idArea, index) {
         return this.areas.get(idArea).getResource(index);
+    }
+
+    getAreaForThisRegion(idRegion, index) {
+        return this.regions[idRegion].getArea(index);
     }
 
     /*

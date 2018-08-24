@@ -62,17 +62,18 @@ class TravelModule extends GModule {
             case "travel":
                 let wantedAreaToTravel = parseInt(args[0], 10);
                 if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
-                    if (Globals.areasManager.exist(wantedAreaToTravel)) {
-                        if (wantedAreaToTravel == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
+                    if (Globals.areasManager.existInRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel)) {
+                        let areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
+                        if (areaObjectTravel.getID() == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
                             msg = Translator.getString(lang, "errors", "travel_already_here");
                         } else {
 
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), wantedAreaToTravel);
+                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
                             let checkEmoji = Emojis.getID("vmark");
                             let xmarkEmoji = Emojis.getID("xmark");
                             let tempMsg = await message.channel.send(new Discord.RichEmbed()
                                 .setColor([0, 255, 0])
-                                .setAuthor(Translator.getString(lang, "travel", "travel_planning"))
+                                .setAuthor(Translator.getString(lang, "travel", "travel_planning", [Globals.connectedUsers[authorIdentifier].character.getArea().getName(lang), areaObjectTravel.getName(lang)]))
                                 .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [costs.timeToWait]), true)
                                 .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
                                 .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
@@ -97,10 +98,10 @@ class TravelModule extends GModule {
                                     case checkEmoji:
                                         if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
                                             // Update le compte de joueurs
-                                            wantedAreaToTravel = Globals.areasManager.getArea(wantedAreaToTravel);
+                                            wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
                                             // change de zone
-                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), args[0]).timeToWait);
+                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), parseInt(args[0], 10)).timeToWait);
 
                                             // Messages
                                             msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);

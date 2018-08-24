@@ -358,6 +358,14 @@ class Area {
         return desc != null ? desc : Translator.getString(lang, "areas", "no_description");
     }
 
+    getIDRegion() {
+        return this.idRegion;
+    }
+
+    getID() {
+        return this.id;
+    }
+
     /**
      * 
      * @param {number} indexResource 

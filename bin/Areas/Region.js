@@ -10,11 +10,8 @@ class Region {
          * @type {Map<number, Area>}
          */
         this.areas = new Map();
-
-        this.load();
+        this.areaIncrementIndex = 1;
     }
-
-    load() {}
 
     getName(lang="en") {
         return Translator.getString(lang, "regionsNames", this.id);
@@ -24,12 +21,24 @@ class Region {
         return Translator.getString(lang, "regionsImages", this.id);
     }
 
+    getArea(index) {
+        return this.areas.get(index);
+    }
+
     /**
      * 
      * @param {Area} area 
      */
     addArea(area) {
-        this.areas.set(area.id, area);
+        this.areas.set(this.areaIncrementIndex, area);
+        this.areaIncrementIndex++;
+    }
+
+    exist(index) {
+        if(this.areas.get(index) != null) {
+            return true;
+        }
+        return false;
     }
 
     seeAreas(lang) {
@@ -39,14 +48,14 @@ class Region {
             switch (this.areas.get(key).areaType) {
                 case "wild":
                     //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "wild_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "wild_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
                 case "city":
                     //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "city_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
                 case "dungeon":
-                    str += Translator.getString(lang, "area", "dungeon_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    str += Translator.getString(lang, "area", "dungeon_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
                     break;
             }
 
