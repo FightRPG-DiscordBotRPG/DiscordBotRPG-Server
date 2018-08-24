@@ -138,7 +138,10 @@
     "you_sold" : "You've selled %d item for %dG",
     "you_buy": "You've buyed %d item for %dG",
     "you_buy_plur" : "You've buyed %d items for %dG",
-    "you_paid_tax"  : "You've paid %dG of taxes to place this item"
+    "you_paid_tax"  : "You've paid %dG of taxes to place this item",
+    "now_muted" : "Marketplaces notifications are now deactivated",
+    "now_unmuted" : "Marketplaces notifications are now activated",
+    "settings_menu_mute" : "%s Marketplaces notifications"
   },
   "group" : {
     "you_left" : "You left your group",
@@ -159,7 +162,8 @@
     "avg_level" : "Average Level : %d",
     "avg_power" : "Average Power : %d%",
     "members_of_the_group" : "Members of the group",
-    "invited_users" : "Invited users"
+    "invited_users" : "Invited users",
+    "settings_menu_mute" : "%s Group notifications"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
@@ -226,7 +230,9 @@
     "resource" : "Resource",
     "resources" : "Resources",
     "lvl" : "Lvl.",
-    "page_out_of_x" : "Page %d/%d"
+    "page_out_of_x" : "Page %d/%d",
+    "enable" : "Enable",
+    "disable" : "Disable"
   },
   "guild" : {
     "you_dont_have_a_guild" : "You don't have a guild",
@@ -480,6 +486,9 @@
      "craftshow" : "Show the recipe of given id",
      "craft" : "Craft the recipe of given id",
      "collect" : "Collect the rousource of given id"
-
+   },
+   "settings_menu" : {
+     "title" : "Settings"
    }
+
 }

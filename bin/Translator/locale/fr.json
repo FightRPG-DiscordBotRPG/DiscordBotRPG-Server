@@ -137,7 +137,10 @@
     "you_sold" : "Vous avez vendu %d objet pour %dG",
     "you_buy": "Vous avez acheté %d objet pour %dG",
     "you_buy_plur" : "Vous avez acheter %d objets pour %dG",
-    "you_paid_tax"  : "Vous avez payé %dG de taxe pour pouvoir mettre l'objet en vente"
+    "you_paid_tax"  : "Vous avez payé %dG de taxe pour pouvoir mettre l'objet en vente",
+    "now_muted" : "Les notifications en rapport avec l'hôtel des ventes sont maintenant désactivées",
+    "now_unmuted" : "Les notifications en rapport avec l'hôtel des ventes sont maintenant activées",
+    "settings_menu_mute" : "%s les notifications en rapport avec l'hôtel des ventes"
   },
   "group" : {
     "you_left" : "Vous avez quitté votre groupe",
@@ -158,7 +161,8 @@
     "avg_level" : "Level moyen : %d",
     "avg_power" : "Puissance Moyenne : %d%",
     "members_of_the_group" : "Membres du groupe",
-    "invited_users" : "Utilisateurs invités"
+    "invited_users" : "Utilisateurs invités",
+    "settings_menu_mute" : "%s les notifications en rapport avec le groupe"
   },
   "area" : {
     "monster"   : "ID : %d | %s | Niv : %d | Type : %s",
@@ -225,7 +229,9 @@
     "resource" : "Ressource",
     "resources" : "Ressources",
     "lvl" : "Niv.",
-    "page_out_of_x" : "Page %d/%d"
+    "page_out_of_x" : "Page %d/%d",
+    "enable" : "Activer",
+    "disable" : "Désactiver"
   },
   "guild" : {
     "you_dont_have_a_guild" : "Vous n'avez pas de guilde",
@@ -479,8 +485,8 @@
      "craftshow" : "Affiche la recette d'identifiant idCraft",
      "craft" : "Fabrique l'objet dont l'id est passé en paramètre",
      "collect" : "Collecte la ressource dont l'id est passé en paramètre"
-
-     
-
+   },
+   "settings_menu" : {
+     "title" : "Paramètres"
    }
 }
