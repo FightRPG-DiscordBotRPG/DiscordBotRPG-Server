@@ -120,6 +120,10 @@ class Character extends CharacterEntity {
         return this.area;
     }
 
+    getIDRegion() {
+        return this.area.getIDRegion();
+    }
+
     // Group System
     leaveGroup() {
         this.group = null;
