@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -144,6 +144,11 @@ class AdminModule extends GModule {
                 Translator.loadRegionsBases();
                 Translator.loadMonstersBases();
                 msg = "Translations reloaded";
+                break;
+            case "reload_emojis":
+                delete require.cache[require.resolve("../../Emojis.js")];
+                require("../../Emojis.js");
+                msg = "Emojis reloaded";
                 break;
 
         }
