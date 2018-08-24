@@ -136,7 +136,7 @@ class CraftinModule extends GModule {
 
                                     PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", 1);
 
-                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, resourceToCollect.nomItem]) + "\n";
+                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, Translator.getString(lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
                                 } else {
                                     msg = Translator.getString(lang, "resources", "not_collected") + "\n";
                                 }
