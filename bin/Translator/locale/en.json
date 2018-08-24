@@ -485,7 +485,9 @@
      "craftlist" : "Show all the available recipes in this city at given page",
      "craftshow" : "Show the recipe of given id",
      "craft" : "Craft the recipe of given id",
-     "collect" : "Collect the rousource of given id"
+     "collect" : "Collect the rousource of given id",
+
+     "settings" : "Shows the settings menu"
    },
    "settings_menu" : {
      "title" : "Settings"

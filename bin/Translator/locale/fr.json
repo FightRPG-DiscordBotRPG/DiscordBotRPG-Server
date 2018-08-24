@@ -484,7 +484,9 @@
      "craftlist" : "Affiche la liste des recettes disponibles dans la ville, a la page souhaité",
      "craftshow" : "Affiche la recette d'identifiant idCraft",
      "craft" : "Fabrique l'objet dont l'id est passé en paramètre",
-     "collect" : "Collecte la ressource dont l'id est passé en paramètre"
+     "collect" : "Collecte la ressource dont l'id est passé en paramètre",
+
+     "settings" : "Affiche le menu des paramètres"
    },
    "settings_menu" : {
      "title" : "Paramètres"

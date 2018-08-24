@@ -220,7 +220,8 @@ class OtherModule extends GModule {
 
                     "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
                     "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
-                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n";
+                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n" +
+                    "::settings : " + Translator.getString(lang, "help_panel", "settings") + "\n";
                 break;
         }
         str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
