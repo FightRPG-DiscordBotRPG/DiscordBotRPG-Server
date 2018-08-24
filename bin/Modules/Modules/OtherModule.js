@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["lang", "help"];
+        this.commands = ["lang", "help", "settings"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
@@ -65,6 +65,52 @@ class OtherModule extends GModule {
                 break;
             case "help":
                 msg = this.helpPanel(lang, parseInt(args[0], 10));
+                break;
+            case "settings":
+                let one = Emojis.getString("one");
+                let two = Emojis.getString("two");
+                let tempMsgContent = "**" + Translator.getString(lang, "settings_menu", "title") + "**\n\n" +
+                one + " : " + "`" + Translator.getString(lang, "group", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isGroupMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n" +
+                two + " : " + "`" + Translator.getString(lang, "marketplace", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isMarketplaceMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n";
+                let tempMsg = await message.channel.send(tempMsgContent).catch(e => null);
+                
+                await Promise.all([
+                    tempMsg.react(one),
+                    tempMsg.react(two)
+                ]).catch(e => null);
+
+                const filter = (reaction, user) => {
+                    return [one, two].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
+                };
+
+                const collected = await tempMsg.awaitReactions(filter, {
+                    max: 1,
+                    time: 20000
+                });
+                const reaction = collected.first();
+                if (reaction != null) {
+                    switch (reaction.emoji.id || reaction.emoji.name) {
+                        case one:
+                            if(Globals.connectedUsers[authorIdentifier].isGroupMuted()) {
+                                Globals.connectedUsers[authorIdentifier].muteGroup(false);
+                                msg = Translator.getString(lang, "group", "now_unmuted");
+                            } else {
+                                Globals.connectedUsers[authorIdentifier].muteGroup(true);
+                                msg = Translator.getString(lang, "group", "now_muted");
+                            }
+                            break;
+                        case two:
+                            if (Globals.connectedUsers[authorIdentifier].isMarketplaceMuted()) {
+                                Globals.connectedUsers[authorIdentifier].muteGroup(false);
+                                msg = Translator.getString(lang, "marketplace", "now_unmuted");
+                            } else {
+                                Globals.connectedUsers[authorIdentifier].muteGroup(true);
+                                msg = Translator.getString(lang, "marketplace", "now_muted");
+                            }
+                            break;
+                    }
+                }
+                tempMsg.delete().catch(e => null);
                 break;
         }
 
