@@ -306,7 +306,7 @@
    "travel" : {
      "travel_to_area" : "You travelled to an area called: %s",
      "travel_to_area_exhaust" : "You are tired, you will have to wait %d seconds before doing something again",
-     "travel_planning" : "Planning",
+     "travel_planning" : "Planning travel from \"%s\" to \"%s\"",
      "wait_time_title" : "Expected wait time",
      "wait_time_body" : "%d seconds",
      "gold_price_title" : "Expected gold cost",
