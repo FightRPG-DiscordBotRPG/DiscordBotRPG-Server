@@ -307,7 +307,7 @@
      "travel_to_area_exhaust" : "Vous êtes fatigué vous allez devoir attendre %d secondes avant de pouvoir refaire une action",
      "travel_planning" : "Planification du voyage de \"%s\" à \"%s\"",
      "wait_time_title" : "Temps de fatigue attendu",
-     "wait_time_body" : "%d secondes",
+     "wait_time_body" : "%d secondes (Grâce à votre endurance vous gagnez %d secondes)",
      "gold_price_title" : "Coût en G attendu",
      "gold_price_body" : "%d G",
      "sure_to_travel_title" : "Êtes-vous sûr de vouloir voyager ?",

@@ -308,7 +308,7 @@
      "travel_to_area_exhaust" : "You are tired, you will have to wait %d seconds before doing something again",
      "travel_planning" : "Planning travel from \"%s\" to \"%s\"",
      "wait_time_title" : "Expected wait time",
-     "wait_time_body" : "%d seconds",
+     "wait_time_body" : "%d seconds (Thanks to your constitution you've gain %d seconds)",
      "gold_price_title" : "Expected gold cost",
      "gold_price_body" : "%d G",
      "sure_to_travel_title" : "Are you sure you want to travel ?",
