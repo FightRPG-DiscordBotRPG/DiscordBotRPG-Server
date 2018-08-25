@@ -98,9 +98,7 @@ class Character extends CharacterEntity {
     }
 
     changeArea(area, waitTime=Globals.basicWaitTimeAfterTravel) {
-        let conReduction = Math.floor(this.getStat("constitution") / 20);
-        conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
-        let baseTimeToWait = (waitTime - conReduction) * 1000;
+        let baseTimeToWait = this.getWaitTimeTravel(waitTime);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
         this.area = area;
@@ -465,30 +463,50 @@ class Character extends CharacterEntity {
 
     // More = time in ms
     waitForNextFight(more = 0) {
-        let conReduction = Math.floor(this.getStat("constitution") / 50);
-        conReduction = conReduction > Globals.basicWaitTimeBeforeFight / 2 ? Globals.basicWaitTimeBeforeFight / 2 : conReduction;
-
-        let baseTimeToWait = (Globals.basicWaitTimeBeforeFight - conReduction) * 1000;
+        let waitTime = this.getWaitTimeFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + baseTimeToWait + more;
+        this.canFightAt = Date.now() + waitTime;
+        return waitTime;
     }
 
     waitForNextResource(rarity = 1) {
-        let baseTimeToWait = (Globals.basicWaitTimeCollectTravel - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCollectTravel / 2)) * 1000 * rarity;
+        let baseTimeToWait = this.getWaitTimeResource(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
+        return baseTimeToWait;
     }
 
     waitForNextCraft(rarity = 1) {
-        let baseTimeToWait = (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
+        let baseTimeToWait = this.getWaitTimeCraft(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
+        return baseTimeToWait;
+    }
+
+    getWaitTimeCraft(rarity = 1) {
+        return (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
+    }
+
+    getWaitTimeResource(rarity = 1) {
+        return (Globals.basicWaitTimeCollectTravel - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCollectTravel / 2)) * 1000 * rarity;
+    }
+
+    getWaitTimeFight(more = 0) {
+        let conReduction = Math.floor(this.getStat("constitution") / 50);
+        conReduction = conReduction > Globals.basicWaitTimeBeforeFight / 2 ? Globals.basicWaitTimeBeforeFight / 2 : conReduction;
+        return (Globals.basicWaitTimeBeforeFight - conReduction) * 1000 + more;
+    }
+
+    getWaitTimeTravel(waitTime=Globals.basicWaitTimeAfterTravel) {
+        let conReduction = Math.floor(this.getStat("constitution") / 20);
+        conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
+        let baseTimeToWait = (waitTime - conReduction) * 1000;
+        return baseTimeToWait;
     }
 
     isInGuild() {
         return this.idGuild > 0 ? true : false;
     }
-
 
     addCraftXP(xp) {
         let actualLevel = this.getCraftLevel();
