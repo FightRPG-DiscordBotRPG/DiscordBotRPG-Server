@@ -71,10 +71,11 @@ class TravelModule extends GModule {
                             let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
                             let checkEmoji = Emojis.getID("vmark");
                             let xmarkEmoji = Emojis.getID("xmark");
+                            let realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
                             let tempMsg = await message.channel.send(new Discord.RichEmbed()
                                 .setColor([0, 255, 0])
                                 .setAuthor(Translator.getString(lang, "travel", "travel_planning", [Globals.connectedUsers[authorIdentifier].character.getArea().getName(lang), areaObjectTravel.getName(lang)]))
-                                .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [costs.timeToWait]), true)
+                                .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [realWaitTime, costs.timeToWait - realWaitTime]), true)
                                 .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
                                 .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
                             ).catch(e => null);
