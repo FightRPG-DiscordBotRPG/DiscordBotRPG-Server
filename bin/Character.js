@@ -122,6 +122,17 @@ class Character extends CharacterEntity {
         return this.area.getIDRegion();
     }
 
+    /**
+     * @returns {number} Exhuast time in seconds
+     */
+    getExhaust() {
+        return Math.ceil((this.canFightAt - Date.now()) / 1000);
+    }
+
+    canDoAction() {
+        return this.canFightAt <= Date.now();
+    }
+
     // Group System
     leaveGroup() {
         this.group = null;
