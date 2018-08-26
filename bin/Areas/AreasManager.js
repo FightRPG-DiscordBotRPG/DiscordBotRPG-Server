@@ -17,6 +17,7 @@ class AreasManager {
         this.areas = new Map();
         this.regions = {};
         this.paths = new Graph();
+        this.pathsGoldCosts = new Graph();
 
         this.loadRegions();
         this.loadAreas();
@@ -65,11 +66,14 @@ class AreasManager {
         for(let area of res) {
             let paths = conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
             let node = {};
+            let nodeGold = {};
             for(let path of paths) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
                 node[path.idArea2] = path.time;
+                nodeGold[path.idArea2] = path.goldPrice + 1;
             }
             this.paths.addNode(area.idArea1.toString(), node);
+            this.pathsGoldCosts.addNode(area.idArea1.toString(), nodeGold);
         }
     }
 
@@ -80,13 +84,11 @@ class AreasManager {
      */
     getPathCosts(from, to) {
         let path = this.paths.path(from.toString(), to.toString(), {cost:true});
-        
+        let pathGold = this.pathsGoldCosts.path(from.toString(), to.toString(), {cost:true});
         let toReturn = {
             timeToWait : path.cost,
-            goldPrice : 0
+            goldPrice : pathGold.cost - (pathGold.path.length - 1)
         }
-        /*console.log(from + " -> " + to);
-        console.log(toReturn);*/
         return toReturn;
     }
 
@@ -190,6 +192,13 @@ class AreasManager {
         return false;
     }
 
+    isConnectedToRegion(idRegion, index) {
+        if(this.regions[idRegion]) {
+            return this.regions[idRegion].isConnected(index);
+        }
+        return false;
+    }
+
     // Single Getters for an area
 
     getNameOf(idArea, lang) {
@@ -210,6 +219,10 @@ class AreasManager {
 
     getAreaForThisRegion(idRegion, index) {
         return this.regions[idRegion].getArea(index);
+    }
+
+    getConnectedAreaForThisRegion(idRegion, index) {
+        return this.regions[idRegion].getConnectedArea(index);
     }
 
     /*
