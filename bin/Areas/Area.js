@@ -355,7 +355,7 @@ class Area {
 
     getDesc(lang="en") {
         let desc = Translator.getString(lang, "areasDesc", this.id, [], true);
-        return desc != null ? desc : Translator.getString(lang, "areas", "no_description");
+        return desc != null ? desc : Translator.getString(lang, "area", "no_description");
     }
 
     getIDRegion() {
