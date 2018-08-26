@@ -186,7 +186,9 @@
     "bonus_list_header" : "Identifiant => Correspondance",
     "up_stat" : "Le bonus %s gagne %d points",
     "areas" : "Zones",
-    "list" : "Liste des zones"
+    "list" : "Liste des zones",
+    "list_regions_connected" : "Régions connecté",
+    "no_connected_regions" : "Pas de régions connectés à cette région"
   },
   "bonuses" : {
     "bonuses" : "Bonus",
@@ -231,7 +233,8 @@
     "lvl" : "Niv.",
     "page_out_of_x" : "Page %d/%d",
     "enable" : "Activer",
-    "disable" : "Désactiver"
+    "disable" : "Désactiver",
+    "region" : "Région"
   },
   "guild" : {
     "you_dont_have_a_guild" : "Vous n'avez pas de guilde",

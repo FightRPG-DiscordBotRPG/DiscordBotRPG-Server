@@ -94,15 +94,17 @@ class Region {
                     strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
                     break;
             }
-            strConnectedAreas += " | Region : " + Region.staticGetName(this.connectedAreas.get(key).idRegion)  + "`\n"
+            strConnectedAreas += " | " + Translator.getString(lang, "general", "region") + " : " + Region.staticGetName(this.connectedAreas.get(key).idRegion) + "`\n"
         }
-        strConnectedAreas += "";
+        if(strConnectedAreas == "") {
+            strConnectedAreas = Translator.getString(lang, "area", "no_connected_regions");
+        }
 
         return new Discord.RichEmbed()
         .setColor([0, 255, 0])
         .setAuthor(this.getName(lang))
         .addField(Translator.getString(lang, "area", "list"), strAreas)
-        .addField("Connected Regions", strConnectedAreas)
+        .addField(Translator.getString(lang, "area", "list_regions_connected"), strConnectedAreas)
         .setImage(this.getImage(lang));
     }
 

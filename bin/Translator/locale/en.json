@@ -187,7 +187,9 @@
     "bonus_list_header" : "Identifier => Refers to",
     "up_stat" : "The bonus %s have gained %d points",
     "areas" : "Areas",
-    "list" : "List of areas"
+    "list" : "List of areas",
+    "list_regions_connected" : "Connected regions",
+    "no_connected_regions" : "No regions connected to this region"
   },
   "bonuses" : {
     "bonuses" : "Bonuses",
@@ -232,7 +234,8 @@
     "lvl" : "Lvl.",
     "page_out_of_x" : "Page %d/%d",
     "enable" : "Enable",
-    "disable" : "Disable"
+    "disable" : "Disable",
+    "region" : "Region"
   },
   "guild" : {
     "you_dont_have_a_guild" : "You don't have a guild",
