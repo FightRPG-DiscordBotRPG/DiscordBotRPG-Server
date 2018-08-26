@@ -69,7 +69,7 @@ class CraftinModule extends GModule {
             case "craft":
                 if (craftingbuilding != null) {
                     // ToCraft = Craft type
-                    if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                    if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                         /**
                          * @type {Craft}
                          */
@@ -108,7 +108,7 @@ class CraftinModule extends GModule {
                             msg = Translator.getString(lang, "errors", "craft_dont_exist");
                         }
                     } else {
-                        msg = Translator.getString(lang, "errors", "craft_tired_wait_x_seconds", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                        msg = Translator.getString(lang, "errors", "craft_tired_wait_x_seconds", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                     }
                 } else {
                     msg = Translator.getString(lang, "errors", "craft_no_building");
@@ -117,7 +117,7 @@ class CraftinModule extends GModule {
             case "collect":
                 PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
                 let idToCollect = parseInt(args[0], 10);
-                if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                     if (idToCollect && Number.isInteger(idToCollect)) {
                         let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
                         //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
@@ -166,7 +166,7 @@ class CraftinModule extends GModule {
                         msg = Translator.getString(lang, "errors", "collect_enter_id_to_collect");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                    msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                 }
                 break;
         }
