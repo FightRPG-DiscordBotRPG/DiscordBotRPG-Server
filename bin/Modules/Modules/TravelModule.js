@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class TravelModule extends GModule {
     constructor() {
         super();
-        this.commands = ["area", "areas", "travel", "areaplayers"];
+        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers"];
         this.startLoading("Travel");
         this.init();
         this.endLoading("Travel");
@@ -47,6 +47,8 @@ class TravelModule extends GModule {
         let nb;
         let temp;
         let doIHaveThisItem = false;
+        // travel related
+        let wantedAreaToTravel, areaObjectTravel, costs, checkEmoji, xmarkEmoji, realWaitTime, tempMsg;
 
         PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
 
@@ -60,25 +62,19 @@ class TravelModule extends GModule {
                 break;
 
             case "travel":
-                let wantedAreaToTravel = parseInt(args[0], 10);
-                if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                wantedAreaToTravel = parseInt(args[0], 10);
+                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                     if (Globals.areasManager.existInRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel)) {
-                        let areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
+                        areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
                         if (areaObjectTravel.getID() == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
                             msg = Translator.getString(lang, "errors", "travel_already_here");
                         } else {
 
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
-                            let checkEmoji = Emojis.getID("vmark");
-                            let xmarkEmoji = Emojis.getID("xmark");
-                            let realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
-                            let tempMsg = await message.channel.send(new Discord.RichEmbed()
-                                .setColor([0, 255, 0])
-                                .setAuthor(Translator.getString(lang, "travel", "travel_planning", [Globals.connectedUsers[authorIdentifier].character.getArea().getName(lang), areaObjectTravel.getName(lang)]))
-                                .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [realWaitTime, costs.timeToWait - realWaitTime]), true)
-                                .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
-                                .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
-                            ).catch(e => null);
+                            costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
+                            checkEmoji = Emojis.getID("vmark");
+                            xmarkEmoji = Emojis.getID("xmark");
+                            realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                            tempMsg = await message.channel.send(this.travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel)).catch(e => null);
                             await Promise.all([
                                 tempMsg.react(checkEmoji),
                                 tempMsg.react(xmarkEmoji)
@@ -97,7 +93,7 @@ class TravelModule extends GModule {
                             if (reaction != null) {
                                 switch (reaction.emoji.id) {
                                     case checkEmoji:
-                                        if (Globals.connectedUsers[authorIdentifier].character.canFightAt <= Date.now()) {
+                                        if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                                             // Update le compte de joueurs
                                             wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
@@ -106,9 +102,9 @@ class TravelModule extends GModule {
 
                                             // Messages
                                             msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
-                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                                         } else {
-                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                                         }
 
                                         break;
@@ -125,10 +121,72 @@ class TravelModule extends GModule {
                         msg = Translator.getString(lang, "errors", "travel_area_dont_exist");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Math.ceil((Globals.connectedUsers[authorIdentifier].character.canFightAt - Date.now()) / 1000)]);
+                    msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                 }
                 break;
 
+            case "travelregion":
+                wantedAreaToTravel = parseInt(args[0], 10);
+                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
+                    if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel)) {
+                        areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
+                        if (areaObjectTravel.getID() == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
+                            msg = Translator.getString(lang, "errors", "travel_already_here");
+                        } else {
+                            costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
+                            checkEmoji = Emojis.getID("vmark");
+                            xmarkEmoji = Emojis.getID("xmark");
+                            realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                            tempMsg = await message.channel.send(this.travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel)).catch(e => null);
+                            await Promise.all([
+                                tempMsg.react(checkEmoji),
+                                tempMsg.react(xmarkEmoji)
+                            ]).catch(e => null);
+
+                            const filter = (reaction, user) => {
+                                return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                            };
+
+
+                            const collected = await tempMsg.awaitReactions(filter, {
+                                max: 1,
+                                time: 10000
+                            });
+                            const reaction = collected.first();
+                            if (reaction != null) {
+                                switch (reaction.emoji.id) {
+                                    case checkEmoji:
+                                        if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
+                                            // Update le compte de joueurs
+                                            wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+
+                                            // change de zone
+                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+
+                                            // Messages
+                                            msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
+                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                        } else {
+                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                        }
+
+                                        break;
+
+                                    case xmarkEmoji:
+                                        msg = Translator.getString(lang, "travel", "travel_cancel");
+                                        break;
+                                }
+                            }
+                            tempMsg.delete().catch(e => null);
+                        }
+
+                    } else {
+                        msg = Translator.getString(lang, "errors", "travel_area_dont_exist");
+                    }
+                } else {
+                    msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                }
+                break;
             case "areaplayers":
                 apPage = parseInt(args[0], 10);
                 if (!apPage || !Number.isInteger(apPage)) {
@@ -139,6 +197,15 @@ class TravelModule extends GModule {
         }
 
         this.sendMessage(message, msg);
+    }
+
+    travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel) {
+        return new Discord.RichEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(Translator.getString(lang, "travel", "travel_planning", [Globals.connectedUsers[authorIdentifier].character.getArea().getName(lang), areaObjectTravel.getName(lang)]))
+            .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [realWaitTime, costs.timeToWait - realWaitTime]), true)
+            .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
+            .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
     }
 }
 
