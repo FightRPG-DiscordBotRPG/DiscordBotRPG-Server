@@ -11,6 +11,15 @@ class Region {
          */
         this.areas = new Map();
         this.areaIncrementIndex = 1;
+        /**
+         * @type {Map<number, Area>}
+         */
+        this.connectedAreas = new Map();
+        this.connectedAreasIncrementIndex = 1;
+    }
+
+    static staticGetName(id, lang="en") {
+        return Translator.getString(lang, "regionsNames", id);
     }
 
     getName(lang="en") {
@@ -34,6 +43,11 @@ class Region {
         this.areaIncrementIndex++;
     }
 
+    addConnectedArea(area) {
+        this.connectedAreas.set(this.connectedAreasIncrementIndex, area);
+        this.connectedAreasIncrementIndex++;
+    }
+
     exist(index) {
         if(this.areas.get(index) != null) {
             return true;
@@ -42,30 +56,48 @@ class Region {
     }
 
     seeAreas(lang) {
-        let str = "```";
+        let strAreas = "";
         // Map
         for (let [key, value] of this.areas) {
+            strAreas += "`";
             switch (this.areas.get(key).areaType) {
                 case "wild":
-                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "wild_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    strAreas += Translator.getString(lang, "area", "wild_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
                     break;
                 case "city":
-                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "city_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    strAreas += Translator.getString(lang, "area", "city_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
                     break;
                 case "dungeon":
-                    str += Translator.getString(lang, "area", "dungeon_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
+                    strAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
                     break;
             }
-
+            strAreas += "`\n";
         }
-        str += "```";
+        strAreas += "";
+
+        let strConnectedAreas = "";
+        for (let [key, value] of this.connectedAreas) {
+            strConnectedAreas += "`"
+            switch (this.connectedAreas.get(key).areaType) {
+                case "wild":
+                    strConnectedAreas += Translator.getString(lang, "area", "wild_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    break;
+                case "city":
+                    strConnectedAreas += Translator.getString(lang, "area", "city_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    break;
+                case "dungeon":
+                    strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    break;
+            }
+            strConnectedAreas += " | Region : " + Region.staticGetName(this.connectedAreas.get(key).idRegion)  + "`\n"
+        }
+        strConnectedAreas += "";
 
         return new Discord.RichEmbed()
         .setColor([0, 255, 0])
         .setAuthor(this.getName(lang))
-        .addField(Translator.getString(lang, "area", "list"), str)
+        .addField(Translator.getString(lang, "area", "list"), strAreas)
+        .addField("Connected Regions", strConnectedAreas)
         .setImage(this.getImage(lang));
     }
 

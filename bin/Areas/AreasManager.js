@@ -20,7 +20,18 @@ class AreasManager {
 
         this.loadRegions();
         this.loadAreas();
+        // Inter regions paths
+        this.loadConnectedAreas();
         this.loadPaths();
+    }
+
+    loadConnectedAreas() {
+        for(let rk of Object.keys(this.regions)) {
+            let res = conn.query("SELECT idArea2 as idArea FROM areaspaths WHERE areaspaths.idArea1 IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?) AND areaspaths.idArea2 NOT IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?)", [rk, rk]);
+            for(let find of res) {
+                this.regions[rk].addConnectedArea(this.areas.get(find.idArea));
+            }
+        }
     }
 
     loadRegions() {
@@ -148,49 +159,6 @@ class AreasManager {
      */
     seeConquestOfThisArea(idArea, lang) {
         return this.areas.get(idArea).conquestToStr(lang);
-    }
-
-    seeAllAreas(lang) {
-        let str = "```";
-
-        // No Map
-        /*for (let i in this.areas) {
-            console.log(i);
-            switch (this.areas[i].areaType) {
-                case "Wild":
-                    str += this.areas[i].id + " | " + this.areas[i].name + " | Niveaux : " + this.areas[i].levels + "\n";
-                    break;
-                case "City":
-                    str += this.areas[i].id + " | " + this.areas[i].name + " (Ville) | Niveaux : " + this.areas[i].levels + "\n";
-                    break;
-            }
-
-        }*/
-        //console.log(this.areas.);
-        // Map
-        for (let [key, value] of this.areas) {
-            switch (this.areas.get(key).areaType) {
-                case "wild":
-                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " | Niveaux : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "wild_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
-                    break;
-                case "city":
-                    //str += this.areas.get(key).id + " | " + this.areas.get(key).name + " (Ville) | Niveau : " + this.areas.get(key).levels + "\n";
-                    str += Translator.getString(lang, "area", "city_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
-                    break;
-                case "dungeon":
-                    str += Translator.getString(lang, "area", "dungeon_area", [this.areas.get(key).id, this.areas.get(key).getName(lang), this.areas.get(key).levels]) + "\n";
-                    break;
-            }
-
-        }
-        str += "```";
-
-        return new Discord.RichEmbed()
-        .setColor([0, 255, 0])
-        .setAuthor(Translator.getString(lang, "area", "areas"))
-        .addField(Translator.getString(lang, "area", "list"), str)
-        .setImage("https://image.ibb.co/nKdAGK/map_base.png");
     }
 
     seeAllAreasInThisRegion(area, lang) {
