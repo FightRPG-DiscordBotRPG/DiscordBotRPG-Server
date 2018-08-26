@@ -34,6 +34,10 @@ class Region {
         return this.areas.get(index);
     }
 
+    getConnectedArea(index) {
+        return this.connectedAreas.get(index);
+    }
+
     /**
      * 
      * @param {Area} area 
@@ -49,10 +53,11 @@ class Region {
     }
 
     exist(index) {
-        if(this.areas.get(index) != null) {
-            return true;
-        }
-        return false;
+        return this.areas.get(index) != null;
+    }
+
+    isConnected(index) {
+        return this.connectedAreas.get(index) != null;
     }
 
     seeAreas(lang) {
