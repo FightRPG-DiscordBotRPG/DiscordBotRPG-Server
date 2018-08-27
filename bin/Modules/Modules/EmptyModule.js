@@ -15,7 +15,7 @@ const CraftSystem = require("../../CraftSystem/CraftSystem");
 const AreaTournament = require("../../AreaTournament/AreaTournament");
 const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
-const Item = require("../../Item");
+const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 
 
