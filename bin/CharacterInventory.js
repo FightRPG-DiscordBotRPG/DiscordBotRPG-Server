@@ -32,7 +32,7 @@ class CharacterInventory {
     }
 
     isEquipable(idEmplacement) {
-        if (this.objects[idEmplacement].equipable == true) {
+        if (this.objects[idEmplacement].isEquipable()) {
             return true;
         }
         return false;

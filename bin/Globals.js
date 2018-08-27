@@ -7,6 +7,7 @@ let equipsPossible = [];
 let areasTypes = [];
 let monstersTypes = {};
 let itemsrarities = [];
+let equipableCorresponds = {};
 let res;
 
 // All Stats
@@ -35,6 +36,11 @@ for (let i in res) {
     itemsrarities[res[i].idRarity] = res[i].nomRarity;
 }
 
+res = conn.query("SELECT * FROM itemstypes WHERE equipable = 1");
+for(let r of res) {
+    equipableCorresponds[r.nomType] = r.idType;
+}
+
 
 
 
@@ -60,6 +66,7 @@ var Globals = {
     "statsIds": statsIds,
     "monstersIds": monstersTypes,
     "itemsrarities" : itemsrarities,
+    "equipableCorresponds" : equipableCorresponds,
     "basicWaitTimeBeforeFight": 30,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeCollectTravel" : 10,

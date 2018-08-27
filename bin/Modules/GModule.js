@@ -1,3 +1,5 @@
+const Globals = require("../Globals");
+
 class GModule {
     constructor() {
         this.isReloadable = true;
@@ -71,22 +73,7 @@ class GModule {
     }
 
     getEquipableIDType(string) {
-        let r = -1;
-        switch (string) {
-            case "weapon":
-                r = 1;
-                break;
-            case "chest":
-                r = 2;
-                break;
-            case "legs":
-                r = 3;
-                break;
-            case "head":
-                r = 4;
-                break;
-        }
-        return r;
+        return Globals.equipableCorresponds[string] != null ? Globals.equipableCorresponds[string] : -1;
     }
 
 }

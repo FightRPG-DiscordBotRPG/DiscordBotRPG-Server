@@ -77,26 +77,26 @@ class CharacterEquipement {
     // Sinon return id item à swap
     equip(idItem) {
         let item = new Item(idItem);
-        if (this.objects[item.type]) {
+        if (this.objects[item.getEquipTypeID()]) {
             //console.log("Equip And Swap");
-            if (this.objects[item.type].id !== idItem) {
-                let toReturn = this.objects[item.type].id;
+            if (this.objects[item.getEquipTypeID()].id !== idItem) {
+                let toReturn = this.objects[item.getEquipTypeID()].id;
 
                 // On enlève les stats de l'objet
-                this.removeStats(item.type);
+                this.removeStats(item.getEquipTypeID());
                 // On remplace l'objet
-                this.objects[item.type] = item;
-                conn.query("UPDATE charactersequipements SET idItem = " + idItem + " WHERE idCharacter = " + this.id + " AND idType = " + item.type + ";");
-                this.addStats(item.type);
+                this.objects[item.getEquipTypeID()] = item;
+                conn.query("UPDATE charactersequipements SET idItem = ? WHERE idCharacter = ? AND idType = ?;", [idItem, this.id, item.getEquipTypeID()])
+                this.addStats(item.getEquipTypeID());
                 // return id object
                 return toReturn;
             }
         } else {
             //console.log("Equip Only");
-            this.objects[item.type] = item;
-            conn.query("INSERT INTO charactersequipements VALUES(" + this.id + ", " + idItem + ", " + item.type + ");");
+            this.objects[item.getEquipTypeID()] = item;
+            conn.query("INSERT INTO charactersequipements VALUES(?, ?, ?);", [this.id, idItem, item.getEquipTypeID()]);
             // Une fois tout fait on peut add les stats
-            this.addStats(item.type);
+            this.addStats(item.getEquipTypeID());
             return -1;
         }
 
@@ -105,7 +105,7 @@ class CharacterEquipement {
     unEquip(type) {
         if (this.objects[type]) {
             let idItem = this.objects[type].id;
-            conn.query("DELETE FROM charactersequipements WHERE idCharacter = " + this.id + " AND idType = " + type);
+            conn.query("DELETE FROM charactersequipements WHERE idCharacter = ? AND idType = ?;");
             this.removeStats(type);
             delete this.objects[type];
             return idItem;
@@ -138,7 +138,6 @@ class CharacterEquipement {
     }
 
     toStr(lang) {
-        //let str = "| id |                  Nom                    |         Type         | idType | Niveau |    Rareté    |\n\n";
         let str = "";
         str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
@@ -148,41 +147,11 @@ class CharacterEquipement {
         let empty = true;
         let count = 0;
         for (let i in this.objects) {
-            /*
-            //str += " + " + this.objects[i].name + " | " + this.objects[i].typeName + " | " + this.objects[i].type + " | " + this.objects[i].level + " | " + this.objects[i].rarity + "\n";
-            // Id
-            count = 4 - this.objects[i].id.toString().length;
-            str += "|" + " ".repeat(Math.floor(count / 2)) + this.objects[i].id + " ".repeat(Math.ceil(count / 2)) + "|";
-
-            // Name
-            count = 41 - this.objects[i].name.length;
-            str += " ".repeat(Math.floor(count / 2)) + this.objects[i].name + " ".repeat(Math.ceil(count/2)) + "|";
-
-            // Type
-            count = 22 - this.objects[i].typeName.length;
-            str += " ".repeat(Math.floor(count / 2)) + this.objects[i].typeName + " ".repeat(Math.ceil(count / 2)) + "|";
-
-            // Id Type
-            count = 8 - this.objects[i].type.toString().length;
-            str += " ".repeat(Math.floor(count / 2)) + this.objects[i].type + " ".repeat(Math.ceil(count / 2)) + "|";
-
-            // Niveau
-            count = 8 - this.objects[i].level.toString().length;
-            str += " ".repeat(Math.floor(count / 2)) + this.objects[i].level + " ".repeat(Math.ceil(count / 2)) + "|";
-
-            // Raret�
-            count = 14 - this.objects[i].rarity.length;
-            str += " ".repeat(Math.floor(count / 2)) + this.objects[i].rarity + " ".repeat(Math.ceil(count / 2)) + "|\n";
-            */
             str += this.objects[i].toStr(lang) + "\n";
-
             empty = false;
-
         }
         if (empty) {
             let strNoObjects = Translator.getString(lang, "inventory_equipment", "nothing_equipped");
-            /*count = (77) - strNoObjects.length;
-            str += "|" + " ".repeat(Math.floor(count / 2)) + strNoObjects + " ".repeat(Math.ceil(count / 2)) + "|";*/
             str += strNoObjects;
         }
 

@@ -77,6 +77,14 @@ class Item {
         conn.query("UPDATE items SET favorite = ? WHERE idItem = ?", [this.isFavorite, this.id]);
     }
 
+    getEquipTypeID() {
+        return this.type;
+    }
+
+    isEquipable() {
+        return this.equipable;
+    }
+
     toStr(lang) {
         let numberStr = this.number > 1 ? " [x" + this.number + "]" : "";
         return this.getName(lang) + (this.isFavorite == true ? " ★" : "") + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " (" + Translator.getString(lang, "item_sous_types", this.sousTypeName) + ")" + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
