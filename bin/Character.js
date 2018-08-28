@@ -2,12 +2,13 @@
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const CharacterInventory = require("./CharacterInventory.js");
-const CharacterEntity = require("./Entities/CharacterEntity");
-const MarketplaceOrder = require("./Marketplace/MarketplaceOrder");
+const CharacterEntity = require("./Entities/CharacterEntity.js");
+const MarketplaceOrder = require("./Marketplace/MarketplaceOrder.js");
 const Item = require("./Items/Item.js");
-const PlayerCraft = require("./CraftSystem/PlayerCraft");
-const LootSystem = require("./LootSystem");
-const PStatistics = require("./Achievement/PStatistics");
+const Consumable = require("./Items/Consumable.js");
+const PlayerCraft = require("./CraftSystem/PlayerCraft.js");
+const LootSystem = require("./LootSystem.js");
+const PStatistics = require("./Achievement/PStatistics.js");
 
 class Character extends CharacterEntity {
 
@@ -50,7 +51,7 @@ class Character extends CharacterEntity {
         this.idArea = 1;
 
         //Load inv
-        this.inv.loadInventory(this.id);
+        this.getInv().loadInventory(this.id);
 
         // Load Equipement
         this.equipement.loadEquipements(this.id);
@@ -75,7 +76,7 @@ class Character extends CharacterEntity {
         this.honorPoints = res["honor"];
 
         //Load inv
-        this.inv.loadInventory(id);
+        this.getInv().loadInventory(id);
 
         // Load Equipement
         this.equipement.loadEquipements(id);
@@ -336,26 +337,26 @@ class Character extends CharacterEntity {
     // number : Nbr of items to sell
     sellThisItem(IdEmplacement, number) {
         number = number ? number : 1;
-        let value = this.inv.objects[IdEmplacement] ? this.inv.objects[IdEmplacement].getCost(number) : 0;
+        let value = this.getInv().objects[IdEmplacement] ? this.getInv().objects[IdEmplacement].getCost(number) : 0;
         // Si cost > 0 alors item existe et peut se vendre
         // On fait passer true pour deleteo bject puisque si on delete tout item on doit delete de la bdd
         if (value > 0) {
-            this.inv.removeSomeFromInventory(IdEmplacement, number, true);
+            this.getInv().removeSomeFromInventory(IdEmplacement, number, true);
             this.addMoney(value);
         }
         return value;
     }
 
     sellAllInventory() {
-        let value = this.inv.getAllInventoryValue();
-        this.inv.deleteAllFromInventory();
+        let value = this.getInv().getAllInventoryValue();
+        this.getInv().deleteAllFromInventory();
         this.addMoney(value);
         PStatistics.incrStat(this.id, "gold_sell", value);
         return value;
     }
 
     setItemFavoriteInv(idEmplacement, fav) {
-        this.inv.getItem(idEmplacement).setFavorite(fav ? fav : false);
+        this.getInv().getItem(idEmplacement).setFavorite(fav ? fav : false);
     }
 
     setItemFavoriteEquip(idEquip, fav) {
@@ -372,7 +373,7 @@ class Character extends CharacterEntity {
     }
 
     craft(craft) {
-        let items = this.inv.getItemsOfThosesIds(craft.requiredItems.map((e) => e.idBase));
+        let items = this.getInv().getItemsOfThosesIds(craft.requiredItems.map((e) => e.idBase));
         let gotAllItems = true;
         
         if(items.length === craft.requiredItems.length) {
@@ -392,7 +393,7 @@ class Character extends CharacterEntity {
                 for(let i in items) {
                     for(let j in craft.requiredItems) {
                         if(items[i].item.idBaseItem === craft.requiredItems[j].idBase) {
-                            this.inv.removeSomeFromInventory(this.inv.getEmplacementOfThisItemIdBase(items[i].item.idBaseItem), craft.requiredItems[j].number, true);
+                            this.getInv().removeSomeFromInventory(this.getInv().getEmplacementOfThisItemIdBase(items[i].item.idBaseItem), craft.requiredItems[j].number, true);
                         }
                     }
                 }
@@ -403,7 +404,7 @@ class Character extends CharacterEntity {
                 let newItemID = ls.newItem(craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel));
 
                 // on add 1 à l'inventaire
-                this.inv.addToInventory(newItemID);
+                this.getInv().addToInventory(newItemID);
                 return true;
             }
         }
@@ -418,15 +419,15 @@ class Character extends CharacterEntity {
         let idItem;
         if (this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
-            let item = this.inv.getItem(idEmplacement);
+            let item = this.getInv().getItem(idEmplacement);
             //idItem = Item.createNew(item.idBaseItem, item.level);
             idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
-            idItem = this.inv.getIdItemOfThisEmplacement(idEmplacement);
+            idItem = this.getInv().getIdItemOfThisEmplacement(idEmplacement);
         }
 
-        this.inv.removeSomeFromInventory(idEmplacement, nbr, false);
+        this.getInv().removeSomeFromInventory(idEmplacement, nbr, false);
         order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
         order.place();
     }
@@ -435,14 +436,14 @@ class Character extends CharacterEntity {
         let item = new Item(order.idItem);
         order.remove();
         if (item.equipable) {
-            this.inv.addToInventory(order.idItem, order.number);
+            this.getInv().addToInventory(order.idItem, order.number);
         } else {
             let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
             if (inventoryItemID != null) {
-                this.inv.addToInventory(inventoryItemID, order.number);
+                this.getInv().addToInventory(inventoryItemID, order.number);
                 item.deleteItem();
             } else {
-                this.inv.addToInventory(order.idItem, order.number);
+                this.getInv().addToInventory(order.idItem, order.number);
             }
         }
 
@@ -457,19 +458,31 @@ class Character extends CharacterEntity {
             order.update();
             let item = new Item(order.idItem);
             if (item.equipable) {
-                this.inv.addToInventory(order.idItem, order.number);
+                this.getInv().addToInventory(order.idItem, order.number);
             } else {
                 let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
                 if (inventoryItemID != null) {
-                    this.inv.addToInventory(inventoryItemID, number);
+                    this.getInv().addToInventory(inventoryItemID, number);
                 } else {
                     let idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
-                    this.inv.addToInventory(idItem, number);
+                    this.getInv().addToInventory(idItem, number);
                 }
             }
 
         }
         this.removeMoney(order.price * number);  
+    }
+
+    use(consumable) {
+        console.log("J'utilise l'objet " + consumable);
+    }
+
+    canUse(idItem) {
+        let item = this.getInv().getItem(idItem);
+        if(item != null) {
+            return item instanceof Consumable;
+        }
+        return false;
     }
 
     // More = time in ms
@@ -516,7 +529,7 @@ class Character extends CharacterEntity {
     }
 
     isInGuild() {
-        return this.idGuild > 0 ? true : false;
+        return this.idGuild > 0;
     }
 
     addCraftXP(xp) {
@@ -537,6 +550,10 @@ class Character extends CharacterEntity {
         return this.honorPoints;
     }
 
+    getInv() {
+        return this.inv;
+    }
+
     getLevel() {
         return this.levelSystem.actualLevel;
     }
@@ -554,7 +571,7 @@ class Character extends CharacterEntity {
     }
 
     haveThisObject(itemId) {
-        return this.inv.doIHaveThisItem(itemId);
+        return this.getInv().doIHaveThisItem(itemId);
     }
 
     haveThisObjectEquipped(idEmplacement) {
@@ -562,15 +579,15 @@ class Character extends CharacterEntity {
     }
 
     getAmountOfThisItem(idEmplacement) {
-        return this.inv.getItem(idEmplacement).number;
+        return this.getInv().getItem(idEmplacement).number;
     }
 
     getIdOfThisIdBase(idBaseItem) {
-        return this.inv.getIdOfThisIdBase(idBaseItem);
+        return this.getInv().getIdOfThisIdBase(idBaseItem);
     }
     
     isItemFavorite(idEmplacement) {
-        return this.inv.getItem(idEmplacement).isFavorite;
+        return this.getInv().getItem(idEmplacement).isFavorite;
     }
 
     /**

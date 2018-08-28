@@ -2,6 +2,7 @@
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Item = require("./Items/Item.js");
+const Consumable = require("./Items/Consumable");
 const Discord = require("discord.js");
 const Translator = require("./Translator/Translator");
 const Stats = require("./Stats/Stats");
@@ -21,11 +22,9 @@ class CharacterInventory {
     // If not exist create new one
     loadInventory(id) {
         this.id = id;
-        let res = conn.query("SELECT idItem, number FROM charactersinventory WHERE idCharacter = " + this.id);
+        let res = conn.query("SELECT charactersinventory.idItem, number, itemstypes.nomType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ?", [this.id]);
         for (let i = 0; i < res.length; i++) {
-            /*this.objects[res[i]["idItem"]] = new Item(res[i]["idItem"]);
-            this.objects[res[i]["idItem"]].number = res[i]["number"];*/
-            this.objects.push(new Item(res[i]["idItem"]));
+            this.objects.push(Item.newItem(res[i]["idItem"], res[i]["nomType"]));  
             this.objects[i].number = res[i]["number"];
             // push
         }
@@ -49,7 +48,7 @@ class CharacterInventory {
             this.objects[idEmplacement].number += number;
             conn.query("UPDATE charactersinventory SET number = " + this.objects[idEmplacement].number + " WHERE idCharacter = " + this.id + " AND idItem = " + idItem);
         } else {
-            let nItem = new Item(idItem);
+            let nItem = Item.newItem(idItem, Item.getType(idItem));
             nItem.number = number;
             this.objects.push(nItem);
             conn.query("INSERT INTO charactersinventory VALUES (" + this.id + "," + idItem + ", " + number + ")");

@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class EquipmentModule extends GModule {
     constructor() {
         super();
-        this.commands = ["equip", "unequip", "equiplist", "equipment"];
+        this.commands = ["equip", "unequip", "equiplist", "equipment", "use"];
         this.startLoading("Equipment");
         this.init();
         this.endLoading("Equipment");
@@ -56,17 +56,17 @@ class EquipmentModule extends GModule {
                 msg = "";
                 //console.log((toEquip));
                 if (toEquip != null && Number.isInteger(toEquip)) {
-                    if (Globals.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(toEquip)) {
-                        if (Globals.connectedUsers[authorIdentifier].character.inv.isEquipable(toEquip)) {
-                            if (Globals.connectedUsers[authorIdentifier].character.getLevel() >= Globals.connectedUsers[authorIdentifier].character.inv.objects[toEquip].level) {
-                                let swapItem = Globals.connectedUsers[authorIdentifier].character.equipement.equip(Globals.connectedUsers[authorIdentifier].character.inv.objects[toEquip].id);
-                                Globals.connectedUsers[authorIdentifier].character.inv.deleteFromInventory(toEquip);
+                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toEquip)) {
+                        if (Globals.connectedUsers[authorIdentifier].character.getInv().isEquipable(toEquip)) {
+                            if (Globals.connectedUsers[authorIdentifier].character.getLevel() >= Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].level) {
+                                let swapItem = Globals.connectedUsers[authorIdentifier].character.equipement.equip(Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].id);
+                                Globals.connectedUsers[authorIdentifier].character.getInv().deleteFromInventory(toEquip);
                                 if (swapItem > 0) {
-                                    Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(swapItem);
+                                    Globals.connectedUsers[authorIdentifier].character.getInv().addToInventory(swapItem);
                                 }
                                 msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
                             } else {
-                                msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [Globals.connectedUsers[authorIdentifier].character.inv.objects[toEquip].level]);
+                                msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].level]);
                             }
 
                         } else {
@@ -87,7 +87,7 @@ class EquipmentModule extends GModule {
                     //let swapItem = Globals.connectedUsers[authorIdentifier].character.equ
                     let itemToInventory = Globals.connectedUsers[authorIdentifier].character.equipement.unEquip(toUnequip);
                     if (itemToInventory > 0) {
-                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(itemToInventory);
+                        Globals.connectedUsers[authorIdentifier].character.getInv().addToInventory(itemToInventory);
                         msg = Translator.getString(lang, "inventory_equipment", "item_unequiped");
                     } else {
                         msg = Translator.getString(lang, "errors", "item_you_dont_have_item_equiped_here");
@@ -101,6 +101,24 @@ class EquipmentModule extends GModule {
             case "equiplist":
             case "equipment":
                 msg = "```" + Globals.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```";
+                break;
+            case "use":
+                let toUse = parseInt(args[0], 10);
+                msg = "";
+                //console.log((toEquip));
+                if (toUse != null && Number.isInteger(toUse)) {
+                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toUse)) {
+                        if (Globals.connectedUsers[authorIdentifier].character.canUse(toUse)) {
+                            msg = Globals.connectedUsers[authorIdentifier].character.use(toUse);
+                        } else {
+                            msg = Translator.getString(lang, "errors", "item_you_cant_use");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "item_you_dont_have");
+                    }
+                } else {
+                    msg = Translator.getString(lang, "errors", "item_enter_id_to_use");
+                }
                 break;
         }
 

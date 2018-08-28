@@ -90,71 +90,32 @@ class LootSystem {
     }
 
     getLoot(character, rarity, level) {
-        let res = conn.query("SELECT itemsbase.idBaseItem, itemsbase.idType FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = " + character.getIdArea() + " AND itemsbase.idRarity = " + rarity + ";");
+        let res = conn.query("SELECT itemsbase.idBaseItem FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = ? AND itemsbase.idRarity = ?;", [character.getIdArea(), rarity]);
         let r = Math.floor(Math.random() * res.length);
-        let objectType = res[r]["idType"];
-        let idItemBase = res[r]["idBaseItem"];
-        let stats = {};
-        let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
-        let statsPossible = Object.keys(Globals.statsIds);
-        let alreadyDone = rarity - 1;
-
-        ratio = ratio / 100 * rarity / 5;
-
-
-        if (objectType === 1) {
-            //Une arme
-            stats.strength = Math.ceil(level * ratio * 2);
-        } else {
-            stats.armor = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
-        }
-
-        while (alreadyDone > 0) {
-            ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
-            ratio = ratio / 100 * rarity / 5; 
-            let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
-            while (stats[r]) {
-                r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
-            }
-
-            if (r != "armor") {
-                stats[r] = Math.ceil(level * ratio * 2);
-            } else {
-                stats[r] = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
-            }
-            
-
-
-            alreadyDone--;
-        }
-
-
-
+        let idBase = res[r]["idBaseItem"];
         
-        let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idItemBase + ", " + level + ")")["insertId"];
-        for (let i in stats) {
-            conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")");
-        }
-
-        character.inv.addToInventory(idInsert);
-
+        let idItem = this.newItem(idBase, level);
+        if(idItem > -1) {
+            character.inv.addToInventory(idItem);
+        }            
     }
 
     // Return id of new item if created
     newItem(idBase, level) {
-        let res = conn.query(`SELECT * FROM itemsbase WHERE itemsbase.idBaseItem = ?`, [idBase]);
+        let res = conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes On itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
         if(res[0]) {
             let rarity = res[0].idRarity;
             let stats = {};
             let statsPossible = Object.keys(Globals.statsIds);
             let alreadyDone = rarity - 1;
-            let objectType = res[0]["idType"];
+            let objectType = res[0]["nomType"];
+            let equipable = res[0]["equipable"];
     
-            if(objectType != 5) {
+            if(equipable == true) {
                 let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
                 ratio = ratio / 100 * rarity / 5;
         
-                if (objectType === 1) {
+                if (objectType == "weapon") {
                     //Une arme
                     stats.strength = Math.ceil(level * ratio * 2);
                 } else {

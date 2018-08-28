@@ -173,6 +173,25 @@ class Item {
         return toApiObject;
     }
 
+    static getType(idItem) {
+        let res = conn.query("SELECT itemstypes.nomType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idItem = ?", [idItem]);
+        if(res[0]) {
+            return res[0].nomType;
+        }
+        return "unknown";
+    }
+
 }
 
+Item.newItem = (idBase, type) => {
+    switch(type) {
+        case "consumable":
+            return new Consumable(idBase);
+        default:
+            return new Item(idBase);
+    }
+};
+
 module.exports = Item;
+
+const Consumable = require("./Consumable");
