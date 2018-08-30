@@ -31,7 +31,7 @@ class Craft {
                 stypename: res.nomSousType,
                 rarity: res.nomRarity,
                 idRarity: res.idRarity,
-                rarityColor: res.rarityColor,
+                rarityColor: res.couleurRarity,
                 maxLevel: res.maxLevel,
                 minLevel: res.minLevel,
             }
@@ -63,7 +63,7 @@ class Craft {
                 .setAuthor(itemName, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
                 .setColor(this.itemInfo.rarityColor)
                 .addField(Translator.getString(lang, "item_types", this.itemInfo.typename) + " (" + Translator.getString(lang, "item_sous_types", this.itemInfo.stypename) + ")" + " | " + Translator.getString(lang, "rarities", this.itemInfo.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.itemInfo.minLevel + "-" + this.itemInfo.maxLevel + " | "
-                , desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc"))
+                , desc)
                 .addField(Translator.getString(lang, "craft", "needed_items"), this.requiredItemsToStr(lang));
         return embed;
     }
