@@ -104,7 +104,7 @@ class Item {
     }
     
     static getName(lang="en", idBase) {
-        return Translator.getString(lang, "itemsNames", this.idBase);
+        return Translator.getString(lang, "itemsNames", idBase);
     }
 
     static getDesc(lang="en", idBase) {
