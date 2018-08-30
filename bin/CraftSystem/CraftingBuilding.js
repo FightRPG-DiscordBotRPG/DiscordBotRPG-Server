@@ -44,15 +44,18 @@ class CraftingBuilding {
         return { res: res, maxPage: maxPage, page: page };
     }
 
-    craftingListToEmbed(page, lang) {
+    craftingListToEmbed(page=1, lang) {
         let res = this.getCraftingList(page);
         let str = "```\n";
         str += Translator.getString(lang, "craft", "header_craft_list") + "\n\n";
         let crafts = res.res;
+        let index = 1;
+        let indexOffset = (res.page-1) * 10;
         if (crafts.length > 0) {
             for (let craft of crafts) {
                 let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
-                str += craft.idCraftItem + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                str += (index+indexOffset) + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                index++;
             }
             str += "\n";
         } else {
@@ -64,7 +67,7 @@ class CraftingBuilding {
     }
 
     craftToEmbed(idCraft, lang) {
-        idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 0;
+        idCraft = this.getRealIdCraft(idCraft);
 
         // Like this we dont have to call databse if id is not a number or whatever
         if(idCraft > 0) {
@@ -78,7 +81,7 @@ class CraftingBuilding {
     }
 
     getCraft(idCraft) {
-        idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 0;
+        idCraft = this.getRealIdCraft(idCraft);
         
         if(idCraft > 0) {
             let craft = new Craft(idCraft);
@@ -87,6 +90,14 @@ class CraftingBuilding {
             }
         }
         return null;
+    }
+
+    getRealIdCraft(idCraft) {
+        idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 0;
+        
+        let res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT 1 OFFSET ?", [this.maxRarity, idCraft-1]);
+
+        return res[0] != null ? res[0].idCraftItem : 0;
     }
 
 }
