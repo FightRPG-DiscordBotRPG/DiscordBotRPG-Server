@@ -162,6 +162,10 @@ class CharacterEquipement {
         return this.objects[idEmplacement];
     }
 
+    getStat(statName) {
+        return this.stats.getStat(statName);
+    }
+
     apiGetItem(type) {
         if (this.objects[type]) {
             return this.objects[type].toApi();

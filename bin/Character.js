@@ -165,55 +165,6 @@ class Character extends CharacterEntity {
 
     }
 
-    stun(advWill) {
-        // LAST NUMBER = NBR MAX ITEM
-        // LIMIT 50%
-        // Maximum Stat for this level
-        let max = this.getLevel() * 2 * 4;
-        // Calcul of chance
-        let stun = (this.stats.charisma + this.equipement.stats.charisma) / max;
-        let otherResist = (advWill) / max;
-
-        // Cap to 50%;
-        stun        = stun > .5 ? .5 : stun;
-        otherResist = otherResist > .5 ? .5 : otherResist;
-        let chanceToStun = stun >= otherResist ? stun : 0;
-
-        return Math.random() <= chanceToStun ? true : false;
-    }
-
-    damageDefenceReduction() {
-        let reduction = Math.round((this.stats.armor + this.equipement.stats.armor) / ((8 * (Math.pow(this.level,2))) / 7 + 5) * .5);
-        return reduction > 0.5 ? 0.5 : 1 - reduction;
-    }
-
-    /**
-     * 
-     * @param {string} statName 
-     * @returns {number} Stat value
-     */
-    getStat(statName) {
-        if (this.stats[statName] != null && this.equipement.stats[statName] != null) {
-            return this.stats[statName] + this.equipement.stats[statName];
-        }
-        return 0;
-    }
-
-    /**
-     * @returns {number} Power in percentage
-     */
-    getPower() {
-        return this.equipement.getPower();
-    }
-
-    /**
-     * Prends en compte l'équipement
-     */
-    updateStats() {
-        this.maxHP = 10 + (this.stats.constitution + this.equipement.stats["constitution"]) * 10;
-        this.actualHP = this.maxHP;
-    }
-
     /**
      * 
      * @param {string} stat 

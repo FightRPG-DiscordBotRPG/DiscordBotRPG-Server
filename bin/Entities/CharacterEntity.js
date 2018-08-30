@@ -29,6 +29,14 @@ class CharacterEntity extends WorldEntity{
         this.equipement.loadEquipements(id);
     }
 
+    /**
+     * Prends en compte l'équipement
+     */
+    updateStats() {
+        this.maxHP = 10 + this.getStat("constitution") * 10;
+        this.actualHP = this.maxHP;
+    }
+
 
     damageCalcul() {
         let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
@@ -69,7 +77,7 @@ class CharacterEntity extends WorldEntity{
         // Maximum Stat for this level
         let max = this.getLevel() * 2 * 4;
         // Calcul of chance
-        let stun = (this.stats.charisma + this.equipement.stats.charisma) / max;
+        let stun = this.getStat("charisma") / max;
         let otherResist = (advWill) / max;
 
         // Cap to 50%;
@@ -81,8 +89,7 @@ class CharacterEntity extends WorldEntity{
     }
 
     damageDefenceReduction() {
-        let reduction = (this.stats.armor + this.equipement.stats.armor) / ((8 * (Math.pow(this.getLevel(),2))) / 7 + 5) * .5;
-        //console.log("armor : " + reduction;
+        let reduction = this.getStat("armor") / ((8 * (Math.pow(this.getLevel(),2))) / 7 + 5) * .5;
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
@@ -92,11 +99,16 @@ class CharacterEntity extends WorldEntity{
      * @returns {number} Stat value
      */
     getStat(statName) {
-        if (this.stats[statName] != null && this.equipement.stats[statName] != null) {
-            return (this.stats[statName] + this.equipement.stats[statName]);
-        }
-        return 0;
+        return this.stats.getStat(statName) + this.equipement.getStat(statName);
     }
+
+    /**
+     * @returns {number} Power in percentage
+     */
+    getPower() {
+        return this.equipement.getPower();
+    }
+
 }
 
 module.exports = CharacterEntity;

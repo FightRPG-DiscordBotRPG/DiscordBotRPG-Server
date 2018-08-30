@@ -20,6 +20,13 @@ class Stats {
         this.luck = 0;
     }
 
+    getStat(statName) {
+        if(this[statName] >= 0) {
+            return this[statName];
+        }
+        return 0;
+    }
+
     toStr() {
         let str = "```"
         for (let stat in Globals.statsIds) {
