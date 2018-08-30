@@ -2,6 +2,7 @@ const conn = require("../../conf/mysql");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Discord = require("discord.js");
+const Item = require("../Items/Item");
 
 class Craft {
     constructor(id) {
@@ -56,8 +57,8 @@ class Craft {
     }
 
     toEmbed(lang) {
-        let desc = Translator.getString(lang, "itemsDesc", this.itemInfo.idBase);
-        let itemName = Translator.getString(lang, "itemsNames", this.itemInfo.idBase);
+        let desc = Item.getDesc(lang, this.itemInfo.idBase);
+        let itemName = Item.getName(lang, this.itemInfo.idBase);
         let embed = new Discord.RichEmbed()
                 .setAuthor(itemName, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
                 .setColor(this.itemInfo.rarityColor)
@@ -71,7 +72,7 @@ class Craft {
         let str = "```\n" + Translator.getString(lang, "craft", "header_required") + "\n";
 
         for(let item of this.requiredItems) {
-            let itemName = Translator.getString(lang, "itemsName", item.idBase);
+            let itemName = Item.getName(lang, item.idBase);
             str += "\n";
             str += itemName + " - " + Translator.getString(lang, "item_types", item.typename) + " - " + Translator.getString(lang, "item_sous_types", item.stypename) + " - " + Translator.getString(lang, "rarities", item.rarity) + " - x" + item.number;
         }
