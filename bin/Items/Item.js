@@ -88,38 +88,6 @@ class Item {
     toStr(lang) {
         let numberStr = this.number > 1 ? " [x" + this.number + "]" : "";
         return this.getName(lang) + (this.isFavorite == true ? " ★" : "") + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " (" + Translator.getString(lang, "item_sous_types", this.sousTypeName) + ")" + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
-
-        // OLD WAY - beautiful but not readable on mobile
-        /*let str = "";
-        let count = 0;
-        let strNum = "";
-
-        
-        count = 8 - this.id.toString().length;
-        str += "|" + " ".repeat(Math.floor(count / 2)) + this.id + " ".repeat(Math.ceil(count / 2)) + "|";
-
-        // Nom | Si + 1 item on affiche le nombre
-        count = 63 - this.name.length;
-        if (this.number > 1) {
-            count -= (this.number.toString().length + 4);
-            strNum = " [x" + this.number + "]";
-        }
-
-        str += " ".repeat(Math.floor(count / 2)) + this.name + strNum + " ".repeat(Math.ceil(count / 2)) + "|";
-
-        //type
-        count = 22 - this.typeName.length;
-        str += " ".repeat(Math.floor(count / 2)) + this.typeName + " ".repeat(Math.ceil(count / 2)) + "|";
-
-        // Niveau
-        count = 8 - this.level.toString().length;
-        str += " ".repeat(Math.floor(count / 2)) + this.level + " ".repeat(Math.ceil(count / 2)) + "|";
-
-        // Rareté
-        count = 14 - this.rarity.length;
-        str += " ".repeat(Math.floor(count / 2)) + this.rarity + " ".repeat(Math.ceil(count / 2)) + "|";
-
-        return str;*/
     }
 
     getCost(number) {
@@ -134,6 +102,16 @@ class Item {
         let desc = Translator.getString(lang, "itemsDesc", this.idBaseItem, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
+    
+    static getName(lang="en", idBase) {
+        return Translator.getString(lang, "itemsNames", this.idBase);
+    }
+
+    static getDesc(lang="en", idBase) {
+        let desc = Translator.getString(lang, "itemsDesc", idBase, [], true);
+        return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
+    }
+
 
     /* 
      * API CALLS HERE
