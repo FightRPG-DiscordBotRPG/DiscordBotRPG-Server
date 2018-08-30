@@ -36,7 +36,7 @@ class CraftingBuilding {
         let res = conn.query(`SELECT * FROM craftitem
                     INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
                     INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
-                    WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT ? OFFSET ?`,
+                    WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`,
             [this.maxRarity, perPage, (page - 1) * perPage]);
 
 
@@ -95,7 +95,7 @@ class CraftingBuilding {
     getRealIdCraft(idCraft) {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 0;
         
-        let res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC LIMIT 1 OFFSET ?", [this.maxRarity, idCraft-1]);
+        let res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.maxRarity, idCraft-1]);
 
         return res[0] != null ? res[0].idCraftItem : 0;
     }
