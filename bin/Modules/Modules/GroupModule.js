@@ -62,11 +62,11 @@ class GroupModule extends GModule {
                 break;
 
             case "grpkick":
-                if (messageArray[1]) {
+                if (args[0]) {
                     if (group != null) {
                         if (!group.doingSomething) {
                             if (group.leader == Globals.connectedUsers[authorIdentifier]) {
-                                let grptokick = message.content.split(prefix + "grpkick ")[1];
+                                let grptokick = args[0];
                                 if (grptokick != Globals.connectedUsers[authorIdentifier].username) {
                                     if (group.kick(grptokick, message.client)) {
                                         msg = Translator.getString(lang, "group", "user_kicked", [grptokick]);
@@ -201,7 +201,7 @@ class GroupModule extends GModule {
 
             case "grpfight":
                 PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
-                let idEnemyGroup = parseInt(messageArray[1], 10);
+                let idEnemyGroup = parseInt(args[0], 10);
                 if (group != null) {
                     if (group.leader === Globals.connectedUsers[authorIdentifier]) {
                         if (!group.doingSomething) {
