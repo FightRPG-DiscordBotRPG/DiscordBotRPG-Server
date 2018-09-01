@@ -101,7 +101,7 @@ class CraftingBuilding {
         
         
 
-        return res[0] != null ? res[0].idCraftItem : 0;
+        return res != null && res[0] != null ? res[0].idCraftItem : 0;
     }
 
 }
