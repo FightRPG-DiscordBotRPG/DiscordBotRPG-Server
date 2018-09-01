@@ -93,10 +93,9 @@ class CraftingBuilding {
     }
 
     getRealIdCraft(idCraft) {
-        let okCraft = idCraft && Number.isInteger(Number.parseInt(idCraft));
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
         let res;
-        if(okCraft) {
+        if(idCraft > 0) {
             res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.maxRarity, idCraft-1]);
         }
         
