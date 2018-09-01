@@ -1,8 +1,5 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
-const Globals = require("../Globals");
-const Translator = require("../Translator/Translator");
-const User = require("../User.js");
 const Item = require("../Items/Item.js");
 
 
