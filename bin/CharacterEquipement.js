@@ -105,7 +105,7 @@ class CharacterEquipement {
     unEquip(type) {
         if (this.objects[type]) {
             let idItem = this.objects[type].id;
-            conn.query("DELETE FROM charactersequipements WHERE idCharacter = ? AND idType = ?;");
+            conn.query("DELETE FROM charactersequipements WHERE idCharacter = ? AND idType = ?;", [this.id, type]);
             this.removeStats(type);
             delete this.objects[type];
             return idItem;
