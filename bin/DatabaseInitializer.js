@@ -7,6 +7,20 @@ class DatabaseInitializer {
         DatabaseInitializer.areaBonuses();
         DatabaseInitializer.PStats();
         DatabaseInitializer.disconnectUsers();
+        DatabaseInitializer.RemoveBuggedCharacters();
+    }
+
+    static RemoveBuggedCharacters() {
+        conn.query("DELETE FROM guildsappliances WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM charactersstatistics WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM charactersinventory WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM levels WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM characterscraftlevel WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM statscharacters WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM charactersequipements WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM charactershonor WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM marketplacesorders WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
+        conn.query("DELETE FROM characters WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
     }
 
     static citiesMarketplaces() {
