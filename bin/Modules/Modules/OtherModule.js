@@ -195,7 +195,8 @@ class OtherModule extends GModule {
                     "::grpleave : " + Translator.getString(lang, "help_panel", "grpleave") + "\n" +
                     "::grpaccept : " + Translator.getString(lang, "help_panel", "grpaccept") + "\n" +
                     "::grpdecline : " + Translator.getString(lang, "help_panel", "grpdecline") + "\n" +
-                    "::grpkick <name#tag> : " + Translator.getString(lang, "help_panel", "grpkick") + "\n" +
+                    "::grpkick \"<name#tag>\" : " + Translator.getString(lang, "help_panel", "grpkick") + "\n" +
+                    "::grpswap \"<name#tag>\" : " + Translator.getString(lang, "help_panel", "grpswap") + "\n" +
                     "::grpmute : " + Translator.getString(lang, "help_panel", "grpmute") + "\n" +
                     "::grpunmute : " + Translator.getString(lang, "help_panel", "grpunmute") + "\n" +
 

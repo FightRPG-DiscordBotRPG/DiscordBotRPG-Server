@@ -155,8 +155,28 @@ class Group {
 		this.players = null;
 		this.leader = null;
 		//console.log(this);
-	}
+    }
+    
+    swap(playername) {
+        if(playername != this.leader.getUsername()) {
+            for(let user in this.players) {
+                if(playername == this.players[user].getUsername()) {
+                    let oldLeader = this.leader;
+                    this.leader = this.players[user];
+                    delete this.players[user];
+                    this.players[oldLeader.getUserId()] = oldLeader;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
+    /**
+     * 
+     * @param {User} player 
+     * @param {DiscordClient} discordClient 
+     */
 	playerLeave(player, discordClient) {
 		if (this.nbOfPlayers() > 1) {
 			// Make character leave group

@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class GroupModule extends GModule {
     constructor() {
         super();
-        this.commands = ["grpmute", "grpunmute", "grpkick", "grpleave", "grpinvite", "grpaccept", "grpdecline", "grp", "grpfight"];
+        this.commands = ["grpmute", "grpunmute", "grpkick", "grpleave", "grpinvite", "grpaccept", "grpdecline", "grp", "grpfight", "grpswap"];
         this.startLoading("Group");
         this.init();
         this.endLoading("Group");
@@ -47,7 +47,7 @@ class GroupModule extends GModule {
         let nb;
         let temp;
         let doIHaveThisItem = false;
-        
+
         PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
 
         switch (command) {
@@ -93,7 +93,34 @@ class GroupModule extends GModule {
                     msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
                 }
                 break;
-
+            case "grpswap":
+                if (args[0]) {
+                    if (group != null) {
+                        if (!group.doingSomething) {
+                            if (group.leader == Globals.connectedUsers[authorIdentifier]) {
+                                let grptoswap = args[0];
+                                if (grptoswap != Globals.connectedUsers[authorIdentifier].getUsername()) {
+                                    if (group.swap(grptoswap, message.client)) {
+                                        msg = Translator.getString(lang, "group", "user_swaped", [grptoswap]);
+                                    } else {
+                                        msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [grptoswap]);
+                                    }
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "group_cant_swap_yourself");
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "group_not_leader");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "group_occupied");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    }
+                } else {
+                    msg = Translator.getString(lang, "errors", "group_user_swap_empty_name");
+                }
+                break;
             case "grpleave":
                 if (group != null) {
                     if (!group.doingSomething) {
