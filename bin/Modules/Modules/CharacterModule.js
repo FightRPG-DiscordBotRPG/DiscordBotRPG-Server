@@ -68,7 +68,7 @@ class CharacterModule extends GModule {
                 break;
 
             case "info":
-                msg = Globals.connectedUsers[authorIdentifier].infoPanel();
+                msg = Globals.connectedUsers[authorIdentifier].infoPanel(lang);
                 break;
 
             case "up":

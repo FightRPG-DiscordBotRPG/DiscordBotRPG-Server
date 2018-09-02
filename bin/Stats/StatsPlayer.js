@@ -2,6 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const Globals = require("../Globals.js");
 const Stats = require("./Stats.js");
+const Translator = require("../Translator/Translator");
 
 
 class StatsPlayer extends Stats {
@@ -12,7 +13,7 @@ class StatsPlayer extends Stats {
         super(id, id);
     }
 
-    toStr(otherStats) {
+    toStr(otherStats, lang) {
         let str = "```";
         let count = 1;
         let totalSpaces = 25;
@@ -21,13 +22,14 @@ class StatsPlayer extends Stats {
             let end = "";
             let beforeNumber = "";
             let statStr = "";
+            let statLocaleString = Translator.getString(lang, "stats", stat);
             if (stat !== "armor") {
                 statStr = this[stat].toString() + "+" + otherStats[stat].toString();
             } else {
                 statStr = otherStats[stat].toString();
             }
             
-            let nbrChar = stat.length + 2;
+            let nbrChar = statLocaleString.length + 2;
             let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
             beforeNumber += " ".repeat(lessSpaces);
             if (count === 2) {
@@ -38,7 +40,7 @@ class StatsPlayer extends Stats {
                 end += " ".repeat(3) + "|" + " ".repeat(3);
             }
             count++;
-            str += "" + stat + beforeNumber + "[" + statStr + "]" + end;
+            str += "" + statLocaleString + beforeNumber + "[" + statStr + "]" + end;
         }
         str += "```"
         return str;

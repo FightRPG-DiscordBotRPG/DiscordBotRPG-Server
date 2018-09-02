@@ -150,7 +150,7 @@ class AdminModule extends GModule {
                 require("../../Emojis.js");
                 msg = "Emojis reloaded";
                 break;
-
+                
         }
 
         this.sendMessage(message, msg);

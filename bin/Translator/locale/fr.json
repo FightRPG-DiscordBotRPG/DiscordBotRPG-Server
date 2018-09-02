@@ -61,6 +61,7 @@
     "item_you_dont_have_item_equiped_here" : "Vous n'avez pas d'objets équipé dans cet emplacement",
     "item_you_have_to_choose_type_to_unequip" : "Vous devez choisir le type d'objet à déséquiper",
     "item_cant_equip_higher_level" : "Vous devez être au minimum level %d pour équiper cet objet",
+    "item_cant_sell_favorite" : "Vous ne pouvez pas vendre un objet marqué comme favori",
 
     "character_you_dont_have_enough_to_reset" : "Vous n'avez pas assez d'argent pour réinitialiser vos stats !",
     "economic_enter_id_item_to_sell" : "Vous devez entrer l'ID de l'objet à vendre",
@@ -298,7 +299,14 @@
     "reset_done" : "Réinitialisation terminée !",
     "attribute_up_to" : "L'attribut %s a été augmenté et passe désormais à %d points",
     "attribute_x_points_available" : "Il vous reste %d point à répartir",
-    "attribute_x_points_available_plural" : "Il vous reste %d points à répartir"
+    "attribute_x_points_available_plural" : "Il vous reste %d points à répartir",
+    "info_attributes_title"  : "Attributs | %d point à répartir (Prix du reset %dG)",
+    "info_attributes_title_plur"  : "Attributs | %d points à répartir (Prix du reset %dG)",
+    "maximum_level" : "Niveau Max.",
+    "level" :"Niveau",
+    "craft_level" : "Niv. de Métier",
+    "money" : "Argent",
+    "honor" : "Honneur"
   },
   "economic" : {
     "sell_for_x" : "Vous avez vendu votre objet pour %dG",

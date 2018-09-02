@@ -39,7 +39,7 @@ class StatsItems extends Stats{
                 let end = "";
                 let beforeNumber = "";
                 let statStr = this[stat].toString();
-                let statLocalized = Translator.getString(lang, "stats", stat)
+                let statLocalized = Translator.getString(lang, "stats", stat);
                 let nbrChar = statLocalized.length + 2 + diff.length;
                 let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                 beforeNumber += " ".repeat(lessSpaces);

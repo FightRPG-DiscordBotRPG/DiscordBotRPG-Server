@@ -6,6 +6,7 @@ const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");
 const DatabaseInitializer = require("./DatabaseInitializer");
+const Translator = require("./Translator/Translator");
 
 class User {
     // Discord User Info
@@ -134,8 +135,8 @@ class User {
     }
 
     //Affichage
-    infoPanel() {
-        let statPointsPlur = this.character.getStatPoints() > 1 ? "s" : "";
+    infoPanel(lang) {
+        let statPointsPlur = this.character.getStatPoints() > 1 ? "_plur" :  "";
         let xpProgressBar = new ProgressBar();
         let xpBar = "";
         let xpOn = "";
@@ -144,7 +145,7 @@ class User {
         let xpOnCraft = "";
 
         if (this.character.getLevel() === Globals.maxLevel) {
-            xpOn = "Niveau Max";
+            xpOn = Translator.getString(lang, "character", "maximum_level");
             xpBar = xpProgressBar.draw(1, 1);
         } else {
             xpOn = this.character.levelSystem.actualXP + " / " + this.character.levelSystem.expToNextLevel;
@@ -152,7 +153,7 @@ class User {
         }
 
         if(this.character.getCraftLevel() === Globals.maxLevel) {
-            xpOnCraft = "Niveau Max";
+            xpOnCraft = Translator.getString(lang, "character", "maximum_level");
             xpBarCraft = xpProgressBar.draw(1, 1);
         } else {
             xpOnCraft = this.character.getCratfXP() + " / " + this.character.getCraftNextLevelXP();
@@ -160,16 +161,21 @@ class User {
         }
 
 
+        let authorTitle = this.getUsername() + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.character.getPower() + "%";
+        let statsTitle = Translator.getString(lang, "character", "info_attributes_title" + statPointsPlur, [this.character.getStatPoints(), this.character.getResetStatsValue()]);
+        let titleXPFight = Translator.getString(lang, "character", "level") + " : " + this.character.getLevel() + " | " + xpOn + " ";
+        let titleXPCraft = Translator.getString(lang, "character", "craft_level") + " : " + this.character.getCraftLevel() + " | " + xpOnCraft + " "
+        
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.character.name + " | Power : " + this.character.getPower() + "%", this.avatar)
-            .addField("Attributes | " + this.character.statPoints + " point" + statPointsPlur + " à répartir (Prix du reset : " + this.character.getResetStatsValue() + "G)", this.character.getStatsStr())
-            .addField("Level : " + this.character.getLevel() + " | " + xpOn + " ", xpBar, true)
-            .addField("Craft Level : " + this.character.getCraftLevel() + " | " + xpOnCraft + " ", xpBarCraft, true)
+            .setAuthor(authorTitle, this.avatar)
+            .addField(statsTitle, this.character.getStatsStr(lang))
+            .addField(titleXPFight, xpBar, true)
+            .addField(titleXPCraft, xpBarCraft, true)
             .addBlankField(true)
-            .addField("Money", this.character.money + " G",true)
-            .addField("Honor", this.character.honorPoints + " Pts", true)
+            .addField(Translator.getString(lang, "character", "money"), this.character.getMoney() + " G",true)
+            .addField(Translator.getString(lang, "character", "honor"), this.character.getHonor(), true)
             .addBlankField(true);
 
         return embed;

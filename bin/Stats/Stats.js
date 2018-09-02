@@ -27,14 +27,15 @@ class Stats {
         return 0;
     }
 
-    toStr() {
+    toStr(lang) {
         let str = "```"
         for (let stat in Globals.statsIds) {
             //let end = stat === "luck" ? "" : "   |   ";
             let end = "";
             let beforeNumber = "";
+            let statLocaleString = Translator.getString(lang, "stats", stat);
 
-            let nbrChar = stat.length + 2;
+            let nbrChar = statLocaleString.length + 2;
             let lessSpaces = totalSpaces - nbrChar;
             beforeNumber += " ".repeat(lessSpaces);
             if (count === 2) {
@@ -45,7 +46,7 @@ class Stats {
                 end += " ".repeat(3) + "|" + " ".repeat(3);
             }
             count++;
-            str += "" + stat + beforeNumber + end;
+            str += "" + statLocaleString + beforeNumber + end;
         }
         str += "```"
         return str;

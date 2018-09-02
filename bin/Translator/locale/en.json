@@ -299,7 +299,14 @@
     "reset_done" : "Reset done!",
     "attribute_up_to" : "The attribute %s has increased and is now up to %d points",
     "attribute_x_points_available" : "There is %d point to allocate left",
-    "attribute_x_points_available_plural" : "There are %d points to allocate left"
+    "attribute_x_points_available_plural" : "There are %d points to allocate left",
+    "info_attributes_title"  : "Attributes | %d point to distribute (Reset price %dG)",
+    "info_attributes_title_plur"  : "Attributes | %d points to distribute (Reset price %dG)",
+    "maximum_level" : "Max. Level",
+    "level" :"Level",
+    "craft_level" : "Craft Level",
+    "money" : "Money",
+    "honor" : "Honor"
   },
   "economic" : {
     "sell_for_x" : "You sold your item for %dG",
@@ -499,5 +506,4 @@
    "settings_menu" : {
      "title" : "Settings"
    }
-
 }

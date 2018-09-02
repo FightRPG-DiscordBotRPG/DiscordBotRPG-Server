@@ -140,8 +140,8 @@ class Character extends CharacterEntity {
     }
 
     // Str Stats
-    getStatsStr() {
-        return this.stats.toStr(this.equipement.stats);
+    getStatsStr(lang) {
+        return this.stats.toStr(this.equipement.stats, lang);
     }
 
     damageCalcul() {
@@ -499,6 +499,10 @@ class Character extends CharacterEntity {
 
     getHonor() {
         return this.honorPoints;
+    }
+
+    getMoney() {
+        return this.money;
     }
 
     getInv() {
