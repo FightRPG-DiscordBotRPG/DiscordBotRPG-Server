@@ -53,7 +53,7 @@ class Leaderboard {
             levelLength = i.actualLevel.toString().length;
             levelLength = (levelMaxLength - levelLength) / 2;
 
-            str += "|" + " ".repeat(Math.floor(idLength)) + offset + " ".repeat(Math.ceil(rankLength)) + "|"
+            str += "|" + " ".repeat(Math.floor(rankLength)) + offset + " ".repeat(Math.ceil(rankLength)) + "|"
                 + " ".repeat(Math.floor(idLength)) + i.idCharacter + " ".repeat(Math.ceil(idLength)) + "|"
                 + " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|"
                 + " ".repeat(Math.floor(honorLength)) + i.Honor + " ".repeat(Math.ceil(honorLength)) + "|"
