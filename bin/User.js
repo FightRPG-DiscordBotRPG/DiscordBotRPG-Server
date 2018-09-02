@@ -5,7 +5,6 @@ const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");
-const Translator = require("./Translator/Translator");
 const DatabaseInitializer = require("./DatabaseInitializer");
 
 class User {
@@ -76,6 +75,14 @@ class User {
     static getUserNameByIdCharacter(idCharacter) {
         let res = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [idCharacter]);
         return res[0] ? res[0]["userName"] : null;
+    }
+
+    getUsername() {
+        return this.username;
+    }
+
+    getUserId() {
+        return this.id;
     }
 
     getToken() {
