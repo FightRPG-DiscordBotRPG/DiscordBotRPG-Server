@@ -34,7 +34,7 @@ class FightPvP extends Fight {
         }
     }
 
-    endFight(lang) {
+    endFight() {
         let teamsHonor = this.getTotalHonorTeams();
         let honor = 0;
         let baseHonor = 10;
@@ -66,6 +66,10 @@ class FightPvP extends Fight {
         this.addHonorToThisTeam(this.winnerGroup, honor);
         this.removeHonorToThisTeam(this.winnerGroup === 0 ? 1 : 0, honor);
         this.summary.honor = honor;
+
+        for (let entity of this.entities[0]) {
+            entity.waitForNextPvPFight(this.summary.rounds.length * 2500);
+        }
     }
 
 }
