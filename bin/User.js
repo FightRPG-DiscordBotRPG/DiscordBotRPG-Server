@@ -52,7 +52,12 @@ class User {
         } else {
             // Sinon on le load
             this.character.loadCharacter(res[0]["idCharacter"]);
-            conn.query("UPDATE users SET username = ?, isConnected = true WHERE idUser = ?", [this.username, this.id]);
+            if(this.username != null) {
+                conn.query("UPDATE users SET username = ?, isConnected = true WHERE idUser = ?", [this.username, this.id]);
+            } else {
+                this.username = res[0]["userName"];
+            }
+
             //this.username = res[0]["userName"];
             this.character.name = this.username;
 
@@ -192,8 +197,8 @@ class User {
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             level: this.character.getLevel(),
-            money: this.character.money,
-            honor: this.character.honorPoints,
+            money: this.character.getMoney(),
+            honor: this.character.getHonor(),
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
 
