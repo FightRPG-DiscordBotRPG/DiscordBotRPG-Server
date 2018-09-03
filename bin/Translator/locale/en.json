@@ -351,6 +351,12 @@
      "group_pm_lost_fight" : "Your group lost the fight",
      "group_pm_won_fight" : "Your group won the fight"
    },
+   "fight_pvp" : {
+      "onfight_user_attack" : "%s attacks %s and inflicts %d damage points",
+      "honor_gain" : "You win: %d honor points!",
+      "honor_lose" : "You lose : %d honor points!",
+      "honor_not_honorable" : "Fight not honorable, you lose: %d honor points!"
+   },
    "monsters_types" : {
      "normal" : "Normal",
      "elite" : "Elite",

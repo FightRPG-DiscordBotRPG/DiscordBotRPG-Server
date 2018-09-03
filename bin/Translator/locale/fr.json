@@ -351,6 +351,12 @@
      "group_pm_lost_fight" : "Votre groupe a perdu le combat",
      "group_pm_won_fight" : "Votre groupe a gagné le combat"
    },
+   "fight_pvp" : {
+      "onfight_user_attack" : "%s attaque %s et lui inflige %d points de dégâts",
+      "honor_gain" : "Vous gagnez : %d d'honneur !",
+      "honor_lose" : "Vous perdez : %d d'honneur !",
+      "honor_not_honorable" : "Combat peu honorable, vous perdez : %d d'honneur !"
+   },
    "monsters_types" : {
      "normal" : "Normal",
      "elite" : "Elite",

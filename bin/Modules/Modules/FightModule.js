@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const Character = require("../../Character");
 
 
 class FightModule extends GModule {
@@ -92,7 +93,6 @@ class FightModule extends GModule {
                     } else {
                         msg = Translator.getString(lang, "errors", "fight_pvp_choose_enemy");
                     }
-
                     // Ici on lance le combat si possible
                     if (Globals.connectedUsers[mId]) {
                         if (authorIdentifier !== mId) {
@@ -102,7 +102,22 @@ class FightModule extends GModule {
                         }
 
                     } else {
-                        msg = Translator.getString(lang, "errors", "fight_pvp_not_same_area");
+                        if(mId != -1) {
+                            if (authorIdentifier !== mId) {
+                                if(Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
+                                    let notConnectedEnemy = new User(mId);
+                                    notConnectedEnemy.loadUser();
+                                    notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
+                                    Globals.fightManager.fightPvP([Globals.connectedUsers[authorIdentifier].character], [notConnectedEnemy.character], message, lang);
+                                } else {
+                                    msg = Translator.getString(lang, "errors", "generic_tired", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                }
+                            } else {
+                                msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself");
+                            }
+                        } else {
+                            msg = Translator.getString(lang, "errors", "fight_pvp_not_same_area");
+                        }
                     }
                 } else {
                     msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_here");
