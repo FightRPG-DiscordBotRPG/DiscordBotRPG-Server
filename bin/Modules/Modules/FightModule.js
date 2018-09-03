@@ -91,9 +91,10 @@ class FightModule extends GModule {
                             mId = Leaderboard.idOf(idOtherPlayerCharacter);
                         }
                     } else {
+                        // useless
                         msg = Translator.getString(lang, "errors", "fight_pvp_choose_enemy");
                     }
-                    // Ici on lance le combat si possible
+                    // Ici on lance le combat si connecté
                     if (Globals.connectedUsers[mId]) {
                         if (authorIdentifier !== mId) {
                             Globals.fightManager.fightPvP([Globals.connectedUsers[authorIdentifier].character], [Globals.connectedUsers[mId].character], message, lang);
@@ -108,6 +109,7 @@ class FightModule extends GModule {
                                     let notConnectedEnemy = new User(mId);
                                     notConnectedEnemy.loadUser();
                                     notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
+
                                     Globals.fightManager.fightPvP([Globals.connectedUsers[authorIdentifier].character], [notConnectedEnemy.character], message, lang);
                                 } else {
                                     msg = Translator.getString(lang, "errors", "generic_tired", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
