@@ -19,7 +19,7 @@ class Leaderboard {
 
         let actualRank = Leaderboard.getPlayerRank(id);
         let maximumRank = Leaderboard.getMaximumRank();
-        let offset = actualRank - 5;
+        let offset = actualRank - 6;
 
         if(actualRank <= 5) {
             offset = 0;
