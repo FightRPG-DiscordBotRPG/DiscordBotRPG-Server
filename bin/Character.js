@@ -23,7 +23,6 @@ class Character extends CharacterEntity {
         this.canFightAt = 0;
         this.idArea = 1;
         this.area;
-        this.honorPoints = 0;
         this.idGuild = 0;
 
         // Party mechanics
@@ -62,7 +61,7 @@ class Character extends CharacterEntity {
 
     loadCharacter(id) {
         // load from database
-        let res = conn.query("SELECT statPoints, money, idArea, honor " +
+        let res = conn.query("SELECT statPoints, money, idArea " +
             "FROM characters " +
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
             "WHERE characters.idCharacter = " + id)[0];
@@ -73,7 +72,7 @@ class Character extends CharacterEntity {
         this.statPoints = res["statPoints"];
         this.money = res["money"];
         this.idArea = res["idArea"];
-        this.honorPoints = res["honor"];
+        //this.honorPoints = res["honor"];
 
         //Load inv
         this.getInv().loadInventory(id);
@@ -269,20 +268,32 @@ class Character extends CharacterEntity {
     }
 
     doIHaveEnoughMoney(money) {
-        return (this.money >= money);
+        return (this.getMoney() >= money);
     }
 
+    /**
+     * 
+     * @param {number} honorPoints 
+     */
     addHonorPoints(honorPoints) {
-        this.honorPoints += honorPoints;
+        /*this.honorPoints += honorPoints;
         //console.log("Add " + this.honorPoints);
-        this.saveHonor();
+        this.saveHonor();*/
+        if(honorPoints != null) {
+            if(honorPoints >= 0) {
+                conn.query("UPDATE charactershonor SET Honor = Honor + ? WHERE idCharacter = ?;", [honorPoints, this.id]);
+            } else {
+                this.removeHonorPoints(honorPoints); 
+            } 
+            return true;
+        }
+        return false;
     }
 
     removeHonorPoints(honorPoints) {
-        this.honorPoints -= honorPoints;
-        this.honorPoints = this.honorPoints < 0 ? 0 : this.honorPoints;
-        //console.log("Remove " + this.honorPoints);
-        this.saveHonor();
+        let honor = this.getHonor() - honorPoints;
+        honor = honor < 0 ? 0 : honor;
+        conn.query("UPDATE charactershonor SET Honor = ? WHERE idCharacter = ?;", [honor, this.id]);
     }
 
     // number : Nbr of items to sell
@@ -444,6 +455,13 @@ class Character extends CharacterEntity {
         return waitTime;
     }
 
+    waitForNextPvPFight(more = 0) {
+        let waitTime = this.getWaitTimePvPFight(more);
+        //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
+        this.canFightAt = Date.now() + waitTime;
+        return waitTime;
+    }
+
     waitForNextResource(rarity = 1) {
         let baseTimeToWait = this.getWaitTimeResource(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
@@ -472,6 +490,12 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeBeforeFight - conReduction) * 1000 + more;
     }
 
+    getWaitTimePvPFight(more = 0) {
+        let conReduction = Math.floor(this.getStat("charisma") / 50);
+        conReduction = conReduction > Globals.basicWaitTimeBeforePvPFight / 2 ? Globals.basicWaitTimeBeforePvPFight / 2 : conReduction;
+        return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
+    }
+
     getWaitTimeTravel(waitTime=Globals.basicWaitTimeAfterTravel) {
         let conReduction = Math.floor(this.getStat("constitution") / 20);
         conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
@@ -498,7 +522,7 @@ class Character extends CharacterEntity {
     }
 
     getHonor() {
-        return this.honorPoints;
+        return conn.query("SELECT honor FROM charactershonor WHERE idCharacter = ?;", [this.id])[0].honor;
     }
 
     getMoney() {
@@ -551,19 +575,31 @@ class Character extends CharacterEntity {
 
     // Partie Base De Donn�e
     saveStatsPoints() {
-        conn.query("UPDATE characters SET statPoints = " + this.statPoints + " WHERE idCharacter = " + this.id);
+        conn.query("UPDATE characters SET statPoints = " + this.getStatPoints() + " WHERE idCharacter = " + this.id);
     }
 
     saveMoney() {
-        conn.query("UPDATE characters SET money = " + this.money + " WHERE idCharacter = " + this.id);
+        conn.query("UPDATE characters SET money = " + this.getMoney() + " WHERE idCharacter = " + this.id);
     }
 
     saveHonor() {
-        conn.query("UPDATE charactershonor SET honor = " + this.honorPoints + " WHERE idCharacter = " + this.id);
+        conn.query("UPDATE charactershonor SET honor = " + this.getHonor() + " WHERE idCharacter = " + this.id);
     }
 
     toStrSimple() {
         return this.name + " | " + this.getLevel() + " | " + this.getPower() + "%";
+    }
+
+    static exist(id) {
+        if(id > 0) {
+            let res = conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
+            if(res != null && res[0] != null) {
+                return true;
+            } else{
+                return false;
+            }
+        }
+        return false;
     }
 
 
