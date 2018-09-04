@@ -4,6 +4,7 @@ const mysql = require("mysql");
 class DatabaseInitializer {
     static initialize() {
         DatabaseInitializer.citiesMarketplaces();
+        DatabaseInitializer.citiesCraftBuildings();
         DatabaseInitializer.areaBonuses();
         DatabaseInitializer.PStats();
         DatabaseInitializer.disconnectUsers();
@@ -25,6 +26,10 @@ class DatabaseInitializer {
 
     static citiesMarketplaces() {
         conn.query('INSERT IGNORE INTO marketplaces (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city";');
+    }
+
+    static citiesCraftBuildings() {
+        conn.query('INSERT IGNORE INTO craftbuilding (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city";');
     }
 
     static areaBonuses() {
