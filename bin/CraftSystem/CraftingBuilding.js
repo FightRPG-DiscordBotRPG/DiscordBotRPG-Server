@@ -9,17 +9,21 @@ class CraftingBuilding {
         this.maxRarity = 1;
         this.maxRarityName = "";
         this.maxRarityColor = "";
+        this.minLevel = 0;
+        this.maxLevel = 0;
         this.isActive = false;
     }
 
     load(idArea) {
-        let res = conn.query("SELECT idCraftBuilding, rarityMax, nomRarity, couleurRarity, active FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
+        let res = conn.query("SELECT idCraftBuilding, rarityMax, nomRarity, couleurRarity, active, minLevel, maxLevel FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
         if (res[0]) {
             this.id = res[0]["idCraftBuilding"];
             this.maxRarity = res[0]["rarityMax"];
             this.maxRarityName = res[0]["nomRarity"];
             this.maxRarityColor = res[0]["couleurRarity"];
             this.isActive = res[0]["active"];
+            this.minLevel = res[0]["minLevel"];
+            this.maxLevel = res[0]["maxLevel"];
         }
     }
 
@@ -29,15 +33,15 @@ class CraftingBuilding {
         let perPage = 10;
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity <= ?`,
-            [this.maxRarity])[0]["COUNT(*)"] / perPage);
+                                WHERE itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ?;`,
+            [this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
         let res = conn.query(`SELECT * FROM craftitem
                     INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
                     INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
-                    WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`,
-            [this.maxRarity, perPage, (page - 1) * perPage]);
+                    WHERE itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`,
+            [this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, perPage, (page - 1) * perPage]);
 
 
 
@@ -96,12 +100,18 @@ class CraftingBuilding {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
         let res;
         if(idCraft > 0) {
-            res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.maxRarity, idCraft-1]);
+            res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, idCraft-1]);
         }
         
-        
-
         return res != null && res[0] != null ? res[0].idCraftItem : 0;
+    }
+
+    getMinLevel() {
+        return this.minLevel;
+    }
+
+    getMaxLevel() {
+        return this.maxLevel;
     }
 
 }
