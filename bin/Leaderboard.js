@@ -7,9 +7,9 @@ class Leaderboard {
         let str = "`";
         let usernameMaxLength = 34;
         let honorMaxLength = 13;
-        let idMaxLength = 6;
+        let idMaxLength = 8;
         let levelMaxLength = 13;
-        let rankMaxLength = 6;
+        let rankMaxLength = 8;
 
         let idLength;
         let usernameLength;
@@ -25,14 +25,14 @@ class Leaderboard {
             offset = 0;
         } 
         if(maximumRank - actualRank < 5) {
-            offset -= 6 - (maximumRank - actualRank);
+            offset -= 5 - (maximumRank - actualRank);
         }
 
         offset = offset >= 0 ? offset : 0;
 
 
-        str += "| rank |  id  |             username             |    honor    |    level    |\n" +
-               "|______|______|__________________________________|_____________|_____________|\n";
+        str += "|  rank  |   id   |             username             |    honor    |    level    |\n" +
+               "|________|________|__________________________________|_____________|_____________|\n";
         let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
 
         //console.log("offset : " + offset + " | rank : " + actualRank + " | max rank : " + maximumRank + " | nb affiche : " + res.length);
@@ -44,6 +44,9 @@ class Leaderboard {
             idLength = i.idCharacter.toString().length;
             idLength = (idMaxLength - idLength) / 2;
 
+            if(i.userName.length >= usernameMaxLength) {
+                i.userName = i.userName.substring(0, usernameMaxLength - 5) + "...";
+            }
             usernameLength = i.userName.length;
             usernameLength = (usernameMaxLength - usernameLength) / 2;
 
