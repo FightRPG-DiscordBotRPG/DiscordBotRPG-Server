@@ -9,21 +9,21 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
-ALTER TABLE `discord_bot_rpg`.`CraftBuilding` 
+ALTER TABLE `discord_bot_rpg`.`craftbuilding` 
 ADD COLUMN `minLevel` INT(10) UNSIGNED NOT NULL DEFAULT 1 AFTER `rarityMax`,
 ADD COLUMN `maxLevel` INT(10) UNSIGNED NOT NULL DEFAULT 1 AFTER `minLevel`,
 ADD INDEX `fk_CraftBuilding_LevelsRequire1_idx` (`minLevel` ASC),
 ADD INDEX `fk_CraftBuilding_LevelsRequire2_idx` (`maxLevel` ASC);
 
-ALTER TABLE `discord_bot_rpg`.`CraftBuilding` 
+ALTER TABLE `discord_bot_rpg`.`craftbuilding` 
 ADD CONSTRAINT `fk_CraftBuilding_LevelsRequire1`
   FOREIGN KEY (`minLevel`)
-  REFERENCES `discord_bot_rpg`.`LevelsRequire` (`level`)
+  REFERENCES `discord_bot_rpg`.`levelsrequire` (`level`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `fk_CraftBuilding_LevelsRequire2`
   FOREIGN KEY (`maxLevel`)
-  REFERENCES `discord_bot_rpg`.`LevelsRequire` (`level`)
+  REFERENCES `discord_bot_rpg`.`levelsrequire` (`level`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
