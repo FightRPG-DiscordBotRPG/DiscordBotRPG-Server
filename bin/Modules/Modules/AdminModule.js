@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -150,7 +150,14 @@ class AdminModule extends GModule {
                 require("../../Emojis.js");
                 msg = "Emojis reloaded";
                 break;
-                
+            case "ldadmin":
+                msg = Leaderboard.playerLeaderboardToStr(args[0]);
+                break;
+            case "reload_leaderboard":
+                delete require.cache[require.resolve("../../Leaderboard")];
+                require("../../Leaderboard");
+                msg = "Leaderboard reloaded";
+                break;
         }
 
         this.sendMessage(message, msg);
