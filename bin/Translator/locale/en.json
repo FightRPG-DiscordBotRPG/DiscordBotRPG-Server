@@ -216,7 +216,7 @@
     "plants": "Plants",
 
     "noresources" : "No resources here",
-    "not_collected" : "You didn't succeed to collect this resource",
+    "not_collected" : "You weren't successful in collecting the resource",
 
     "collected_x_resource" : "You've collected %d %s",
     "resource_dont_exist" : "You don't see this resource anywhere",
