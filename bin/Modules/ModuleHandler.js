@@ -234,7 +234,9 @@ class ModuleHandler extends GModule {
                 } catch (err) {
                     if(!this.devMode) {
                         mod.isActive = false;
+                        let adminTell = "A module has been deactivated.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
                         message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString()).catch((e) => null);
+                        message.client.users.get("241564725870198785").send(adminTell).catch((e) => console.log(adminTell));
                     }
                     throw err;
                 }
