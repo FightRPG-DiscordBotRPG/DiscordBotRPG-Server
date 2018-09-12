@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -159,8 +159,11 @@ class AdminModule extends GModule {
                 msg = "Leaderboard reloaded";
                 break;
             case "debug":
-                console.log(Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(parseInt(args[0], 10)));
-                console.log(Globals.connectedUsers[authorIdentifier].character.getInv().getItem(parseInt(args[0], 10)).id);
+                break;
+            case "last_command":
+                let lcommand = conn.query("SELECT * FROM commandslogs ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1 OFFSET 1;");
+                msg = "The last command used is: " + lcommand[0].command;
+                msg += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
                 break;
         }
 
