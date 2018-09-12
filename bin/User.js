@@ -37,7 +37,7 @@ class User {
             nToken = Crypto.randomBytes(16).toString('hex');
             res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
-        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`) VALUES ( " + this.id + ", " + this.character.id + ", '" + this.username + "', '" + nToken + "', true);");
+        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`) VALUES (?, ?, ?, ?, true);", [this.id, this.character.id, this.username, nToken]);
         conn.query("INSERT IGNORE INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
         DatabaseInitializer.PStats();
     }
@@ -136,7 +136,7 @@ class User {
     }
 
     tell(str) {
-        Globals.discordClient.users.get(this.id).send(str);
+        Globals.discordClient.users.get(this.id).send(str).catch((e) => null);
     }
 
     //Affichage
