@@ -1,5 +1,6 @@
 ﻿'use strict';
 const conn = require("../conf/mysql.js");
+const Emojis = require("./Emojis");
 
 class Leaderboard {
 
@@ -10,12 +11,14 @@ class Leaderboard {
         let idMaxLength = 8;
         let levelMaxLength = 13;
         let rankMaxLength = 8;
+        let statusMaxLength = 13;
 
         let idLength;
         let usernameLength;
         let honorLength;
         let levelLength;
         let rankLength;
+        let statusLength;
 
         let actualRank = Leaderboard.getPlayerRank(id);
         let maximumRank = Leaderboard.getMaximumRank();
@@ -31,9 +34,9 @@ class Leaderboard {
         offset = offset >= 0 ? offset : 0;
 
 
-        str += "|  rank  |   id   |             username             |    honor    |    level    |\n" +
-               "|________|________|__________________________________|_____________|_____________|\n";
-        let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
+        str += "|  rank  |   id   |             username             |    honor    |    level    |  connected  |\n" +
+               "|________|________|__________________________________|_____________|_____________|_____________|\n";
+        let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, users.isConnected, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
 
         //console.log("offset : " + offset + " | rank : " + actualRank + " | max rank : " + maximumRank + " | nb affiche : " + res.length);
         offset++;
@@ -56,11 +59,18 @@ class Leaderboard {
             levelLength = i.actualLevel.toString().length;
             levelLength = (levelMaxLength - levelLength) / 2;
 
+            let connected = i.isConnected == true ? Emojis.getString("blue_circle") : Emojis.getString("red_circle");
+
+            statusLength = connected.length;
+            statusLength = (statusMaxLength - statusLength) / 2;
+
+            
             str += "|" + " ".repeat(Math.floor(rankLength)) + offset + " ".repeat(Math.ceil(rankLength)) + "|"
                 + " ".repeat(Math.floor(idLength)) + i.idCharacter + " ".repeat(Math.ceil(idLength)) + "|"
                 + " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|"
                 + " ".repeat(Math.floor(honorLength)) + i.Honor + " ".repeat(Math.ceil(honorLength)) + "|"
-                + " ".repeat(Math.floor(levelLength)) + i.actualLevel + " ".repeat(Math.ceil(levelLength)) + "|\n";
+                + " ".repeat(Math.floor(levelLength)) + i.actualLevel + " ".repeat(Math.ceil(levelLength)) + "|"
+                + " ".repeat(Math.floor(statusLength)) + connected + " ".repeat(Math.floor(statusLength)) + "|\n";
 
                 offset++;
         }

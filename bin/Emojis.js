@@ -41,6 +41,8 @@ Emojis.general = {
     "seven" : "7⃣",
     "eight" : "8⃣",
     "nine" : "9⃣",
+    "red_circle" : "🔴",
+    "blue_circle" : "🔵",
 }
 
 module.exports = Emojis;
