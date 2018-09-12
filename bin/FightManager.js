@@ -81,23 +81,23 @@ class FightManager {
                 }
             }
             if (!canIFightTheMonster) {
-                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => message.author.send(e.message));
+                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => message.author.send(e.message).catch((e) => null));
                 this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [users[0].name, enemies[0].getName(lang)]) + "\n\n";
             } else {
                 this.fights[userid].text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [users[0].name, enemies[0].getName(lang)]) + "\n\n";
             }
             //console.log("Fight Initialized");
             message.channel.send(this.embedPvE(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
-                .then(msg => this.discordFightPvE(msg, userid, lang)).catch(e => message.author.send(e.message));
+                .then(msg => this.discordFightPvE(msg, userid, lang)).catch(e => message.author.send(e.message).catch((e) => null));
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize Fight : Already in battle");
-                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message));
+                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message).catch((e) => null));
             } else if (timeToFight >= 0) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)])).catch(e => message.author.send(e.message));
+                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)])).catch(e => message.author.send(e.message).catch((e) => null));
             }
 
         }
@@ -437,16 +437,16 @@ class FightManager {
             }
             //console.log("Fight Initialized");
             message.channel.send(this.embedPvP(message.author.id, this.fights[userid].text[0] + this.fights[userid].text[1] + this.fights[userid].text[2], null, lang))
-                .then(msg => this.discordFightPvP(msg, userid, lang)).catch(e => message.author.send(e.message));
+                .then(msg => this.discordFightPvP(msg, userid, lang)).catch(e => message.author.send(e.message).catch((e) => null));
 
         } else {
             // erreur
             if (alreadyInBattle) {
                 //console.log("Can't Initialize Fight : Already in battle");
-                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message));
+                message.channel.send(Translator.getString(lang, "errors", "fight_already_in")).catch(e => message.author.send(e.message).catch((e) => null));
             } else if (timeToFight >= 0) {
                 //console.log("Can't Initialize Fight : Have To Wait");
-                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)])).catch(e => message.author.send(e.message));
+                message.channel.send(Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)])).catch(e => message.author.send(e.message)).catch((e) => null);
             }
 
         }

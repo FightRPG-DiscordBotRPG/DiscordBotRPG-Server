@@ -202,7 +202,7 @@ class Group {
 	playerLeaveBroadcast(player, discordClient) {
 		// Send to leader
         if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username]));
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
         }
 
 
@@ -210,7 +210,7 @@ class Group {
 		for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username]));
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
             }
 		}
 	}
@@ -218,20 +218,20 @@ class Group {
 	playerJoinedBroadcast(player, discordClient) {
 		// Send to leader
         if (!this.leader.isGroupMuted()) {;
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username]));
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
         }
 		// Send to rest of group
 		for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username]));
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
             }
 		}
 	}
 
     playerDeclinedBroadcast(player, discordClient) {
         if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]));
+            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username])).catch((e) => null);
         }
     }
 
@@ -239,10 +239,10 @@ class Group {
         for (let user in this.players) {
             user = this.players[user];
             if (user == player) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "you_ve_been_kicked"));
+                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "you_ve_been_kicked")).catch((e) => null);
             } else {
                 if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username]));
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username])).catch((e) => null);
                 }
             }
         }
@@ -309,7 +309,7 @@ class Group {
                 }
 
 
-                discordClient.users.get(this.leader.id).send(str);
+                discordClient.users.get(this.leader.id).send(str).catch((e) => null);
             }
 
             // Send to rest of group
@@ -339,18 +339,18 @@ class Group {
                     }
 
 
-                    discordClient.users.get(user.id).send(str);
+                    discordClient.users.get(user.id).send(str).catch((e) => null);
                 }
             }
         } else {
             if (!this.leader.isGroupMuted()) {
-                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight"));
+                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight")).catch((e) => null);
             }
             // Send to rest of group
             for (let user in this.players) {
                 user = this.players[user];
                 if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight"));
+                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight")).catch((e) => null);
                 }
             }
         }

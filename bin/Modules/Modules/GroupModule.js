@@ -151,7 +151,7 @@ class GroupModule extends GModule {
                                         if (Globals.connectedUsers[firstMention.id].character.group === null) {
                                             if (Globals.connectedUsers[firstMention.id].character.pendingPartyInvite == null) {
                                                 group.invite(Globals.connectedUsers[firstMention.id]);
-                                                firstMention.send(Translator.getString(Globals.connectedUsers[firstMention.id].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"]));
+                                                firstMention.send(Translator.getString(Globals.connectedUsers[firstMention.id].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"])).catch((e) => null);
                                                 msg = Translator.getString(lang, "group", "invitation_sent");
                                             } else {
                                                 msg = Translator.getString(lang, "errors", "group_invite_waiting");
