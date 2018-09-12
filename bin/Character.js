@@ -13,7 +13,7 @@ const PStatistics = require("./Achievement/PStatistics.js");
 class Character extends CharacterEntity {
 
     constructor(id) {
-        super();
+        super(id);
         this._type = "Character";
         this.id = id;
         this.inv = new CharacterInventory();
@@ -56,7 +56,7 @@ class Character extends CharacterEntity {
         this.equipement.loadEquipements(this.id);
 
 
-        //this.updateStats();
+        this.updateStats();
     }
 
     loadCharacter(id) {
@@ -64,11 +64,11 @@ class Character extends CharacterEntity {
         let res = conn.query("SELECT statPoints, money, idArea " +
             "FROM characters " +
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
-            "WHERE characters.idCharacter = " + id)[0];
+            "WHERE characters.idCharacter = ?", [id])[0];
         this.id = id;
         this.stats.loadStat(id);
-        this.levelSystem.loadLevelSystem(this.id);
-        this.craftSystem.load(this.id);
+        this.levelSystem.loadLevelSystem(id);
+        this.craftSystem.load(id);
         this.statPoints = res["statPoints"];
         this.money = res["money"];
         this.idArea = res["idArea"];
@@ -84,7 +84,9 @@ class Character extends CharacterEntity {
         if (res.length > 0) {
             this.idGuild = res[0]["idGuild"];
         }
-       
+
+        this.updateStats();
+
     }
 
     saveCharacter() {
@@ -97,7 +99,7 @@ class Character extends CharacterEntity {
         conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
-    changeArea(area, waitTime=Globals.basicWaitTimeAfterTravel) {
+    changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
         let baseTimeToWait = this.getWaitTimeTravel(waitTime);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.canFightAt = Date.now() + baseTimeToWait;
@@ -120,6 +122,10 @@ class Character extends CharacterEntity {
 
     getIDRegion() {
         return this.area.getIDRegion();
+    }
+
+    getEquipement() {
+        return this.equipement;
     }
 
     /**
@@ -192,7 +198,7 @@ class Character extends CharacterEntity {
                     stat = "dexterity";
                     break;
 
-                // Secondaires
+                    // Secondaires
 
                 case "cha":
                     this.stats.charisma += nbr;
@@ -279,12 +285,12 @@ class Character extends CharacterEntity {
         /*this.honorPoints += honorPoints;
         //console.log("Add " + this.honorPoints);
         this.saveHonor();*/
-        if(honorPoints != null) {
-            if(honorPoints >= 0) {
+        if (honorPoints != null) {
+            if (honorPoints >= 0) {
                 conn.query("UPDATE charactershonor SET Honor = Honor + ? WHERE idCharacter = ?;", [honorPoints, this.id]);
             } else {
-                this.removeHonorPoints(honorPoints); 
-            } 
+                this.removeHonorPoints(honorPoints);
+            }
             return true;
         }
         return false;
@@ -297,14 +303,15 @@ class Character extends CharacterEntity {
     }
 
     // number : Nbr of items to sell
-    sellThisItem(IdEmplacement, number) {
+    sellThisItem(idEmplacement, number) {
         number = number ? number : 1;
-        let value = this.getInv().objects[IdEmplacement] ? this.getInv().objects[IdEmplacement].getCost(number) : 0;
+        let value = this.getInv().getItem(idEmplacement).getCost(number);
         // Si cost > 0 alors item existe et peut se vendre
         // On fait passer true pour deleteo bject puisque si on delete tout item on doit delete de la bdd
         if (value > 0) {
-            this.getInv().removeSomeFromInventory(IdEmplacement, number, true);
+            this.getInv().removeSomeFromInventory(idEmplacement, number, true);
             this.addMoney(value);
+            PStatistics.incrStat(this.id, "gold_sell", value);
         }
         return value;
     }
@@ -335,31 +342,14 @@ class Character extends CharacterEntity {
     }
 
     craft(craft) {
-        let items = this.getInv().getItemsOfThosesIds(craft.requiredItems.map((e) => e.idBase));
         let gotAllItems = true;
-        
-        if(items.length === craft.requiredItems.length) {
-            // Crack if got all of the required items
-            for(let i in items) {
-                for(let j in craft.requiredItems) {
-                    if(items[i].item.idBaseItem === craft.requiredItems[j].idBase && items[i].item.number < craft.requiredItems[j].number) {
-                        gotAllItems = false;
-                        break;
-                    }
+        if (craft.id > 0) {
+            gotAllItems = conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id])[0][0].doesPlayerHaveEnoughMats;
+            if (gotAllItems) {
+                for (let i in craft.requiredItems) {
+                    this.getInv().removeSomeFromInventoryIdBase(craft.requiredItems[i].idBase, craft.requiredItems[i].number, true);
                 }
-            }
 
-            if(gotAllItems) {
-
-                // On del les objets requis
-                for(let i in items) {
-                    for(let j in craft.requiredItems) {
-                        if(items[i].item.idBaseItem === craft.requiredItems[j].idBase) {
-                            this.getInv().removeSomeFromInventory(this.getInv().getEmplacementOfThisItemIdBase(items[i].item.idBaseItem), craft.requiredItems[j].number, true);
-                        }
-                    }
-                }
-                
                 let ls = new LootSystem();
 
                 // Create new item
@@ -367,6 +357,7 @@ class Character extends CharacterEntity {
 
                 // on add 1 à l'inventaire
                 this.getInv().addToInventory(newItemID);
+
                 return true;
             }
         }
@@ -432,7 +423,7 @@ class Character extends CharacterEntity {
             }
 
         }
-        this.removeMoney(order.price * number);  
+        this.removeMoney(order.price * number);
     }
 
     use(consumable) {
@@ -441,7 +432,7 @@ class Character extends CharacterEntity {
 
     canUse(idItem) {
         let item = this.getInv().getItem(idItem);
-        if(item != null) {
+        if (item != null) {
             return item instanceof Consumable;
         }
         return false;
@@ -496,7 +487,8 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
 
-    getWaitTimeTravel(waitTime=Globals.basicWaitTimeAfterTravel) {
+    getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
+        this.updateStats();
         let conReduction = Math.floor(this.getStat("constitution") / 20);
         conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
         let baseTimeToWait = (waitTime - conReduction) * 1000;
@@ -564,7 +556,7 @@ class Character extends CharacterEntity {
     getIdOfThisIdBase(idBaseItem) {
         return this.getInv().getIdOfThisIdBase(idBaseItem);
     }
-    
+
     isItemFavorite(idEmplacement) {
         return this.getInv().getItem(idEmplacement).isFavorite;
     }
@@ -591,11 +583,11 @@ class Character extends CharacterEntity {
     }
 
     static exist(id) {
-        if(id > 0) {
+        if (id > 0) {
             let res = conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
-            if(res != null && res[0] != null) {
+            if (res != null && res[0] != null) {
                 return true;
-            } else{
+            } else {
                 return false;
             }
         }

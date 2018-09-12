@@ -55,14 +55,13 @@ class InventoryModule extends GModule {
                 let idItemToSee = parseInt(args[0], 10);
                 doIHaveThisItem = false;
                 if (idItemToSee !== undefined && Number.isInteger(idItemToSee)) {
-                    doIHaveThisItem = Globals.connectedUsers[authorIdentifier].character.inv.doIHaveThisItem(idItemToSee);
+                    doIHaveThisItem = Globals.connectedUsers[authorIdentifier].character.getInv().doIHaveThisItem(idItemToSee);
                     if (doIHaveThisItem) {
-                        let typeName = Globals.connectedUsers[authorIdentifier].character.inv.objects[idItemToSee].typeName;
-                        let oneEquipped = Globals.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)] ? true : false;
-                        let equippedStats;
-                        if (oneEquipped)
-                            equippedStats = Globals.connectedUsers[authorIdentifier].character.equipement.objects[this.getEquipableIDType(typeName)].stats;
-                        msg = Globals.connectedUsers[authorIdentifier].character.inv.seeThisItem(idItemToSee, equippedStats, lang);
+                        let itemToSee = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(idItemToSee);
+                        let equippedStats = Globals.connectedUsers[authorIdentifier].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
+                        if (equippedStats != null)
+                            equippedStats = equippedStats.stats;
+                        msg = Globals.connectedUsers[authorIdentifier].character.getInv().seeThisItem(idItemToSee, equippedStats, lang);
                     } else {
                         msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
                     }
@@ -146,7 +145,7 @@ class InventoryModule extends GModule {
                 //console.log(numberOfItemsToSell);
                 msg = "";
                 if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                    if (sellIdItem !== undefined && Number.isInteger(sellIdItem)) {
+                    if (sellIdItem != null && Number.isInteger(sellIdItem)) {
                         if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
                             if (!Globals.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
                                 let itemValue = Globals.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);

@@ -56,6 +56,25 @@ class Item {
         conn.query("DELETE FROM items WHERE idItem = " + this.id + ";");
     }
 
+    static deleteItem(idItem) {
+        StatsItems.deleteStats(idItem);
+        conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
+    }
+
+    /**
+     * 
+     * @param {Array<number>} idItems 
+     */
+    static deleteItems(idItems) {
+        let itemsToDelete = "(" + idItems.toString() + ")";
+        StatsItems.deleteStatsMultiple(idItems);
+        conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
+    }
+
+    getLevel() {
+        return this.level;
+    }
+
     getPower() {
         let statsPossible = Object.keys(Globals.statsIds);
         let power = 0;
@@ -161,12 +180,12 @@ class Item {
 
 }
 
-Item.newItem = (idBase, type) => {
+Item.newItem = (idItem, type) => {
     switch(type) {
         case "consumable":
-            return new Consumable(idBase);
+            return new Consumable(idItem);
         default:
-            return new Item(idBase);
+            return new Item(idItem);
     }
 };
 

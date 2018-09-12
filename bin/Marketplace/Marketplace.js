@@ -125,7 +125,11 @@ class Marketplace {
 
     showItemOrder(idItem, character, lang) {
         let item = new Item(idItem);
-        let compareStats = item.equipable ? character.equipement.objects[this.getEquipableIDType(item.typeName)].stats : null;
+        let compareStats = character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
+        if (compareStats != null) {
+            compareStats = compareStats.stats;
+        }
+
         return new Discord.RichEmbed()
             .setAuthor(item.getName(lang), Globals.addr + "images/items/" + item.image + ".png")
             .setColor(item.rarityColor)

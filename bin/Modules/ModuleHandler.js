@@ -14,6 +14,7 @@ class ModuleHandler extends GModule {
         this.isReloadable = false;
         this.prefixes = {};
         this.prefix = "::";
+        this.devMode = false;
         /**
          * @type {Array<GModule>}
          */
@@ -231,12 +232,14 @@ class ModuleHandler extends GModule {
                 try {
                     await mod.run(message, command, args);
                 } catch (err) {
-                    mod.isActive = false;
-                    message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString());
+                    if(!this.devMode) {
+                        mod.isActive = false;
+                        message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString()).catch((e) => null);
+                    }
                     throw err;
                 }
             } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.");
+                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
             }
         }
     }

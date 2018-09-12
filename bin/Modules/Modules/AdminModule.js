@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -157,6 +157,10 @@ class AdminModule extends GModule {
                 delete require.cache[require.resolve("../../Leaderboard")];
                 require("../../Leaderboard");
                 msg = "Leaderboard reloaded";
+                break;
+            case "debug":
+                console.log(Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(parseInt(args[0], 10)));
+                console.log(Globals.connectedUsers[authorIdentifier].character.getInv().getItem(parseInt(args[0], 10)).id);
                 break;
         }
 

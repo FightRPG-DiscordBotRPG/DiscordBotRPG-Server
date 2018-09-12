@@ -11,47 +11,30 @@ class CharacterInventory {
     // Discord User Info
     constructor(id) {
         this.id = id;
-        //this.objects = {};
-        /**
-         * @type {Array<Item>}
-         */
-        this.objects = [];
     }
 
     // Load user from DB
     // If not exist create new one
     loadInventory(id) {
         this.id = id;
-        let res = conn.query("SELECT charactersinventory.idItem, number, itemstypes.nomType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ?", [this.id]);
-        for (let i = 0; i < res.length; i++) {
-            this.objects.push(Item.newItem(res[i]["idItem"], res[i]["nomType"]));  
-            this.objects[i].number = res[i]["number"];
-            // push
-        }
     }
 
     isEquipable(idEmplacement) {
-        if (this.objects[idEmplacement].isEquipable()) {
-            return true;
+        idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
+        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+
+        if(isEquipable[0]) {
+            return isEquipable[0].equipable == 1;
         }
         return false;
     }
 
-    getItem(idEmplacement) {
-        return this.objects[idEmplacement];
-    }
-
     addToInventory(idItem, number) {
-        number = number ? number : 1;
-        let idEmplacement = this.getIdEmplacementOfItem(idItem);
-        if (idEmplacement >= 0) {
-            this.objects[idEmplacement].number += number;
-            conn.query("UPDATE charactersinventory SET number = " + this.objects[idEmplacement].number + " WHERE idCharacter = " + this.id + " AND idItem = " + idItem);
+        number = number > 0 ? number : 1;
+        if(this.isThisItemInInventory(idItem)) {
+            conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, this.id, idItem]);
         } else {
-            let nItem = Item.newItem(idItem, Item.getType(idItem));
-            nItem.number = number;
-            this.objects.push(nItem);
-            conn.query("INSERT INTO charactersinventory VALUES (" + this.id + "," + idItem + ", " + number + ")");
+            conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [this.id, idItem, number]);
         }
     }
 
@@ -62,6 +45,19 @@ class CharacterInventory {
         conn.query("UPDATE charactersinventory SET number = " + number + " WHERE idCharacter = " + this.id + " AND idItem = " + idItem);
     }*/
 
+    removeSomeFromInventoryIdBase(idBase, number, deleteObject) {
+        number = number ? number : 1;
+        let item = this.getItemByBase(idBase);
+        if(item != null) {
+            item.number -= number;
+            if (item.number <= 0) {
+                this.deleteFromInventory(item, deleteObject);
+            } else {
+                conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
+            }
+        }
+    }
+
     /**
      * Remove from inventory item | idEmplacement needs to be in the array
      * @param {any} idEmplacement
@@ -70,69 +66,68 @@ class CharacterInventory {
      */
     removeSomeFromInventory(idEmplacement, number, deleteObject) {
         number = number ? number : 1;
-        this.objects[idEmplacement].number -= number;
-        if (this.objects[idEmplacement].number <= 0) {
-            this.deleteFromInventory(idEmplacement, deleteObject);
+        let item = this.getItem(idEmplacement);
+        item.number -= number;
+        if (item.number <= 0) {
+            this.deleteFromInventory(item, deleteObject);
         } else {
-            conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, this.objects[idEmplacement].id])
+            conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
         }
     }
 
     /**
      * Remove item from database character inventory and if demand remove it from the game
-     * @param {any} idItem
-     * @param {any} deleteObject
+     * @param {Item} item
+     * @param {boolean} deleteObject
      */
-    deleteFromInventory(idEmplacement, deleteObject) {
-        conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id + " AND idItem = " + this.objects[idEmplacement].id);
+    deleteFromInventory(item, deleteObject) {
+        conn.query("DELETE FROM charactersinventory WHERE idCharacter = ? AND idItem = ?", [this.id, item.id]);
         if (deleteObject) {
-            this.objects[idEmplacement].deleteItem();
+            Item.deleteItem(item.id);
         }
-        delete this.objects[idEmplacement];
-        this.reorderInventory();
-    }
-
-    reorderInventory() {
-        this.objects = this.objects.filter(val => val);
     }
 
     /**
      * Delete all objects from inventory
      */
     deleteAllFromInventory() {
-        let empty = true;
 
-        // Update database inventory
+        // Only way to do
+        // Multiple queries 1 query = impossible
+        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE idCharacter = 1 AND favorite = 0");
+        let ids = [];
+        for(let i in res) {
+            ids[i] = res[i].idItem;
+        }
+
+        // Delete from inventory
         conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
 
-        // Then delete all items
-        for (let i in this.objects) {
-            //conn.query("DELETE FROM charactersinventory WHERE idCharacter = " + this.id + " AND idItem = " + this.objects[i].id);
-            if(!this.objects[i].isFavorite) {
-                this.objects[i].deleteItem();
-                delete this.objects[i];
-    
-                empty = false;
-            }
-
-        }
-
-        this.reorderInventory();
-        if (empty) {
-            return false;
-        } else {
-            return true;
-        }
+        // Delete items
+        Item.deleteItems(ids);
     }
 
     getAllInventoryValue() {
-        let value = 0;
-        for (let i in this.objects) {
-            if(!this.objects[i].isFavorite) {
-                value += this.objects[i].getCost();
-            }
-        }
+        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+ itemsbase.idRarity * 2) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0", [this.id])[0]["value"];
         return value;
+    }
+
+    getAllItemsAtThisPage(page) {
+        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
+        let perPage = 10;
+        let maxPage = Math.ceil(this.getNumberOfItem() / perPage);
+        page = maxPage > 0 && maxPage < page ? maxPage : page;
+        let items = [];
+
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
+
+        for(let i in res) {
+            let item = Item.newItem(res[i].idItem, res[i].nomType);
+            item.number = res[i].number;
+            items[i] = item;
+        }
+
+        return { items: items, maxPage: maxPage, page: page };
     }
 
     /**
@@ -141,7 +136,6 @@ class CharacterInventory {
      * @param {string} lang 
      */
     toStr(page, lang) {
-        page = page ? page - 1 : 0;
         let str = "```";
         //str += "|   nb   |" + "                             Nom                               |" + "         Type         |" + " Niveau |" + "    Rareté    |\n";
         str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
@@ -151,30 +145,18 @@ class CharacterInventory {
         str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
 
-        let keys = Object.keys(this.objects);
-        if (keys.length > 0) {
-            // Doing pagination
-            let paginated = keys.slice(page * 8, (page + 1) * 8);
-            if (paginated.length === 0) {
-                page = 0;
-                paginated = keys.slice(page * 8, (page + 1) * 8)
-            }
-
-            // Create string for each objects
-            for (let i of paginated) {
-                /*str += "|" + " ".repeat(Math.floor((8 - i.toString().length) / 2)) + i + " ".repeat(Math.ceil((8 - i.toString().length) / 2)) + "|";
-                str += this.objects[i].toStr() + "\n";*/
-                str += i + " - " + this.objects[i].toStr(lang) + "\n";
+        let res = this.getAllItemsAtThisPage(page);
+        let index = (res.page - 1) * 10 + 1;
+        if(res.items.length > 0) {
+            for(let item of res.items) {
+                str += index + " - " + item.toStr(lang) + "\n";
+                index++;
             }
         } else {
-            /*str += "|                                                                                                                       |\n";
-            str += "|                                              Votre inventaire est vide !                                              |\n";
-            str += "|_______________________________________________________________________________________________________________________|";*/
             str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
         }
-        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : 1;
-        //str += "\n\nPage " + (page + 1) + "/" + nbrOfPages;
-        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [(page + 1), nbrOfPages])
+
+        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [res.page, res.maxPage])
         str += "```"
         return str;
     }
@@ -186,46 +168,62 @@ class CharacterInventory {
      * @param {string} lang 
      */
     seeThisItem(idEmplacement, compareStats, lang) {
+        let item = this.getItem(idEmplacement);
         let embed = new Discord.RichEmbed()
-            .setAuthor(this.objects[idEmplacement].getName(lang) + (this.objects[idEmplacement].isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + this.objects[idEmplacement].image + ".png")
-            .setColor(this.objects[idEmplacement].rarityColor)
-            .addField(Translator.getString(lang, "item_types", this.objects[idEmplacement].typeName) + " (" + Translator.getString(lang, "item_sous_types", this.objects[idEmplacement].sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", this.objects[idEmplacement].rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.objects[idEmplacement].level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.objects[idEmplacement].getPower() + "%"
-            , this.objects[idEmplacement].getDesc(lang))
-            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", this.objects[idEmplacement].stats.toStr(compareStats, lang));
+            .setAuthor(item.getName(lang) + (item.isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + item.image + ".png")
+            .setColor(item.rarityColor)
+            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%"
+            , item.getDesc(lang))
+            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
         
         return embed;
     }
 
     /**
+     * Returns if inventory is empty
+     */
+    isEmpty() {
+        return this.getNumberOfItem() == 0;
+    }
+
+    getNumberOfItem() {
+        let res = conn.query("SELECT COUNT(*) as cnt FROM charactersinventory WHERE idCharacter = ?;", [this.id]);
+        return res[0].cnt;
+    }
+
+    /**
      * To Know if this emplacement is used
-     * @param {number} itemId
+     * Should be "is this Emplacement used"
+     * @param {number} idEmplacement
      * @returns {boolean}
      */
-    doIHaveThisItem(itemId) {
-        /*for (let i in this.objects) {
-            if (this.objects[i].id === itemId) {
-                return true;
-            }
-        }
-        return false;
-        console.log(itemId);*/
-        if (this.objects[itemId]) {
+    doIHaveThisItem(idEmplacement) {
+        if(idEmplacement <= this.getNumberOfItem() && idEmplacement > 0) {
             return true;
         }
         return false;
     }
 
     // craft system
-    getItemOfThisID(itemId) {
-        for(let item of this.objects) {
-            if(item.idBaseItem == itemId) {
-                return item;
-            }
+    /**
+     * Base ID of item
+     * @param {number} idItem 
+     */
+    getItemOfThisID(idBaseItem) {
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+        if(res[0] != null) {
+            let item = Item.newItem(res[0].idItem, res[0].nomType);
+            item.number = res[0].number;
+            return item;
         }
         return null;
     }
 
     // craft system
+    /**
+     * @deprecated
+     * @param {Array<number>} ArrItemsIDs 
+     */
     getItemsOfThosesIds(ArrItemsIDs) {
         let arr = [];
         for(let i in this.objects) {
@@ -236,15 +234,17 @@ class CharacterInventory {
         return arr;
     }
 
-    getIdEmplacementOfItem(itemId) {
-        for (let i in this.objects) {
-            if (this.objects[i].id === itemId) {
-                return i;
-            }
-        }
-        return -1;
+    isThisItemInInventory(idItem) {
+        idItem = idItem >= 0 ? idItem : 0;
+        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [this.id, idItem]);
+        return res[0] != null;
     }
 
+    
+    /**
+     * @deprecated
+     * @param {number} idBase 
+     */
     getEmplacementOfThisItemIdBase(idBase) {
         for(let i in this.objects) {
             if(this.objects[i].idBaseItem == idBase) {
@@ -255,22 +255,49 @@ class CharacterInventory {
     }
 
     getIdOfThisIdBase(idBaseItem) {
-        /*let item = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;" , [idBaseItem, this.id]);
-        if(item[0] != null) {
-            return item[0].idItem;
-        }
-        return null;*/
-
-        for (let i in this.objects) {
-            if (this.objects[i].idBaseItem === idBaseItem) {
-                return this.objects[i].id;
-            }
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+        if(res[0]) {
+            return res[0].idItem;
         }
         return null;
     }
 
+    
+    // Instantiate the require item
+    // If idEmplacement not valid 
+    // Intantiate first item in inventory
+    // If inventory is empty => throw err 
+    getItem(idEmplacement) {
+        idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+        let item = Item.newItem(res[0].idItem, res[0].nomType);
+        item.number = res[0].number;
+        return item;
+    }
+
+    getItemByBase(idBase) {
+        idBase = idBase > 0 ? idBase : 1;
+        let res = conn.query("SELECT items.idItem, charactersinventory.number, itemstypes.nomType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
+        if(res[0] != null) {
+            let item = Item.newItem(res[0].idItem, res[0].nomType);
+            item.number = res[0].number;
+            return item;
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param {number} idEmplacement 
+     * @returns Returns idItem if exist else return 0
+     */
     getIdItemOfThisEmplacement(idEmplacement) {
-        return this.objects[idEmplacement] ? this.objects[idEmplacement].id : -1;
+        idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+        if(res[0]) {
+            return res[0].idItem;
+        }
+        return 0;
     }
 
     /*

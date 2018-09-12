@@ -6,6 +6,7 @@ const Item = require("../Items/Item");
 
 class Craft {
     constructor(id) {
+        this.id = id;
         this.exist = false;
         this.requiredItems = [];
         this.itemInfo = {};

@@ -25,7 +25,7 @@ class CharacterEntity extends WorldEntity{
     loadCharacter(id) {
         this.id = id;
         this.stats.loadStat(id);
-        this.levelSystem.loadLevelSystem(this.id);
+        this.levelSystem.loadLevelSystem(id);
         this.equipement.loadEquipements(id);
     }
 
@@ -34,7 +34,7 @@ class CharacterEntity extends WorldEntity{
      */
     updateStats() {
         this.maxHP = 10 + this.getStat("constitution") * 10;
-        this.actualHP = this.maxHP;
+        this.actualHP = this.maxHP;        
     }
 
 

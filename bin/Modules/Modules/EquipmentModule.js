@@ -58,15 +58,16 @@ class EquipmentModule extends GModule {
                 if (toEquip != null && Number.isInteger(toEquip)) {
                     if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toEquip)) {
                         if (Globals.connectedUsers[authorIdentifier].character.getInv().isEquipable(toEquip)) {
-                            if (Globals.connectedUsers[authorIdentifier].character.getLevel() >= Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].level) {
-                                let swapItem = Globals.connectedUsers[authorIdentifier].character.equipement.equip(Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].id);
-                                Globals.connectedUsers[authorIdentifier].character.getInv().deleteFromInventory(toEquip);
+                            let tItemToEquip = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(toEquip);
+                            if (Globals.connectedUsers[authorIdentifier].character.getLevel() >= tItemToEquip.getLevel()) {
+                                let swapItem = Globals.connectedUsers[authorIdentifier].character.getEquipement().equip(tItemToEquip.id);
+                                Globals.connectedUsers[authorIdentifier].character.getInv().deleteFromInventory(tItemToEquip);
                                 if (swapItem > 0) {
                                     Globals.connectedUsers[authorIdentifier].character.getInv().addToInventory(swapItem);
                                 }
                                 msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
                             } else {
-                                msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [Globals.connectedUsers[authorIdentifier].character.getInv().objects[toEquip].level]);
+                                msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
                             }
 
                         } else {

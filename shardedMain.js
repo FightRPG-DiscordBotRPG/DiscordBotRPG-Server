@@ -90,7 +90,7 @@ bot.on('message', (message) => {
         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
         console.log(err);
-        message.channel.send(msgError);
+        message.channel.send(msgError).catch((e) => null);
     }
     
 });

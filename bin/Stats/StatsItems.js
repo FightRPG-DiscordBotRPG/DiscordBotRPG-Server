@@ -25,6 +25,19 @@ class StatsItems extends Stats{
         conn.query("DELETE FROM itemsstats WHERE idItem = " + this.id + ";");
     }
 
+    static deleteStats(idItem) {
+        conn.query("DELETE FROM itemsstats WHERE idItem = ?", [idItem]);
+    }
+
+    /**
+     * 
+     * @param {Array<number>} idItems 
+     */
+    static deleteStatsMultiple(idItems) {
+        let itemsToDelete = "(" + idItems.toString() + ")";
+        conn.query("DELETE FROM itemsstats WHERE idItem IN " + itemsToDelete + ";")
+    }
+
     toStr(compareStats, lang) {
         let str = "```";
         let count = 1;
