@@ -161,7 +161,7 @@ class AdminModule extends GModule {
             case "debug":
                 break;
             case "last_command":
-                let lcommand = conn.query("SELECT * FROM commandslogs ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1 OFFSET 1;");
+                let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [authorIdentifier]);
                 msg = "The last command used is: " + lcommand[0].command;
                 msg += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
                 break;
