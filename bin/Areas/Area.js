@@ -106,15 +106,15 @@ class Area {
      * @param {string} lang 
      */
     getMonsters(lang) {
-        let str = "```";
+        let str = "`\n";
         for (let i in this.monsters) {
             if (this.monsters[i].numberOfMonsters > 1) {
-                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n\n";
+                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             }
         }
-        str += "```";
+        str += "`";
         return str;
     }
 
@@ -132,14 +132,14 @@ class Area {
         let strHerbsHeader = Translator.getString(lang, "resources", "plants") + "\n";
         let strHerbs = "";
 
-        let str = "```" + Translator.getString(lang, "area", "resources") + "\n";
+        let str = "`" + "\n";
         let tempString = "";
         //let id = 0;
 
         for (let i = 0; i < this.resources.length; i++) {
             // On créer d'abord la vue de l'objet
             //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
-            tempString = Translator.getString(lang, "area", "resource", [i + 1, Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem), Translator.getString(lang, "rarities", this.resources[i]["nomRarity"])]) + "\n\n";
+            tempString = Translator.getString(lang, "area", "resource", [i + 1, Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem), Translator.getString(lang, "rarities", this.resources[i]["nomRarity"]), this.resources[i].requiredLevel]) + "\n";
 
             switch (this.resources[i]["nomSousType"]) {
                 case "wood":
@@ -160,7 +160,7 @@ class Area {
             str += strWoods.length > 0 ? strWoodsHeader + strWoods : "" + strStones.length > 0 ? strStonesHeader + strStones : "" + strHerbs.length > 0 ? strHerbsHeader + strHerbs : "";
         }
          
-        return str + "```";
+        return str + "`";
     }
 
     /**
