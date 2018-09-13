@@ -70,8 +70,9 @@ var Globals = {
     "basicWaitTimeBeforeFight": 30,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight" : 900,
-    "basicWaitTimeCollectTravel" : 10,
-    "basicWaitTimeCraft": 30,
+    "basicWaitTimeCollectTravel" : 20,
+    "basicWaitTimeCraft": 40,
+    "collectTriesOnce" : 20,
     "admins": ["241564725870198785", "285789367954440194"],
     "activated" : true,
     "mDifficulties": [

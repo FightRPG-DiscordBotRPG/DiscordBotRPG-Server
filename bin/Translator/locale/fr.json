@@ -171,7 +171,7 @@
   "area" : {
     "monster"   : "ID : %d | %s | Niv : %d | Type : %s",
     "resources" : "Ressources de la zone :",
-    "resource"  : "- ID : %d | %s | %s",
+    "resource"  : "- ID : %d | %s | %s | Niv : %d",
     "list_of_players_in_area" : "Liste des joueurs de la zone %s :",
     "player"    : "ID : %d | Nom : %s | Niveau : %d",
     "wild_area" : "%d | %s | Niveaux : %s",
@@ -222,7 +222,8 @@
     "resource_dont_exist" : "Vous ne voyez cette ressource nulle part",
     "collect_gain_xp" : "Vous avez gagné un total de %d XP (Dont %d XP bonus dûe à la zone) à votre métier de craft",
     "job_level_up" : "Vous avez gagné %d niveau à votre métier de craft",
-    "job_level_up_plur" : "Vous avez gagné %d niveaux à votre métier de craft"
+    "job_level_up_plur" : "Vous avez gagné %d niveaux à votre métier de craft",
+    "tried_to_collect_x_times" : "Vous avez essayé de récolter la ressource %d fois"
   },
   "general" : {
     "nothing_at_this_page" : "Cette page ne contient rien",

@@ -126,24 +126,26 @@ class CraftinModule extends GModule {
                                 let collectBonuses = currentArea.getAllBonuses();
                                 Globals.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
                                 idToCollect = Globals.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                                if (CraftSystem.haveCollectItem(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") + collectBonuses.collect_drop.getPercentage(), resourceToCollect.idRarity)) {
+                                let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") + collectBonuses.collect_drop.getPercentage(), resourceToCollect.idRarity);
+                                msg += Translator.getString(lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
+                                if (numberItemsCollected > 0) {
                                     if (idToCollect) {
-                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, 1);
+                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, numberItemsCollected);
                                     } else {
-                                        let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + resourceToCollect.idBaseItem + ", " + 1 + ")")["insertId"];
-                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, 1);
+                                        let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem])["insertId"];
+                                        Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, numberItemsCollected);
                                     }
 
-                                    PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", 1);
+                                    PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
 
-                                    msg = Translator.getString(lang, "resources", "collected_x_resource", [1, Translator.getString(lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
+                                    msg += Translator.getString(lang, "resources", "collected_x_resource", [numberItemsCollected, Translator.getString(lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
                                 } else {
-                                    msg = Translator.getString(lang, "resources", "not_collected") + "\n";
+                                    msg += Translator.getString(lang, "resources", "not_collected") + "\n";
                                 }
 
                                 // Si le joueur n'est pas max level en craft
                                 if (Globals.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
-                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true);
+                                    let collectXP = CraftSystem.getXP(resourceToCollect.requiredLevel, Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true) * Globals.collectTriesOnce;
                                     let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
                                     let totalCollectXP = collectXP + collectXPBonus;
                                     let collectCraftUP = Globals.connectedUsers[authorIdentifier].character.addCraftXP(totalCollectXP);

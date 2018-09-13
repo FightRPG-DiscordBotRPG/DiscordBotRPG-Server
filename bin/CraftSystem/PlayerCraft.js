@@ -55,6 +55,10 @@ class PlayerCraft {
         conn.query("UPDATE characterscraftlevel SET actualExp = " + this.actualXP + ", actualLevel = " + this.actualLevel + " WHERE idCharacter = " + this.id);
     }
 
+    getLevel() {
+        return this.actualLevel;
+    }
+
     
 }
 

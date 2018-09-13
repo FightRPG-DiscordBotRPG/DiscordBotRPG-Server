@@ -171,7 +171,7 @@
   "area" : {
     "monster"   : "ID : %d | %s | Lv : %d | Type : %s",
     "resources" : "Resources of the area:",
-    "resource"  : "- ID : %d | %s | %s",
+    "resource"  : "- ID : %d | %s | %s | Lv : %d",
     "list_of_players_in_area" : "List of players of the %s area:",
     "player"    : "ID : %d | Name : %s | Level : %d",
     "wild_area" : "%d | %s | Levels : %s",
@@ -222,7 +222,8 @@
     "resource_dont_exist" : "You don't see this resource anywhere",
     "collect_gain_xp" : "You've gain a total of %d XP (with %d XP bonus thanks to the area) to your crafting job",
     "job_level_up" : "You've gain %d level to your crafting job",
-    "job_level_up_plur" : "You've gain %d levels to your crafting job"
+    "job_level_up_plur" : "You've gain %d levels to your crafting job",
+    "tried_to_collect_x_times" : "You've tried to collect the resource %d times"
   },
   "general" : {
     "nothing_at_this_page" : "This page is empty",

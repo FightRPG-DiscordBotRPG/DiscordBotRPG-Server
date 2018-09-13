@@ -472,7 +472,8 @@ class Character extends CharacterEntity {
     }
 
     getWaitTimeResource(rarity = 1) {
-        return (Globals.basicWaitTimeCollectTravel - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCollectTravel / 2)) * 1000 * rarity;
+        let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * rarity;
     }
 
     getWaitTimeFight(more = 0) {
@@ -530,7 +531,7 @@ class Character extends CharacterEntity {
     }
 
     getCraftLevel() {
-        return this.craftSystem.actualLevel;
+        return this.craftSystem.getLevel();
     }
 
     getCratfXP() {
