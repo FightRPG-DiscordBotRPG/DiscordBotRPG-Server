@@ -103,7 +103,7 @@ class FightModule extends GModule {
                         }
 
                     } else {
-                        if(mId != -1) {
+                        if(mId != -1 && User.exist(mId)) {
                             if (authorIdentifier !== mId) {
                                 if(Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                                     let notConnectedEnemy = new User(mId);

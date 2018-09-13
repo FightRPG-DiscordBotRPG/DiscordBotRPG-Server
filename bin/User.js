@@ -83,6 +83,11 @@ class User {
         return res[0] ? res[0]["userName"] : null;
     }
 
+    static exist(idUser) {
+        let res = conn.query("SELECT * FROM users WHERE idUser = ?;", [idUser]);
+        return res[0] != null;
+    }
+
     getUsername() {
         return this.username;
     }
