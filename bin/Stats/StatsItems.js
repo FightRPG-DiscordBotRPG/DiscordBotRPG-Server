@@ -34,8 +34,10 @@ class StatsItems extends Stats{
      * @param {Array<number>} idItems 
      */
     static deleteStatsMultiple(idItems) {
-        let itemsToDelete = "(" + idItems.toString() + ")";
-        conn.query("DELETE FROM itemsstats WHERE idItem IN " + itemsToDelete + ";")
+        if(idItems.toString().length > 0) {
+            let itemsToDelete = "(" + idItems.toString() + ")";
+            conn.query("DELETE FROM itemsstats WHERE idItem IN " + itemsToDelete + ";");
+        }
     }
 
     toStr(compareStats, lang) {

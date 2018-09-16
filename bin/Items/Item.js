@@ -66,9 +66,11 @@ class Item {
      * @param {Array<number>} idItems 
      */
     static deleteItems(idItems) {
-        let itemsToDelete = "(" + idItems.toString() + ")";
-        StatsItems.deleteStatsMultiple(idItems);
-        conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
+        if(idItems.toString().length > 0) {
+            let itemsToDelete = "(" + idItems.toString() + ")";
+            StatsItems.deleteStatsMultiple(idItems);
+            conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
+        }
     }
 
     getLevel() {
