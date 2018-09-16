@@ -120,14 +120,28 @@ class AdminModule extends GModule {
                 break;
 
             case "gold":
-                let value = parseInt(args[0], 10);
-                if (!value && !Number.isInteger(value)) {
-                    value = 1;
-                }
-
-                let str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " Argent tombent du ciel rien que pour vous !\n";
-                Globals.connectedUsers[authorIdentifier].character.addMoney(value);
-                str += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[authorIdentifier].character.money + " Argent !";
+                let str;
+                if(args[1] != null) {
+                    let value = parseInt(args[0], 10);
+                    if (!value && !Number.isInteger(value)) {
+                        value = 1;
+                    }
+                    if(Globals.connectedUsers[authorIdentifier] != null) {
+                        Globals.connectedUsers[authorIdentifier].character.addMoney(value);
+                        str = "C'est bon il a recu l'argent";
+                    } else {
+                        str = "Non il existe pas ce mec";
+                    }
+                } else {
+                    let value = parseInt(args[0], 10);
+                    if (!value && !Number.isInteger(value)) {
+                        value = 1;
+                    }
+    
+                    str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " Argent tombent du ciel rien que pour vous !\n";
+                    Globals.connectedUsers[authorIdentifier].character.addMoney(value);
+                    str += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[authorIdentifier].character.money + " Argent !";
+                }    
 
                 msg = str;
                 break;
