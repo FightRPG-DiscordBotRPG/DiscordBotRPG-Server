@@ -140,7 +140,7 @@ class AdminModule extends GModule {
     
                     str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " Argent tombent du ciel rien que pour vous !\n";
                     Globals.connectedUsers[authorIdentifier].character.addMoney(value);
-                    str += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[authorIdentifier].character.money + " Argent !";
+                    str += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[authorIdentifier].character.getMoney() + " Argent !";
                 }    
 
                 msg = str;
