@@ -3,6 +3,7 @@
     "generic" : "You can't do that right now",
     "generic_tired" : "You are tired. Wait %d seconds then try again",
     "generic_cant_do_that" : "You can't do that",
+    "generic_user_dont_exist" : "Unable to find this user",
     "you_cant_claim" : "You can't claim this area",
     "you_have_to_be_in_a_guild" : "You must be in a guild to do this",
     "you_dont_have_right_to_change_announcement" : "You don't have the right to change the announcement of the guild",
@@ -67,6 +68,9 @@
     "economic_enter_id_item_to_sell" : "You must enter the item's ID to sell it",
     "economic_have_to_be_in_town" : "You must be in a town to sell your items",
     "economic_cant_sell_nothing" : "Cannot sell anything, your inventory is empty",
+    "economic_cant_send_money_to_youself" : "You can't send money to yourself",
+    "economic_minimum_send_gold" : "You must send at least 1G",
+    "economic_dont_have_enough_money" : "You don't have that amount of money",
     "fight_enter_id_monster" : "You must enter the monster's ID if you want to fight",
     "fight_impossible_in_town" : "You can't fight in town",
     "fight_already_in" : "You're already fighting, once you finish you can start a new one",
@@ -312,7 +316,8 @@
   "economic" : {
     "sell_for_x" : "You sold your item for %dG",
     "sell_for_x_plural" : "You sold your items for %dG",
-    "sell_all_for_x" : "You've sold all items in your inventory for %dG"
+    "sell_all_for_x" : "You've sold all items in your inventory for %dG",
+    "send_money_to" : "You've sent %dG to %s"
   },
   "admin" : {
     "no_admin_xp_command" : "You aren't an adminsitrator but you tried to cheat! Unfortunately, god isn't nice and decided to punish you; so here is a brand new life. (You are now level 1)."
@@ -432,6 +437,7 @@
      "itemunfav" : "Untag and item tag as favorite",
      "sell" : "Sells the selected item",
      "sellall" : "Sells all the inventory items",
+     "sendmoney" : "Send money to a player",
 
      "equipment_title" : "Equipment",
      "equipment" : "Shows equipped items",

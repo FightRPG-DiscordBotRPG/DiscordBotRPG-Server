@@ -119,20 +119,13 @@ class OtherModule extends GModule {
 
     helpPanel(lang, page) {
         let str = "";
-        let maxPage = 5;
+        let maxPage = 6;
         page = page && page > 0 && page <= maxPage ? page : 1;
 
         switch (page) {
             case 1:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
-                    "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
-                    "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
-                    "::itemfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemfav") + "\n" +
-                    "::itemunfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemunfav") + "\n" +
-                    "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
-                    "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
 
                     "[" + Translator.getString(lang, "help_panel", "equipment_title") + "]\n" +
                     "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
@@ -154,6 +147,18 @@ class OtherModule extends GModule {
             case 2:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                    "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
+                    "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
+                    "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
+                    "::itemfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemfav") + "\n" +
+                    "::itemunfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemunfav") + "\n" +
+                    "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
+                    "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
+                    "::sendmoney <@mention or idCharacter> <value> : " + Translator.getString(lang, "help_panel", "sendmoney") + "\n";
+                break;
+            case 3:
+                str = "```apache\n" +
+                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
                     "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
                     "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
@@ -164,7 +169,7 @@ class OtherModule extends GModule {
                     "::areaupbonus <bonus_identifier> <pts_to_allocate> : " + Translator.getString(lang, "help_panel", "areaupbonus") + "\n" +
                     "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
                 break;
-            case 3:
+            case 4:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
@@ -173,7 +178,7 @@ class OtherModule extends GModule {
                     "::gcreate <name> : " + Translator.getString(lang, "help_panel", "gcreate") + "\n" +
                     "::gdisband : " + Translator.getString(lang, "help_panel", "gdisband") + "\n" +
                     "::gapply <guildID> : " + Translator.getString(lang, "help_panel", "gapply") + "\n" +
-                    "::gcreate <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
+                    "::gaccept <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
                     "::gapplies : " + Translator.getString(lang, "help_panel", "gapplies") + "\n" +
                     "::gapplyremove <applyID> : " + Translator.getString(lang, "help_panel", "gapplyremove") + "\n" +
                     "::gappliesremove : " + Translator.getString(lang, "help_panel", "gappliesremove") + "\n" +
@@ -186,7 +191,7 @@ class OtherModule extends GModule {
                     "::gaccept <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
                     "::gmod <playerID> <rank> : " + Translator.getString(lang, "help_panel", "gmod") + "\n";
                 break;
-            case 4:
+            case 5:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "groups_title") + "]\n" +
@@ -210,7 +215,7 @@ class OtherModule extends GModule {
                     "::mksee <idItem> : " + Translator.getString(lang, "help_panel", "mksee") + "\n";
                 break;
 
-            case 5:
+            case 6:
                 str = "```apache\n" +
                     "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
                     "[" + Translator.getString(lang, "help_panel", "craft_title") + "]\n" +

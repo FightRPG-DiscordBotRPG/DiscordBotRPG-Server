@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class InventoryModule extends GModule {
     constructor() {
         super();
-        this.commands = ["item", "itemfav", "itemunfav", "inv", "inventory", "sell", "sellall"];
+        this.commands = ["item", "itemfav", "itemunfav", "inv", "inventory", "sell", "sellall", "sendmoney"];
         this.startLoading("Inventory");
         this.init();
         this.endLoading("Inventory");
@@ -181,6 +181,60 @@ class InventoryModule extends GModule {
                     }
                 } else {
                     msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
+                }
+                break;
+
+            case "sendmoney":
+                firstMention = mentions.first();
+                let idOtherPlayerCharacter = 0;
+                let mId = -1;
+                // Ici on récupère l'id
+                if (firstMention) {
+                    mId = firstMention.id;
+                } else if (args[0]) {
+                    idOtherPlayerCharacter = parseInt(args[0], 10);
+                    if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
+                        mId = Leaderboard.idOf(idOtherPlayerCharacter);
+                    }
+                }
+
+                let userSendMoney, userReceiveMoney;
+
+                // Si connecté
+                if (Globals.connectedUsers[mId]) {
+                    if (authorIdentifier !== mId) {
+                        userSendMoney = Globals.connectedUsers[authorIdentifier];
+                        userReceiveMoney = Globals.connectedUsers[mId];
+                    } else {
+                        msg = Translator.getString(lang, "errors", "economic_cant_send_money_to_youself");
+                    }
+                } else {
+                    if (mId != -1 && User.exist(mId)) {
+                        if (authorIdentifier !== mId) {
+                            userSendMoney = Globals.connectedUsers[authorIdentifier];
+                            userReceiveMoney = new User(mId);
+                            userReceiveMoney.loadUser();
+                        } else {
+                            msg = Translator.getString(lang, "errors", "economic_cant_send_money_to_youself");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "generic_user_dont_exist");
+                    }
+                }
+
+                if(userSendMoney != null && userReceiveMoney != null) {
+                    args[1] = parseInt(args[1], 10);
+                    if(args[1] > 0) {
+                        if(userSendMoney.character.doIHaveEnoughMoney(args[1])) {
+                            userSendMoney.character.removeMoney(args[1]);
+                            userReceiveMoney.character.addMoney(args[1]);
+                            msg = Translator.getString(lang, "economic", "send_money_to", [args[1], userReceiveMoney.getUsername()]);
+                        } else {
+                            msg = Translator.getString(lang, "errors", "economic_dont_have_enough_money");
+                        }
+                    } else {
+                        msg = Translator.getString(lang, "errors", "economic_minimum_send_gold");
+                    }
                 }
                 break;
         }

@@ -3,6 +3,7 @@
     "generic" : "Vous ne pouvez pas faire cela maintenant",
     "generic_tired" : "Vous êtes fatigué attendez : %d secondes puis recommencer",
     "generic_cant_do_that" : "Vous ne pouvez pas faire cela",
+    "generic_user_dont_exist" : "Impossible de trouver cet utilisateur",
     "you_cant_claim" : "Vous ne pouvez pas conquérir cette zone",
     "you_have_to_be_in_a_guild" : "Vous devez être dans une guilde pour faire ceci",
     "you_dont_have_right_to_change_announcement" : "Vous n'avez pas la permission de modifier l'annonce de guilde",
@@ -67,6 +68,9 @@
     "economic_enter_id_item_to_sell" : "Vous devez entrer l'ID de l'objet à vendre",
     "economic_have_to_be_in_town" : "Vous devez être dans une ville pour pouvoir vendre vos objets",
     "economic_cant_sell_nothing" : "Impossible de vendre quelque chose, votre inventaire est vide",
+    "economic_cant_send_money_to_youself" : "Vous ne pouvez pas vous envoyer de l'argent",
+    "economic_minimum_send_gold" : "Vous devez envoyer au minimum 1G",
+    "economic_dont_have_enough_money" : "Vous n'avez pas cette somme",
     "fight_enter_id_monster" : "Vous devez entrer l'identifiant du monstre que vous voulez combattre",
     "fight_impossible_in_town" : "Vous ne pouvez pas vous battre en ville",
     "fight_already_in" : "Vous êtes déjà en combat, finissez votre combat avant d'en commencer un autre",
@@ -312,7 +316,8 @@
   "economic" : {
     "sell_for_x" : "Vous avez vendu votre objet pour %dG",
     "sell_for_x_plural" : "Vous avez vendu vos objets pour %dG",
-    "sell_all_for_x" : "Vous avez vendu tous les objets de votre inventaire pour %dG"
+    "sell_all_for_x" : "Vous avez vendu tous les objets de votre inventaire pour %dG",
+    "send_money_to" : "Vous avez envoyé %dG à %s"
   },
   "admin" : {
     "no_admin_xp_command" : "Vous n'êtes pas administrateur, mais vous avez essayé de tricher, malheureusement, dieu n'est pas gentil et il a décidé de vous punir en vous faisant revivre une nouvelle vie (Vous êtes désormais niveau 1)."
@@ -432,6 +437,7 @@
      "itemunfav" : "Enlève la marque favori d'un objet pour qu'il puisse être vendu",
      "sell" : "Vend l'objet choisi",
      "sellall" : "Vend tous les objets de l'inventaire",
+     "sendmoney" : "Envoi de l'argent à un joueur",
 
      "equipment_title" : "Equipement",
      "equipment" : "Affiche les objets équipés",
