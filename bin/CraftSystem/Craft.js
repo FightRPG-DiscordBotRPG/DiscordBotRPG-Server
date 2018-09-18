@@ -14,7 +14,7 @@ class Craft {
     }
 
     load(id) {
-        let res = conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, itemsbase.idBaseItem FROM craftitemsneeded 
+        let res = conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, stackable, itemsbase.idBaseItem FROM craftitemsneeded 
         INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
         INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
         INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -35,6 +35,7 @@ class Craft {
                 rarityColor: res.couleurRarity,
                 maxLevel: res.maxLevel,
                 minLevel: res.minLevel,
+                stackable: res.stackable,
             }
 
             res = conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
@@ -91,6 +92,10 @@ class Craft {
      */
     getRarity() {
         return this.itemInfo.rarity;
+    }
+
+    isStackable() {
+        return this.itemInfo.stackable;
     }
 
 }
