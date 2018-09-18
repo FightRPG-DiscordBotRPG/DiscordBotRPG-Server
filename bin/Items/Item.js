@@ -20,6 +20,7 @@ class Item {
         this.sousType = 0;
         this.sousTypeName = "";
         this.equipable = true;
+        this.stackable = false;
         this.stats = new StatsItems(id);
         this.number = 1;
         this.isFavorite = false;
@@ -32,7 +33,7 @@ class Item {
 
     loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = "+this.id+";")[0];
+        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = "+this.id+";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.level = res["level"];
         this.image = res["imageItem"];
@@ -48,6 +49,8 @@ class Item {
         this.sousTypeName = res["nomSousType"];
 
         this.equipable = res["equipable"];
+        this.stackable = res["stackable"];
+        this.usable = res["usable"];
         this.isFavorite = res["favorite"];
     }
 
@@ -77,6 +80,10 @@ class Item {
         return this.level;
     }
 
+    getIdRarity() {
+        return this.idRarity;
+    }
+
     getPower() {
         let statsPossible = Object.keys(Globals.statsIds);
         let power = 0;
@@ -102,8 +109,25 @@ class Item {
         return this.type;
     }
 
+    /**
+     * @returns {boolean}
+     */
     isEquipable() {
         return this.equipable;
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    isStackable() {
+        return this.stackable;
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    isUsable() {
+        return this.usable;
     }
 
     toStr(lang) {
@@ -182,10 +206,12 @@ class Item {
 
 }
 
-Item.newItem = (idItem, type) => {
-    switch(type) {
+Item.newItem = (idItem, stype) => {
+    switch(stype) {
         case "consumable":
             return new Consumable(idItem);
+        case "loot_box_equipment":
+            return new EquipmentLootBox(idItem);
         default:
             return new Item(idItem);
     }
@@ -193,4 +219,5 @@ Item.newItem = (idItem, type) => {
 
 module.exports = Item;
 
+const EquipmentLootBox = require("./EquipmentLootBox");
 const Consumable = require("./Consumable");
