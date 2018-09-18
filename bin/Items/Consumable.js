@@ -8,6 +8,10 @@ class Consumable extends Item {
     use(character) {
         throw "Use must be implemented";
     }
+
+    resultToString(lang) {
+        throw "To Discord must be implemented";
+    }
 }
 
 module.exports = Consumable;

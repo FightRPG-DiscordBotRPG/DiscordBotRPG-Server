@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class EquipmentModule extends GModule {
     constructor() {
         super();
-        this.commands = ["equip", "unequip", "equiplist", "equipment"];
+        this.commands = ["equip", "unequip", "equiplist", "equipment", "use"];
         this.startLoading("Equipment");
         this.init();
         this.endLoading("Equipment");
@@ -109,8 +109,10 @@ class EquipmentModule extends GModule {
                 //console.log((toEquip));
                 if (toUse != null && Number.isInteger(toUse)) {
                     if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toUse)) {
-                        if (Globals.connectedUsers[authorIdentifier].character.canUse(toUse)) {
-                            msg = Globals.connectedUsers[authorIdentifier].character.use(toUse);
+                        let itemToUse = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(toUse);
+                        if (Globals.connectedUsers[authorIdentifier].character.canUse(itemToUse)) {
+                            Globals.connectedUsers[authorIdentifier].character.use(itemToUse, toUse);
+                            msg = itemToUse.resultToString(lang);
                         } else {
                             msg = Translator.getString(lang, "errors", "item_you_cant_use");
                         }

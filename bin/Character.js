@@ -351,13 +351,7 @@ class Character extends CharacterEntity {
                 }
 
                 let ls = new LootSystem();
-
-                // Create new item
-                let newItemID = ls.newItem(craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel));
-
-                // on add 1 à l'inventaire
-                this.getInv().addToInventory(newItemID);
-
+                ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
                 return true;
             }
         }
@@ -391,7 +385,7 @@ class Character extends CharacterEntity {
         if (item.equipable) {
             this.getInv().addToInventory(order.idItem, order.number);
         } else {
-            let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
+            let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
             if (inventoryItemID != null) {
                 this.getInv().addToInventory(inventoryItemID, order.number);
                 item.deleteItem();
@@ -410,10 +404,10 @@ class Character extends CharacterEntity {
             order.number -= number;
             order.update();
             let item = new Item(order.idItem);
-            if (item.equipable) {
+            if (item.isStackable() == false) {
                 this.getInv().addToInventory(order.idItem, order.number);
             } else {
-                let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem);
+                let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
                 if (inventoryItemID != null) {
                     this.getInv().addToInventory(inventoryItemID, number);
                 } else {
@@ -426,14 +420,24 @@ class Character extends CharacterEntity {
         this.removeMoney(order.price * number);
     }
 
-    use(consumable) {
-        console.log("J'utilise l'objet " + consumable);
+    /**
+     * 
+     * @param {Consumable} itemToUse 
+     */
+    use(itemToUse, idEmplacement) {
+        if(this.canUse(itemToUse)) {
+            itemToUse.use(this);
+            this.getInv().removeSomeFromInventory(idEmplacement, 1, true);
+        }
     }
 
-    canUse(idItem) {
-        let item = this.getInv().getItem(idItem);
+    /**
+     * 
+     * @param {Item} item 
+     */
+    canUse(item) {
         if (item != null) {
-            return item instanceof Consumable;
+            return item.isUsable();
         }
         return false;
     }
@@ -554,8 +558,8 @@ class Character extends CharacterEntity {
         return this.getInv().getItem(idEmplacement).number;
     }
 
-    getIdOfThisIdBase(idBaseItem) {
-        return this.getInv().getIdOfThisIdBase(idBaseItem);
+    getIdOfThisIdBase(idBaseItem, level=1) {
+        return this.getInv().getIdOfThisIdBase(idBaseItem, level);
     }
 
     isItemFavorite(idEmplacement) {
