@@ -61,32 +61,36 @@ class LootSystem {
     }
 
     adminGetItem(character, idBase, number) {
+        return this.giveToPlayer(character, idBase, character.getLevel(), number);
+    }
+
+    giveToPlayer(character, idBase=0, level=1, number=1) {
         number = Number.parseInt(number);
-        number = number > 0 && number < 11 ? number : 1;
-        let res = conn.query("SELECT * FROM itemsbase WHERE idBaseItem = ?", [idBase]);
+        number = number > 0 ? number : 1;
+        let res = conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
         let idToAdd;
+
         if(res[0]) {
             res = res[0];
-            if(res.idType == 5) {
-                // C'est une ressource donc stackable
-                idToAdd = character.getIdOfThisIdBase(idBase);
+            level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
+            if(res.stackable == true) {
+                // C'est un objet stackable
+                idToAdd = character.getIdOfThisIdBase(idBase, level);
                 if(idToAdd == null) {
-                    idToAdd = this.newItem(idBase, 1);
+                    idToAdd = this.newItem(idBase, level);
                 }
                 character.inv.addToInventory(idToAdd, number);
             } else {
-                // C'est autre chose donc pas stackable (pour l'instant)
+                // C'est autre chose
                 for(let i = 0; i < number; i++) {
                     idToAdd = this.newItem(idBase, character.getLevel());
-                    character.inv.addToInventory(idToAdd, 1);
+                    character.inv.addToInventory(idToAdd, number);
                 }
 
             }
             return true;
         }
         return false;
-
-        
     }
 
     getLoot(character, rarity, level) {
@@ -101,8 +105,8 @@ class LootSystem {
     }
 
     // Return id of new item if created
-    newItem(idBase, level) {
-        let res = conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes On itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
+    newItem(idBase, level, maxStatsPercentage=100) {
+        let res = conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
         if(res[0]) {
             let rarity = res[0].idRarity;
             let stats = {};
@@ -110,9 +114,10 @@ class LootSystem {
             let alreadyDone = rarity - 1;
             let objectType = res[0]["nomType"];
             let equipable = res[0]["equipable"];
+            maxStatsPercentage = maxStatsPercentage >= 50 ? maxStatsPercentage : 100;
     
             if(equipable == true) {
-                let ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
+                let ratio = Math.floor(Math.random() * (maxStatsPercentage - 50 + 1) + 50);
                 ratio = ratio / 100 * rarity / 5;
         
                 if (objectType == "weapon") {
@@ -152,6 +157,19 @@ class LootSystem {
         }
 
         return -1;
+    }
+
+    /**
+     * 
+     * @param {string} type 
+     */
+    static isModularLevelPossible(type) {
+        switch(type) {
+            case "resource":
+                return false;
+            default:
+                return true;
+        }
     }
 
 }
