@@ -264,13 +264,13 @@ class Character extends CharacterEntity {
     }
 
     addMoney(money) {
-        this.money += money;
-        this.saveMoney();
+        money = money >= 0 ? money : 0;
+        conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [money, this.id]);
     }
 
     removeMoney(money) {
-        this.money -= money;
-        this.saveMoney();
+        money = money >= 0 ? money : 0;
+        conn.query("UPDATE characters SET money = money - ? WHERE idCharacter = ?;", [money, this.id]);
     }
 
     doIHaveEnoughMoney(money) {
@@ -519,7 +519,7 @@ class Character extends CharacterEntity {
     }
 
     getMoney() {
-        return this.money;
+        return conn.query("SELECT money FROM characters WHERE idCharacter = ?;", [this.id])[0].money;
     }
 
     getInv() {
