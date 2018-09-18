@@ -45,6 +45,7 @@ class CharacterInventory {
         conn.query("UPDATE charactersinventory SET number = " + number + " WHERE idCharacter = " + this.id + " AND idItem = " + idItem);
     }*/
 
+    // Used by craft
     removeSomeFromInventoryIdBase(idBase, number, deleteObject) {
         number = number ? number : 1;
         let item = this.getItemByBase(idBase);
@@ -119,10 +120,10 @@ class CharacterInventory {
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let items = [];
 
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
 
         for(let i in res) {
-            let item = Item.newItem(res[i].idItem, res[i].nomType);
+            let item = Item.newItem(res[i].idItem, res[i].nomSousType);
             item.number = res[i].number;
             items[i] = item;
         }
@@ -210,9 +211,9 @@ class CharacterInventory {
      * @param {number} idItem 
      */
     getItemOfThisID(idBaseItem) {
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
         if(res[0] != null) {
-            let item = Item.newItem(res[0].idItem, res[0].nomType);
+            let item = Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
         }
@@ -254,8 +255,9 @@ class CharacterInventory {
         return -1;
     }
 
-    getIdOfThisIdBase(idBaseItem) {
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+    getIdOfThisIdBase(idBaseItem, level=1) {
+        level = level >= 1 ? level : 1;
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
         if(res[0]) {
             return res[0].idItem;
         }
@@ -269,17 +271,18 @@ class CharacterInventory {
     // If inventory is empty => throw err 
     getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
-        let item = Item.newItem(res[0].idItem, res[0].nomType);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+        let item = Item.newItem(res[0].idItem, res[0].nomSousType);
         item.number = res[0].number;
         return item;
     }
 
+    // Only used by craft -> don't care about level of item take first one
     getItemByBase(idBase) {
         idBase = idBase > 0 ? idBase : 1;
-        let res = conn.query("SELECT items.idItem, charactersinventory.number, itemstypes.nomType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
+        let res = conn.query("SELECT items.idItem, charactersinventory.number, itemstypes.nomType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
         if(res[0] != null) {
-            let item = Item.newItem(res[0].idItem, res[0].nomType);
+            let item = Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
         }
