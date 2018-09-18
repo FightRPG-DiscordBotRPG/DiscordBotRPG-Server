@@ -94,7 +94,7 @@ class CharacterInventory {
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE idCharacter = 1 AND favorite = 0");
+        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
         let ids = [];
         for(let i in res) {
             ids[i] = res[i].idItem;
