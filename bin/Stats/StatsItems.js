@@ -41,7 +41,7 @@ class StatsItems extends Stats{
     }
 
     toStr(compareStats, lang) {
-        let str = "```";
+        let str = "`";
         let count = 1;
         let totalSpaces = 30;
         let noStats = true;
@@ -71,9 +71,9 @@ class StatsItems extends Stats{
 
         }
         if (noStats) {
-            str += "Cet objet n'a pas de stats !";
+            str += Translator.getString(lang, "inventory_equipment", "item_no_stats");
         }
-        str += "```";
+        str += "`";
         return str;
     }
 
