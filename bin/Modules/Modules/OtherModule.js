@@ -131,6 +131,7 @@ class OtherModule extends GModule {
                     "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
                     "::equip <itemID> : " + Translator.getString(lang, "help_panel", "equip") + "\n" +
                     "::unequip <itemType> : " + Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)" + "\n" +
+                    "::use <itemID> : " + Translator.getString(lang, "help_panel", "use") + "\n" +
 
                     "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
                     "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
