@@ -1,4 +1,5 @@
 const Globals = require("./bin/Globals.js");
+const Translator = require("./bin/Translator/Translator");
 const Discord = require("discord.js");
 const Key = require("./conf/botkey.js");
 const FightManager = require("./bin/FightManager");
@@ -7,6 +8,17 @@ const AreasManager = require("./bin/Areas/AreasManager.js");
 const conf = require("./conf/conf");
 const DatabaseInitializer = require("./bin/DatabaseInitializer");
 const ModuleHandler = require("./bin/Modules/ModuleHandler");
+const User = require("./bin/User");
+const LootSystem = require("./bin/LootSystem");
+const DBL = require("dblapi.js");
+const options = {
+    webhookPort: 5000,
+    webhookAuth: conf.webhookkey
+};
+const dbl = new DBL(conf.discordbotskey, options, bot);
+dbl.webhook.on('ready', hook => {
+    console.log(`Webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
+});
 
 
 var bot = new Discord.Client();
@@ -15,7 +27,9 @@ var timeStart = Date.now();
 let syncStartWith = Date.now();
 let totalGameStartTime = Date.now();
 
-process.on('unhandledRejection', up => { throw up });
+process.on('unhandledRejection', up => {
+    throw up
+});
 
 console.log("Initializing Database ...");
 DatabaseInitializer.initialize();
@@ -27,17 +41,35 @@ console.log("Bot Starting ...");
 
 bot.on("ready", () => {
     console.log("Bot Connected");
-    
+
     bot.user.setPresence({
         game: {
             name: "On " + bot.guilds.size + " guilds !",
         },
     });
 
-    
-    if(conf.env === "prod") {
-        const DBL = require("dblapi.js");
-        const dbl = new DBL(conf.discordbotskey, bot);
+    if (conf.env === "prod") {
+
+        dbl.webhook.on('vote', vote => {
+            if(User.exist(vote.user)) {
+                let user = new User(vote.user);
+                user.loadUser();
+                let ls = new LootSystem();
+                ls.giveToPlayer(user.character, 41, 1, vote.isWeekend ? 2 : 1);
+                let duser = bot.users.get(vote.user);
+                if(duser != null) {
+                    let lang = user.getLang();
+                    let msg = Translator.getString(lang, "vote_daily", "you_voted");
+                    if(vote.isWeekend) {
+                        msg += Translator.getString(lang, "vote_daily", "vote_week_end");
+                    } else {
+                        msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
+                    }
+                    duser.send(msg);
+                }
+            }
+            
+        });
 
         setInterval(() => {
             console.log("Sending stats to https://discordbots.org/ ...");
@@ -45,7 +77,7 @@ bot.on("ready", () => {
             console.log("Data sent");
         }, 1800000);
     }
-    
+
     console.log("Loading servers stats ...");
     DatabaseInitializer.serversStats(bot.guilds);
     console.log("Servers stats loaded");
@@ -100,7 +132,7 @@ bot.on('message', async (message) => {
         console.log(err);
         message.channel.send(msgError).catch((e) => null);
     }
-    
+
 });
 
 bot.on('guildCreate', (guild) => {
@@ -124,5 +156,3 @@ bot.on('guildDelete', () => {
 
 // Load api after all 
 const ApiResponder = require("./api/ApiResponder.js");
-
-
