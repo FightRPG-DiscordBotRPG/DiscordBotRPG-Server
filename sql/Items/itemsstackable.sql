@@ -17,7 +17,3 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-INSERT INTO itemstypes VALUES (NULL, "lootbox", 0, 1, 1);
-INSERT INTO itemssoustypes VALUES (NULL, 'loot_box_equipment');
-INSERT INTO itemsbase VALUES (NULL, 7, 5, 'unknown', 8); -- 52
-INSERT INTO localizationitems VALUES (52, 'en', 'Luxury equipment box', NULL), (52, 'fr', 'Boîte d\'équipement de luxe', NULL);
