@@ -29,10 +29,9 @@ class FightManager {
     // PveFight
 
     timeToFight(users) {
-        let date = Date.now();
         for (let i in users) {
-            if (users[i].canFightAt > date) {
-                return users[i].canFightAt - date;
+            if (!users[i].canDoAction()) {
+                return users[i].getExhaustMillis();
             }
         }
         return -1;
