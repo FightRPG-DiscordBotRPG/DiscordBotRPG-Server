@@ -102,7 +102,7 @@ class Character extends CharacterEntity {
     changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
         let baseTimeToWait = this.getWaitTimeTravel(waitTime);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + baseTimeToWait;
+        this.setWaitTime(Date.now() + baseTimeToWait);
         this.area = area;
         this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
@@ -110,6 +110,18 @@ class Character extends CharacterEntity {
 
     setArea(area) {
         this.area = area;
+    }
+
+    resetWaitTime() {
+        this.setWaitTime(0);
+    }
+
+    setWaitTime(time) {
+        this.canFightAt = time;
+    }
+
+    getWaitTime() {
+        return this.canFightAt;
     }
 
     getIdArea() {
@@ -132,11 +144,15 @@ class Character extends CharacterEntity {
      * @returns {number} Exhuast time in seconds
      */
     getExhaust() {
-        return Math.ceil((this.canFightAt - Date.now()) / 1000);
+        return Math.ceil((this.getWaitTime() - Date.now()) / 1000);
+    }
+
+    getExhaustMillis() {
+        return this.getWaitTime() - Date.now();
     }
 
     canDoAction() {
-        return this.canFightAt <= Date.now();
+        return this.getWaitTime() <= Date.now();
     }
 
     // Group System
@@ -367,13 +383,11 @@ class Character extends CharacterEntity {
         if (this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
             let item = this.getInv().getItem(idEmplacement);
-            //idItem = Item.createNew(item.idBaseItem, item.level);
             idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
             idItem = this.getInv().getIdItemOfThisEmplacement(idEmplacement);
         }
-
         this.getInv().removeSomeFromInventory(idEmplacement, nbr, false);
         order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
         order.place();
@@ -446,28 +460,28 @@ class Character extends CharacterEntity {
     waitForNextFight(more = 0) {
         let waitTime = this.getWaitTimeFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + waitTime;
+        this.setWaitTime(Date.now() + waitTime);
         return waitTime;
     }
 
     waitForNextPvPFight(more = 0) {
         let waitTime = this.getWaitTimePvPFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + waitTime;
+        this.setWaitTime(Date.now() + waitTime);
         return waitTime;
     }
 
     waitForNextResource(rarity = 1) {
         let baseTimeToWait = this.getWaitTimeResource(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + baseTimeToWait;
+        this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
     }
 
     waitForNextCraft(rarity = 1) {
         let baseTimeToWait = this.getWaitTimeCraft(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.canFightAt = Date.now() + baseTimeToWait;
+        this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
     }
 
@@ -597,6 +611,16 @@ class Character extends CharacterEntity {
             }
         }
         return false;
+    }
+
+    static staticGetIdByUID(uid) {
+        if(uid != null) {
+            let res = conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [uid]);
+            if(res[0]) {
+                return res[0].idCharacter;
+            }
+        }
+        return null;
     }
 
 
