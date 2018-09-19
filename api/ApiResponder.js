@@ -45,7 +45,7 @@ app.use(limiter);
 /*https.createServer(httpsOptions, app).listen(8443);*/
 
 app.use(express.static(path.join(__dirname, '../public')));
-app.use('/api', api);
+//app.use('/api', api);
 
 //console.log(path.join(__dirname, '../public'));
 
@@ -64,11 +64,11 @@ app.use('/api', api);
 
 
 
-
+/*
 var connectedUsers = Globals.connectedUsers;
 var connectedGuilds = Globals.connectedGuilds;
 var areasManager = Globals.areasManager;
-var fightManager = Globals.fightManager;
+var fightManager = Globals.fightManager;*/
 
 
 
