@@ -1,5 +1,6 @@
 const Item = require("./Item");
 const Consumable = require("./Consumable");
+const Translator = require("../Translator/Translator");
 
 
 class LootBox extends Consumable {
@@ -18,7 +19,7 @@ class LootBox extends Consumable {
     }
 
     resultToString(lang) {
-        let msg = "Vous avez ouvert une lootbox, vous obtenez : \n";
+        let msg = Translator.getString(lang, "lootboxes", "open_message");
         let drop = false;
 
         if(this.openResult.items.length > 0) {
@@ -36,7 +37,7 @@ class LootBox extends Consumable {
         }
 
         if(drop == false ) {
-            msg = "Vous avez ouvert une lootbox, mais vous n'avez rien eu !";
+            msg = Translator.getString(lang, "lootboxes", "no_drop");
         }
 
         return msg;
