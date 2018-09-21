@@ -39,7 +39,7 @@ class CharacterEntity extends WorldEntity{
 
 
     damageCalcul() {
-        let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
+        let baseDamage = (this.getStat("strength") + 1) * 2;
         return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
     }
 
