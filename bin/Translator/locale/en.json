@@ -300,7 +300,7 @@
     "power": "Power",
     "item_tag_as_favorite": "This item is now tagged as favorite",
     "item_untag_as_favorite": "This item is not longer tagged as favorite",
-    "item_no_stats": "This item don't have any attributes"
+    "item_no_stats": "This item doesn't have any attributes"
   },
   "character": {
     "reset_done": "Reset done!",
