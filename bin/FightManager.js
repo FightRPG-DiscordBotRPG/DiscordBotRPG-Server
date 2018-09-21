@@ -94,7 +94,7 @@ class FightManager {
             //console.log("Fight Initialized");
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, (thisPvEFight.fight.summary.rounds.length) * 2000);
+            }, (thisPvEFight.fight.summary.rounds.length) * 6000);
             message.channel.send(this.embedPvE(thisPvEFight.text[0] + thisPvEFight.text[1] + thisPvEFight.text[2], thisPvEFight, null, lang))
                 .then(msg => this.discordFightPvE(msg, userid, thisPvEFight, lang)).catch(e => console.log(e));
 
@@ -130,7 +130,7 @@ class FightManager {
 
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, this.fights[userid].fight.summary.rounds.length * 2001);
+            }, this.fights[userid].fight.summary.rounds.length * 6000);
             
 
         } else {
@@ -172,7 +172,7 @@ class FightManager {
                     fight.summaryIndex++;
                     setTimeout(() => {
                         this.discordFightPvE(message, userid, fight, lang);
-                    }, 2000);
+                    }, 6000);
                 })
                 .catch((e) => {
                     console.log(e);
@@ -269,7 +269,7 @@ class FightManager {
                     fight.summaryIndex++;
                     setTimeout(() => {
                         this.discordFightPvP(message, userid, fight, lang);
-                    }, 2000);
+                    }, 6000);
                 })
                 .catch((e) => {
                     console.log(e);
@@ -444,7 +444,7 @@ class FightManager {
             //console.log("Fight Initialized");
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, (pvpFight.fight.summary.rounds.length) * 2000);
+            }, (pvpFight.fight.summary.rounds.length) * 6000);
             message.channel.send(this.embedPvP(pvpFight.text[0] + pvpFight.text[1] + pvpFight.text[2], pvpFight, null, lang))
                 .then(msg => this.discordFightPvP(msg, userid, pvpFight, lang)).catch(e => console.log(e));
 
