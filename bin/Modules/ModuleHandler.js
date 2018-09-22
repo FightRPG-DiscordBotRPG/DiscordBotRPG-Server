@@ -59,6 +59,7 @@ class ModuleHandler extends GModule {
 
 
         if (!message.author.bot && command != null) {
+            let dt = Date.now();
             PStatistics.logCommand(authorIdentifier, command, Date.now());
             await this.connectUser(message);
 
@@ -111,6 +112,7 @@ class ModuleHandler extends GModule {
             }
 
             this.sendMessage(message, msg);
+            console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
         }
     }
 

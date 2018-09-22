@@ -173,6 +173,7 @@ class AdminModule extends GModule {
                 msg = "Leaderboard reloaded";
                 break;
             case "debug":
+                msg = Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(args[0]);
                 break;
             case "last_command":
                 let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [authorIdentifier]);
