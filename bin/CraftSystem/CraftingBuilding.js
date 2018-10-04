@@ -35,11 +35,7 @@ class CraftingBuilding {
             [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let res = conn.query(`SELECT * FROM craftitem
-                    INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
-                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`,
-            [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, perPage, (page - 1) * perPage]);
+        let res = conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, perPage, (page - 1) * perPage]);
 
 
 
@@ -98,7 +94,7 @@ class CraftingBuilding {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
         let res;
         if(idCraft > 0) {
-            res = conn.query("SELECT idCraftItem FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.maxRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, idCraft-1]);
+            res = conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, idCraft-1]);
         }
         
         return res != null && res[0] != null ? res[0].idCraftItem : 0;
