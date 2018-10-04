@@ -393,10 +393,12 @@ class Character extends CharacterEntity {
         order.place();
     }
 
+    // TODO :
+    // Must change when is not stackable (add an item for each number => insert)
     marketplaceCollectThisItem(order) {
         let item = new Item(order.idItem);
         order.remove();
-        if (item.equipable) {
+        if (item.isStackable() == false) {
             this.getInv().addToInventory(order.idItem, order.number);
         } else {
             let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
