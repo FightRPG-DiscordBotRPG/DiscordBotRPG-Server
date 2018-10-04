@@ -502,6 +502,7 @@
     "glevelup": "Raises the guild level",
     "genroll": "Enrolls your guild for the next conquest of the area where you are in",
     "gunenroll": "Unenroll the guild from the next conquest of this area",
+    "gleave" : "Leave your guild",
     "gmod": "Change the member rank (1 : Member, 2 : Officer)",
 
     "other_title": "Other",

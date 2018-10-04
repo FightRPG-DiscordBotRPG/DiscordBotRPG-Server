@@ -22,7 +22,7 @@ const Emojis = require("../../Emojis");
 class GuildModule extends GModule {
     constructor() {
         super();
-        this.commands = ["guild", "gcreate", "gdisband", "gapply", "gaccept", "gapplies", "gapplyremove", "gappliesremove", "guilds", "gremove", "gmod", "gannounce", "gaddmoney", "gremovemoney", "glevelup", "genroll", "gunenroll"];
+        this.commands = ["guild", "gcreate", "gdisband", "gapply", "gaccept", "gapplies", "gapplyremove", "gappliesremove", "guilds", "gremove", "gmod", "gannounce", "gaddmoney", "gremovemoney", "glevelup", "genroll", "gunenroll", "gleave", "gquit"];
         this.startLoading("Guild");
         this.init();
         this.endLoading("Guild");
@@ -247,6 +247,24 @@ class GuildModule extends GModule {
                         if (Globals.connectedUsers[uIDGuild]) {
                             Globals.connectedUsers[uIDGuild].character.idGuild = 0;
                         }
+                    }
+                } else {
+                    msg = Translator.getString(lang, "errors", "guild_not_in_guild");
+                }
+                break;
+
+            case "gleave":
+            case "gquit":
+                tGuildId = Globals.connectedUsers[authorIdentifier].character.idGuild;
+                if (tGuildId > 0) {
+                    uIDGuild = authorIdentifier;
+                    let mychaid = Globals.connectedUsers[authorIdentifier].character.id;
+                    err = Globals.connectedGuilds[tGuildId].removeMember(mychaid, mychaid, lang);
+                    if (err.length > 0) {
+                        msg = err[0];
+                    } else {
+                        msg = Translator.getString(lang, "guild", "you_leaved_guild");
+                        Globals.connectedUsers[authorIdentifier].character.idGuild = 0;
                     }
                 } else {
                     msg = Translator.getString(lang, "errors", "guild_not_in_guild");

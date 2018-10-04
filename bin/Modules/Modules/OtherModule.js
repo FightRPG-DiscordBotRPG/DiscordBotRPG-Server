@@ -189,7 +189,7 @@ class OtherModule extends GModule {
                     "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
                     "::genroll : " + Translator.getString(lang, "help_panel", "genroll") + "\n" +
                     "::gunenroll : " + Translator.getString(lang, "help_panel", "gunenroll") + "\n" +
-                    "::gaccept <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
+                    "::gleave : " + Translator.getString(lang, "help_panel", "gleave") + "\n" +
                     "::gmod <playerID> <rank> : " + Translator.getString(lang, "help_panel", "gmod") + "\n";
                 break;
             case 5:
