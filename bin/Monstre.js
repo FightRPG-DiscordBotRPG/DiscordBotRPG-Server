@@ -2,7 +2,7 @@
 const conn = require("../conf/mysql.js");
 const StatsMonstres = require("./Stats/StatsMonstres");
 const Globals = require("./Globals.js");
-const WorldEntity = require("./WorldEntity.js");
+const WorldEntity = require("./Entities/WorldEntity.js");
 const Translator = require("./Translator/Translator");
 
 class Monstre extends WorldEntity {
@@ -33,29 +33,27 @@ class Monstre extends WorldEntity {
     loadMonster() {
         let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
         this.difficulty = Globals.mDifficulties[tDifficulty];
-        let res = conn.query("SELECT DISTINCT avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = " + this.id)[0];
+        let res = conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id])[0];
         let bonus = 1;
         this.type = res["nom"];
+        this.level = res["avglevel"];
+        let multiplier = res["idType"];
 
         if (this.type == "elite") {
             bonus = 2;
             this.luckBonus = 40;
-            this.stats.loadStat(this.id, 1.3);
         } else if (this.type == "normal") {
-            this.stats.loadStat(this.id, this.difficulty.value);
+            multiplier = this.difficulty.value;
         } else if (this.type == "boss") {
             bonus = 10;
             this.luckBonus = 120;
-            this.stats.loadStat(this.id, 2);
         }
 
+        this.stats.loadStat(this.id, multiplier, this.getLevel());
 
-
-
-        this.level = res["avglevel"];
         this.updateStats();
-        this.xp = Math.round((10 * (Math.pow(this.level, 2))) / 6 * bonus);
-        this.money = Math.round((Math.random() * (this.level * 2 - this.level) + this.level) * bonus);
+        this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 6 * bonus);
+        this.money = Math.round((Math.random() * (this.getLevel() * 2 - this.getLevel()) + this.getLevel()) * bonus);
     }
 
     getName(lang="en") {

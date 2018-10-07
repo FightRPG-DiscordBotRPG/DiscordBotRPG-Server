@@ -61,6 +61,18 @@ class Stats {
         return r;
     }
 
+    getOptimalArmor(level=1) {
+        return ((8 * (Math.pow(level,2))) / 7 + 5);
+    }
+
+    getOptimalCrit(level=1) {
+        return level * 8;
+    }
+
+    getOptimalStun(level=1) {
+        return level * 8;
+    }
+
 
 }
 
