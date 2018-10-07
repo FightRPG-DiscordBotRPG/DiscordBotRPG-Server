@@ -1,4 +1,4 @@
-const Entity = require("../WorldEntity");
+const Entity = require("./WorldEntity");
 const StatsGuild = require("../Stats/StatsGuild");
 const conn = require("../../conf/mysql");
 

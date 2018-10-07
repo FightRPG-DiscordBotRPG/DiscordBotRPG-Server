@@ -1,4 +1,4 @@
-const WorldEntity = require("../WorldEntity");
+const WorldEntity = require("../Entities/WorldEntity");
 class Fight {
     /**
      * Classe de gestion d'un combat
