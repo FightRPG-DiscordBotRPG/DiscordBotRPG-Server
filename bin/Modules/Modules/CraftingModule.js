@@ -18,7 +18,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 
-class CraftinModule extends GModule {
+class CraftingModule extends GModule {
     constructor() {
         super();
         this.commands = ["craftlist", "craftshow", "craft", "collect"];
@@ -177,4 +177,4 @@ class CraftinModule extends GModule {
     }
 }
 
-module.exports = CraftinModule;
+module.exports = CraftingModule;
