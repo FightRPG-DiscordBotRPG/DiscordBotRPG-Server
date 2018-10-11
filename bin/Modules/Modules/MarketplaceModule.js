@@ -18,7 +18,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 
-class CraftinModule extends GModule {
+class MarketplaceModule extends GModule {
     constructor() {
         super();
         this.commands = ["mkmylist", "mkplace", "mkcancel", "mkbuy", "mksearch", "mkshow", "mksee"];
@@ -153,8 +153,13 @@ class CraftinModule extends GModule {
                                 if (Globals.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
                                     temp = conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter])[0]["idUser"];
                                     // Recupération de l'objet
+                                    console.log("Before");
+                                    console.log(orderToBuy);
+                                    console.log("nbr : " + numberOrderToBuy);
                                     Globals.connectedUsers[authorIdentifier].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
-
+                                    console.log("After");
+                                    console.log(orderToBuy);
+                                    console.log("nbr : " + numberOrderToBuy);
                                     // Puis donne l'argent au vendeur
                                     if (Globals.connectedUsers[temp]) {
                                         Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
@@ -218,4 +223,4 @@ class CraftinModule extends GModule {
     }
 }
 
-module.exports = CraftinModule;
+module.exports = MarketplaceModule;
