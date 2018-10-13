@@ -153,13 +153,7 @@ class MarketplaceModule extends GModule {
                                 if (Globals.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
                                     temp = conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter])[0]["idUser"];
                                     // Recupération de l'objet
-                                    console.log("Before");
-                                    console.log(orderToBuy);
-                                    console.log("nbr : " + numberOrderToBuy);
                                     Globals.connectedUsers[authorIdentifier].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
-                                    console.log("After");
-                                    console.log(orderToBuy);
-                                    console.log("nbr : " + numberOrderToBuy);
                                     // Puis donne l'argent au vendeur
                                     if (Globals.connectedUsers[temp]) {
                                         Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
