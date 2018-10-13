@@ -50,7 +50,6 @@ DROP PRIMARY KEY,
 ADD PRIMARY KEY (`idMonstre`),
 ADD INDEX `fk_StatsMonstres_StatsProfil1_idx` (`idStatsProfil` ASC),
 DROP INDEX `fk_StatsMonstres_Stats1_idx` ;
-;
 
 ALTER TABLE `discord_bot_rpg`.`statsmonstres` 
 ADD CONSTRAINT `fk_StatsMonstres_StatsProfil1`
@@ -58,11 +57,6 @@ ADD CONSTRAINT `fk_StatsMonstres_StatsProfil1`
   REFERENCES `discord_bot_rpg`.`StatsProfil` (`idStatsProfil`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 INSERT INTO `statsprofil` (`idStatsProfil`, `name`) VALUES (NULL, 'balance');
 INSERT INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES ('1', '1', '25'), ('1', '3', '25'), ('1', '5', '25'), ('1', '9', '25'), ('1', '4', '15');
