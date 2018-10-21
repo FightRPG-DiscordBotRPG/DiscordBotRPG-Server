@@ -14,7 +14,7 @@ class LootSystem {
         //console.log(chance);
         let rarity = 0;
 
-        let minLeg = 1 - Globals.rarityChances.legendaire * (luckModifier > 20 ? 20 : luckModifier);
+        let minLeg = 1 - Globals.rarityChances.legendaire * (luckModifier > 2 ? 2 : luckModifier);
         let minEpique = minLeg - Globals.rarityChances.epique * (luckModifier > 10 ? 10 : luckModifier);
         let minSuperieur = minEpique - Globals.rarityChances.superieur * (luckModifier > 5 ? 5 : luckModifier);
         let minRare = minSuperieur - Globals.rarityChances.rare * (luckModifier > 5 ? 5 : luckModifier);
@@ -24,23 +24,14 @@ class LootSystem {
 
 
         if (chance >= minCommun && chance < minRare) {
-            // Commun
-            // 10%
             rarity = 1;
         } else if (chance >= minRare && chance < minSuperieur) {
-            // Rare
-            // 7.5%
             rarity = 2;
         } else if (chance >= minSuperieur && chance < minEpique) {
-            // superieur
-            // 4.5%
             rarity = 3;
         } else if (chance >= minEpique && chance < minLeg) {
-            // epique
-            // 1%
             rarity = 4;
         } else if (chance >= minLeg) {
-            // 0.5%
             rarity = 5;
         }
 
@@ -84,7 +75,7 @@ class LootSystem {
                 // C'est autre chose
                 for(let i = 0; i < number; i++) {
                     idToAdd = this.newItem(idBase, character.getLevel());
-                    character.inv.addToInventory(idToAdd, number);
+                    character.inv.addToInventory(idToAdd, 1);
                 }
 
             }
@@ -111,14 +102,13 @@ class LootSystem {
             let rarity = res[0].idRarity;
             let stats = {};
             let statsPossible = Object.keys(Globals.statsIds);
-            let alreadyDone = rarity - 1;
+            let alreadyDone = rarity - 1 + this.getNumberOfStatsBonus(rarity);
             let objectType = res[0]["nomType"];
             let equipable = res[0]["equipable"];
             maxStatsPercentage = maxStatsPercentage >= 50 ? maxStatsPercentage : 100;
     
             if(equipable == true) {
-                let ratio = Math.floor(Math.random() * (maxStatsPercentage - 50 + 1) + 50);
-                ratio = ratio / 100 * rarity / 5;
+                let ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
         
                 if (objectType == "weapon") {
                     //Une arme
@@ -128,8 +118,7 @@ class LootSystem {
                 }
         
                 while (alreadyDone > 0) {
-                    ratio = Math.floor(Math.random() * (100 - 50 + 1) + 50);
-                    ratio = ratio / 100 * rarity / 5; 
+                    ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
                     let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
                     while (stats[r]) {
                         r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
@@ -170,6 +159,24 @@ class LootSystem {
             default:
                 return true;
         }
+    }
+
+    getNumberOfStatsBonus(rarity) {
+        let maxPossible = 5 - rarity;
+        let maxStats = 0;
+        while(maxPossible > 0) {
+            if(Math.random() < 0.1) {
+                maxStats++;
+            }
+            maxPossible--;
+        }
+        return maxStats;
+    }
+
+    getRandomStatRatio(rarity, maxToPerfection=100) {
+        let min = (rarity - 1) / 5;
+        let max = rarity / 5;
+        return Math.random() * (max - min) + min;
     }
 
 }

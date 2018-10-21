@@ -49,15 +49,15 @@ let rarityChances = {
     rare: 10 / 100,
     superieur: 4 / 100,
     epique: 0.5 / 100,
-    legendaire: 0.2 / 100,
+    legendaire: 0.1 / 100,
 }
 
 let collectChances = {
     commun: 50 / 100,
     rare: 30 / 100,
     superieur: 9 / 100,
-    epique: 1.5 / 100,
-    legendaire: 0.8 / 100,
+    epique: 1.25 / 100,
+    legendaire: 0.3 / 100,
 }
 
 var Globals = {
@@ -78,11 +78,11 @@ var Globals = {
     "mDifficulties": [
         {
             name: "Weak",
-            value: 0.6,
+            value: 0.8,
         },
         {
             name: "Young",
-            value: 0.8,
+            value: 0.9,
         },
         {
             name: "Adult",
@@ -90,7 +90,7 @@ var Globals = {
         },
         {
             name: "Alpha",
-            value: 1.5,
+            value: 1.2,
         }
     ],
     "equipsPossible": equipsPossible,
