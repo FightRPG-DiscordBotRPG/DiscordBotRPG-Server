@@ -96,7 +96,7 @@ class Item {
             }
             power += statPower;
         }
-        return Math.round(power / 5 * 100);
+        return Math.floor(power / 5 * 100);
     }
 
     setFavorite(value) {

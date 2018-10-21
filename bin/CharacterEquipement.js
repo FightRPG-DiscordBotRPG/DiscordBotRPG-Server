@@ -46,7 +46,7 @@ class CharacterEquipement {
         for (let i in items) {
             avgPower += items[i].getPower();
         }
-        return Math.round(avgPower / Globals.equipsPossible.length);
+        return Math.floor(avgPower / Globals.equipsPossible.length);
     }
 
     // -1 Pas Swap
