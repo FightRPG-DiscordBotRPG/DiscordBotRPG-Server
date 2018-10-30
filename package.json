@@ -66,6 +66,7 @@
     },
     "dblapi.js": "^2.2.0",
     "discord.js": "^11.4.2",
+    "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-rate-limit": "^2.12.2",
     "get-port": {
@@ -116,17 +117,7 @@
       "resolved": "https://registry.npmjs.org/lowdb/-/lowdb-1.0.0.tgz",
       "version": "1.0.0"
     },
-    "mysql": {
-      "integrity": "sha512-C7tjzWtbN5nzkLIV+E8Crnl9bFyc7d3XJcBAvHKEVkjrYjogz3llo22q6s/hw+UcsE4/844pDob9ac+3dVjQSA==",
-      "requires": {
-        "bignumber.js": "4.0.4",
-        "readable-stream": "2.3.3",
-        "safe-buffer": "5.1.1",
-        "sqlstring": "2.3.0"
-      },
-      "resolved": "https://registry.npmjs.org/mysql/-/mysql-2.15.0.tgz",
-      "version": "2.15.0"
-    },
+    "mysql": "^2.16.0",
     "node-dijkstra": "^2.5.0",
     "nodemon": "^1.18.3",
     "object-sizeof": "^1.2.0",
@@ -185,6 +176,7 @@
       "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz",
       "version": "5.1.1"
     },
+    "session-file-store": "^1.2.0",
     "snekfetch": {
       "integrity": "sha512-aLEvf1YR440pINb0LEo/SL2Q2s/A26+YEqPlx09A0XpGH7qWp8iqIFFolVILHn2yudWXJne9QWyQu+lzDp+ksQ==",
       "resolved": "https://registry.npmjs.org/snekfetch/-/snekfetch-3.6.1.tgz",
