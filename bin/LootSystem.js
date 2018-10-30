@@ -210,5 +210,3 @@ class LootSystem {
 }
 
 module.exports = LootSystem;
-
-const Character = require("./Character");
