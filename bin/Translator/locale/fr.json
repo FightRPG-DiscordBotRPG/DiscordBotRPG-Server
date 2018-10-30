@@ -63,7 +63,7 @@
     "item_you_have_to_choose_type_to_unequip": "Vous devez choisir le type d'objet à déséquiper",
     "item_cant_equip_higher_level": "Vous devez être au minimum level %d pour équiper cet objet",
     "item_cant_sell_favorite": "Vous ne pouvez pas vendre un objet marqué comme favori",
-    "item_you_cant_use" : "Vous ne pouvez pas utiliser cet objet",
+    "item_you_cant_use": "Vous ne pouvez pas utiliser cet objet",
 
     "character_you_dont_have_enough_to_reset": "Vous n'avez pas assez d'argent pour réinitialiser vos stats !",
     "economic_enter_id_item_to_sell": "Vous devez entrer l'ID de l'objet à vendre",
@@ -342,7 +342,10 @@
     "user_attacked": "%s attaque %s !",
     "onfight_user_attack": "%s attaque le monstre %s et lui inflige %d points de dégâts",
     "onfight_monster_attack": "%s attaque le joueur %s et lui inflige %d points de dégâts",
-    "drop_item": "Vous avez gagné un objet (%s) ! Bravo !",
+    "drop_item_equip": "Vous avez gagné un équipement (%s) !",
+    "drop_item_equip_plur": "Vous avez gagné des équipements (%s) !",
+    "drop_item_other": "Vous avez gagné un objet (%s) !",
+    "drop_item_other_plur": "Vous avez gagné des objets (%s) !",
     "level_up": "Bravo ! Vous avez gagné : %d niv. Vous êtes désormais niveau : %d !",
     "money_gain": "Vous gagnez : %d G",
     "xp_gain": "Vous gagnez : %d XP",
@@ -407,7 +410,7 @@
     "herbs": "Herbe",
     "resource": "Ressource",
     "lootbox": "Coffre à butin",
-    "potion" : "Potion"
+    "potion": "Potion"
   },
   "item_sous_types": {
     "wood": "Bois",
@@ -417,7 +420,7 @@
     "whip": "Fouet",
     "armor": "Armure",
     "loot_box_equipment": "Coffre d'équipements",
-    "reset_time_potion" : "Anti-Fatigue"
+    "reset_time_potion": "Anti-Fatigue"
   },
   "stats": {
     "strength": "Force",
@@ -432,17 +435,17 @@
     "luck": "Chance"
   },
   "lootboxes": {
-    "open_message" : "Vous avez ouvert un coffre à butin, vous obtenez :\n",
-    "no_drop" : "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !"
+    "open_message": "Vous avez ouvert un coffre à butin, vous obtenez :\n",
+    "no_drop": "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !"
   },
-  "potions" : {
-    "drink" : "Vous avez bu : \"%s\"\n",
-    "reset_time" : "Vous sentez votre fatigue partir, votre temps de fatigue a été réinitialisé"
+  "potions": {
+    "drink": "Vous avez bu : \"%s\"\n",
+    "reset_time": "Vous sentez votre fatigue partir, votre temps de fatigue a été réinitialisé"
   },
-  "vote_daily" : {
-    "you_voted" : "Vous avez voté pour le bot, merci à vous !\n",
-    "vote_no_week_end" : "Vous recevez une potion anti-fatigue !",
-    "vote_week_end" : "Bonus du week-end ! Vous recevez deux potions anti-fatigue !"
+  "vote_daily": {
+    "you_voted": "Vous avez voté pour le bot, merci à vous !\n",
+    "vote_no_week_end": "Vous recevez une potion anti-fatigue !",
+    "vote_week_end": "Bonus du week-end ! Vous recevez deux potions anti-fatigue !"
   },
   "help_panel": {
     "help": "Aide",
@@ -462,7 +465,7 @@
     "equipment": "Affiche les objets équipés",
     "equip": "Equipé l'objet choisi",
     "unequip": "Déséquipe l'objet de l'emplacement choisi",
-    "use" : "Utilise l'objet choisi",
+    "use": "Utilise l'objet choisi",
 
     "character_title": "Personnage",
     "info": "Affiche les informations sur votre personnage",
@@ -502,7 +505,7 @@
     "glevelup": "Permet de faire monter de niveau la guilde.",
     "genroll": "Inscrit votre guilde au tournoi de la zone dans laquelle vous vous trouvez",
     "gunenroll": "Désinscrit votre guilde au tournoi auquel elle est inscrite",
-    "gleave" : "Abandonner votre guilde",
+    "gleave": "Abandonner votre guilde",
     "gmod": "Change le rang du membre de la guilde (1 : Membre, 2 : Officier)",
 
     "other_title": "Autres",

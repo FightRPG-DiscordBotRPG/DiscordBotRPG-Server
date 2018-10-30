@@ -63,7 +63,7 @@
     "item_you_have_to_choose_type_to_unequip": "You must choose the kind of item you want to unequip",
     "item_cant_equip_higher_level": "You must be at least at level %d to equip this item",
     "item_cant_sell_favorite": "You can't sell an item tagged as favorite",
-    "item_you_cant_use" : "You can't use this item",
+    "item_you_cant_use": "You can't use this item",
 
     "character_you_dont_have_enough_to_reset": "You don't have enough money to reset your stats!",
     "economic_enter_id_item_to_sell": "You must enter the item's ID to sell it",
@@ -343,6 +343,10 @@
     "onfight_user_attack": "%s attacks the monster %s and inflicts %d damage points",
     "onfight_monster_attack": "%s attacks the player %s and inflicts %d damage points",
     "drop_item": "You won an item (%s)! Congrats!",
+    "drop_item_equip": "You've won equipment (%s) !",
+    "drop_item_equip_plur": "You've won equipment (%s) !",
+    "drop_item_other": "You've won an item (%s) !",
+    "drop_item_other_plur": "You've won item (%s) !",
     "level_up": "Congrats! You won: %d lvl. You are now level: %d !",
     "money_gain": "You won: %d G",
     "xp_gain": "You won: %d XP",
@@ -407,7 +411,7 @@
     "herbs": "Herb",
     "resource": "Resource",
     "lootbox": "LootBox",
-    "potion" : "Potion"
+    "potion": "Potion"
   },
   "item_sous_types": {
     "wood": "Wood",
@@ -417,7 +421,7 @@
     "whip": "Whip",
     "armor": "Armor",
     "loot_box_equipment": "Equipment Box",
-    "reset_time_potion" : "Anti-Tiredness"
+    "reset_time_potion": "Anti-Tiredness"
   },
   "stats": {
     "strength": "Strength",
@@ -432,17 +436,17 @@
     "luck": "Luck"
   },
   "lootboxes": {
-    "open_message" : "You opened a loot box, you get:\n",
-    "no_drop" : "You opened a loot box, but you didn't get anything!"
+    "open_message": "You opened a loot box, you get:\n",
+    "no_drop": "You opened a loot box, but you didn't get anything!"
   },
-  "potions" : {
-    "drink" : "You drank : \"%s\"\n",
-    "reset_time" : "You feel your tiredness leaving, your tiredness time has been reset"
+  "potions": {
+    "drink": "You drank : \"%s\"\n",
+    "reset_time": "You feel your tiredness leaving, your tiredness time has been reset"
   },
-  "vote_daily" : {
-    "you_voted" : "You voted for the bot, thank you!\n",
-    "vote_no_week_end" : "As a reward, you receive an anti-tiredness potion!",
-    "vote_week_end" : "Weekend bonus! You receive two anti-tiredness potions!"
+  "vote_daily": {
+    "you_voted": "You voted for the bot, thank you!\n",
+    "vote_no_week_end": "As a reward, you receive an anti-tiredness potion!",
+    "vote_week_end": "Weekend bonus! You receive two anti-tiredness potions!"
   },
   "help_panel": {
     "help": "Help",
@@ -462,7 +466,7 @@
     "equipment": "Shows equipped items",
     "equip": "Equips the selected item",
     "unequip": "Unequips the object from the selected slot",
-    "use" : "Use the specified item",
+    "use": "Use the specified item",
 
     "character_title": "Character",
     "info": "Shows your character's information",
@@ -502,7 +506,7 @@
     "glevelup": "Raises the guild level",
     "genroll": "Enrolls your guild for the next conquest of the area where you are in",
     "gunenroll": "Unenroll the guild from the next conquest of this area",
-    "gleave" : "Leave your guild",
+    "gleave": "Leave your guild",
     "gmod": "Change the member rank (1 : Member, 2 : Officer)",
 
     "other_title": "Other",

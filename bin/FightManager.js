@@ -68,7 +68,7 @@ class FightManager {
         let timeToFight = this.timeToFight(users);
         if (timeToFight < 0 && !alreadyInBattle) {
             let enemies = this.loadMonsters(monsters);
-            
+
             let thisPvEFight = {
                 text: ["", "", ""],
                 fight: new FightPvE(users, enemies, lang),
@@ -131,7 +131,7 @@ class FightManager {
             setTimeout(() => {
                 this.deleteFight(userid);
             }, this.fights[userid].fight.summary.rounds.length * 6000);
-            
+
 
         } else {
             // erreur
@@ -184,9 +184,43 @@ class FightManager {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
 
                 if (fight.fight.entities[0].length == 1) {
+                    console.log(summary.drops);
                     if (summary.drops.length > 0) {
-                        fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "drop_item", [Translator.getString(lang, "rarities", summary.drops[0].drop)]) + "\n\n", fight);
+                        let drop_string = "<:treasure:403457812535181313>  ";
+                        let equipDrop = 0;
+                        let otherDrop = 0;
+                        let strEquipments = "";
+                        let strOthers = "";
+                        let allDrops = summary.drops[0].drop;
+
+                        for (let drop in allDrops) {
+                            let rname = Translator.getString(lang, "rarities", Globals.getRarityName(drop));
+                            if (allDrops[drop].equipable > 0) {
+                                strEquipments += rname + ": " + allDrops[drop].equipable + ", ";
+                                equipDrop += allDrops[drop].equipable;
+                            }
+                            if (allDrops[drop].other > 0) {
+                                otherDrop += allDrops[drop].other;
+                                strOthers += rname + ": " + allDrops[drop].other + ", ";
+                            }
+                        }
+
+                        if (strEquipments != "") {
+                            console.log(strEquipments);
+                            strEquipments = strEquipments.slice(0, -2);
+                            drop_string += Translator.getString(lang, "fight_pve", equipDrop > 1 ? "drop_item_equip_plur" : "drop_item_equip", [strEquipments]) + "\n";
+                            console.log(strEquipments);
+                            console.log(drop_string);
+                        }
+                        if (strOthers != "") {
+                            strOthers = strOthers.slice(0, -2);
+                            drop_string += Translator.getString(lang, "fight_pve", otherDrop > 1 ? "drop_item_other_plur" : "drop_item_other", [strOthers]) + "\n";
+                        }
+
+                        fight = this.swapArrayIndexes(drop_string + "\n", fight);
+
                     }
+
                     if (summary.levelUpped.length > 0) {
                         fight = this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]) + "\n", fight);
                     }
@@ -235,12 +269,14 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch(() => {console.log(e)});
+            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch(() => {
+                console.log(e)
+            });
 
         }
 
 
-        
+
     }
 
     deleteFight(userid) {
@@ -259,7 +295,7 @@ class FightManager {
         let ind = fight.summaryIndex;
         let summary = fight.fight.summary;
         if (ind < summary.rounds.length) {
-            fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds    [ind].defenderName, summary.rounds[ind].damage]) +
+            fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                 (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
                 (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
                 "\n\n", fight);
@@ -279,8 +315,8 @@ class FightManager {
         } else {
             if (summary.winner == 0) {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
-                if (fight.fight.entities[0].length == 1) {   
-                    if(summary.honor > 0) {                        
+                if (fight.fight.entities[0].length == 1) {
+                    if (summary.honor > 0) {
                         fight = this.swapArrayIndexes("<:honor:403824433837637632> " + Translator.getString(lang, "fight_pvp", "honor_gain", [summary.honor]) + "\n", fight);
                     } else {
                         fight = this.swapArrayIndexes("<:honor:403824433837637632> " + Translator.getString(lang, "fight_pvp", "honor_not_honorable", [-summary.honor]) + "\n", fight);
@@ -288,8 +324,8 @@ class FightManager {
                 }
             } else {
                 fight = this.swapArrayIndexes("<:loose:403153660756099073> " + Translator.getString(lang, "fight_general", "loose") + "\n", fight);
-                if (fight.fight.entities[0].length == 1) {    
-                    if(summary.honor > 0) {
+                if (fight.fight.entities[0].length == 1) {
+                    if (summary.honor > 0) {
                         fight = this.swapArrayIndexes("<:honor:403824433837637632> " + Translator.getString(lang, "fight_pvp", "honor_lose", [summary.honor]) + "\n", fight);
                     }
                 }
@@ -304,12 +340,14 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch((e) => {console.log(e)});
+            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch((e) => {
+                console.log(e)
+            });
 
         }
 
 
-        
+
     }
 
     embedPvE(text, fight, color, lang) {

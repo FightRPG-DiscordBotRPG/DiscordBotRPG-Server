@@ -37,7 +37,7 @@ for (let i in res) {
 }
 
 res = conn.query("SELECT * FROM itemstypes WHERE equipable = 1");
-for(let r of res) {
+for (let r of res) {
     equipableCorresponds[r.nomType] = r.idType;
 }
 
@@ -48,8 +48,8 @@ let rarityChances = {
     commun: 15 / 100,
     rare: 10 / 100,
     superieur: 4 / 100,
-    epique: 0.5 / 100,
-    legendaire: 0.1 / 100,
+    epique: 1 / 100,
+    legendaire: 0.05 / 100,
 }
 
 let collectChances = {
@@ -65,18 +65,17 @@ var Globals = {
     "maxStatsId": maxStatsId,
     "statsIds": statsIds,
     "monstersIds": monstersTypes,
-    "itemsrarities" : itemsrarities,
-    "equipableCorresponds" : equipableCorresponds,
+    "itemsrarities": itemsrarities,
+    "equipableCorresponds": equipableCorresponds,
     "basicWaitTimeBeforeFight": 30,
     "basicWaitTimeAfterTravel": 120,
-    "basicWaitTimeBeforePvPFight" : 900,
-    "basicWaitTimeCollectTravel" : 20,
+    "basicWaitTimeBeforePvPFight": 900,
+    "basicWaitTimeCollectTravel": 20,
     "basicWaitTimeCraft": 40,
-    "collectTriesOnce" : 20,
+    "collectTriesOnce": 20,
     "admins": ["241564725870198785", "285789367954440194"],
-    "activated" : true,
-    "mDifficulties": [
-        {
+    "activated": true,
+    "mDifficulties": [{
             name: "Weak",
             value: 0.8,
         },
@@ -95,17 +94,17 @@ var Globals = {
     ],
     "equipsPossible": equipsPossible,
     "rarityChances": rarityChances,
-    "collectChances":collectChances,
+    "collectChances": collectChances,
     "areasTypes": areasTypes,
     "chanceToFightTheMonsterYouWant": 0.63,
     "resetStatsPricePerLevel": 250,
     "guilds": {
         "maxLevel": 10,
         "basePriceLevel": 20000,
-        "multBasePricePerLevel" : 5,
+        "multBasePricePerLevel": 5,
         "baseMembers": 5,
         "membersPerLevels": 5,
-        "maxApplies" : 5,
+        "maxApplies": 5,
     },
     "addr": "http://azz-tech.no-ip.org:8080/",
     "discordClient": {},
@@ -115,7 +114,33 @@ var Globals = {
     "connectedUsers": {},
     "connectedGuilds": {},
     "areasManager": {},
-    "fightManager": {}
+    "fightManager": {},
+    randomInclusive: (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    getRarityName: (idRarity) => {
+        idRarity = parseInt(idRarity);
+        let rarityName = "";
+        switch (idRarity) {
+            case 1:
+                rarityName = "common";
+                break;
+            case 2:
+                rarityName = "rare";
+                break;
+            case 3:
+                rarityName = "superior";
+                break;
+            case 4:
+                rarityName = "epic";
+                break;
+            case 5:
+                rarityName = "lengendary";
+                break;
+        }
+        return rarityName;
+    }
 }
+
 
 module.exports = Globals;

@@ -70,7 +70,7 @@ class FightPvE extends Fight {
 
                 let actualLevel = this.entities[0][i].getLevel();
 
-                
+
 
                 // Add exp and money
                 let xp = 0;
@@ -104,8 +104,6 @@ class FightPvE extends Fight {
 
                 let diffLevel = this.entities[0][i].getLevel() - actualLevel;
                 if (diffLevel > 0) {
-                    /*let plur = diffLevel > 1 ? "x" : "";
-                    this.swapArrayIndexes("<:levelup:403456740139728906> Bravo ! Vous avez gagné : " + diffLevel + " niveau" + plur + ". Vous �tes desormais niveau : " + this.fights[userid].user.character.getLevel() + " !\n", userid);*/
                     // Add to sumary
                     this.summary.levelUpped.push({
                         name: this.entities[0][i].name,
@@ -116,53 +114,26 @@ class FightPvE extends Fight {
 
                 // Loot or Not
                 let lootSystem = new LootSystem();
-                /*console.log(this.entities[0][i].name);
-                console.log(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus());*/
-                let loot = lootSystem.loot(this.entities[0][i].getStat("luck") + this.getAvgLuckBonus() + areaBonuses["gold_drop"].getPercentage());
-                let okLoot = lootSystem.isTheLootExistForThisArea(this.entities[0][i].getIdArea(), loot);
-                if (okLoot) {
-                    lootSystem.getLoot(this.entities[0][i], loot, avgLevelEnemies);
-                    //add rarity to sumary
-                    let rarityName = "";
-                    switch (loot) {
-                        case 1:
-                            rarityName = "common";
-                            break;
-                        case 2:
-                            rarityName = "rare";
-                            break;
-                        case 3:
-                            rarityName = "superior";
-                            break;
-                        case 4:
-                            rarityName = "epic";
-                            break;
-                        case 5:
-                            rarityName = "lengendary";
-                            break;
-                    }
-
+                let totalLuck = this.entities[0][i].getStat("luck") + this.getAvgLuckBonus() + areaBonuses["gold_drop"].getPercentage();
+                let loot = lootSystem.loot(entity, totalLuck, avgLevelEnemies);
+                if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                     this.summary.drops.push({
                         name: this.entities[0][i].name,
-                        drop: rarityName,
+                        drop: loot,
                     });
-
-                    PStatistics.incrStat(entity.id, "items_" + rarityName + "_loot", 1);
                 }
-
-                for(let monster of this.entities[1]) {
+                for (let monster of this.entities[1]) {
                     PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);
                 }
-
             }
 
             this.summary.xp = totalXp;
             this.summary.money = Math.round(totalMoney * 0.95);
             let ownerid = this.entities[0][0].getArea().getOwnerID();
-            if(ownerid != null) {
+            if (ownerid != null) {
                 Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
             }
-            
+
 
         } else {
             for (let entity of this.entities[0]) {
@@ -178,9 +149,9 @@ class FightPvE extends Fight {
     }
 
     async PStatsDamageDandT() {
-        for(let round of this.summary.rounds) {
+        for (let round of this.summary.rounds) {
             // 0 = player who attack
-            if(round.roundEntitiesIndex == 0) {
+            if (round.roundEntitiesIndex == 0) {
                 PStatistics.incrStat(round.attackerId, "damage_done", round.damage);
             } else {
                 PStatistics.incrStat(round.defenderId, "damage_taken", round.damage);
