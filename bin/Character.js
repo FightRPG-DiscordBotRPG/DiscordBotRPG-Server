@@ -361,7 +361,7 @@ class Character extends CharacterEntity {
         let gotAllItems = true;
         if (craft.id > 0) {
             gotAllItems = conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id])[0][0].doesPlayerHaveEnoughMats;
-            if (gotAllItems) {
+            if (gotAllItems == true) {
                 for (let i in craft.requiredItems) {
                     this.getInv().removeSomeFromInventoryIdBase(craft.requiredItems[i].idBase, craft.requiredItems[i].number, true);
                 }
@@ -441,7 +441,7 @@ class Character extends CharacterEntity {
      * @param {Consumable} itemToUse 
      */
     use(itemToUse, idEmplacement) {
-        if(this.canUse(itemToUse)) {
+        if (this.canUse(itemToUse)) {
             itemToUse.use(this);
             this.getInv().removeSomeFromInventory(idEmplacement, 1, true);
         }
@@ -574,7 +574,7 @@ class Character extends CharacterEntity {
         return this.getInv().getItem(idEmplacement).number;
     }
 
-    getIdOfThisIdBase(idBaseItem, level=1) {
+    getIdOfThisIdBase(idBaseItem, level = 1) {
         return this.getInv().getIdOfThisIdBase(idBaseItem, level);
     }
 
@@ -616,9 +616,9 @@ class Character extends CharacterEntity {
     }
 
     static staticGetIdByUID(uid) {
-        if(uid != null) {
+        if (uid != null) {
             let res = conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [uid]);
-            if(res[0]) {
+            if (res[0]) {
                 return res[0].idCharacter;
             }
         }
