@@ -121,12 +121,12 @@ class AdminModule extends GModule {
 
             case "gold":
                 let str;
-                if(args[1] != null) {
+                if (args[1] != null) {
                     let value = parseInt(args[0], 10);
                     if (!value && !Number.isInteger(value)) {
                         value = 1;
                     }
-                    if(Globals.connectedUsers[authorIdentifier] != null) {
+                    if (Globals.connectedUsers[authorIdentifier] != null) {
                         Globals.connectedUsers[authorIdentifier].character.addMoney(value);
                         str = "C'est bon il a recu l'argent";
                     } else {
@@ -137,11 +137,11 @@ class AdminModule extends GModule {
                     if (!value && !Number.isInteger(value)) {
                         value = 1;
                     }
-    
+
                     str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " Argent tombent du ciel rien que pour vous !\n";
                     Globals.connectedUsers[authorIdentifier].character.addMoney(value);
                     str += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[authorIdentifier].character.getMoney() + " Argent !";
-                }    
+                }
 
                 msg = str;
                 break;
@@ -173,7 +173,7 @@ class AdminModule extends GModule {
                 msg = "Leaderboard reloaded";
                 break;
             case "debug":
-                msg = Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(args[0]);
+                //msg = Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(args[0]);
                 break;
             case "last_command":
                 let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [authorIdentifier]);

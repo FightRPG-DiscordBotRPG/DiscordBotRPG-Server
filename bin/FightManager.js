@@ -9,9 +9,6 @@ const FightPvP = require("./Fight/FightPvP");
 const Translator = require("./Translator/Translator");
 const Monster = require("./Monstre");
 
-// TODO : Remove combat after x seconds
-// Directly => do'nt wait catch or end
-
 class FightManager {
     constructor() {
         this.fights = {};
@@ -37,11 +34,32 @@ class FightManager {
         return -1;
     }
 
-    loadMonsters(monsters) {
+    /**
+     * 
+     * @param {Array<Monstre>} monsters 
+     * @param {Array<Character>} characters 
+     */
+    loadMonsters(monsters, characters) {
+        let level = 0;
+        let area = characters[0].getArea();
+        if (characters[0].group != null) {
+            level = characters[0].group.getHighestLevel();
+        } else {
+            level = characters[0].getLevel();
+        }
+
+        if (area.minLevel > level) {
+            level = area.minLevel;
+        } else if (area.maxLevel < level) {
+            level = area.maxLevel;
+        }
+
+
+
         let arr = [];
         for (let i in monsters) {
             for (let j = 0; j < monsters[i].number; j++) {
-                arr.push(new Monstre(monsters[i].id));
+                arr.push(new Monstre(monsters[i].id, level));
             }
         }
         return arr;
@@ -67,8 +85,7 @@ class FightManager {
         let alreadyInBattle = users.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
         let timeToFight = this.timeToFight(users);
         if (timeToFight < 0 && !alreadyInBattle) {
-            let enemies = this.loadMonsters(monsters);
-
+            let enemies = this.loadMonsters(monsters, users);
             let thisPvEFight = {
                 text: ["", "", ""],
                 fight: new FightPvE(users, enemies, lang),
@@ -184,7 +201,6 @@ class FightManager {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
 
                 if (fight.fight.entities[0].length == 1) {
-                    console.log(summary.drops);
                     if (summary.drops.length > 0) {
                         let drop_string = "<:treasure:403457812535181313>  ";
                         let equipDrop = 0;
@@ -206,11 +222,8 @@ class FightManager {
                         }
 
                         if (strEquipments != "") {
-                            console.log(strEquipments);
                             strEquipments = strEquipments.slice(0, -2);
                             drop_string += Translator.getString(lang, "fight_pve", equipDrop > 1 ? "drop_item_equip_plur" : "drop_item_equip", [strEquipments]) + "\n";
-                            console.log(strEquipments);
-                            console.log(drop_string);
                         }
                         if (strOthers != "") {
                             strOthers = strOthers.slice(0, -2);

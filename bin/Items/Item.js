@@ -33,7 +33,7 @@ class Item {
 
     loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = "+this.id+";")[0];
+        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = " + this.id + ";")[0];
         this.idBaseItem = res["idBaseItem"];
         this.level = res["level"];
         this.image = res["imageItem"];
@@ -69,7 +69,7 @@ class Item {
      * @param {Array<number>} idItems 
      */
     static deleteItems(idItems) {
-        if(idItems.toString().length > 0) {
+        if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
             StatsItems.deleteStatsMultiple(idItems);
             conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
@@ -136,23 +136,23 @@ class Item {
     }
 
     getCost(number) {
-        return Math.round((this.level * (1 + this.idRarity * 2)) * (number <= this.number ? number : this.number));
+        return Math.round((this.level * (1 + this.idRarity)) * (number <= this.number ? number : this.number));
     }
 
-    getName(lang="en") {
+    getName(lang = "en") {
         return Translator.getString(lang, "itemsNames", this.idBaseItem);
     }
 
-    getDesc(lang="en") {
+    getDesc(lang = "en") {
         let desc = Translator.getString(lang, "itemsDesc", this.idBaseItem, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
-    
-    static getName(lang="en", idBase) {
+
+    static getName(lang = "en", idBase) {
         return Translator.getString(lang, "itemsNames", idBase);
     }
 
-    static getDesc(lang="en", idBase) {
+    static getDesc(lang = "en", idBase) {
         let desc = Translator.getString(lang, "itemsDesc", idBase, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
@@ -168,7 +168,7 @@ class Item {
             desc: this.desc,
             rarity: this.rarity,
             rarityColor: this.rarityColor,
-            level: this.level,        
+            level: this.level,
             typeName: this.typeName,
             equipable: this.equipable === 1 ? true : false,
             number: this.number,
@@ -198,7 +198,7 @@ class Item {
 
     static getType(idItem) {
         let res = conn.query("SELECT itemstypes.nomType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idItem = ?", [idItem]);
-        if(res[0]) {
+        if (res[0]) {
             return res[0].nomType;
         }
         return "unknown";
@@ -207,12 +207,12 @@ class Item {
 }
 
 Item.newItem = (idItem, stype) => {
-    switch(stype) {
+    switch (stype) {
         case "consumable":
             return new Consumable(idItem);
         case "loot_box_equipment":
             return new EquipmentLootBox(idItem);
-        case "reset_time_potion": 
+        case "reset_time_potion":
             return new ResetTimePotion(idItem);
         default:
             return new Item(idItem);

@@ -103,9 +103,9 @@ class FightModule extends GModule {
                         }
 
                     } else {
-                        if(mId != -1 && User.exist(mId)) {
+                        if (mId != -1 && User.exist(mId)) {
                             if (authorIdentifier !== mId) {
-                                if(Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
+                                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                                     let notConnectedEnemy = new User(mId);
                                     notConnectedEnemy.loadUser();
                                     notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));

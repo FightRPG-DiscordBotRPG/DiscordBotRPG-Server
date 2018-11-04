@@ -7,7 +7,7 @@ const Translator = require("./Translator/Translator");
 
 class Monstre extends WorldEntity {
 
-    constructor(id) {
+    constructor(id, level = 1) {
         super();
         this._type = "Monster";
 
@@ -25,18 +25,18 @@ class Monstre extends WorldEntity {
         this.type = "";
 
         // Functions
-        this.loadMonster();
+        this.loadMonster(level);
 
     }
 
 
-    loadMonster() {
+    loadMonster(level = 1) {
         let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
         this.difficulty = Globals.mDifficulties[tDifficulty];
         let res = conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id])[0];
         let bonus = 1;
         this.type = res["nom"];
-        this.level = res["avglevel"];
+        this.level = res["avglevel"] > 0 ? res["avglevel"] : level;
         let multiplier = res["idType"];
 
         if (this.type == "elite") {
@@ -56,11 +56,11 @@ class Monstre extends WorldEntity {
         this.money = Math.round((Math.random() * (this.getLevel() * 2 - this.getLevel()) + this.getLevel()) * bonus);
     }
 
-    getName(lang="en") {
+    getName(lang = "en") {
         return Translator.getString(lang, "monstersNames", this.id);
     }
 
-    static getName(id, lang="en") {
+    static getName(id, lang = "en") {
         return Translator.getString(lang, "monstersNames", id);
     }
 

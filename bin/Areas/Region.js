@@ -18,15 +18,15 @@ class Region {
         this.connectedAreasIncrementIndex = 1;
     }
 
-    static staticGetName(id, lang="en") {
+    static staticGetName(id, lang = "en") {
         return Translator.getString(lang, "regionsNames", id);
     }
 
-    getName(lang="en") {
+    getName(lang = "en") {
         return Translator.getString(lang, "regionsNames", this.id);
     }
 
-    getImage(lang="en") {
+    getImage(lang = "en") {
         return Translator.getString(lang, "regionsImages", this.id);
     }
 
@@ -67,13 +67,13 @@ class Region {
             strAreas += "`";
             switch (this.areas.get(key).areaType) {
                 case "wild":
-                    strAreas += Translator.getString(lang, "area", "wild_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
+                    strAreas += Translator.getString(lang, "area", "wild_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).minMaxLevelToString()]);
                     break;
                 case "city":
-                    strAreas += Translator.getString(lang, "area", "city_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
+                    strAreas += Translator.getString(lang, "area", "city_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).minMaxLevelToString()]);
                     break;
                 case "dungeon":
-                    strAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).levels]);
+                    strAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.areas.get(key).getName(lang), this.areas.get(key).minMaxLevelToString()]);
                     break;
             }
             strAreas += "`\n";
@@ -85,27 +85,27 @@ class Region {
             strConnectedAreas += "`"
             switch (this.connectedAreas.get(key).areaType) {
                 case "wild":
-                    strConnectedAreas += Translator.getString(lang, "area", "wild_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    strConnectedAreas += Translator.getString(lang, "area", "wild_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).minMaxLevelToString()]);
                     break;
                 case "city":
-                    strConnectedAreas += Translator.getString(lang, "area", "city_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    strConnectedAreas += Translator.getString(lang, "area", "city_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).minMaxLevelToString()]);
                     break;
                 case "dungeon":
-                    strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).levels]);
+                    strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", [key, this.connectedAreas.get(key).getName(lang), this.connectedAreas.get(key).minMaxLevelToString()]);
                     break;
             }
             strConnectedAreas += " | " + Translator.getString(lang, "general", "region") + " : " + Region.staticGetName(this.connectedAreas.get(key).idRegion) + "`\n"
         }
-        if(strConnectedAreas == "") {
+        if (strConnectedAreas == "") {
             strConnectedAreas = Translator.getString(lang, "area", "no_connected_regions");
         }
 
         return new Discord.RichEmbed()
-        .setColor([0, 255, 0])
-        .setAuthor(this.getName(lang))
-        .addField(Translator.getString(lang, "area", "list"), strAreas)
-        .addField(Translator.getString(lang, "area", "list_regions_connected"), strConnectedAreas)
-        .setImage(this.getImage(lang));
+            .setColor([0, 255, 0])
+            .setAuthor(this.getName(lang))
+            .addField(Translator.getString(lang, "area", "list"), strAreas)
+            .addField(Translator.getString(lang, "area", "list_regions_connected"), strConnectedAreas)
+            .setImage(this.getImage(lang));
     }
 
 }

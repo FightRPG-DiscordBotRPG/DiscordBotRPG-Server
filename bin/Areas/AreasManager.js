@@ -27,9 +27,9 @@ class AreasManager {
     }
 
     loadConnectedAreas() {
-        for(let rk of Object.keys(this.regions)) {
+        for (let rk of Object.keys(this.regions)) {
             let res = conn.query("SELECT idArea2 as idArea FROM areaspaths WHERE areaspaths.idArea1 IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?) AND areaspaths.idArea2 NOT IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?)", [rk, rk]);
-            for(let find of res) {
+            for (let find of res) {
                 this.regions[rk].addConnectedArea(this.areas.get(find.idArea));
             }
         }
@@ -37,13 +37,13 @@ class AreasManager {
 
     loadRegions() {
         let res = conn.query("SELECT idRegion FROM regions");
-        for(let region of res) {
+        for (let region of res) {
             this.regions[region.idRegion] = new Region(region.idRegion);
         }
     }
 
     loadAreas() {
-        let res = conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea ORDER BY AreaLevels ASC, idArea");
+        let res = conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, idArea");
         for (let i in res) {
             switch (res[i].NomAreaType) {
                 case "wild":
@@ -63,11 +63,11 @@ class AreasManager {
 
     loadPaths() {
         let res = conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
-        for(let area of res) {
+        for (let area of res) {
             let paths = conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
             let node = {};
             let nodeGold = {};
-            for(let path of paths) {
+            for (let path of paths) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
                 node[path.idArea2] = path.time;
                 nodeGold[path.idArea2] = path.goldPrice + 1;
@@ -83,11 +83,15 @@ class AreasManager {
      * @param {string} to 
      */
     getPathCosts(from, to) {
-        let path = this.paths.path(from.toString(), to.toString(), {cost:true});
-        let pathGold = this.pathsGoldCosts.path(from.toString(), to.toString(), {cost:true});
+        let path = this.paths.path(from.toString(), to.toString(), {
+            cost: true
+        });
+        let pathGold = this.pathsGoldCosts.path(from.toString(), to.toString(), {
+            cost: true
+        });
         let toReturn = {
-            timeToWait : path.cost,
-            goldPrice : pathGold.cost - (pathGold.path.length - 1)
+            timeToWait: path.cost,
+            goldPrice: pathGold.cost - (pathGold.path.length - 1)
         }
         return toReturn;
     }
@@ -186,14 +190,14 @@ class AreasManager {
     }
 
     existInRegion(idRegion, index) {
-        if(this.regions[idRegion]){
+        if (this.regions[idRegion]) {
             return this.regions[idRegion].exist(index);
         }
         return false;
     }
 
     isConnectedToRegion(idRegion, index) {
-        if(this.regions[idRegion]) {
+        if (this.regions[idRegion]) {
             return this.regions[idRegion].isConnected(index);
         }
         return false;
@@ -226,8 +230,8 @@ class AreasManager {
     }
 
     /*
-    *   CONQUEST
-    */
+     *   CONQUEST
+     */
     claim(idArea, idGuild) {
         return this.areas.get(idArea).claim(idGuild);
     }

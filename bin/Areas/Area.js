@@ -11,7 +11,8 @@ class Area {
     constructor(id) {
         this.id = id;
         this.image = "";
-        this.levels = "";
+        this.minLevel = 1;
+        this.maxLevel = 1;
         this.areaType = "";
         this.idRegion = 0;
         //this.nbrPlayers = 0;
@@ -36,11 +37,12 @@ class Area {
     }
 
     loadArea(id) {
-        let res = conn.query("SELECT idRegion, AreaImage, AreaLevels, NomAreaType FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea WHERE areas.idArea = ?", [id])[0];
+        let res = conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [id])[0];
         this.idRegion = res["idRegion"];
         this.image = res["AreaImage"];
-        this.levels = res["AreaLevels"];
         this.areaType = res["NomAreaType"];
+        this.minLevel = res["minLevel"];
+        this.maxLevel = res["maxLevel"];
         //this.nbrPlayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
 
         res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, areasresources.requiredLevel, itemsbase.idRarity " +
@@ -98,7 +100,7 @@ class Area {
         if (res[0]) {
             this.maxItemRarity = res[0]["nomRarity"];
         }
-        
+
     }
 
     /**
@@ -109,9 +111,9 @@ class Area {
         let str = "`\n";
         for (let i in this.monsters) {
             if (this.monsters[i].numberOfMonsters > 1) {
-                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : Translator.getString(lang, "general", "modular"), Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : Translator.getString(lang, "general", "modular"), Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             }
         }
         str += "`";
@@ -151,7 +153,7 @@ class Area {
                 case "plant":
                     strHerbs += tempString;
                     break;
-                
+
             }
         }
         if (this.resources.length === 0) {
@@ -159,7 +161,7 @@ class Area {
         } else {
             str += strWoods.length > 0 ? strWoodsHeader + strWoods : "" + strStones.length > 0 ? strStonesHeader + strStones : "" + strHerbs.length > 0 ? strHerbsHeader + strHerbs : "";
         }
-         
+
         return str + "`";
     }
 
@@ -210,7 +212,7 @@ class Area {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        
+
         let indexPage = (page - 1) * perPage;
 
         let players = conn.query("SELECT characters.idCharacter, users.userName, levels.actualLevel FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter INNER JOIN levels ON levels.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ? ORDER BY actualLevel DESC LIMIT ? OFFSET ?;", [this.id, perPage, indexPage]);
@@ -223,7 +225,7 @@ class Area {
             str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n";
         }
 
-        str += "\n"+ Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
+        str += "\n" + Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
         str += "```";
         return str;
     }
@@ -244,8 +246,8 @@ class Area {
         let str = "```\n";
         let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ?;", [this.id]);
         let empty = true;
-        for(let o of res) {
-            if(o.value > 0) {
+        for (let o of res) {
+            if (o.value > 0) {
                 let bonus = new AreaBonus(o.idBonusTypes);
                 bonus.setValue(o.value);
                 str += bonus.toStr(lang) + "\n";
@@ -253,7 +255,7 @@ class Area {
             }
         }
 
-        if(empty) {
+        if (empty) {
             str += Translator.getString(lang, "bonuses", "no_bonuses");
         }
         str += "```";
@@ -267,7 +269,7 @@ class Area {
     getAllBonuses() {
         let bonuses = {};
         let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ? AND idBonusTypes;", [this.id]);;
-        for(let o of res) {
+        for (let o of res) {
             let bonus = new AreaBonus(o.idBonusTypes);
             bonus.setValue(o.value);
             bonuses[bonus.name] = bonus;
@@ -331,7 +333,7 @@ class Area {
     listOfBonusesToStr(lang) {
         let str = "```\n";
         str += Translator.getString(lang, "area", "bonus_list_header") + "\n\n";
-        for(let bonus of this.authorizedBonuses) {
+        for (let bonus of this.authorizedBonuses) {
             str += bonus + " => " + Translator.getString(lang, "bonuses", bonus) + "\n";
         }
         str += "```";
@@ -349,11 +351,11 @@ class Area {
         return str;
     }
 
-    getName(lang="en") {
+    getName(lang = "en") {
         return Translator.getString(lang, "areasNames", this.id);
     }
 
-    getDesc(lang="en") {
+    getDesc(lang = "en") {
         let desc = Translator.getString(lang, "areasDesc", this.id, [], true);
         return desc != null ? desc : Translator.getString(lang, "area", "no_description");
     }
@@ -393,7 +395,7 @@ class Area {
      */
     getOwnerID() {
         let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [this.id]);
-        if(res[0]) {
+        if (res[0]) {
             return res[0].idGuild;
         }
         return null;
@@ -401,7 +403,7 @@ class Area {
 
     static staticGetOwnerID(idArea) {
         let res = conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [idArea]);
-        if(res[0]) {
+        if (res[0]) {
             return res[0].idGuild;
         }
         return null;
@@ -430,7 +432,7 @@ class Area {
         } else {
             conn.query("INSERT INTO areasowners VALUES(" + this.id + ", " + this.owner + ")");
         }
-        
+
     }
 
 
@@ -485,7 +487,7 @@ class Area {
             id: this.id,
             name: this.name,
             image: this.image,
-            levels: this.levels,
+            levels: this.minMaxLevelToString(),
             nbrPlayers: this.players.length,
         }
     }
@@ -501,11 +503,10 @@ class Area {
     conquestToStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.getName(lang) + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.getName(lang) + " | " + this.minMaxLevelToString() + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```")
             .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(lang))
-            .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(lang))
-            ;
+            .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(lang));
     }
 
     /**
@@ -513,6 +514,10 @@ class Area {
      */
     toStr(lang) {
         return new Discord.RichEmbed();
+    }
+
+    minMaxLevelToString() {
+        return this.minLevel != this.maxLevel ? this.minLevel + "-" + this.maxLevel : this.maxLevel + "";
     }
 
 }

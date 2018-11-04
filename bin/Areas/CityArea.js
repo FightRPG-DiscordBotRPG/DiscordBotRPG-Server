@@ -13,7 +13,7 @@ class CityArea extends Area {
         super(id, id);
         this.services = {
             "marketplace": new Marketplace(),
-            "craftingbuilding" : new CraftingBuilding()
+            "craftingbuilding": new CraftingBuilding()
         }
 
         this.authorizedBonuses = ["xp_craft"];
@@ -23,20 +23,20 @@ class CityArea extends Area {
 
     toStr(lang) {
         let tax = "";
-        if(this.getOwnerID != null) {
+        if (this.getOwnerID != null) {
             tax = "(" + (this.services.marketplace.getTax() * 100) + "% Tax)";
         }
 
-        let craftingbuilding = this.getService("craftingbuilding"); 
+        let craftingbuilding = this.getService("craftingbuilding");
         let forge;
-        if(craftingbuilding != null) {
+        if (craftingbuilding != null) {
             let lvl = Translator.getString(lang, "general", "lvl");
             forge = "- Forge (Craft : " + lvl + " " + craftingbuilding.getMinLevel() + " - " + craftingbuilding.getMaxLevel() + ")";
-        } 
+        }
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.getName(lang) + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.getName(lang) + " | " + this.minMaxLevelToString() + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\nAvancement de la ville : **" + 1 + "**")
             .addField("Services", "```- Marché " + tax + "\n" + forge + "```")
             .setImage(this.image);

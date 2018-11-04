@@ -9,9 +9,9 @@ var nextID = 0;
 
 class Group {
 
-	constructor(leader) {
-		leader.pendingPartyInvite = null;
-		this.id = nextID;
+    constructor(leader) {
+        leader.pendingPartyInvite = null;
+        this.id = nextID;
         nextID++;
         /**
          * @type {Array<User>}
@@ -21,8 +21,8 @@ class Group {
          * @type {Array<User>}
          */
         this.pendingPlayers = {};
-		this.leader = leader;
-		this.doingSomething = false;
+        this.leader = leader;
+        this.doingSomething = false;
     }
 
     allInSameArea() {
@@ -60,21 +60,21 @@ class Group {
         return arr;
     }
 
-	invite(player) {
+    invite(player) {
         player.character.pendingPartyInvite = this;
         this.pendingPlayers[player.id] = player;
-	}
+    }
 
-	nbOfPlayers() {
-		return Object.keys(this.players).length + 1;
+    nbOfPlayers() {
+        return Object.keys(this.players).length + 1;
     }
 
     nbOfInvitedPlayers() {
         return Object.keys(this.pendingPlayers).length;
     }
 
-	isFull() {
-		return Object.keys(this.players).length + 1 >= 5;
+    isFull() {
+        return Object.keys(this.players).length + 1 >= 5;
     }
 
     isMaxInvitationsReached() {
@@ -88,6 +88,16 @@ class Group {
             avgLevel += user.getLevel();
         }
         return Math.round(avgLevel / this.nbOfPlayers());
+    }
+
+    getHighestLevel() {
+        let highestLevel = this.leader.character.getLevel();
+        for (let user in this.players) {
+            if (this.players[user].character.getLevel() > highestLevel) {
+                highestLevel = this.players[user].character.getLevel();
+            }
+        }
+        return highestLevel;
     }
 
     getAveragePower() {
@@ -106,12 +116,12 @@ class Group {
         return true;
     }
 
-	addPlayer(player, discordClient) {
-		this.playerJoinedBroadcast(player, discordClient);
+    addPlayer(player, discordClient) {
+        this.playerJoinedBroadcast(player, discordClient);
         player.character.pendingPartyInvite = null;
         delete this.pendingPlayers[player.id];
-		this.players[player.id] = player;
-		player.character.group = this;
+        this.players[player.id] = player;
+        player.character.group = this;
 
     }
 
@@ -143,24 +153,24 @@ class Group {
 
 
 
-	disband() {
-		this.leader.character.leaveGroup();
-		for (let user in this.players) {
+    disband() {
+        this.leader.character.leaveGroup();
+        for (let user in this.players) {
             this.players[user].character.leaveGroup();
         }
         for (let user2 in this.pendingPlayers) {
             this.pendingPlayers[user2].character.pendingPartyInvite = null;
         }
         this.pendingPlayers = null;
-		this.players = null;
-		this.leader = null;
-		//console.log(this);
+        this.players = null;
+        this.leader = null;
+        //console.log(this);
     }
-    
+
     swap(playername) {
-        if(playername != this.leader.getUsername()) {
-            for(let user in this.players) {
-                if(playername == this.players[user].getUsername()) {
+        if (playername != this.leader.getUsername()) {
+            for (let user in this.players) {
+                if (playername == this.players[user].getUsername()) {
                     let oldLeader = this.leader;
                     this.leader = this.players[user];
                     delete this.players[user];
@@ -177,57 +187,57 @@ class Group {
      * @param {User} player 
      * @param {DiscordClient} discordClient 
      */
-	playerLeave(player, discordClient) {
-		if (this.nbOfPlayers() > 1) {
-			// Make character leave group
-			//console.log(this.players);
-			player.character.leaveGroup();
-			if (player === this.leader) {
-				// Set new leader and remvoe from list of players
-				let newLeader = Object.keys(this.players)[0];
-				this.leader = this.players[newLeader];
-				delete this.players[newLeader];
-			} else {
-				// Delete from list of players
-				delete this.players[player.id];
-			}
-			this.playerLeaveBroadcast(player, discordClient);
-			//console.log(this);
-		} else {
-			this.disband();
-		}
+    playerLeave(player, discordClient) {
+        if (this.nbOfPlayers() > 1) {
+            // Make character leave group
+            //console.log(this.players);
+            player.character.leaveGroup();
+            if (player === this.leader) {
+                // Set new leader and remvoe from list of players
+                let newLeader = Object.keys(this.players)[0];
+                this.leader = this.players[newLeader];
+                delete this.players[newLeader];
+            } else {
+                // Delete from list of players
+                delete this.players[player.id];
+            }
+            this.playerLeaveBroadcast(player, discordClient);
+            //console.log(this);
+        } else {
+            this.disband();
+        }
 
-	}
+    }
 
-	playerLeaveBroadcast(player, discordClient) {
-		// Send to leader
+    playerLeaveBroadcast(player, discordClient) {
+        // Send to leader
         if (!this.leader.isGroupMuted()) {
             discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
         }
 
 
-		// Send to rest of group
-		for (let user in this.players) {
+        // Send to rest of group
+        for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
                 discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
             }
-		}
-	}
+        }
+    }
 
-	playerJoinedBroadcast(player, discordClient) {
-		// Send to leader
+    playerJoinedBroadcast(player, discordClient) {
+        // Send to leader
         if (!this.leader.isGroupMuted()) {;
             discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
         }
-		// Send to rest of group
-		for (let user in this.players) {
+        // Send to rest of group
+        for (let user in this.players) {
             user = this.players[user];
             if (!user.isGroupMuted()) {
                 discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
             }
-		}
-	}
+        }
+    }
 
     playerDeclinedBroadcast(player, discordClient) {
         if (!this.leader.isGroupMuted()) {
@@ -273,10 +283,9 @@ class Group {
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 127, 255])
-            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [this.getAverageLevel()]) + " | " + Translator.getString(lang,"group","avg_power", [this.getAveragePower()]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
+            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [this.getAverageLevel()]) + " | " + Translator.getString(lang, "group", "avg_power", [this.getAveragePower()]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
             .addField(Translator.getString(lang, "group", "members_of_the_group") + " (" + this.nbOfPlayers() + " / 5)", membersOfGroup)
-            .addField(Translator.getString(lang, "group", "invited_users") + " (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers)
-            ;
+            .addField(Translator.getString(lang, "group", "invited_users") + " (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers);
 
         return embed;
     }
@@ -295,7 +304,9 @@ class Group {
                         if (drops[summary.drops[i].drop]) {
                             drops[summary.drops[i].drop].number++;
                         } else {
-                            drops[summary.drops[i].drop] = { number: 1 };
+                            drops[summary.drops[i].drop] = {
+                                number: 1
+                            };
                         }
                     }
                 }
@@ -325,7 +336,9 @@ class Group {
                             if (drops[summary.drops[i].drop]) {
                                 drops[summary.drops[i].drop].number++;
                             } else {
-                                drops[summary.drops[i].drop] = { number: 1 };
+                                drops[summary.drops[i].drop] = {
+                                    number: 1
+                                };
                             }
                         }
                     }

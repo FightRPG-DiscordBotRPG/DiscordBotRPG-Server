@@ -5,7 +5,7 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 
-class DungeonArea extends Area{
+class DungeonArea extends Area {
 
     constructor(id) {
         super(id, id);
@@ -21,14 +21,14 @@ class DungeonArea extends Area{
             "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
             "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
         );
-        
-        return  res[0] ? res[0]["nomRarity"] : "None";
+
+        return res[0] ? res[0]["nomRarity"] : "None";
     }
 
     toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.getName(lang) + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.getName(lang) + " | " + this.minMaxLevelToString() + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") + " **" + Translator.getString(lang, "rarities", this.getMaxItemQuality()) + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
             .setImage(this.image);

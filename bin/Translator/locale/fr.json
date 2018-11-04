@@ -174,7 +174,7 @@
     "settings_menu_mute": "%s les notifications en rapport avec le groupe"
   },
   "area": {
-    "monster": "ID : %d | %s | Niv : %d | Type : %s",
+    "monster": "ID : %d | %s | Niv : %s | Type : %s",
     "resources": "Ressources de la zone :",
     "resource": "- ID : %d | %s | %s | Niv : %d",
     "list_of_players_in_area": "Liste des joueurs de la zone %s :",
@@ -244,7 +244,8 @@
     "page_out_of_x": "Page %d/%d",
     "enable": "Activer",
     "disable": "Désactiver",
-    "region": "Région"
+    "region": "Région",
+    "modular": "Modulaire"
   },
   "guild": {
     "you_dont_have_a_guild": "Vous n'avez pas de guilde",

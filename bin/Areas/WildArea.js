@@ -31,7 +31,7 @@ class WildArea extends Area {
     toStr(lang) {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(this.getName(lang) + " | " + this.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
+            .setAuthor(this.getName(lang) + " | " + this.minMaxLevelToString() + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
             .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") + " **" + Translator.getString(lang, "rarities", this.getMaxItemQuality()) + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
             .addField(Translator.getString(lang, "general", "resources"), this.getResources(lang))
