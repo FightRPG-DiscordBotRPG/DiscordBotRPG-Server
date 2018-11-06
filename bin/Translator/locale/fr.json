@@ -64,6 +64,7 @@
     "item_cant_equip_higher_level": "Vous devez être au minimum level %d pour équiper cet objet",
     "item_cant_sell_favorite": "Vous ne pouvez pas vendre un objet marqué comme favori",
     "item_you_cant_use": "Vous ne pouvez pas utiliser cet objet",
+    "item_enter_id_to_use": "Vous devez entrer l'id de l'objet à utiliser.",
 
     "character_you_dont_have_enough_to_reset": "Vous n'avez pas assez d'argent pour réinitialiser vos stats !",
     "economic_enter_id_item_to_sell": "Vous devez entrer l'ID de l'objet à vendre",

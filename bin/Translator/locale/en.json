@@ -64,6 +64,7 @@
     "item_cant_equip_higher_level": "You must be at least at level %d to equip this item",
     "item_cant_sell_favorite": "You can't sell an item tagged as favorite",
     "item_you_cant_use": "You can't use this item",
+    "item_enter_id_to_use": "You must enter the id of the item to use.",
 
     "character_you_dont_have_enough_to_reset": "You don't have enough money to reset your stats!",
     "economic_enter_id_item_to_sell": "You must enter the item's ID to sell it",
