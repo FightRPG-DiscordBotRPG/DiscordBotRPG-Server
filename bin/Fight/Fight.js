@@ -145,8 +145,8 @@ class Fight {
 
 
 
-        let isFirstTeamAlive    = this.isThisTeamAlive(0);
-        let isSecondTeamAlive   = this.isThisTeamAlive(1);
+        let isFirstTeamAlive = this.isThisTeamAlive(0);
+        let isSecondTeamAlive = this.isThisTeamAlive(1);
 
         if (isFirstTeamAlive == true && isSecondTeamAlive == true) {
             this.initiativeUpdate();
@@ -169,7 +169,7 @@ class Fight {
 
     }
 
-    endFight() { };
+    endFight() {};
 
     getThisTeamLife(teamIndex) {
         let hp = 0;
@@ -206,10 +206,10 @@ class Fight {
         let mult = 1;
         // Lv 1 est plus faible que 2
         if (diff < 0) {
-            mult = mult - 0.25 * -diff;
+            mult = mult - 0.10 * -diff;
             return mult < 0 ? 0 : mult;
         } else if (diff > 0) {
-            mult = mult + 0.25 * diff;
+            mult = mult + 0.10 * diff;
             return mult < 0 ? 0 : mult;
         }
         return 1;

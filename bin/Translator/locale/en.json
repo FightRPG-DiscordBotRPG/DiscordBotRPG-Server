@@ -176,14 +176,15 @@
   "area": {
     "monster": "ID : %d | %s | Lv : %s | Type : %s",
     "resources": "Resources of the area:",
-    "resource": "- ID : %d | %s | %s | Lv : %d",
+    "resource": "- ID : %d | %s | %s",
     "list_of_players_in_area": "List of players of the %s area:",
     "player": "ID : %d | Name : %s | Level : %d",
     "wild_area": "%d | %s | Levels : %s",
     "city_area": "%d | %s (Town) | Level : %s",
     "dungeon_area": "%d | %s (Dungeon) | Level : %s",
     "no_description": "No description available for this area",
-    "maximum_quality": "Maximum quality for an obejct:",
+    "maximum_quality": "Maximum quality for an item:",
+    "minimum_quality": "Minimum quality for an item:",
     "you_claimed": "You've claimed this area",
     "owned_by": "Owned by",
     "monster_group": "ID : %d | %s (+%d more) | Avg Lv : %s | Type : %s",
@@ -422,7 +423,8 @@
     "whip": "Whip",
     "armor": "Armor",
     "loot_box_equipment": "Equipment Box",
-    "reset_time_potion": "Anti-Tiredness"
+    "reset_time_potion": "Anti-Tiredness",
+    "founder_box": "Founder Reward"
   },
   "stats": {
     "strength": "Strength",
@@ -490,6 +492,7 @@
     "areaplayers": "Shows the players in the zone",
     "areaupbonus": "Up one the available bonuses",
     "travel": "Allows you to travel to the area areaID",
+    "travelregion": "Allows you to travel to the region regionID",
 
     "guilds_title": "Guilds",
     "guild": "Shows the information of the guild you're in",

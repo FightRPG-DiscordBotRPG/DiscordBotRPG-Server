@@ -45,7 +45,7 @@ class Area {
         this.maxLevel = res["maxLevel"];
         //this.nbrPlayers = conn.query("SELECT COUNT(*) FROM characters WHERE characters.idArea = " + id + ";")[0]["COUNT(*)"];
 
-        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, areasresources.requiredLevel, itemsbase.idRarity " +
+        res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity " +
             "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
             "INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType " +
             "INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType " +
@@ -62,7 +62,7 @@ class Area {
 
         // Load monsters
 
-        res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idArea = ?;", [this.id]);
+        res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idMonstreGroupe = monstresgroupes.idMonstreGroupe WHERE areasmonsters.idArea = ?;", [this.id]);
         //res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
         let arrOfMonstersGroup = {};
         for (let i in res) {
@@ -110,10 +110,12 @@ class Area {
     getMonsters(lang) {
         let str = "`\n";
         for (let i in this.monsters) {
+            let level = this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : this.minMaxLevelToString();
+            level = this.monsters[i].needToBeMaxLevel() == true ? this.maxLevel : level;
             if (this.monsters[i].numberOfMonsters > 1) {
-                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : Translator.getString(lang, "general", "modular"), Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : Translator.getString(lang, "general", "modular"), Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             }
         }
         str += "`";
@@ -137,12 +139,10 @@ class Area {
         let str = "`" + "\n";
         let tempString = "";
         //let id = 0;
-
         for (let i = 0; i < this.resources.length; i++) {
             // On créer d'abord la vue de l'objet
             //tempString = "- ID : " + (i + 1) + " | " + this.resources[i]["nomItem"] + " | " + this.resources[i]["nomRarity"] + "\n";
-            tempString = Translator.getString(lang, "area", "resource", [i + 1, Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem), Translator.getString(lang, "rarities", this.resources[i]["nomRarity"]), this.resources[i].requiredLevel]) + "\n";
-
+            tempString = Translator.getString(lang, "area", "resource", [i + 1, Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem), Translator.getString(lang, "rarities", this.resources[i]["nomRarity"])]) + "\n";
             switch (this.resources[i]["nomSousType"]) {
                 case "wood":
                     strWoods += tempString;
@@ -159,7 +159,7 @@ class Area {
         if (this.resources.length === 0) {
             str += Translator.getString(lang, "resources", "noresources");
         } else {
-            str += strWoods.length > 0 ? strWoodsHeader + strWoods : "" + strStones.length > 0 ? strStonesHeader + strStones : "" + strHerbs.length > 0 ? strHerbsHeader + strHerbs : "";
+            str += (strWoods.length > 0 ? strWoodsHeader + strWoods : "") + (strStones.length > 0 ? strStonesHeader + strStones : "") + (strHerbs.length > 0 ? strHerbsHeader + strHerbs : "");
         }
 
         return str + "`";
@@ -476,6 +476,18 @@ class Area {
     static staticSetOwner(idArea, idGuild) {
         conn.query("DELETE FROM areasowners WHERE idArea = ?", [idArea]);
         conn.query("INSERT INTO areasowners VALUES(?, ?)", [idArea, idGuild]);
+    }
+
+    getMaxItemQuality() {
+        let res = conn.query(
+            "SELECT DISTINCT itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity DESC LIMIT 1;", [this.id]);
+        return res[0] != null ? res[0]["nomRarity"] : "common";
+    }
+
+    getMinItemQuality() {
+        let res = conn.query(
+            "SELECT DISTINCT itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ASC LIMIT 1;", [this.id]);
+        return res[0] != null ? res[0]["nomRarity"] : "common";
     }
 
 

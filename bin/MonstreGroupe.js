@@ -3,7 +3,7 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Monstre = require("./Monstre");
 
-class MonstreGroup  {
+class MonstreGroup {
 
     constructor() {
         /**
@@ -36,7 +36,11 @@ class MonstreGroup  {
             this.avglevel += listMonster[i].avglevel * listMonster[i].number;
             this.numberOfMonsters += listMonster[i].number;
             this.monstersIDs.push(listMonster[i].id);
-            this.enemiesObjetsToFight.push({ id: listMonster[i].id, number: listMonster[i].number });
+            this.enemiesObjetsToFight.push({
+                id: listMonster[i].id,
+                needToBeMaxLevel: Globals.monstersIds[listMonster[i].type] > 1 ? true : false,
+                number: listMonster[i].number
+            });
 
         }
         this.name = listMonster[indexTo].name;
@@ -56,6 +60,12 @@ class MonstreGroup  {
         return Monstre.getName(this.monstersIDs[0], lang);
     }
 
+    needToBeMaxLevel() {
+        if (this.type == "normal") {
+            return false;
+        }
+        return true;
+    }
 
 
 
@@ -63,7 +73,8 @@ class MonstreGroup  {
 
 
 
-    
+
+
 
 }
 

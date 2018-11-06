@@ -214,6 +214,8 @@ Item.newItem = (idItem, stype) => {
             return new EquipmentLootBox(idItem);
         case "reset_time_potion":
             return new ResetTimePotion(idItem);
+        case "founder_box":
+            return new FounderGift(idItem);
         default:
             return new Item(idItem);
     }
@@ -224,3 +226,4 @@ module.exports = Item;
 const EquipmentLootBox = require("./EquipmentLootBox");
 const Consumable = require("./Consumable");
 const ResetTimePotion = require("./ResetTimePotion");
+const FounderGift = require("./FounderGift");

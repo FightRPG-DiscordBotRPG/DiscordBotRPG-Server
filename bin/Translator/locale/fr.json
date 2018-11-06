@@ -176,7 +176,7 @@
   "area": {
     "monster": "ID : %d | %s | Niv : %s | Type : %s",
     "resources": "Ressources de la zone :",
-    "resource": "- ID : %d | %s | %s | Niv : %d",
+    "resource": "- ID : %d | %s | %s",
     "list_of_players_in_area": "Liste des joueurs de la zone %s :",
     "player": "ID : %d | Nom : %s | Niveau : %d",
     "wild_area": "%d | %s | Niveaux : %s",
@@ -184,6 +184,7 @@
     "dungeon_area": "%d | %s (Donjon) | Niveau : %s",
     "no_description": "Aucune description pour cette zone",
     "maximum_quality": "Qualité maximale pour un objet :",
+    "minimum_quality": "Qualité minimale pour un objet :",
     "you_claimed": "Vous avez conquis cette zone",
     "owned_by": "Propriétaire",
     "monster_group": "ID : %d | %s (+%d autres) | Lv. Moy. : %s | Type : %s",
@@ -421,7 +422,8 @@
     "whip": "Fouet",
     "armor": "Armure",
     "loot_box_equipment": "Coffre d'équipements",
-    "reset_time_potion": "Anti-Fatigue"
+    "reset_time_potion": "Anti-Fatigue",
+    "founder_box": "Récompense de Fondateur"
   },
   "stats": {
     "strength": "Force",
@@ -489,6 +491,7 @@
     "areaupbonus": "Augmente un des bonus de la zone",
     "areaplayers": "Affiche les joueurs de la zone",
     "travel": "Permet de voyager à la zone areaID",
+    "travelregion": "Permet de voyager à la région regionID",
 
     "guilds_title": "Guildes",
     "guild": "Affiche les informations de la guilde dans laquelle vous êtes",

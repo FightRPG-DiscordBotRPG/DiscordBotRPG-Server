@@ -158,14 +158,20 @@ class TravelModule extends GModule {
                                     case checkEmoji:
                                         if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
                                             // Update le compte de joueurs
-                                            wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+                                            if (Globals.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(costs.goldPrice)) {
+                                                wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
-                                            // change de zone
-                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+                                                // change de zone
+                                                Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+                                                Globals.connectedUsers[authorIdentifier].character.removeMoney(costs.goldPrice);
 
-                                            // Messages
-                                            msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
-                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                                // Messages
+                                                msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
+                                                msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                            } else {
+                                                msg = "Not enough Gold";
+                                            }
+
                                         } else {
                                             msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                                         }

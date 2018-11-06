@@ -64,6 +64,13 @@ class Monstre extends WorldEntity {
         return Translator.getString(lang, "monstersNames", id);
     }
 
+    needToBeMaxLevel() {
+        if (this.type == "normal") {
+            return false;
+        }
+        return true;
+    }
+
 }
 
 module.exports = Monstre;

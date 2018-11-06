@@ -21,9 +21,9 @@ class CharacterInventory {
 
     isEquipable(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
 
-        if(isEquipable[0]) {
+        if (isEquipable[0]) {
             return isEquipable[0].equipable == 1;
         }
         return false;
@@ -31,7 +31,7 @@ class CharacterInventory {
 
     addToInventory(idItem, number) {
         number = number > 0 ? number : 1;
-        if(this.isThisItemInInventory(idItem)) {
+        if (this.isThisItemInInventory(idItem)) {
             conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, this.id, idItem]);
         } else {
             conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [this.id, idItem, number]);
@@ -49,7 +49,7 @@ class CharacterInventory {
     removeSomeFromInventoryIdBase(idBase, number, deleteObject) {
         number = number ? number : 1;
         let item = this.getItemByBase(idBase);
-        if(item != null) {
+        if (item != null) {
             item.number -= number;
             if (item.number <= 0) {
                 this.deleteFromInventory(item, deleteObject);
@@ -97,7 +97,7 @@ class CharacterInventory {
         // Multiple queries 1 query = impossible
         let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
         let ids = [];
-        for(let i in res) {
+        for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
@@ -109,7 +109,7 @@ class CharacterInventory {
     }
 
     getAllInventoryValue() {
-        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+ itemsbase.idRarity * 2) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0", [this.id])[0]["value"];
+        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0", [this.id])[0]["value"];
         return value;
     }
 
@@ -122,13 +122,17 @@ class CharacterInventory {
 
         let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
 
-        for(let i in res) {
+        for (let i in res) {
             let item = Item.newItem(res[i].idItem, res[i].nomSousType);
             item.number = res[i].number;
             items[i] = item;
         }
 
-        return { items: items, maxPage: maxPage, page: page };
+        return {
+            items: items,
+            maxPage: maxPage,
+            page: page
+        };
     }
 
     /**
@@ -148,8 +152,8 @@ class CharacterInventory {
 
         let res = this.getAllItemsAtThisPage(page);
         let index = (res.page - 1) * 10 + 1;
-        if(res.items.length > 0) {
-            for(let item of res.items) {
+        if (res.items.length > 0) {
+            for (let item of res.items) {
                 str += index + " - " + item.toStr(lang) + "\n";
                 index++;
             }
@@ -157,7 +161,7 @@ class CharacterInventory {
             str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
         }
 
-        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [res.page, res.maxPage])
+        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [res.page, res.maxPage == 0 ? 1 : res.maxPage])
         str += "```"
         return str;
     }
@@ -173,10 +177,9 @@ class CharacterInventory {
         let embed = new Discord.RichEmbed()
             .setAuthor(item.getName(lang) + (item.isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + item.image + ".png")
             .setColor(item.rarityColor)
-            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%"
-            , item.getDesc(lang))
+            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%", item.getDesc(lang))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
-        
+
         return embed;
     }
 
@@ -199,7 +202,7 @@ class CharacterInventory {
      * @returns {boolean}
      */
     doIHaveThisItem(idEmplacement) {
-        if(idEmplacement <= this.getNumberOfItem() && idEmplacement > 0) {
+        if (idEmplacement <= this.getNumberOfItem() && idEmplacement > 0) {
             return true;
         }
         return false;
@@ -212,7 +215,7 @@ class CharacterInventory {
      */
     getItemOfThisID(idBaseItem) {
         let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
-        if(res[0] != null) {
+        if (res[0] != null) {
             let item = Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
@@ -227,9 +230,12 @@ class CharacterInventory {
      */
     getItemsOfThosesIds(ArrItemsIDs) {
         let arr = [];
-        for(let i in this.objects) {
-            if(ArrItemsIDs.indexOf(this.objects[i].idBaseItem) > -1) {
-                arr.push({item:this.objects[i], index:i});
+        for (let i in this.objects) {
+            if (ArrItemsIDs.indexOf(this.objects[i].idBaseItem) > -1) {
+                arr.push({
+                    item: this.objects[i],
+                    index: i
+                });
             }
         }
         return arr;
@@ -241,37 +247,37 @@ class CharacterInventory {
         return res[0] != null;
     }
 
-    
+
     /**
      * @deprecated
      * @param {number} idBase 
      */
     getEmplacementOfThisItemIdBase(idBase) {
-        for(let i in this.objects) {
-            if(this.objects[i].idBaseItem == idBase) {
+        for (let i in this.objects) {
+            if (this.objects[i].idBaseItem == idBase) {
                 return i;
             }
         }
         return -1;
     }
 
-    getIdOfThisIdBase(idBaseItem, level=1) {
+    getIdOfThisIdBase(idBaseItem, level = 1) {
         level = level >= 1 ? level : 1;
         let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
-        if(res[0]) {
+        if (res[0]) {
             return res[0].idItem;
         }
         return null;
     }
 
-    
+
     // Instantiate the require item
     // If idEmplacement not valid 
     // Intantiate first item in inventory
     // If inventory is empty => throw err 
     getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
         let item = Item.newItem(res[0].idItem, res[0].nomSousType);
         item.number = res[0].number;
         return item;
@@ -281,7 +287,7 @@ class CharacterInventory {
     getItemByBase(idBase) {
         idBase = idBase > 0 ? idBase : 1;
         let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
-        if(res[0] != null) {
+        if (res[0] != null) {
             let item = Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
@@ -296,8 +302,8 @@ class CharacterInventory {
      */
     getIdItemOfThisEmplacement(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement-1]);
-        if(res[0]) {
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        if (res[0]) {
             return res[0].idItem;
         }
         return 0;
@@ -305,12 +311,14 @@ class CharacterInventory {
 
     /*
      *      API CALLS
-    */
+     */
     apiGetInv(page) {
         page = page ? page - 1 : 0;
         let keys = Object.keys(this.objects);
         let apiReturn = {
-            nbrPages: 0, inv: {}};
+            nbrPages: 0,
+            inv: {}
+        };
         if (keys.length > 0) {
             // Doing pagination
             let paginated = keys.slice(page * 8, (page + 1) * 8);
@@ -322,17 +330,17 @@ class CharacterInventory {
             // Create string for each objects
             for (let i of paginated) {
                 apiReturn.inv[i] = this.objects[i].toApiLight();
-                    /*{
-                        name: this.objects[i].name,
-                        desc: this.objects[i].desc,
-                        image: "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png",
-                        rarity: this.objects[i].rarity,
-                        rarityColor: this.objects[i].rarityColor,
-                        level: this.objects[i].level,
-                        typeName: this.objects[i].typeName,
-                        equipable: this.objects[i].equipable === 1 ? true : false,
-                        number: this.objects[i].number,
-                    };*/
+                /*{
+                    name: this.objects[i].name,
+                    desc: this.objects[i].desc,
+                    image: "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png",
+                    rarity: this.objects[i].rarity,
+                    rarityColor: this.objects[i].rarityColor,
+                    level: this.objects[i].level,
+                    typeName: this.objects[i].typeName,
+                    equipable: this.objects[i].equipable === 1 ? true : false,
+                    number: this.objects[i].number,
+                };*/
             }
         }
         let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : 1;

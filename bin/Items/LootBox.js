@@ -6,7 +6,10 @@ const Translator = require("../Translator/Translator");
 class LootBox extends Consumable {
     constructor(id) {
         super(id);
-        this.openResult = {items : [], gold: 0}
+        this.openResult = {
+            items: [],
+            gold: 0
+        }
     }
 
     use(character) {
@@ -14,29 +17,36 @@ class LootBox extends Consumable {
     }
 
     addItem(id, number) {
-        let item = {id: id, number:number};
+        let item = {
+            id: id,
+            number: number
+        };
         this.openResult.items.push(item);
+    }
+
+    addGold(goldNumber) {
+        this.openResult.gold += goldNumber;
     }
 
     resultToString(lang) {
         let msg = Translator.getString(lang, "lootboxes", "open_message");
         let drop = false;
 
-        if(this.openResult.items.length > 0) {
-            for(let i=0; i<this.openResult.items.length; i++) {
+        if (this.openResult.items.length > 0) {
+            for (let i = 0; i < this.openResult.items.length; i++) {
                 msg += Item.getName(lang, this.openResult.items[i].id) + " [x" + this.openResult.items[i].number + "]";
-                if(i < (this.openResult.items-1)) {
-                    msg += ",";
-                }   
+                if (i < (this.openResult.items.length - 1)) {
+                    msg += ", ";
+                }
             }
             drop = true;
         }
-        if(this.openResult.gold > 0) {
-            msg += "\n%dG";
+        if (this.openResult.gold > 0) {
+            msg += "\n" + this.openResult.gold + "G";
             drop = true;
         }
 
-        if(drop == false ) {
+        if (drop == false) {
             msg = Translator.getString(lang, "lootboxes", "no_drop");
         }
 

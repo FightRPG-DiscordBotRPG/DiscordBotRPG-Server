@@ -113,12 +113,12 @@ class LootSystem {
             let rarity = res[0].idRarity;
             let stats = {};
             let statsPossible = Object.keys(Globals.statsIds);
-            let alreadyDone = rarity - 1 + this.getNumberOfStatsBonus(rarity);
+            let alreadyDone = rarity - 1 + this.berOfStatsBonus(rarity);
             let objectType = res[0]["nomType"];
             let equipable = res[0]["equipable"];
             maxStatsPercentage = maxStatsPercentage >= 50 ? maxStatsPercentage : 100;
 
-            if (equipable == true) {
+            if (equipable == true && LootSystem.canHaveStats(objectType)) {
                 let ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
 
                 if (objectType == "weapon") {
@@ -167,12 +167,25 @@ class LootSystem {
         switch (type) {
             case "resource":
                 return false;
+            case "mount":
+                return false;
             default:
                 return true;
         }
     }
 
-    getNumberOfStatsBonus(rarity) {
+    static canHaveStats(type) {
+        switch (type) {
+            case "resource":
+                return false;
+            case "mount":
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    berOfStatsBonus(rarity) {
         let maxPossible = 5 - rarity;
         let maxStats = 0;
         while (maxPossible > 0) {

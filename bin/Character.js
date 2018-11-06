@@ -9,6 +9,7 @@ const Consumable = require("./Items/Consumable.js");
 const PlayerCraft = require("./CraftSystem/PlayerCraft.js");
 const LootSystem = require("./LootSystem.js");
 const PStatistics = require("./Achievement/PStatistics.js");
+const conf = require("../conf/conf");
 
 class Character extends CharacterEntity {
 
@@ -152,7 +153,7 @@ class Character extends CharacterEntity {
     }
 
     canDoAction() {
-        return this.getWaitTime() <= Date.now();
+        return conf.env == "dev" ? true : (this.getWaitTime() <= Date.now());;
     }
 
     // Group System
@@ -354,6 +355,8 @@ class Character extends CharacterEntity {
     }
 
     itemCraftedLevel(maxLevelItem) {
+        let craftingBuilding = this.getArea().getService("craftingbuilding");
+        maxLevelItem = craftingBuilding.getMaxLevel() < maxLevelItem ? craftingBuilding.getMaxLevel() : maxLevelItem;
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
@@ -361,7 +364,7 @@ class Character extends CharacterEntity {
         let gotAllItems = true;
         if (craft.id > 0) {
             gotAllItems = conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id])[0][0].doesPlayerHaveEnoughMats;
-            if (gotAllItems == true) {
+            if (gotAllItems == "true") {
                 for (let i in craft.requiredItems) {
                     this.getInv().removeSomeFromInventoryIdBase(craft.requiredItems[i].idBase, craft.requiredItems[i].number, true);
                 }
@@ -442,8 +445,8 @@ class Character extends CharacterEntity {
      */
     use(itemToUse, idEmplacement) {
         if (this.canUse(itemToUse)) {
-            itemToUse.use(this);
             this.getInv().removeSomeFromInventory(idEmplacement, 1, true);
+            itemToUse.use(this);
         }
     }
 

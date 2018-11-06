@@ -51,16 +51,16 @@ bot.on("ready", () => {
     if (conf.env === "prod") {
 
         dbl.webhook.on('vote', vote => {
-            if(User.exist(vote.user)) {
+            if (User.exist(vote.user)) {
                 let user = new User(vote.user);
                 user.loadUser();
                 let ls = new LootSystem();
                 ls.giveToPlayer(user.character, 41, 1, vote.isWeekend ? 2 : 1);
                 let duser = bot.users.get(vote.user);
-                if(duser != null) {
+                if (duser != null) {
                     let lang = user.getLang();
                     let msg = Translator.getString(lang, "vote_daily", "you_voted");
-                    if(vote.isWeekend) {
+                    if (vote.isWeekend) {
                         msg += Translator.getString(lang, "vote_daily", "vote_week_end");
                     } else {
                         msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
@@ -68,7 +68,7 @@ bot.on("ready", () => {
                     duser.send(msg);
                 }
             }
-            
+
         });
 
         setInterval(() => {
@@ -87,17 +87,7 @@ bot.on("ready", () => {
 
 });
 
-// Key Don't open
-bot.login(Key);
-
 let moduleHandler = new ModuleHandler();
-
-// UNDER CONSTRUCTION SUBJECT TO CHANGE
-var connectedUsers = {};
-var connectedGuilds = {};
-
-Globals.connectedUsers = connectedUsers;
-Globals.connectedGuilds = connectedGuilds;
 
 syncStartWith = Date.now();
 console.log("Loading Areas...");
@@ -109,6 +99,19 @@ syncStartWith = Date.now();
 console.log("Loading Fight Manager...");
 Globals.fightManager = new FightManager();
 console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+// Key Don't open
+bot.login(Key);
+
+
+
+// UNDER CONSTRUCTION SUBJECT TO CHANGE
+var connectedUsers = {};
+var connectedGuilds = {};
+
+Globals.connectedUsers = connectedUsers;
+Globals.connectedGuilds = connectedGuilds;
+
 Globals.discordClient = bot;
 
 console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
@@ -155,4 +158,4 @@ bot.on('guildDelete', () => {
 
 
 // Load api after all 
-const ApiResponder = require("./api/ApiResponder.js");
+//const ApiResponder = require("./api/ApiResponder.js");

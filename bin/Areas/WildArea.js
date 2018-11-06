@@ -12,18 +12,6 @@ class WildArea extends Area {
         this.authorizedBonuses = ["xp_fight", "xp_collect", "gold_drop", "item_drop", "collect_drop"];
     }
 
-    getMaxItemQuality() {
-        let res = conn.query(
-            "SELECT DISTINCT itemsrarities.nomRarity " +
-            "FROM itemsbase " +
-            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity " +
-            "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
-            "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
-        );
-
-        return res[0]["nomRarity"];
-    }
-
     /**
      * @param {string} lang 
      * @returns {RichEmbed}
@@ -32,7 +20,7 @@ class WildArea extends Area {
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
             .setAuthor(this.getName(lang) + " | " + this.minMaxLevelToString() + " | " + Translator.getString(lang, "area", "owned_by") + " : " + this.getOwner(lang), this.image)
-            .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\n" + Translator.getString(lang, "area", "maximum_quality") + " **" + Translator.getString(lang, "rarities", this.getMaxItemQuality()) + "**")
+            .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\n" + Translator.getString(lang, "area", "minimum_quality") + " **" + Translator.getString(lang, "rarities", this.getMinItemQuality()) + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.getMonsters(lang))
             .addField(Translator.getString(lang, "general", "resources"), this.getResources(lang))
             .setImage(this.image);

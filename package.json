@@ -65,6 +65,7 @@
       "version": "1.0.2"
     },
     "dblapi.js": "^2.2.0",
+    "deasync": "^0.1.13",
     "discord.js": "^11.4.2",
     "ejs": "^2.6.1",
     "express": "^4.16.3",

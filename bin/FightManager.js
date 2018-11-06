@@ -59,7 +59,11 @@ class FightManager {
         let arr = [];
         for (let i in monsters) {
             for (let j = 0; j < monsters[i].number; j++) {
-                arr.push(new Monstre(monsters[i].id, level));
+                let realLevel = level;
+                if (monsters[i].needToBeMaxLevel == true) {
+                    realLevel = area.maxLevel;
+                }
+                arr.push(new Monstre(monsters[i].id, realLevel));
             }
         }
         return arr;

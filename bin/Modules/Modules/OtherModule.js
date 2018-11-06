@@ -70,10 +70,10 @@ class OtherModule extends GModule {
                 let one = Emojis.getString("one");
                 let two = Emojis.getString("two");
                 let tempMsgContent = "**" + Translator.getString(lang, "settings_menu", "title") + "**\n\n" +
-                one + " : " + "`" + Translator.getString(lang, "group", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isGroupMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n" +
-                two + " : " + "`" + Translator.getString(lang, "marketplace", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isMarketplaceMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n";
+                    one + " : " + "`" + Translator.getString(lang, "group", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isGroupMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n" +
+                    two + " : " + "`" + Translator.getString(lang, "marketplace", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isMarketplaceMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n";
                 let tempMsg = await message.channel.send(tempMsgContent).catch(e => null);
-                
+
                 await Promise.all([
                     tempMsg.react(one),
                     tempMsg.react(two)
@@ -91,7 +91,7 @@ class OtherModule extends GModule {
                 if (reaction != null) {
                     switch (reaction.emoji.id || reaction.emoji.name) {
                         case one:
-                            if(Globals.connectedUsers[authorIdentifier].isGroupMuted()) {
+                            if (Globals.connectedUsers[authorIdentifier].isGroupMuted()) {
                                 Globals.connectedUsers[authorIdentifier].muteGroup(false);
                                 msg = Translator.getString(lang, "group", "now_unmuted");
                             } else {
@@ -168,7 +168,8 @@ class OtherModule extends GModule {
                     "::areabonuseslist : " + Translator.getString(lang, "help_panel", "areabonuseslist") + "\n" +
                     "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
                     "::areaupbonus <bonus_identifier> <pts_to_allocate> : " + Translator.getString(lang, "help_panel", "areaupbonus") + "\n" +
-                    "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n";
+                    "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n" +
+                    "::travelregion <regionID> : " + Translator.getString(lang, "help_panel", "travelregion") + "\n";
                 break;
             case 4:
                 str = "```apache\n" +

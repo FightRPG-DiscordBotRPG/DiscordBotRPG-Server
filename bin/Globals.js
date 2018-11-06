@@ -45,11 +45,11 @@ for (let r of res) {
 
 
 let rarityChances = {
-    commun: 15 / 100,
-    rare: 10 / 100,
-    superieur: 4 / 100,
-    epique: 1 / 100,
-    legendaire: 0.05 / 100,
+    commun: 40 / 100,
+    rare: 14 / 100,
+    superieur: 6 / 100,
+    epique: 0.9 / 100,
+    legendaire: 0.125 / 100,
 }
 
 let collectChances = {
@@ -67,13 +67,13 @@ var Globals = {
     "monstersIds": monstersTypes,
     "itemsrarities": itemsrarities,
     "equipableCorresponds": equipableCorresponds,
-    "basicWaitTimeBeforeFight": 30,
+    "basicWaitTimeBeforeFight": 40,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
-    "basicWaitTimeCollectTravel": 20,
+    "basicWaitTimeCollectTravel": 25,
     "basicWaitTimeCraft": 40,
     "collectTriesOnce": 20,
-    "admins": ["241564725870198785", "285789367954440194"],
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216"],
     "activated": true,
     "mDifficulties": [{
             name: "Weak",
@@ -97,7 +97,7 @@ var Globals = {
     "collectChances": collectChances,
     "areasTypes": areasTypes,
     "chanceToFightTheMonsterYouWant": 0.63,
-    "resetStatsPricePerLevel": 250,
+    "resetStatsPricePerLevel": 60,
     "guilds": {
         "maxLevel": 10,
         "basePriceLevel": 20000,

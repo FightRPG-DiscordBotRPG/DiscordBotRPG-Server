@@ -5,7 +5,7 @@ const Craft = require("./Craft");
 
 class CraftingBuilding {
     constructor() {
-        this.id = 0; 
+        this.id = 0;
         this.minRarity = 1;
         this.maxRarity = 1;
         this.minLevel = 0;
@@ -31,28 +31,32 @@ class CraftingBuilding {
         let perPage = 10;
         let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ?;`,
-            [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel])[0]["COUNT(*)"] / perPage);
+                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ?;`,
+            [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let res = conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, perPage, (page - 1) * perPage]);
+        let res = conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage]);
 
 
 
-        return { res: res, maxPage: maxPage, page: page };
+        return {
+            res: res,
+            maxPage: maxPage,
+            page: page
+        };
     }
 
-    craftingListToEmbed(page=1, lang) {
+    craftingListToEmbed(page = 1, lang) {
         let res = this.getCraftingList(page);
         let str = "```\n";
         str += Translator.getString(lang, "craft", "header_craft_list") + "\n\n";
         let crafts = res.res;
         let index = 1;
-        let indexOffset = (res.page-1) * 10;
+        let indexOffset = (res.page - 1) * 10;
         if (crafts.length > 0) {
             for (let craft of crafts) {
                 let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
-                str += (index+indexOffset) + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + craft.minLevel + " - " + craft.maxLevel + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
+                str += (index + indexOffset) + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + (craft.minLevel < this.getMinLevel() ? this.getMinLevel() : craft.minLevel) + " - " + (craft.maxLevel > this.getMaxLevel() ? this.getMaxLevel() : craft.maxLevel) + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
                 index++;
             }
             str += "\n";
@@ -65,25 +69,25 @@ class CraftingBuilding {
     }
 
     craftToEmbed(idCraft, lang) {
-        idCraft = this.getRealIdCraft(idCraft);
-
-        // Like this we dont have to call databse if id is not a number or whatever
-        if(idCraft > 0) {
-            let craft = new Craft(idCraft);
-            if(craft.exist && craft.canBeCraft(this.maxRarity)) {
-                return craft.toEmbed(lang);
-            } 
+        let craft = this.getCraft(idCraft);
+        if (craft != null) {
+            return craft.toEmbed(lang);
         }
-
         return Translator.getString(lang, "errors", "craft_dont_exist");
     }
 
     getCraft(idCraft) {
         idCraft = this.getRealIdCraft(idCraft);
-        
-        if(idCraft > 0) {
+
+        if (idCraft > 0) {
             let craft = new Craft(idCraft);
-            if(craft.exist && craft.canBeCraft(this.maxRarity)) {
+            if (craft.exist && craft.canBeCraft(this.maxRarity)) {
+                if (craft.itemInfo.maxLevel > this.maxLevel) {
+                    craft.itemInfo.maxLevel = this.maxLevel;
+                }
+                if (craft.itemInfo.minLevel < this.minLevel) {
+                    craft.itemInfo.minLevel = this.minLevel;
+                }
                 return craft;
             }
         }
@@ -93,10 +97,10 @@ class CraftingBuilding {
     getRealIdCraft(idCraft) {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
         let res;
-        if(idCraft > 0) {
-            res = conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel BETWEEN ? AND ? OR craftitem.maxLevel BETWEEN ? AND ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.minLevel, this.maxLevel, this.minLevel, this.maxLevel, idCraft-1]);
+        if (idCraft > 0) {
+            res = conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, idCraft - 1]);
         }
-        
+
         return res != null && res[0] != null ? res[0].idCraftItem : 0;
     }
 

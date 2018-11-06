@@ -26,11 +26,11 @@ class DatabaseInitializer {
     }
 
     static citiesMarketplaces() {
-        conn.query('INSERT IGNORE INTO marketplaces (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city";');
+        conn.query('INSERT INTO marketplaces (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city" AND areas.idArea NOT IN (SELECT idArea FROM marketplaces);');
     }
 
     static citiesCraftBuildings() {
-        conn.query('INSERT IGNORE INTO craftbuilding (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city";');
+        conn.query('INSERT INTO craftbuilding (idArea) SELECT idArea FROM areas INNER JOIN areastypes ON areas.idAreaType = areastypes.idAreaType WHERE areastypes.NomAreaType = "city" AND areas.idArea NOT IN (SELECT idArea FROM craftbuilding);');
     }
 
     static areaBonuses() {
@@ -49,13 +49,13 @@ class DatabaseInitializer {
         let guildsAddString = "";
         let i = 0;
 
-        guilds.forEach( (guild, snowflake, map) => {
+        guilds.forEach((guild, snowflake, map) => {
             i++;
             //console.log(guild.id + " " + guild.name + " " + guild.memberCount + " " + guild.region);
             //guildsAddString += "(" + guild.id + "," + "`::`, `" + guild.name + "`," + guild.memberCount + ",`" + guild.region + "`";
             let temp = "(?, '::', ?, ?, ?)";
             temp = mysql.format(temp, [guild.id, guild.name, guild.memberCount, guild.region]);
-            if(i < guilds.size) {
+            if (i < guilds.size) {
                 temp += ",";
             } else {
                 temp += ";";
