@@ -2,23 +2,19 @@
 -- type 1 wild, 2 city, 3 dungeon
 INSERT INTO areas
 VALUES
-    (15, "https://vignette.wikia.nocookie.net/planarch-world/images/3/32/Egypt_fantasy_art_1280x800_64840.jpg/revision/latest?cb=20130904022740", 2, 1, 5), -- sepsibenu
+    (15, "https://vignette.wikia.nocookie.net/planarch-world/images/3/32/Egypt_fantasy_art_1280x800_64840.jpg/revision/latest?cb=20130904022740", 2, 1, 5),
 
-    (16, "https://img00.deviantart.net/197a/i/2012/241/b/0/city_at_sunset_by_vennom07-d5cuzhr.jpg", 2, 1, 5), -- fontaine occidentale
+    (16, "https://img00.deviantart.net/197a/i/2012/241/b/0/city_at_sunset_by_vennom07-d5cuzhr.jpg", 2, 1, 5),
 
     (17, "https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png", 1, 1, 5),
-    -- désolé et craquelé
 
     (18, "http://fc03.deviantart.net/fs70/i/2013/019/a/2/desert_landscape_by_rambled-d5s0cib.jpg", 1, 1, 5),
-    -- cratères en feu
 
     (19, "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/2abc5a8d-58e0-4913-a8a5-1d067c864b26/db6my5y-fd0aad3e-4e85-4cfd-b449-3268ff2acff2.jpg/v1/fill/w_900,h_480,q_70,strp/orc_village_by_veravoyna_db6my5y-fullview.jpg", 1, 1, 5),
-    -- village wutgarek
 
     (20, "https://vignette.wikia.nocookie.net/assassinscreed/images/e/e4/ACO_Desert_Ruin_-_Concept_Art.jpg/revision/latest?cb=20171019091305", 1, 1, 5),
-    -- acbydet
 
-    (21, "https://pre00.deviantart.net/7106/th/pre/i/2016/030/a/f/ruins_underground_by_asahisuperdry-d9puru6.jpg", 3, 1, 5); -- tombes oubliées
+    (21, "https://pre00.deviantart.net/7106/th/pre/i/2016/030/a/f/ruins_underground_by_asahisuperdry-d9puru6.jpg", 3, 1, 5);
 
 
 
@@ -48,14 +44,12 @@ VALUES
 -- Paths
 INSERT INTO areaspaths
 VALUES
-    -- Interzone
-    -- From Sepsibenu
+
     (15, 16, 90, 0),
     (16, 15, 90, 0),
     (15, 17, 30, 0),
     (17, 15, 30, 0),
 
-    -- Desolated desert
     (17, 16, 60, 0),
     (16, 17, 60, 0),
     (17, 18, 40, 0),
@@ -65,15 +59,12 @@ VALUES
     (17, 20, 80, 0),
     (20, 17, 80, 0),
 
-    -- From Wutgarek
     (19, 20, 60, 0),
     (20, 19, 60, 0),
 
-    -- Acybet
     (20, 21, 20, 0),
     (21, 20, 20, 0),
 
-    -- Outsite
     (15, 14, 420, 0),
     (14, 15, 420, 0),
     (20, 14, 380, 0),
@@ -197,12 +188,11 @@ VALUES
     (47, 51, 1),
     (48, 52, 1),
     (49, 53, 1),
-    -- wutgarek
+
     (50, 33, 2),
     (51, 34, 1),
 
-    -- dj
-    (52, 54, 1), -- solo
+    (52, 54, 1),
 
     (53, 54, 2),
     (53, 55, 1);
@@ -230,14 +220,13 @@ VALUES
     (20, 49, 53),
     (20, 52, 54),
     
-    -- dj
     (21, 53, 54),
     (21, 53, 55);
 
 
 INSERT INTO areasitems
 VALUES
-    -- desert
+
     (17, 2, 0, 1, 1),
     (17, 3, 0, 1, 1),
     (17, 4, 0, 1, 1),
@@ -251,7 +240,7 @@ VALUES
     (17, 17, 0, 1, 1),
     (17, 18, 0, 1, 1),
     (17, 19, 0, 1, 1),
-    -- crater
+
     (18, 2, 0, 1, 1),
     (18, 3, 0, 1, 1),
     (18, 4, 0, 1, 1),
@@ -265,7 +254,7 @@ VALUES
     (18, 17, 0, 1, 1),
     (18, 18, 0, 1, 1),
     (18, 19, 0, 1, 1),
-    -- village
+
     (19, 2, 0, 1, 1),
     (19, 3, 0, 1, 1),
     (19, 4, 0, 1, 1),
@@ -279,7 +268,7 @@ VALUES
     (19, 18, 0, 1, 1),
     (19, 19, 0, 1, 1),
     (19, 20, 0, 1, 1),
-    -- acbydet
+
     (20, 3, 0, 1, 1),
     (20, 4, 0, 1, 1),
     (20, 8, 0, 1, 1),
@@ -289,7 +278,7 @@ VALUES
     (20, 14, 0, 1, 1),
     (20, 18, 0, 1, 1),
     (20, 19, 0, 1, 1),
-    -- tomb
+
     (21, 5, 0, 1, 1),
     (21, 10, 0, 1, 1),
     (21, 15, 0, 1, 1),

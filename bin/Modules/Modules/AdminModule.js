@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "give_to_all"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -179,15 +179,6 @@ class AdminModule extends GModule {
                 let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [authorIdentifier]);
                 msg = "The last command used is: " + lcommand[0].command;
                 msg += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
-                break;
-            case "give_to_all":
-                let res = conn.query("SELECT idCharacter FROM characters");
-                let idToAdd = 42;
-                for (let char of res) {
-                    idToAdd = tLootSystem.newItem(42, 1);
-                    conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [char.idCharacter, idToAdd, 1]);
-                }
-                msg = "Done";
                 break;
         }
 
