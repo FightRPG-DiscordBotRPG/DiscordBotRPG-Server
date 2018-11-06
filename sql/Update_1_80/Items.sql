@@ -30,15 +30,12 @@ VALUES
 
 INSERT INTO itemsbase
 VALUES
-
-    -- Armes
     (1, 1, 1, "unknwon", 4),
     (2, 1, 2, "unknwon", 4),
     (3, 1, 3, "unknwon", 4),
     (4, 1, 4, "unknwon", 4),
     (5, 1, 5, "unknwon", 4),
 
-    -- Armures
     (6, 2, 1, "unknwon", 6),
     (7, 2, 2, "unknwon", 6),
     (8, 2, 3, "unknwon", 6),
@@ -57,37 +54,32 @@ VALUES
     (19, 4, 4, "unknwon", 6),
     (20, 4, 5, "unknwon", 6),
 
-    -- Ressources
-    -- Ore
     (21, 5, 1, "unknwon", 1),
     (22, 5, 2, "unknwon", 1),
     (23, 5, 3, "unknwon", 1),
     (24, 5, 4, "unknwon", 1),
     (25, 5, 5, "unknwon", 1),
-    -- Plant
+
     (26, 5, 1, "unknwon", 2),
     (27, 5, 2, "unknwon", 2),
     (28, 5, 3, "unknwon", 2),
     (29, 5, 4, "unknwon", 2),
     (30, 5, 5, "unknwon", 2),
-    --Wood
+
     (31, 5, 1, "unknwon", 3),
     (32, 5, 2, "unknwon", 3),
     (33, 5, 3, "unknwon", 3),
     (34, 5, 4, "unknwon", 3),
     (35, 5, 5, "unknwon", 3),
 
-    -- Montures
     (36, 8, 1, "unknwon", 11),
     (37, 8, 2, "unknwon", 11),
     (38, 8, 3, "unknwon", 11),
     (39, 8, 4, "unknwon", 11),
     (40, 8, 5, "unknwon", 11),
 
-    -- Consumable
     (41, 6, 1, "unknown", 9),
 
-    -- LootBox
     (42, 7, 5, "unknown", 10);
 
 INSERT INTO localizationitems

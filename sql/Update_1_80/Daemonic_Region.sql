@@ -3,23 +3,16 @@
 INSERT INTO areas
 VALUES
     (22, "https://image.ibb.co/n2HydV/northernexpedition.png", 2, 1, 5),
-    -- northern expedition
 
     (23, "https://img00.deviantart.net/2238/i/2015/099/9/7/lava_cracks_by_frejagelii-d8p1n1y.jpg", 1, 1, 5),
-    -- lava crack
 
     (24, "http://orig04.deviantart.net/b9a8/f/2010/153/6/f/lavascape_by_llrobinll.png", 1, 1, 5),
-    -- explosive volcanos
 
     (25, "https://cdna.artstation.com/p/assets/images/images/004/407/402/large/nicolas-ico-vallee-sp100.jpg?1483483562", 1, 1, 5),
-    -- lava burnt
 
     (26, "https://pre00.deviantart.net/26ae/th/pre/i/2016/179/4/8/ruined_village_by_andanguyen-da2e44f.png", 1, 1, 5),
-    -- old dwarf city
 
     (27, "https://images6.alphacoders.com/415/415665.jpg", 3, 1, 5);
--- daemonic citadel
-
 
 
 INSERT INTO localizationareas
@@ -45,8 +38,6 @@ VALUES
 -- Paths
 INSERT INTO areaspaths
 VALUES
-    -- Interzone
-    -- From outpost
     (22, 23, 90, 0),
     (23, 22, 90, 0),
     (22, 25, 30, 0),
@@ -54,16 +45,12 @@ VALUES
     (22, 27, 30, 0),
     (27, 22, 30, 0),
 
-    -- Cracks
     (23, 24, 30, 0),
     (24, 23, 30, 0),
 
-    -- foret brulée
     (25, 26, 30, 0),
     (26, 25, 30, 0),
 
-
-    -- Outsite
     (22, 10, 420, 0),
     (10, 22, 420, 0);
 
@@ -115,15 +102,11 @@ VALUES
 
     (64, 0, 2),
 
-
-    -- cité naine
-
     (65, 0, 1),
     (66, 0, 1),
     (67, 0, 1),
     (68, 0, 2),
 
-    -- citadel daemonic
     (69, 0, 2),
     (70, 0, 3);
 
@@ -181,15 +164,11 @@ VALUES
 
     (64, 3),
 
-
-    -- cité naine
-
     (65, 2),
     (66, 8),
     (67, 7),
     (68, 3),
 
-    -- dungeon
     (69, 5),
     (70, 7);
 
@@ -206,10 +185,8 @@ VALUES
     (60, 62, 1),
     (61, 63, 1),
 
-    -- ent
     (62, 64, 1),
 
-    -- fantomes
     (63, 65, 1),
     (64, 66, 1),
     (65, 67, 1),
@@ -242,7 +219,7 @@ VALUES
     (26, 65, 67),
     (26, 66, 68),
 
-    -- dj
+
     (27, 67, 62),
     (27, 67, 69),
     (27, 67, 70);
@@ -250,7 +227,7 @@ VALUES
 
 INSERT INTO areasitems
 VALUES
-    -- cracks
+
     (23, 2, 0, 1, 1),
     (23, 3, 0, 1, 1),
     (23, 4, 0, 1, 1),
@@ -264,7 +241,7 @@ VALUES
     (23, 17, 0, 1, 1),
     (23, 18, 0, 1, 1),
     (23, 19, 0, 1, 1),
-    -- volcanos
+
     (24, 2, 0, 1, 1),
     (24, 3, 0, 1, 1),
     (24, 4, 0, 1, 1),
@@ -278,7 +255,7 @@ VALUES
     (24, 17, 0, 1, 1),
     (24, 18, 0, 1, 1),
     (24, 19, 0, 1, 1),
-    -- burnt forest
+
     (25, 2, 0, 1, 1),
     (25, 3, 0, 1, 1),
     (25, 4, 0, 1, 1),
@@ -292,7 +269,7 @@ VALUES
     (25, 18, 0, 1, 1),
     (25, 19, 0, 1, 1),
     (25, 20, 0, 1, 1),
-    -- old dwarf city
+
     (26, 3, 0, 1, 1),
     (26, 4, 0, 1, 1),
     (26, 8, 0, 1, 1),
@@ -302,7 +279,7 @@ VALUES
     (26, 14, 0, 1, 1),
     (26, 18, 0, 1, 1),
     (26, 19, 0, 1, 1),
-    -- tomb
+
     (27, 5, 0, 1, 1),
     (27, 10, 0, 1, 1),
     (27, 15, 0, 1, 1),
