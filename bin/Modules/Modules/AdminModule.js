@@ -174,6 +174,9 @@ class AdminModule extends GModule {
                 break;
             case "debug":
                 //msg = Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(args[0]);
+                let pb = require("../../ProgressBar");
+                let progress = new pb();
+                msg = progress.draw(0, 0);
                 break;
             case "last_command":
                 let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [authorIdentifier]);

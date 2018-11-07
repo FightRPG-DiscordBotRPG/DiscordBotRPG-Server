@@ -286,7 +286,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch(() => {
+            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch((e) => {
                 console.log(e)
             });
 

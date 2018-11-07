@@ -67,7 +67,7 @@ var Globals = {
     "monstersIds": monstersTypes,
     "itemsrarities": itemsrarities,
     "equipableCorresponds": equipableCorresponds,
-    "basicWaitTimeBeforeFight": 40,
+    "basicWaitTimeBeforeFight": 60,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
     "basicWaitTimeCollectTravel": 25,

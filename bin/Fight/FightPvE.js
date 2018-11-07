@@ -89,7 +89,7 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.5 ? 1.5 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 100 + areaBonuses["xp_fight"].getPercentageValue() + 1));
+                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 2000 + areaBonuses["xp_fight"].getPercentageValue() / 10 + 1));
                     totalXp += xp;
                     this.summary.xpGained[this.entities[0][i].name] = xp;
                     this.entities[0][i].addExp(xp);

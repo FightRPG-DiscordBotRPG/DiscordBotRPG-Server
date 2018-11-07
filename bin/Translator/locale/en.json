@@ -199,7 +199,8 @@
     "areas": "Areas",
     "list": "List of areas",
     "list_regions_connected": "Connected regions",
-    "no_connected_regions": "No regions connected to this region"
+    "no_connected_regions": "No regions connected to this region",
+    "follow_the_link": "You can have the list of resources at the link bellow."
   },
   "bonuses": {
     "bonuses": "Bonuses",
@@ -543,6 +544,7 @@
     "craftshow": "Show the recipe of given id",
     "craft": "Craft the recipe of given id",
     "collect": "Collect the rousource of given id",
+    "resources": "Show all the resources per area",
 
     "settings": "Shows the settings menu"
   },

@@ -199,7 +199,8 @@
     "areas": "Zones",
     "list": "Liste des zones",
     "list_regions_connected": "Régions connecté",
-    "no_connected_regions": "Pas de régions connectés à cette région"
+    "no_connected_regions": "Pas de régions connectés à cette région",
+    "follow_the_link": "Vous pouvez avec la liste des ressources à l'adresse suivante:"
   },
   "bonuses": {
     "bonuses": "Bonus",
@@ -542,6 +543,7 @@
     "craftshow": "Affiche la recette d'identifiant idCraft",
     "craft": "Fabrique l'objet dont l'id est passé en paramètre",
     "collect": "Collecte la ressource dont l'id est passé en paramètre",
+    "resources": "Affiche toutes les ressources par zone",
 
     "settings": "Affiche le menu des paramètres"
   },

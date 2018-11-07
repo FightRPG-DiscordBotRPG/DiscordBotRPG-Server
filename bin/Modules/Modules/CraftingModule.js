@@ -21,7 +21,7 @@ const Emojis = require("../../Emojis");
 class CraftingModule extends GModule {
     constructor() {
         super();
-        this.commands = ["craftlist", "craftshow", "craft", "collect"];
+        this.commands = ["craftlist", "craftshow", "craft", "collect", "resources"];
         this.startLoading("Crafting");
         this.init();
         this.endLoading("Crafting");
@@ -163,6 +163,11 @@ class CraftingModule extends GModule {
                 } else {
                     msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
                 }
+                break;
+
+            case "resources":
+                msg = Translator.getString(lang, "area", "follow_the_link") + "\n";
+                msg += "http://azz-tech.no-ip.org/areas/resources?lang=" + lang;
                 break;
         }
 
