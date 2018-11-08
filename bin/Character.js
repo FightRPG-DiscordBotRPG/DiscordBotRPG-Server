@@ -496,7 +496,7 @@ class Character extends CharacterEntity {
 
     getWaitTimeResource(rarity = 1) {
         let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
-        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * rarity;
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2);
     }
 
     getWaitTimeFight(more = 0) {

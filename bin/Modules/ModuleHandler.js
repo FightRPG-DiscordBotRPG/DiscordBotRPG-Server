@@ -105,21 +105,21 @@ class ModuleHandler extends GModule {
                     }
                     break;
                 case "disabled_modules":
-                    if(isAdmin) {
+                    if (isAdmin) {
                         msg = this.getDisabledModules();
                     }
                     break;
             }
 
             this.sendMessage(message, msg);
-            console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
+            //console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
         }
     }
 
     getDisabledModules() {
         let cmds = "";
-        for(let m in this.modules) {
-            if(!this.modules[m].isActive) {
+        for (let m in this.modules) {
+            if (!this.modules[m].isActive) {
                 cmds += this.modules[m].commands.toString() + "\n";
             }
         }
@@ -234,7 +234,7 @@ class ModuleHandler extends GModule {
                 try {
                     await mod.run(message, command, args);
                 } catch (err) {
-                    if(!this.devMode) {
+                    if (!this.devMode) {
                         mod.isActive = false;
                         let adminTell = "A module has been deactivated.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
                         message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString()).catch((e) => null);
@@ -283,7 +283,7 @@ class ModuleHandler extends GModule {
             lang = Globals.connectedUsers[authorIdentifier].getLang();
         }
 
-        
+
 
         if (Globals.connectedUsers[authorIdentifier].isNew) {
             message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink])).catch((e) => {

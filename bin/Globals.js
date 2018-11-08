@@ -49,7 +49,7 @@ let rarityChances = {
     rare: 14 / 100,
     superieur: 6 / 100,
     epique: 0.9 / 100,
-    legendaire: 0.125 / 100,
+    legendaire: 0.1 / 100,
 }
 
 let collectChances = {
@@ -57,7 +57,7 @@ let collectChances = {
     rare: 30 / 100,
     superieur: 9 / 100,
     epique: 1.25 / 100,
-    legendaire: 0.3 / 100,
+    legendaire: 0.25 / 100,
 }
 
 var Globals = {
@@ -72,7 +72,7 @@ var Globals = {
     "basicWaitTimeBeforePvPFight": 900,
     "basicWaitTimeCollectTravel": 25,
     "basicWaitTimeCraft": 40,
-    "collectTriesOnce": 20,
+    "collectTriesOnce": 10,
     "admins": ["241564725870198785", "285789367954440194", "228787710607753216"],
     "activated": true,
     "mDifficulties": [{
