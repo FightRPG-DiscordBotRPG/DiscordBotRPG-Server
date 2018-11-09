@@ -46,7 +46,7 @@ for (let r of res) {
 
 let rarityChances = {
     commun: 40 / 100,
-    rare: 14 / 100,
+    rare: 7 / 100,
     superieur: 6 / 100,
     epique: 0.9 / 100,
     legendaire: 0.1 / 100,
@@ -54,7 +54,7 @@ let rarityChances = {
 
 let collectChances = {
     commun: 50 / 100,
-    rare: 30 / 100,
+    rare: 14 / 100,
     superieur: 9 / 100,
     epique: 1.25 / 100,
     legendaire: 0.25 / 100,
@@ -135,7 +135,7 @@ var Globals = {
                 rarityName = "epic";
                 break;
             case 5:
-                rarityName = "lengendary";
+                rarityName = "legendary";
                 break;
         }
         return rarityName;

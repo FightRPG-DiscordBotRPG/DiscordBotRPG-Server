@@ -298,25 +298,43 @@ class Group {
             if (!this.leader.isGroupMuted()) {
                 str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_won_fight") + "\n";
                 str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_gain", [summary.xpGained[this.leader.username], summary.goldGained[this.leader.username]]) + "\n";
-                let drops = {};
-                for (let i in summary.drops) {
-                    if (summary.drops[i].name == this.leader.username) {
-                        if (drops[summary.drops[i].drop]) {
-                            drops[summary.drops[i].drop].number++;
-                        } else {
-                            drops[summary.drops[i].drop] = {
-                                number: 1
-                            };
-                        }
+
+                let drop_string = "<:treasure:403457812535181313>  ";
+                let equipDrop = 0;
+                let otherDrop = 0;
+                let strEquipments = "";
+                let strOthers = "";
+                let allDrops = {};
+                for (let personLoot of summary.drops) {
+                    if (personLoot.name == this.leader.username) {
+                        allDrops = personLoot.drop;
+                        break;
                     }
                 }
 
-                if (Object.keys(drops).length > 0) {
-                    let dropsStr = "";
-                    for (let i in drops) {
-                        dropsStr += Translator.getString(this.leader.getLang(), "rarities", i) + "(" + drops[i].number + ") ";
+                for (let drop in allDrops) {
+                    let rname = Translator.getString(this.leader.getLang(), "rarities", Globals.getRarityName(drop));
+                    if (allDrops[drop].equipable > 0) {
+                        strEquipments += rname + ": " + allDrops[drop].equipable + ", ";
+                        equipDrop += allDrops[drop].equipable;
                     }
-                    str += Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_gain_other", [dropsStr]);
+                    if (allDrops[drop].other > 0) {
+                        otherDrop += allDrops[drop].other;
+                        strOthers += rname + ": " + allDrops[drop].other + ", ";
+                    }
+                }
+
+                if (strEquipments != "") {
+                    strEquipments = strEquipments.slice(0, -2);
+                    drop_string += Translator.getString(this.leader.getLang(), "fight_pve", equipDrop > 1 ? "drop_item_equip_plur" : "drop_item_equip", [strEquipments]) + "\n";
+                }
+                if (strOthers != "") {
+                    strOthers = strOthers.slice(0, -2);
+                    drop_string += Translator.getString(this.leader.getLang(), "fight_pve", otherDrop > 1 ? "drop_item_other_plur" : "drop_item_other", [strOthers]) + "\n";
+                }
+
+                if (equipDrop > 0 || otherDrop > 0) {
+                    str += drop_string;
                 }
 
 
@@ -330,25 +348,43 @@ class Group {
                     str = "";
                     str += Translator.getString(user.getLang(), "fight_pve", "group_pm_won_fight") + "\n";
                     str += Translator.getString(user.getLang(), "fight_pve", "group_pm_gain", [summary.xpGained[user.username], summary.goldGained[user.username]]) + "\n";
-                    let drops = {};
-                    for (let i in summary.drops) {
-                        if (summary.drops[i].name == user.username) {
-                            if (drops[summary.drops[i].drop]) {
-                                drops[summary.drops[i].drop].number++;
-                            } else {
-                                drops[summary.drops[i].drop] = {
-                                    number: 1
-                                };
-                            }
+
+                    let drop_string = "<:treasure:403457812535181313>  ";
+                    let equipDrop = 0;
+                    let otherDrop = 0;
+                    let strEquipments = "";
+                    let strOthers = "";
+                    let allDrops = {};
+                    for (let personLoot of summary.drops) {
+                        if (personLoot.name == user.username) {
+                            allDrops = personLoot.drop;
+                            break;
                         }
                     }
 
-                    if (Object.keys(drops).length > 0) {
-                        let dropsStr = "";
-                        for (let i in drops) {
-                            dropsStr += Translator.getString(user.getLang(), "rarities", i) + "(" + drops[i].number + ") ";
+                    for (let drop in allDrops) {
+                        let rname = Translator.getString(user.getLang(), "rarities", Globals.getRarityName(drop));
+                        if (allDrops[drop].equipable > 0) {
+                            strEquipments += rname + ": " + allDrops[drop].equipable + ", ";
+                            equipDrop += allDrops[drop].equipable;
                         }
-                        str += Translator.getString(user.getLang(), "fight_pve", "group_pm_gain_other", [dropsStr]);
+                        if (allDrops[drop].other > 0) {
+                            otherDrop += allDrops[drop].other;
+                            strOthers += rname + ": " + allDrops[drop].other + ", ";
+                        }
+                    }
+
+                    if (strEquipments != "") {
+                        strEquipments = strEquipments.slice(0, -2);
+                        drop_string += Translator.getString(user.getLang(), "fight_pve", equipDrop > 1 ? "drop_item_equip_plur" : "drop_item_equip", [strEquipments]) + "\n";
+                    }
+                    if (strOthers != "") {
+                        strOthers = strOthers.slice(0, -2);
+                        drop_string += Translator.getString(user.getLang(), "fight_pve", otherDrop > 1 ? "drop_item_other_plur" : "drop_item_other", [strOthers]) + "\n";
+                    }
+
+                    if (equipDrop > 0 || otherDrop > 0) {
+                        str += drop_string;
                     }
 
 

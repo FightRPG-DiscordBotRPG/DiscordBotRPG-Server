@@ -126,7 +126,6 @@ class FightPvE extends Fight {
                     PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);
                 }
             }
-
             this.summary.xp = totalXp;
             this.summary.money = Math.round(totalMoney * 0.95);
             let ownerid = this.entities[0][0].getArea().getOwnerID();

@@ -52,60 +52,6 @@ app.use('/', api);
 //console.log(path.join(__dirname, '../public'));
 
 
-
-
-
-
-/*
- * NON EXPRESS
- */
-
-
-
-
-
-
-
-/*
-var connectedUsers = Globals.connectedUsers;
-var connectedGuilds = Globals.connectedGuilds;
-var areasManager = Globals.areasManager;
-var fightManager = Globals.fightManager;*/
-
-
-
-
-/**
- * CROSS DOMAIN
- */
-
-// this array is used for identification of allowed origins in CORS
-const originWhitelist = ['http://localhost:8080'];
-
-// middleware route that all requests pass through
-
-/*
-api.use(    (request, response, next) => {
-
-	let origin = request.headers.host;
-    console.log(request.headers);
-	// only allow requests from origins that we trust
-	if (originWhitelist.indexOf(origin) > -1) {
-		response.setHeader('Access-Control-Allow-Origin', origin);
-	}
-	// only allow get requests, separate methods by comma e.g. 'GET, POST'
-	response.setHeader('Access-Control-Allow-Methods', 'GET');
-	response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-	response.setHeader('Access-Control-Allow-Credentials', true);
-
-	// push through to the proper route
-	next();
-});*/
-
-
-// Init character if not connected
-
-
 api.get("/areas/resources", (req, res) => {
     let langs = ["en", "fr"];
     let urlParts = url.parse(req.url, true);

@@ -1,0 +1,128 @@
+-- Items
+
+(1, "en", "Rudimentary Sword", "A rudimentary sword, made mainly of wood."),
+(2, "en", "Silver Sword", "A silver sword, you're afraid of werewolves?"),
+(3, "en", "Iron Sword", "An iron sword, nothing more banal."),
+(4, "en", "Gold Sword", "A beautiful golden sword, you can see yourself in the reflection."),
+(5, "en", "Mithril Sword", "A Mithril sword adorned with some embellishments."),
+(6, "en", "Rudimentary Chest Armor", "Do you really think that this can save you?"),
+(7, "en", "Silver Chest Armor", "Silver armor, at least the werewolves won't touch you."),
+(8, "en", "Iron Chest Armor", "Iron armor, a little heavy."),
+(9, "en", "Gold Chest Armor", "You can't be any less discreet."),
+(10, "en", "Mithril Chest Armor", "Mithril armor that will protect you from most attacks."),
+(11, "en", "Rudimentary Armored Leggings", "Even I wouldn't dare wear that."),
+(12, "en", "Silver Armored Leggings", "Another part of the best werewolf hunter set ever."),
+(13, "en", "Iron Armored Leggings", "At least what is certain is that this part is well protected."),
+(14, "en", "Gold Armored Leggings", "Gold here? After all, why not."),
+(15, "en", "Mithril Armored Leggings", "If you hold on to your legs this armor is certainly the best."),
+(16, "en", "Rudimentary Helmet", "Ridiculous, that's all I can say."),
+(17, "en", "Silver Helmet", "In general, it's true that werewolves like this part."),
+(18, "en", "Iron Helmet", "If you want to look like a soldier, you can't do better."),
+(19, "en", "Gold Helmet", "Gold on your head, what is certain is that you will easily attract thieving birds."),
+(20, "en", "Mithril Helmet", "Thanks to this protection, it is impossible for you to be knocked out. I mean, you can always believe that."),
+(21, "en", "Stone", "No more than a simple stone."),
+(22, "en", "Silver", "Silver, no more than that."),
+(23, "en", "Iron", "Iron, one of the most common ores."),
+(24, "en", "Gold", "It's... gold! You're going to be rich!"),
+(25, "en", "Mithril", "This ore is really hard to get, but you will probably be able to do a lot of things with it."),
+(26, "en", "Roots", "Roots... Oh, really?"),
+(27, "en", "Ancient Foam", "A foam that starts to change colour, what is certain is that it is not edible."),
+(28, "en", "Grow-Everywhere", "This plant is really everywhere, it grows everywhere. Oh, I think I just found his name."),
+(29, "en", "Lava Flower", "A very strange flower, the inside seems to be filled with lava."),
+(30, "en", "Scathing Creeper", "These vines are really dangerous, you should avoid rubbing them."),
+(31, "en", "Ash Wood", "Ash Wood, yes."),
+(32, "en", "Chestnut Wood", "If you like chestnuts, you shouldn't have cut down the tree..."),
+(33, "en", "Cactus", "A cactus, soaked with water."),
+(34, "en", "Ebony Wood", "Hey Bonnie! Yeah, you're not very good at jokes."),
+(35, "en", "Lava Wood", "A very strange piece of wood, soaked with lava."),
+(36, "en", "Donkey", "Almost a horse."),
+(37, "en", "Old Horse", "A horse with experience, unfortunately it doesn't allow him to go faster."),
+(38, "en", "Tywardreath Horse ", "A proud Tywardreath horse. Probably one of the best of his generation."),
+(39, "en", "Desert Horse", "Yes, it's a horse that's used to the desert, isn't it crazy?"),
+(40, "en", "Fire Palfrey", "A fire horse, honestly, isn't it a dream come true?"),
+(41, "en", "Anti-tiredness potion", "With this potion, in one sip you won't be tired anymore!"),
+(42, "en", "Founder's Gift", "A very rare gift to get you off to a good start! What are you waiting for? Open it! Open it!");
+
+-- Regions
+
+-- Isle of Depraved
+(1, "en", "Buldaar Forest", "This forest welcomes a large number of beginners wishing to go on an adventure, unfortunately for them, the adventure is not easy, even here."),
+(2, "en", "Rocky Plains", "This plain is filled with magic. Golems are born from this magic and since then they wander here."),
+(3, "en", "Lirayl Dead End", "Once this dead end buzzed with life, but for years an evil corrupted the place and destroyed everything in its path."),
+(4, "en", "Baanar Jungle", "It's a jungle!"),
+(5, "en", "Bradford", "Bradford is a very interesting location, and serves as a rest camp for many adventurers."),
+(6, "en", "Fishford", "A fishing village, but this one is just waiting to be extended."),
+(7, "en", "Goundfire", "It's hot in here, isn't it? Yes, it is.");
+
+-- Tywardreath
+(8, "en", "Tywardreath", "The port city of Tywardreath is full of life. Indeed, it is the entry point to the new world. It is rich and active, thanks to its market and foreign trade. It also has fertile land, which local leaders do not hesitate to use."),
+(9, "en", "Tywardreath Burned Forest", "Once a lush forest, the Tywardreath Burned Forest is now a shadow of its own. During the first days of colonization, a race of orcs began to attack and try to defeat the ranks of the colonizers. But the colonizers, thanks to their powerful strike force, managed to overcome it. However, this was not to mention the unfailing motivation of the orcs, who had taken a stand in the forest."),
+(10, "en", "Tywardreath Hills", "The hills in the north of Tywardreath are dotted with paths leading to the mountains. Unfortunately it is not an interesting area, it is unbuildable and full of wild animals. But it is however an obligatory passage, for those who want to venture further north, towards the caves."),
+(11, "en", "Tywardreath Caves", "No one comes here, this cave is cold, humid and... Ugh, what is this !?"),
+(12, "en", "East Crater", "Crater resulting from a meteorite fall. No one dares to venture there, it seems that the meteorite has given life to the ground and that it is likely that a monster will wander there."),
+(13, "en", "Tywardreath Forest", "This forest has not been destroyed by orcs, it is full of life, both in terms of fauna and flora. It is also where most adventurers go to enjoy the new world"),
+(14, "en", "Tywardreath Desert Outpost", "An important outpost, the Desert Outpost, allows adventurers to prepare for the great journey to the desert.");
+
+-- Monsters
+(31, "en", "Wutgarek Warrior"),
+(32, "en", "Wutgarek Archer"),
+(33, "en", "Wutgarek Berserker"),
+(34, "en", "Wutgarek Wizard"),
+(35, "en", "Wutgarek Sergeant"),
+(36, "en", "Bear"),
+(37, "en", "Tywardreath Great Bear"),
+(38, "en", "Stone Golem"),
+(39, "en", "Meteorite Golem"),
+(40, "en", "Great Wolf"),
+(41, "en", "Great Wild Boar"),
+(42, "en", "Tywardreath Great Wolf"),
+(43, "en", "Tywardreath Flying Snake"),
+(44, "en", "Tywardreath Red Eyed Flying Snake");
+
+-- Tjesomunein
+(15, "en", "Sepsibenu", "Sebsibenu is the typical desert city. It has been able to take advantage of the waterways of the Western Fountain. It is now the most important point in the region in terms of trade."),
+(16, "en", "Western Fountain", "This city is surrounded by magic, its water sources seem to be inexhaustible. At the time of colonization, this city did not exist, in fact, it was built very soon afterwards."),
+(17, "en", "Desolated Cracked Desert", "A piece of the desert filled with giant insects. This area only has interesting minerals. The cracks in it have already killed more than one."),
+(18, "en", "The Fire Craters", "Still the result of meteorites, however this part of the desert has some very interesting minerals and it seems that there is a chance of coming across Sand Golems."),
+(19, "en", "Wutgarek Village", "This village is surely the nerve centre of the Wutgareks. But if you're here, it's certainly not to appreciate the buildings. Be careful, however, the Wutgarek will not give you any respite."),
+(20, "en", "Acbydet", "This ancient city is invaded by Wutgareks, insects and mummies. Apart from its graves, this place is probably the worst place in the desert."),
+(21, "en", "The Forgotten Tombs", "These ancient tombs are filled with a dark magic, you seem to hear in the distance, a kind of black mass. What could it be?");
+
+-- monsters
+(45, "en", "Aggressive Giant Rove Beetle"),
+(46, "en", "Giant Praying Mantis"),
+(47, "en", "Giant Rhinoceros Beetle"),
+(48, "en", "Mutant Praying Mantis"),
+(49, "en", "Small Meteorite Golem"),
+(50, "en", "Sand Golem"),
+(51, "en", "Giant Sand Golem"),
+(52, "en", "Wutgarek Lieutenant"),
+(53, "en", "Decomposed Living Mummy"),
+(54, "en", "Servant of the Tombs"),
+(55, "en", "Guardian of the Tombs");
+
+-- Daemonic Region
+(22, "en", "Northern Expedition Outpost", "The northern expedition was organized shortly after the beginning of colonization, however, it began its journey to the north only very recently. Nevertheless, the progress made is impressive. An outpost is built and it has all the amenities. Now, the real problem is the demons."),
+(23, "en", "The Lava Cracks", "These lava cracks are the result of the intense volcanic activity in the region. Elementary beings are born there, go through this region will not be a pleasure."),
+(24, "en", "Explosive Volcanos", "These volcanoes are a concentrate of heat, ash and smoke. In addition to being filled with elementary beings, there are demons. You came here, you must regret it."),
+(25, "en", "The Lava Burnt Forest", "Probably an old forest, now it is burned by the lava that gushes out of the ground. But this forest has something alive, you should be on your guard."),
+(26, "en", "Old Dwarf City", "Remains of an ancient dwarf city. Everything seems quiet, not a sound. As you get closer, you will notice that the city is no longer so deserted..."),
+(27, "en", "The Daemonic Citadel", "The demonic citadel, the heart of the region. Filled with filth, demons and suffering. If you are here, it is surely to free the region from the yoke of the demon who is staying there.");
+
+-- monsters
+(56, "en", "Molten Golem"),
+(57, "en", "Lava Elemental"),
+(58, "en", "Fire Elemental"),
+(59, "en", "Giant Magma Golem"),
+(60, "en", "Smoke Elemental"),
+(61, "en", "Ash Golem"),
+(62, "en", "Lava Imp"),
+(63, "en", "Imp Mother"),
+(64, "en", "Ent Wounded by Lava"),
+(65, "en", "Dwarf Warrior Ghost"),
+(66, "en", "Dwarf Archer Ghost"),
+(67, "en", "Dwarf Mage Ghost"),
+(68, "en", "Angry Ghost of a Former Dwarf King"),
+(69, "en", "Demonic Guard"),
+(70, "en", "Demon of Ancient Times"),
+

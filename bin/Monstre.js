@@ -31,8 +31,7 @@ class Monstre extends WorldEntity {
 
 
     loadMonster(level = 1) {
-        let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
-        this.difficulty = Globals.mDifficulties[tDifficulty];
+        this.difficulty = Globals.mDifficulties[2];
         let res = conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id])[0];
         let bonus = 1;
         this.type = res["nom"];
@@ -42,10 +41,13 @@ class Monstre extends WorldEntity {
         if (this.type == "elite") {
             bonus = 2;
             this.luckBonus = 40;
+
         } else if (this.type == "normal") {
+            let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
+            this.difficulty = Globals.mDifficulties[tDifficulty];
             multiplier = this.difficulty.value;
         } else if (this.type == "boss") {
-            bonus = 10;
+            bonus = 8;
             this.luckBonus = 120;
         }
 
