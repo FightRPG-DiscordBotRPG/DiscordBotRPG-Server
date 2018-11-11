@@ -43,6 +43,7 @@
 (41, "en", "Anti-tiredness potion", "With this potion, in one sip you won't be tired anymore!"),
 (42, "en", "Founder's Gift", "A very rare gift to get you off to a good start! What are you waiting for? Open it! Open it!");
 
+
 -- Regions
 
 -- Isle of Depraved
@@ -54,13 +55,45 @@
 (6, "en", "Fishford", "A fishing village, but this one is just waiting to be extended."),
 (7, "en", "Goundfire", "It's hot in here, isn't it? Yes, it is.");
 
+-- Monsters
+(1, "en", "Wisp"),
+(2, "en", "Slime"),
+(3, "en", "Poisonous Slime"),
+(4, "en", "Tree Spider"),
+(5, "en", "Wolf"),
+(6, "en", "Earth Golem"),
+(7, "en", "Stone Golem"),
+(8, "en", "Magma Golem"),
+(9, "en", "Water Golem"),
+(10, "en", "Air Golem"),
+(11, "en", "Storm Golem"),
+(12, "en", "Arcanic Golem"),
+(13, "en", "Rock Snake"),
+(14, "en", "Stone Basil"),
+(15, "en", "Drilling Worm"),
+(16, "en", "Blood-stained Vulture"),
+(17, "en", "Hyena"),
+(18, "en", "Harpy"),
+(19, "en", "Tortured Giant"),
+(20, "en", "Monstrous Ghoul"),
+(21, "en", "Jungle Snake"),
+(22, "en", "Fierce Tiger"),
+(23, "en", "Lonely Raptor"),
+(24, "en", "Dominant Gorilla"),
+(25, "en", "Scarred Bear"),
+(26, "en", "Large Alligator"),
+(27, "en", "Maatan Warrior"),
+(28, "en", "Maatan Hunter"),
+(29, "en", "Balrog, fire spirit"),
+(30, "en", "Ardent Bogeyman");
+
 -- Tywardreath
 (8, "en", "Tywardreath", "The port city of Tywardreath is full of life. Indeed, it is the entry point to the new world. It is rich and active, thanks to its market and foreign trade. It also has fertile land, which local leaders do not hesitate to use."),
 (9, "en", "Tywardreath Burned Forest", "Once a lush forest, the Tywardreath Burned Forest is now a shadow of its own. During the first days of colonization, a race of orcs began to attack and try to defeat the ranks of the colonizers. But the colonizers, thanks to their powerful strike force, managed to overcome it. However, this was not to mention the unfailing motivation of the orcs, who had taken a stand in the forest."),
 (10, "en", "Tywardreath Hills", "The hills in the north of Tywardreath are dotted with paths leading to the mountains. Unfortunately it is not an interesting area, it is unbuildable and full of wild animals. But it is however an obligatory passage, for those who want to venture further north, towards the caves."),
-(11, "en", "Tywardreath Caves", "No one comes here, this cave is cold, humid and... Ugh, what is this !?"),
+(11, "en", "Tywardreath Caves", "No one comes here, this cave is cold, humid and... Ugh, what is this!?"),
 (12, "en", "East Crater", "Crater resulting from a meteorite fall. No one dares to venture there, it seems that the meteorite has given life to the ground and that it is likely that a monster will wander there."),
-(13, "en", "Tywardreath Forest", "This forest has not been destroyed by orcs, it is full of life, both in terms of fauna and flora. It is also where most adventurers go to enjoy the new world"),
+(13, "en", "Tywardreath Forest", "This forest has not been destroyed by orcs, it is full of life, both in terms of fauna and flora. It is also where most adventurers go to enjoy the new world."),
 (14, "en", "Tywardreath Desert Outpost", "An important outpost, the Desert Outpost, allows adventurers to prepare for the great journey to the desert.");
 
 -- Monsters
@@ -86,7 +119,7 @@
 (18, "en", "The Fire Craters", "Still the result of meteorites, however this part of the desert has some very interesting minerals and it seems that there is a chance of coming across Sand Golems."),
 (19, "en", "Wutgarek Village", "This village is surely the nerve centre of the Wutgareks. But if you're here, it's certainly not to appreciate the buildings. Be careful, however, the Wutgarek will not give you any respite."),
 (20, "en", "Acbydet", "This ancient city is invaded by Wutgareks, insects and mummies. Apart from its graves, this place is probably the worst place in the desert."),
-(21, "en", "The Forgotten Tombs", "These ancient tombs are filled with a dark magic, you seem to hear in the distance, a kind of black mass. What could it be?");
+(21, "en", "The Forgotten Tombs", "These ancient tombs are filled with a dark magic, you seem to hear in the distance a kind of black mass. What could it be?");
 
 -- monsters
 (45, "en", "Aggressive Giant Rove Beetle"),

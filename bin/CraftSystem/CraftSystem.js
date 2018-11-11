@@ -4,6 +4,7 @@ class CraftSystem {
 
     static getXP(craftLevel, playerCraftlevel, rarity, collect) {
         let xp = Math.ceil(10 * (Math.pow(playerCraftlevel, 2) / 1.5) * (1 / 10));
+        xp = xp * (1 + (1 / 5));
 
         let diff = playerCraftlevel - craftLevel;
         diff = diff < 0 ? -diff : diff;

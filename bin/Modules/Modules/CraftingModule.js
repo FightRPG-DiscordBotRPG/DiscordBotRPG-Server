@@ -125,7 +125,7 @@ class CraftingModule extends GModule {
                             let collectBonuses = currentArea.getAllBonuses();
                             Globals.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
                             idToCollect = Globals.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                            let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") + collectBonuses.collect_drop.getPercentage(), resourceToCollect.idRarity);
+                            let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity);
                             msg += Translator.getString(lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
                             if (numberItemsCollected > 0) {
                                 if (idToCollect) {
@@ -167,7 +167,7 @@ class CraftingModule extends GModule {
 
             case "resources":
                 msg = Translator.getString(lang, "area", "follow_the_link") + "\n";
-                msg += "http://azz-tech.no-ip.org/areas/resources?lang=" + lang;
+                msg += "http://api.fight-rpg.com/areas/resources?lang=" + lang;
                 break;
         }
 

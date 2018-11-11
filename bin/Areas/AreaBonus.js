@@ -15,7 +15,7 @@ class AreaBonus {
 
     load() {
         let res = conn.query("SELECT * FROM bonustypes WHERE idBonusTypes = ?", [this.id])[0];
-        if(res) {
+        if (res) {
             this.name = res.nom;
         }
     }
@@ -37,11 +37,11 @@ class AreaBonus {
     }
 
     getPercentage() {
-        return this.value * 10;
+        return this.value;
     }
 
     getPercentageValue() {
-        return this.value * 10 / 100;
+        return this.value / 100;
     }
 
 

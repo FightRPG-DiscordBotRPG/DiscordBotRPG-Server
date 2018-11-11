@@ -1,0 +1,171 @@
+-- Itens
+
+INSERT INTO localizationitems VALUES
+(1, "pt-BR", "Espada Rudimentar", "Uma espada rudimentar, feita principalmente de madeira."),
+(2, "pt-BR", "Espada de Prata", "Uma espada de prata, você tem medo de lobisomens?"),
+(3, "pt-BR", "Espada de Ferro", "Uma espada de ferro, nada mais banal."),
+(4, "pt-BR", "Espada de Ouro", "Uma bela espada de ouro, você pode ver a si mesmo no reflexo dela."),
+(5, "pt-BR", "Espada de Mítrio", "Uma espada de Mítrio adornada com alguns embelezamentos."),
+(6, "pt-BR", "Armadura Peitoral Rudimentar", "Você realmente acha que isso pode te salvar?"),
+(7, "pt-BR", "Armadura Peitoral de Prata", "Armadura de Prata, pelo menos lobisomens não vão encostar em você."),
+(8, "pt-BR", "Armadura Peitoral de Ferro", "Armadura de Ferro, um pouco pesada."),
+(9, "pt-BR", "Armadura Peitoral de Ouro", "Você não pode ser nem um pouco menos discreto."),
+(10, "pt-BR", "Armadura Peitoral de Mítrio", "Armadura de Mítrio que vai protegê-lo da maioria dos ataques."),
+(11, "pt-BR", "Perneiras Reforçadas Rudimentares", "Nem mesmo eu ousaria vestir isso."),
+(12, "pt-BR", "Perneiras Reforçadas em Prata", "Mais uma parte do melhor kit de caça-lobisomens de todos os tempos."),
+(13, "pt-BR", "Perneiras Reforçadas em Ferro", "Pelo menos o que é certo é que esta parte é bem protegida."),
+(14, "pt-BR", "Perneiras Reforçadas em Ouro", "Ouro aqui? Afinal, por que não?"),
+(15, "pt-BR", "Perneiras Reforçadas em Mítrio", "Se você se agarrar nas suas pernas essa armadura é certamente a melhor."),
+(16, "pt-BR", "Capacete Rudimentar", "Ridículo, isso é tudo que eu posso dizer."),
+(17, "pt-BR", "Capacete de Prata", "Em geral, é verdade que lobisomens gostam desta parte."),
+(18, "pt-BR", "Capacete de Ferro", "Se você quer parecer com um soldado, você não pode fazer melhor."),
+(19, "pt-BR", "Capacete de Ouro", "Ouro na sua cabeça, o que é certeza é que você vai facilmente atrair pássaros ladrões."),
+(20, "pt-BR", "Capacete de Mítrio", "Graças à esta proteção, é impossível que você seja nocauteado. Quer dizer, você sempre pode acreditar nisso."),
+(21, "pt-BR", "Pedra", "Nada além de uma simples pedra."),
+(22, "pt-BR", "Prata", "Prata, nada além disso."),
+(23, "pt-BR", "Ferro", "Ferro, um dos minérios mais comuns."),
+(24, "pt-BR", "Ouro", "É... ouro! Você vai ser rico!"),
+(25, "pt-BR", "Mítrio", "Este minério é realmente difícil de conseguir, mas você provavelmente vai conseguir fazer um monte de coisas com ele."),
+(26, "pt-BR", "Raízes", "Raízes... Oh, sério?"),
+(27, "pt-BR", "Espuma Anciã", "Uma espuma que muda de cor, a única certeza é que não é comestível."),
+(28, "pt-BR", "Cresce-Em-Todo-Canto", "Essa planta realmente está em todo lugar, e cresce em todo canto. Oh, acho que acabei de achar o nome dela."),
+(29, "pt-BR", "Flor de Lava", "Uma flor muito estranha, seu interior parecer estar preenchido com lava."),
+(30, "pt-BR", "Trepadeira Mordaz", "Essas vinhas são realmente perigosas, você deve evitar esfregá-las."),
+(31, "pt-BR", "Madeira de Cinzas", "Madeira de Cinzas, sim."),
+(32, "pt-BR", "Madeira de Castanha", "Se você gosta de castanhas, então não devia ter cortado a árvore..."),
+(33, "pt-BR", "Cacto", "Um cacto, encharcado de água."),
+(34, "pt-BR", "Madeira de Ébano", "Ei, Albano! É, você não é muito bom com piadas."),
+(35, "pt-BR", "Madeira de Lava", "Um pedaço muito estranho de madeira, encharcado com lava."),
+(36, "pt-BR", "Burro", "Quase um cavalo."),
+(37, "pt-BR", "Cavalo Velho", "Um cavalo experiente, mas infelizmente isso não o faz andar mais rápido."),
+(38, "pt-BR", "Cavalo de Tywardreath", "Um orgulhoso cavalo de Tywardreath. Provavelmente um dos melhores de sua geração."),
+(39, "pt-BR", "Cavalo do Deserto", "Sim, é um cavalo acostumado com deserto, não é doideira?"),
+(40, "pt-BR", "Palafrém de Fogo", "Um cavalo de fogo, honestamente, isto não é um sonho se tornando realidade?"),
+(41, "pt-BR", "Poção anti-cansaço", "Com esta poção, em um gole você não vai mais estar cansado!"),
+(42, "pt-BR", "Presente do Fundador", "Um presente muito raro pra ajudar você a começar com o pé direito! O que você está esperando? Abre! Abre!");
+
+-- Regiões
+
+-- Ilha dos Imorais
+INSERT INTO localizationareas VALUES
+(1, "pt-BR", "Floresta Buldaar", "Essa floresta dá boas-vindas à um grande número de iniciantes que desejam sair em uma aventura, mas pro azar deles, a aventura não é nada fácil, nem mesmo aqui."),
+(2, "pt-BR", "Planícies Rochosas", "Essa planície é cheia de magia. Golems nascem dessa magia e desde então eles vagam por aqui."),
+(3, "pt-BR", "Beco Sem Saída Lirayl", "Esse beco sem saída já zuniu com vida, mas por anos um mal corrompeu o lugar e destruiu tudo em seu caminho."),
+(4, "pt-BR", "Selva Baanar", "É uma selva!"),
+(5, "pt-BR", "Bradford", "Bradford é um lugar muito interessante, e serve como acampamento de descanso para muitos aventureiros."),
+(6, "pt-BR", "Fishford", "Uma vila de pesca, mas esta aqui está só esperando ser estendida."),
+(7, "pt-BR", "Groundfire", "É quente aqui, não é? Sim, é quente.");
+
+-- Monsters
+INSERT INTO localizationmonsters VALUES
+(1, "pt-BR", "Fogo-fátuo"),
+(2, "pt-BR", "Gosma"),
+(3, "pt-BR", "Gosma Venenosa"),
+(4, "pt-BR", "Aranha de Árvore"),
+(5, "pt-BR", "Lobo"),
+(6, "pt-BR", "Golem da Terra"),
+(7, "pt-BR", "Golem de Pedra"),
+(8, "pt-BR", "Golem de Magma"),
+(9, "pt-BR", "Golem de Água"),
+(10, "pt-BR", "Golem de Ar"),
+(11, "pt-BR", "Golem da Tempestade"),
+(12, "pt-BR", "Golem Arcano"),
+(13, "pt-BR", "Píton"),
+(14, "pt-BR", "Basilisco de Pedra"),
+(15, "pt-BR", "Minhoca Perfuradora"),
+(16, "pt-BR", "Abutre Manchado em Sangue"),
+(17, "pt-BR", "Hiena"),
+(18, "pt-BR", "Harpia"),
+(19, "pt-BR", "Gigante Torturado"),
+(20, "pt-BR", "Ghoul Monstruoso"),
+(21, "pt-BR", "Cobra da Selva"),
+(22, "pt-BR", "Tigre Feroz"),
+(23, "pt-BR", "Ave de Rapina Solitária"),
+(24, "pt-BR", "Gorila Dominante"),
+(25, "pt-BR", "Urso com Cicatrizes"),
+(26, "pt-BR", "Jacaré Grande"),
+(27, "pt-BR", "Guerreiro Maatan"),
+(28, "pt-BR", "Caçador Maatan"),
+(29, "pt-BR", "Balrog, espírito de fogo"),
+(30, "pt-BR", "Bicho-papão Ardente");
+
+-- Tywardreath
+INSERT INTO localizationareas VALUES
+(8, "pt-BR", "Tywardreath", "A cidade portuária de Tywardreath é cheia de vida. De fato, é o ponto de entrada para o novo mundo. É rica e ativa, graças à seu mercado e comércio exterior. Ela também possui terra fértil, a qual os líderes locais não hesitam em usar."),
+(9, "pt-BR", "Floresta Queimada de Tywardreath", "O que já foi uma floresta exuberante, a Floresta Queimada de Tywardreath agora é uma sombra do que ja foi. Durante os primeiros dias de colonização, uma raça de orcs começou a atacar e tentar derrotar os ranks dos colonizadores. Mas os colonizadores, graças à força de ataque poderosa deles, conseguiram superar isso. Entretanto, não foram capazes de amansar a inabalável motivação dos orcs, que tomaram para si uma posição na floresta."),
+(10, "pt-BR", "Colinas de Tywardreath", "As colinas no norte de Tywardreath são pontilhadas com caminhos levando à montanhas. Infelizmente não é uma área interessante, é impossível construir lá e é repleta de animais selvagens. Mas é, porém, uma passagem obrigatória para aqueles que querem aventurar-se mais ao norte, em direção às cavernas."),
+(11, "pt-BR", "Cavernas de Tywardreath", "Ninguém vem aqui, esta caverna é fria, úmida e... Ugh, o que é isto!?"),
+(12, "pt-BR", "Cratera Leste", "Cratera resultante de uma queda de meteorito. Ninguém ousa aventurar-se aqui, parece que o meteorito deu vida ao chão e é provável que um monstro vagará ali."),
+(13, "pt-BR", "Floresta de Tywardreath", "Esta floresta não foi destruída por orcs, é cheia de vida, tanto em termos de fauna quanto flora. Também é onde a maioria dos aventureiros vai para aproveitar o novo mundo."),
+(14, "pt-BR", "Posto Avançado do Deserto de Tywardreath", "Um posto avançado importante, o Posto Avançado do Deserto, permite que aventureiros se preparem para a grande jornada ao deserto.");
+
+-- Monstros
+INSERT INTO localizationmonsters VALUES
+(31, "pt-BR", "Guerreiro Wutgarek Warrior"),
+(32, "pt-BR", "Arqueiro Wutgarek Archer"),
+(33, "pt-BR", "Berserker Wutgarek Berserker"),
+(34, "pt-BR", "Feiticeiro Wutgarek Wizard"),
+(35, "pt-BR", "Sargento Wutgarek Sergeant"),
+(36, "pt-BR", "Urso"),
+(37, "pt-BR", "Grandioso Urso de Tywardreath"),
+(38, "pt-BR", "Golem de Pedra"),
+(39, "pt-BR", "Golem de Meteorito"),
+(40, "pt-BR", "Grande Lobo"),
+(41, "pt-BR", "Grande Javali Selvagem"),
+(42, "pt-BR", "Grandioso Lobo de Tywardreath"),
+(43, "pt-BR", "Cobra Voadora de Tywardreath"),
+(44, "pt-BR", "Cobra Voadora de Olhos Vermelhos de Tywardreath");
+
+-- Tjesomunein
+INSERT INTO localizationareas VALUES
+(15, "pt-BR", "Sepsibenu", "Sebsibenu é a típica cidade desértica. Ela foi capaz de tirar vantagem dos canais da Fonte Oeste. É agora o ponto mais importante da região em termos de comércio."),
+(16, "pt-BR", "Fonte Oeste", "Esta cidade é rodeada de magia, suas fontes de água parecem ser inesgotáveis. No momento da colonização, esta cidade não existia, em fato, ela foi construída muito breve após tal."),
+(17, "pt-BR", "Deserto Desolado Rachado", "Uma parte do deserto cheia de insetos gigantes. Esta área tem apenas minerais interessantes. As rachaduras nela já mataram mais de um."),
+(18, "pt-BR", "As Crateras de Fogo", "Ainda o resultado de meteoritos, porém esta parte do deserto tem alguns minerais muito interessantes e parece que há uma chance de esbarrar com Golems de Areia."),
+(19, "pt-BR", "Vila Wutgarek", "Esta vila é com certeza o centro nervoso dos Wutgareks. Mas se você está aqui, com certeza não é para admirar as construções. Seja cauteloso, porém, os Wutgarek não vai te dar nenhum descanso."),
+(20, "pt-BR", "Acbydet", "Esta cidade antiga está invadida pelos Wutgareks, insetos e múmias. À parte de seus túmulos, este lugar provavelmente é o pior lugar do deserto."),
+(21, "pt-BR", "As Tumbas Esquecidas", "Essas tumbas anciãs estão preenchidas com uma magia negra, você parece ouvir ao longe um tipo de missa negra. O que poderia ser?");
+
+
+-- monstros
+INSERT INTO localizationmonsters VALUES
+(45, "pt-BR", "Besouro Staphylinidae Agressivo Gigante"),
+(46, "pt-BR", "Louva-Deus Gigante"),
+(47, "pt-BR", "Besouro-Rinoceronte Gigante"),
+(48, "pt-BR", "Louva-Deus Mutante"),
+(49, "pt-BR", "Golem de Meteorito Pequeno"),
+(50, "pt-BR", "Golem de Areia"),
+(51, "pt-BR", "Golem de Areia Gigante"),
+(52, "pt-BR", "Tenente de Wutgarek"),
+(53, "pt-BR", "Múmia Decomposta Viva"),
+(54, "pt-BR", "Servo das Tumbas"),
+(55, "pt-BR", "Guardião das Tumbas");
+
+-- Região Demoníaca
+INSERT INTO localizationareas VALUES
+(22, "pt-BR", "Posto Avançado de Expedição do Norte", "A expedição norte foi organizada pouco depois do começo da colonização, porém, ela começou sua jornada para o norte apenas muito recentemente. Mesmo assim, o progresso feito é incrível. Um posto avançado está construído e tem todas as facilidades. Agora, o verdadeiro problema são os demônios."),
+(23, "pt-BR", "As Rachaduras de Lava", "Essas rachaduras de lava são o resultado de uma intensa atividade vulcânica na região. Seres elementais nascem aqui, ir através dessa região não será um prazer."),
+(24, "pt-BR", "Vulcões Explosivos", "Esses vulcões são um concentrado de calor, cinzas e fumaça. Além de estarem cheios de seres elementais, há os demônios. Você veio aqui, e deve se arrepender."),
+(25, "pt-BR", "A Floresta Queimada por Lava", "Provavelmente uma floresta antiga, agora está queimada por lava que jorra do chão. Mas esta floresta tem algo vivo, você deve se manter em guarda."),
+(26, "pt-BR", "Antiga Cidade Anã", "Restos de uma antiga cidade anã. Tudo parece quieto, nem um som. Conforme você se aproximar, você perceberá que esta cidade não está mais tão abandonada..."),
+(27, "pt-BR", "A Cidadela Demoníaca", "A cidadela demoníaca, o coração da região. Repleta de imundice, demônios e sofrimento. Se você está aqui, certamente é para libertar a região do jugo do demônio que está ficando aqui.");
+
+
+-- monstros
+INSERT INTO localizationmonsters VALUES
+(56, "pt-BR", "Golem Derretido"),
+(57, "pt-BR", "Elemental de Lava"),
+(58, "pt-BR", "Elemental de Fogo"),
+(59, "pt-BR", "Golem Gigante de Magma"),
+(60, "pt-BR", "Elemental de Fumaça"),
+(61, "pt-BR", "Golem de Cinzas"),
+(62, "pt-BR", "Diabrete de Lava"),
+(63, "pt-BR", "Mãe Diabrete"),
+(64, "pt-BR", "Ent Ferido por Lava"),
+(65, "pt-BR", "Fantasma de Anão Guerreiro"),
+(66, "pt-BR", "Fantasma de Anão Arqueiro"),
+(67, "pt-BR", "Fantasma de Anão Mago"),
+(68, "pt-BR", "Fantasma Puto de um Ex-Rei Anão"),
+(69, "pt-BR", "Guarda Demoníaco"),
+(70, "pt-BR", "Demônio dos Tempos Antigos");
+

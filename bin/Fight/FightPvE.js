@@ -89,7 +89,7 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.5 ? 1.5 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 2000 + areaBonuses["xp_fight"].getPercentageValue() / 10 + 1));
+                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[this.entities[0][i].name] = xp;
                     this.entities[0][i].addExp(xp);
@@ -114,7 +114,8 @@ class FightPvE extends Fight {
 
                 // Loot or Not
                 let lootSystem = new LootSystem();
-                let totalLuck = this.entities[0][i].getStat("luck") + this.getAvgLuckBonus() + areaBonuses["gold_drop"].getPercentage();
+                let totalLuck = this.entities[0][i].getStat("luck") + this.getAvgLuckBonus();
+                totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
                 let loot = lootSystem.loot(entity, totalLuck, avgLevelEnemies);
                 if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                     this.summary.drops.push({

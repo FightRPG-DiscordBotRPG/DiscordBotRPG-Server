@@ -12,6 +12,7 @@ const Leaderboard = require("../bin/Leaderboard.js");
 const Guild = require("../bin/Guild.js");
 const https = require('https');
 const fs = require('fs');
+const Translator = require("../bin/Translator/Translator");
 const express = require("express"),
     app = express(),
     api = express.Router(),
@@ -53,11 +54,10 @@ app.use('/', api);
 
 
 api.get("/areas/resources", (req, res) => {
-    let langs = ["en", "fr"];
     let urlParts = url.parse(req.url, true);
     let parameters = urlParts.query;
     let lang = "en";
-    lang = parameters.lang != null ? (langs.indexOf(parameters.lang) > -1 ? parameters.lang : "en") : "en";
+    lang = parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en";
     let ressources = conn.query("SELECT localizationareas.nameArea, localizationitems.nameItem FROM areasresources INNER JOIN localizationareas ON areasresources.idArea = localizationareas.idArea INNER JOIN localizationitems ON areasresources.idBaseItem = localizationitems.idBaseItem WHERE localizationareas.lang = ? AND localizationitems.lang = ? ORDER BY localizationareas.idArea", [lang, lang]);
 
     let html = "<p>Res" + (lang == "fr" ? "s" : "") + "ources : ";
