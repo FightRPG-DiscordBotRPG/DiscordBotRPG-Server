@@ -396,6 +396,7 @@
     "fr": "French",
     "en": "English",
     "pt-BR": "Brazilian Portuguese",
+    "ru": "Russian",
     "list_of_languages": "List of available languages (use the shortcut to switch languages)",
     "lang_changed": "Language successfully changed, the bot will now answer in %s"
   },

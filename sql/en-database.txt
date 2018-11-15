@@ -1,5 +1,6 @@
 -- Items
 
+INSERT INTO localizationitems VALUES
 (1, "en", "Rudimentary Sword", "A rudimentary sword, made mainly of wood."),
 (2, "en", "Silver Sword", "A silver sword, you're afraid of werewolves?"),
 (3, "en", "Iron Sword", "An iron sword, nothing more banal."),
@@ -47,6 +48,7 @@
 -- Regions
 
 -- Isle of Depraved
+INSERT INTO localizationareas VALUES
 (1, "en", "Buldaar Forest", "This forest welcomes a large number of beginners wishing to go on an adventure, unfortunately for them, the adventure is not easy, even here."),
 (2, "en", "Rocky Plains", "This plain is filled with magic. Golems are born from this magic and since then they wander here."),
 (3, "en", "Lirayl Dead End", "Once this dead end buzzed with life, but for years an evil corrupted the place and destroyed everything in its path."),
@@ -56,6 +58,7 @@
 (7, "en", "Goundfire", "It's hot in here, isn't it? Yes, it is.");
 
 -- Monsters
+INSERT INTO localizationmonsters VALUES
 (1, "en", "Wisp"),
 (2, "en", "Slime"),
 (3, "en", "Poisonous Slime"),
@@ -88,6 +91,7 @@
 (30, "en", "Ardent Bogeyman");
 
 -- Tywardreath
+INSERT INTO localizationareas VALUES
 (8, "en", "Tywardreath", "The port city of Tywardreath is full of life. Indeed, it is the entry point to the new world. It is rich and active, thanks to its market and foreign trade. It also has fertile land, which local leaders do not hesitate to use."),
 (9, "en", "Tywardreath Burned Forest", "Once a lush forest, the Tywardreath Burned Forest is now a shadow of its own. During the first days of colonization, a race of orcs began to attack and try to defeat the ranks of the colonizers. But the colonizers, thanks to their powerful strike force, managed to overcome it. However, this was not to mention the unfailing motivation of the orcs, who had taken a stand in the forest."),
 (10, "en", "Tywardreath Hills", "The hills in the north of Tywardreath are dotted with paths leading to the mountains. Unfortunately it is not an interesting area, it is unbuildable and full of wild animals. But it is however an obligatory passage, for those who want to venture further north, towards the caves."),
@@ -97,6 +101,7 @@
 (14, "en", "Tywardreath Desert Outpost", "An important outpost, the Desert Outpost, allows adventurers to prepare for the great journey to the desert.");
 
 -- Monsters
+INSERT INTO localizationmonsters VALUES
 (31, "en", "Wutgarek Warrior"),
 (32, "en", "Wutgarek Archer"),
 (33, "en", "Wutgarek Berserker"),
@@ -113,6 +118,7 @@
 (44, "en", "Tywardreath Red Eyed Flying Snake");
 
 -- Tjesomunein
+INSERT INTO localizationareas VALUES
 (15, "en", "Sepsibenu", "Sebsibenu is the typical desert city. It has been able to take advantage of the waterways of the Western Fountain. It is now the most important point in the region in terms of trade."),
 (16, "en", "Western Fountain", "This city is surrounded by magic, its water sources seem to be inexhaustible. At the time of colonization, this city did not exist, in fact, it was built very soon afterwards."),
 (17, "en", "Desolated Cracked Desert", "A piece of the desert filled with giant insects. This area only has interesting minerals. The cracks in it have already killed more than one."),
@@ -122,6 +128,7 @@
 (21, "en", "The Forgotten Tombs", "These ancient tombs are filled with a dark magic, you seem to hear in the distance a kind of black mass. What could it be?");
 
 -- monsters
+INSERT INTO localizationmonsters VALUES
 (45, "en", "Aggressive Giant Rove Beetle"),
 (46, "en", "Giant Praying Mantis"),
 (47, "en", "Giant Rhinoceros Beetle"),
@@ -135,6 +142,7 @@
 (55, "en", "Guardian of the Tombs");
 
 -- Daemonic Region
+INSERT INTO localizationareas VALUES
 (22, "en", "Northern Expedition Outpost", "The northern expedition was organized shortly after the beginning of colonization, however, it began its journey to the north only very recently. Nevertheless, the progress made is impressive. An outpost is built and it has all the amenities. Now, the real problem is the demons."),
 (23, "en", "The Lava Cracks", "These lava cracks are the result of the intense volcanic activity in the region. Elementary beings are born there, go through this region will not be a pleasure."),
 (24, "en", "Explosive Volcanos", "These volcanoes are a concentrate of heat, ash and smoke. In addition to being filled with elementary beings, there are demons. You came here, you must regret it."),
@@ -143,6 +151,7 @@
 (27, "en", "The Daemonic Citadel", "The demonic citadel, the heart of the region. Filled with filth, demons and suffering. If you are here, it is surely to free the region from the yoke of the demon who is staying there.");
 
 -- monsters
+INSERT INTO localizationmonsters VALUES
 (56, "en", "Molten Golem"),
 (57, "en", "Lava Elemental"),
 (58, "en", "Fire Elemental"),
@@ -157,5 +166,5 @@
 (67, "en", "Dwarf Mage Ghost"),
 (68, "en", "Angry Ghost of a Former Dwarf King"),
 (69, "en", "Demonic Guard"),
-(70, "en", "Demon of Ancient Times"),
+(70, "en", "Demon of Ancient Times");
 

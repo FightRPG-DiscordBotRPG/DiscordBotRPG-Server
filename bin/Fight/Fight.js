@@ -115,7 +115,8 @@ class Fight {
         // Celui qui attaque
         damage = attacker.damageCalcul();
         damage = damage * defender.damageDefenceReduction();
-        damage = damage * this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
+        let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
+        damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
         damage = Math.round(damage);
 
         // Critical hit
@@ -206,10 +207,10 @@ class Fight {
         let mult = 1;
         // Lv 1 est plus faible que 2
         if (diff < 0) {
-            mult = mult - 0.20 * -diff;
+            mult = mult - 0.10 * -diff;
             return mult < 0 ? 0 : mult;
         } else if (diff > 0) {
-            mult = mult + 0.20 * diff;
+            mult = mult + 0.10 * diff;
             return mult < 0 ? 0 : mult;
         }
         return 1;

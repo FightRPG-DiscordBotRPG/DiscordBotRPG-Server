@@ -197,7 +197,7 @@
     "bonus_list_header": "Identificador => Refere-se à",
     "up_stat": "Este bonus %s have gained %d points",
     "areas": "Areas",
-	"list": "List of areas",
+    "list": "List of areas",
     "list_regions_connected": "Regiões conectadas",
     "no_connected_regions": "Nenhuma região conectada à esta região",
     "follow_the_link": "Você pode ter a lista de recursos através do link abaixo."
@@ -395,7 +395,8 @@
   "languages": {
     "fr": "Francês",
     "en": "Inglês",
-	"pt-BR": "Português Brasileiro",
+    "pt-BR": "Português Brasileiro",
+    "ru": "Russo",
     "list_of_languages": "Lista de línguas disponíveis (use o atalho para mudar de língua)",
     "lang_changed": "Língua alterada com sucesso, o bot agora responderá em %s"
   },

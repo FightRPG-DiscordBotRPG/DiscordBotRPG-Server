@@ -129,7 +129,10 @@ class AdminModule extends GModule {
                     it--;
                 }
 
+                mres = conn.query("SELECT COUNT(DISTINCT idUser) as uniqueUsers FROM `commandslogs` WHERE commandslogs.timestamp > ?;", [beforeTimeTimeStamp]);
+
                 values += "\n\n" + "Moyenne sur ces " + (h + 1) + " dernières heures : " + Math.round(avg / Object.keys(data).length) + ".";
+                values += "\n\n" + "Utilisateurs uniques depuis ces " + (h + 1) + " dernières heures : " + mres[0].uniqueUsers + ".";
                 msg = values;
 
                 break;

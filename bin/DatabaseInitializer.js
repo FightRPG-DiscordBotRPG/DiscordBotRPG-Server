@@ -12,6 +12,7 @@ class DatabaseInitializer {
     }
 
     static RemoveBuggedCharacters() {
+        conn.query("DELETE FROM charactersachievements WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
         conn.query("DELETE FROM guildsmembers WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);")
         conn.query("DELETE FROM guildsappliances WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
         conn.query("DELETE FROM charactersstatistics WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");

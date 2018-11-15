@@ -16,7 +16,7 @@ class PStatistics extends Statistics {
     }
 
     static async logCommand(userid, command, timestamp) {
-        if(timestamp == null) {
+        if (timestamp == null) {
             timestamp = Date.now();
         }
         conn.query("INSERT INTO commandslogs VALUES(NULL, ?, ?, ?);", [userid, command == null || command == "" ? "unknown" : command, timestamp]);

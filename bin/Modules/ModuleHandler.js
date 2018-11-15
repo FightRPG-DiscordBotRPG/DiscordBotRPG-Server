@@ -258,10 +258,9 @@ class ModuleHandler extends GModule {
             } catch (err) {}
 
             // Load User
-            Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag);
+            Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag, message.author.avatarURL);
             Globals.connectedUsers[authorIdentifier].loadUser();
 
-            Globals.connectedUsers[authorIdentifier].avatar = message.author.avatarURL;
             Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
 
             lang = Globals.connectedUsers[authorIdentifier].getLang();

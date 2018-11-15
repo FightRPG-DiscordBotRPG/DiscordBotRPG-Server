@@ -10,11 +10,11 @@ const Translator = require("./Translator/Translator");
 
 class User {
     // Discord User Info
-    constructor(id, username) {
+    constructor(id, username, avatar) {
         this.id = id;
         this.character = new Character();
-        this.avatar = "";
-        this.username = username;//username.replace(/[\u0800-\uFFFF]/g, '');
+        this.avatar = avatar != null ? avatar : "";
+        this.username = username; //username.replace(/[\u0800-\uFFFF]/g, '');
         this.isNew = false;
 
         this.preferences = {
@@ -37,7 +37,7 @@ class User {
             nToken = Crypto.randomBytes(16).toString('hex');
             res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
-        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`) VALUES (?, ?, ?, ?, true);", [this.id, this.character.id, this.username, nToken]);
+        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`, `avatar`) VALUES (?, ?, ?, ?, true, ?);", [this.id, this.character.id, this.username, nToken, this.avatar]);
         conn.query("INSERT IGNORE INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
         DatabaseInitializer.PStats();
     }
@@ -52,11 +52,19 @@ class User {
         } else {
             // Sinon on le load
             this.character.loadCharacter(res[0]["idCharacter"]);
-            if(this.username != null) {
-                conn.query("UPDATE users SET username = ?, isConnected = true WHERE idUser = ?", [this.username, this.id]);
+            if (this.username != null && this.username != res[0]["userName"]) {
+                conn.query("UPDATE users SET userName = ? WHERE idUser = ?", [this.username, this.id]);
             } else {
                 this.username = res[0]["userName"];
             }
+
+            if (this.avatar != "" && this.avatar != res[0]["avatar"]) {
+                conn.query("UPDATE users SET avatar = ? WHERE idUser = ?", [this.avatar, this.id]);
+            } else {
+                this.avatar = res[0]["avatar"];
+            }
+
+            conn.query("UPDATE users SET isConnected = true WHERE idUser = ?", [this.id]);
 
             //this.username = res[0]["userName"];
             this.character.name = this.username;
@@ -146,7 +154,7 @@ class User {
 
     //Affichage
     infoPanel(lang) {
-        let statPointsPlur = this.character.getStatPoints() > 1 ? "_plur" :  "";
+        let statPointsPlur = this.character.getStatPoints() > 1 ? "_plur" : "";
         let xpProgressBar = new ProgressBar();
         let xpBar = "";
         let xpOn = "";
@@ -162,7 +170,7 @@ class User {
             xpBar = xpProgressBar.draw(this.character.levelSystem.actualXP, this.character.levelSystem.expToNextLevel);
         }
 
-        if(this.character.getCraftLevel() === Globals.maxLevel) {
+        if (this.character.getCraftLevel() === Globals.maxLevel) {
             xpOnCraft = Translator.getString(lang, "character", "maximum_level");
             xpBarCraft = xpProgressBar.draw(1, 1);
         } else {
@@ -175,7 +183,7 @@ class User {
         let statsTitle = Translator.getString(lang, "character", "info_attributes_title" + statPointsPlur, [this.character.getStatPoints(), this.character.getResetStatsValue()]);
         let titleXPFight = Translator.getString(lang, "character", "level") + " : " + this.character.getLevel() + " | " + xpOn + " ";
         let titleXPCraft = Translator.getString(lang, "character", "craft_level") + " : " + this.character.getCraftLevel() + " | " + xpOnCraft + " "
-        
+
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
@@ -184,7 +192,7 @@ class User {
             .addField(titleXPFight, xpBar, true)
             .addField(titleXPCraft, xpBarCraft, true)
             .addBlankField(true)
-            .addField(Translator.getString(lang, "character", "money"), this.character.getMoney() + " G",true)
+            .addField(Translator.getString(lang, "character", "money"), this.character.getMoney() + " G", true)
             .addField(Translator.getString(lang, "character", "honor"), this.character.getHonor(), true)
             .addBlankField(true);
 
