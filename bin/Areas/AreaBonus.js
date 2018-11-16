@@ -36,6 +36,14 @@ class AreaBonus {
         return Translator.getString(lang, "bonuses", this.name) + " : " + this.getPercentage() + "%";
     }
 
+    toApi(lang) {
+        return {
+            bonus_identifier: this.name,
+            name: Translator.getString(lang, "bonuses", this.name),
+            percentage: this.getPercentage(),
+        };
+    }
+
     getPercentage() {
         return this.value;
     }

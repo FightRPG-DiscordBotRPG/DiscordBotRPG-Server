@@ -7,6 +7,7 @@ const Globals = require("./Globals.js");
 const Crypto = require("crypto");
 const DatabaseInitializer = require("./DatabaseInitializer");
 const Translator = require("./Translator/Translator");
+const axios = require("axios").default;
 
 class User {
     // Discord User Info
@@ -142,14 +143,28 @@ class User {
         conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?", [bool, this.id]);
     }
 
-    marketTell(str) {
+    async marketTell(str) {
         if (!this.isMarketplaceMuted()) {
             this.tell(str);
         }
     }
 
-    tell(str) {
-        Globals.discordClient.users.get(this.id).send(str).catch((e) => null);
+    async groupTell(str) {
+        if (!this.isGroupMuted()) {
+            this.tell(str);
+        }
+    }
+
+    async tell(str) {
+        try {
+            await axios.post("http://127.0.0.1:48921", {
+                id: this.id,
+                message: str,
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
     }
 
     //Affichage
@@ -206,14 +221,21 @@ class User {
             xpNextLevel: this.character.levelSystem.expToNextLevel,
             username: this.character.name,
             avatar: this.avatar,
-            statPoints: this.character.statPoints,
+            statPoints: this.character.getStatPoints(),
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             level: this.character.getLevel(),
             money: this.character.getMoney(),
             honor: this.character.getHonor(),
+            power: this.character.getPower(),
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
+            craft: {
+                level: this.character.getCraftLevel(),
+                xp: this.character.getCratfXP(),
+                xpNextLevel: this.character.getCraftNextLevelXP(),
+            },
+            lang: this.getLang(),
 
         };
         return infos;

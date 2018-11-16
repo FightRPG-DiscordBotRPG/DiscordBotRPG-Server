@@ -15,15 +15,33 @@ const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
 };
-const dbl = new DBL(conf.discordbotskey, options, bot);
+const dbl = new DBL(conf.discordbotskey, options);
 dbl.webhook.on('ready', hook => {
     console.log(`Webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
 });
 
+if (conf.env === "prod") {
 
-var bot = new Discord.Client();
+    dbl.webhook.on('vote', vote => {
+        if (User.exist(vote.user)) {
+            let user = new User(vote.user);
+            user.loadUser();
+            let ls = new LootSystem();
+            ls.giveToPlayer(user.character, 41, 1, vote.isWeekend ? 2 : 1);
+            let lang = user.getLang();
+            let msg = Translator.getString(lang, "vote_daily", "you_voted");
+            if (vote.isWeekend) {
+                msg += Translator.getString(lang, "vote_daily", "vote_week_end");
+            } else {
+                msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
+            }
+            user.tell(msg);
+        }
 
-var timeStart = Date.now();
+    });
+}
+
+
 let syncStartWith = Date.now();
 let totalGameStartTime = Date.now();
 
@@ -35,59 +53,11 @@ console.log("Initializing Database ...");
 DatabaseInitializer.initialize();
 console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
-console.log("Bot Starting ...");
+
 
 //console.log(Globals);
 
-bot.on("ready", () => {
-    console.log("Bot Connected");
-
-    bot.user.setPresence({
-        game: {
-            name: "On " + bot.guilds.size + " guilds !",
-        },
-    });
-
-    if (conf.env === "prod") {
-
-        dbl.webhook.on('vote', vote => {
-            if (User.exist(vote.user)) {
-                let user = new User(vote.user);
-                user.loadUser();
-                let ls = new LootSystem();
-                ls.giveToPlayer(user.character, 41, 1, vote.isWeekend ? 2 : 1);
-                let duser = bot.users.get(vote.user);
-                if (duser != null) {
-                    let lang = user.getLang();
-                    let msg = Translator.getString(lang, "vote_daily", "you_voted");
-                    if (vote.isWeekend) {
-                        msg += Translator.getString(lang, "vote_daily", "vote_week_end");
-                    } else {
-                        msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
-                    }
-                    duser.send(msg);
-                }
-            }
-
-        });
-
-        setInterval(() => {
-            console.log("Sending stats to https://discordbots.org/ ...");
-            dbl.postStats(bot.guilds.size);
-            console.log("Data sent");
-        }, 1800000);
-    }
-
-    console.log("Loading servers stats ...");
-    DatabaseInitializer.serversStats(bot.guilds);
-    console.log("Servers stats loaded");
-
-    console.log("Bot ready");
-    console.log("Bot load finished, took : " + ((Date.now() - timeStart) / 1000) + " seconds");
-
-});
-
-let moduleHandler = new ModuleHandler();
+//let moduleHandler = new ModuleHandler();
 
 syncStartWith = Date.now();
 console.log("Loading Areas...");
@@ -100,62 +70,16 @@ console.log("Loading Fight Manager...");
 Globals.fightManager = new FightManager();
 console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
-// Key Don't open
-bot.login(Key);
 
-
-
-// UNDER CONSTRUCTION SUBJECT TO CHANGE
 var connectedUsers = {};
 var connectedGuilds = {};
 
 Globals.connectedUsers = connectedUsers;
 Globals.connectedGuilds = connectedGuilds;
 
-Globals.discordClient = bot;
 
 console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
 
 
-
-
-bot.on('message', async (message) => {
-    try {
-        await moduleHandler.run(message);
-    } catch (err) {
-        let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
-
-        let errorsLines = err.stack.split("\n");
-        let nameAndLine = errorsLines[1].split(" ");
-        nameAndLine = nameAndLine[nameAndLine.length - 1].split("\\");
-        nameAndLine = nameAndLine[nameAndLine.length - 1].split(")")[0];
-
-        msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
-
-        console.log(err);
-        message.channel.send(msgError).catch((e) => null);
-    }
-
-});
-
-bot.on('guildCreate', (guild) => {
-    bot.user.setPresence({
-        game: {
-            name: "On " + bot.guilds.size + " guilds !",
-        },
-    });
-    DatabaseInitializer.newGuild(guild);
-});
-
-bot.on('guildDelete', () => {
-    bot.user.setPresence({
-        game: {
-            name: "On " + bot.guilds.size + " guilds !",
-        },
-    });
-});
-
-
-
 // Load api after all 
-const ApiResponder = require("./api/ApiResponder.js");
+const mHandler = new ModuleHandler();

@@ -26,7 +26,7 @@ class Guild {
 
         // Verifcation nom guilde
         if (guildName.length > 60 || guildName.length < 4) {
-            err.push(Translator.getString(lang, "errors", "guild_name_cant_exceed_x_characters", [60,4]));
+            err.push(Translator.getString(lang, "errors", "guild_name_cant_exceed_x_characters", [60, 4]));
             return err;
         }
 
@@ -45,12 +45,12 @@ class Guild {
         conn.query("INSERT INTO guildsmembers VALUES(" + idCharacter + ", " + res + " , 3)")
 
         // Add To MemberList
-        res = conn.query("SELECT users.userName, users.idUser FROM users " +
-            "WHERE idCharacter = " + idCharacter + ";")[0];
+        res = conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter])[0];
         this.members[idCharacter] = {
             name: res["userName"],
             rank: 3,
             idUser: res["idUser"],
+            level: res["actualLevel"],
         }
         this.nbrMembers++;
 
@@ -73,7 +73,7 @@ class Guild {
     unenroll() {
         AreaTournament.unenrollGuild(this.id);
     }
-    
+
     isRegisterToAnTournament() {
         return conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id])[0] != null;
     }
@@ -99,12 +99,12 @@ class Guild {
         let res;
         if (this.members[idAsk].rank > 1) {
             if (!this.isMaxMembersLimitReached()) {
-                res = conn.query("SELECT users.userName, users.idUser FROM users " +
-                    "WHERE idCharacter = " + idOther + ";")[0];
+                res = conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idOther])[0];
                 this.members[idOther] = {
                     name: res["userName"],
                     rank: 1,
                     idUser: res["idUser"],
+                    level: res["actualLevel"],
                 }
                 conn.query("INSERT INTO guildsmembers VALUES(" + idOther + ", " + this.id + ", " + rank + " );");
                 this.nbrMembers++;
@@ -152,12 +152,13 @@ class Guild {
         } else {
             err.push(Translator.getString(lang, "errors", "guild_member_dont_exist"));
         }
-        
+
         return err;
     }
 
-    
+
     disband(connectedUsers) {
+        conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
         conn.query("DELETE FROM guildsmembers WHERE idGuild = " + this.id);
         conn.query("DELETE FROM guildsappliances WHERE idGuild = " + this.id);
         conn.query("DELETE FROM guilds WHERE idGuild = " + this.id);
@@ -185,15 +186,14 @@ class Guild {
         this.money = res["argent"];
 
         // Members
-        res = conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser FROM guildsmembers " +
-            "INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter " +
-            "WHERE guildsmembers.idGuild = " + id + ";");
+        res = conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);
 
         for (let i in res) {
             this.members[res[i]["idCharacter"]] = {
                 name: res[i]["userName"],
                 rank: res[i]["idGuildRank"],
                 idUser: res[i]["idUser"],
+                level: res[i]["actualLevel"],
             };
             this.nbrMembers++;
         }
@@ -231,6 +231,23 @@ class Guild {
             .addField(Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [this.money]), true);
 
         return embed;
+    }
+
+    toApi() {
+        this.loadMoney();
+        let toApi = {
+            members: this.members,
+            name: this.name,
+            image: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Guild-logo-01_.png",
+            message: this.message,
+            maxMembers: Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level),
+            level: this.level,
+            maxLevel: Globals.guilds.maxLevel,
+            nextLevelPrice: this.getNextLevelPrice(),
+            money: this.money,
+
+        }
+        return toApi;
     }
 
     getIdUserByIdCharacter(idCharacter) {
@@ -377,8 +394,8 @@ class Guild {
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_already_max_level"));
             }
-            
-        
+
+
         } else {
             err.psuh(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
         }
@@ -406,11 +423,11 @@ class Guild {
         let userNameLength;
         let actualLevelLength;
 
-        let res = conn.query("SELECT guildsappliances.idCharacter, users.userName, levels.actualLevel FROM guildsappliances " +
-            "INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter " +
-            "INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter " +
-            "WHERE guildsappliances.idGuild = " + this.id +
-            " ORDER BY users.userName ASC LIMIT 10 OFFSET " + ((page - 1) * 10));
+        let maxPage = conn.query("SELECT COUNT(*) as nbr FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC;", [this.id])[0].nbr;
+        maxPage = Math.ceil(maxPage / 10);
+        maxPage = maxPage <= 0 ? 1 : maxPage;
+        page = page <= maxPage ? page : maxPage;
+        let res = conn.query("SELECT guildsappliances.idCharacter, users.userName, levels.actualLevel FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
 
         let str = "```";
 
@@ -427,9 +444,9 @@ class Guild {
                 actualLevelLength = (actualLevelMaxLength - actualLevelLength) / 2;
 
 
-                str += "|" + " ".repeat(Math.floor(idCharacterLength)) + i.idCharacter + " ".repeat(Math.ceil(idCharacterLength)) + "|"
-                    + " ".repeat(Math.floor(userNameLength)) + i.userName + " ".repeat(Math.ceil(userNameLength)) + "|"
-                    + " ".repeat(Math.floor(actualLevelLength)) + i.actualLevel + " ".repeat(Math.ceil(actualLevelLength)) + "|\n"
+                str += "|" + " ".repeat(Math.floor(idCharacterLength)) + i.idCharacter + " ".repeat(Math.ceil(idCharacterLength)) + "|" +
+                    " ".repeat(Math.floor(userNameLength)) + i.userName + " ".repeat(Math.ceil(userNameLength)) + "|" +
+                    " ".repeat(Math.floor(actualLevelLength)) + i.actualLevel + " ".repeat(Math.ceil(actualLevelLength)) + "|\n"
             }
         } else {
             str += Translator.getString(lang, "guild", "nobody_ask_to_join_your_guild");
@@ -437,6 +454,19 @@ class Guild {
 
         str += "```";
         return str;
+    }
+
+    apiGetGuildAppliances(page, lang) {
+        let maxPage = conn.query("SELECT COUNT(*) as nbr FROM guildsappliances WHERE guildsappliances.idGuild = ?;", [this.id])[0].nbr;
+        maxPage = Math.ceil(maxPage / 10);
+        maxPage = maxPage <= 0 ? 1 : maxPage;
+        page = page <= maxPage ? page : maxPage;
+        let res = conn.query("SELECT guildsappliances.idCharacter as id, users.userName as name, levels.actualLevel as level FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
+        return {
+            appliances: res,
+            page: page,
+            maxPage: maxPage
+        }
     }
 
     /**
@@ -542,44 +572,13 @@ class Guild {
      * @param {any} idCharacter
      */
     static getAppliances(idCharacter, lang) {
-        let res = conn.query("SELECT guilds.idGuild, nom, level FROM guildsappliances " +
-            "INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild " +
-            "WHERE idCharacter = " + idCharacter);
-        let str = "```";
-        let idMaxLength = 10;
-        let nameMaxLength = 35;
-        let levelMaxLength = 11;
+        let res = conn.query("SELECT guilds.idGuild as id, nom as name, level FROM guildsappliances INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild WHERE idCharacter = ?;", [idCharacter]);
 
-        let idLength;
-        let nameLength;
-        let levelLength;
-
-
-
-
-        if (res.length > 0) {
-            str += "|" + "    id    " + "|" + "                nom                " + "|" + "   level   " + "|" + "\n";
-            for (let i of res) {
-                idLength = i.idGuild.toString().length;
-                idLength = (idMaxLength - idLength) / 2;
-
-                nameLength = i.nom.length;
-                nameLength = (nameMaxLength - nameLength) / 2;
-
-                levelLength = i.level.toString().length;
-                levelLength = (levelMaxLength - levelLength) / 2;
-
-                str += "|" + " ".repeat(Math.floor(idLength)) + i.idGuild + " ".repeat(Math.ceil(idLength)) + "|"
-                    + " ".repeat(Math.floor(nameLength)) + i.nom + " ".repeat(Math.ceil(nameLength)) + "|"
-                    + " ".repeat(Math.floor(levelLength)) + i.level + " ".repeat(Math.ceil(levelLength)) + "|\n"
-            }
-        } else {
-            str += Translator.getString(lang, "guild", "guild_no_apply_player");
-        }
-
-
-        str += "```";
-        return str;
+        return {
+            appliances: res,
+            page: 1,
+            maxPage: 1
+        };
     }
 
     static getGuilds(page, lang) {
@@ -588,55 +587,16 @@ class Guild {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = conn.query("SELECT idGuild, nom, level FROM guilds ORDER BY level ASC LIMIT 10 OFFSET " + ((page - 1) * 10));
+        let res = conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level ASC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
 
-        let str = "```";
-        let idMaxLength = 10;
-        let nameMaxLength = 35;
-        let levelMaxLength = 11;
-        let guildmembersMaxLenght = 15;
-
-        let idLength;
-        let nameLength;
-        let levelLength;
-        let guildmembersLenght;
-
-        let maxMembers = 0;
-
-        if (res.length > 0) {
-            str += "|" + "    id    " + "|" + "                nom                " + "|" + "   level   " + "|" + "    membres    " + "|" + "\n";
-            for (let i of res) {
-                count = conn.query("SELECT COUNT(*) FROM guildsmembers WHERE idGuild = " + i.idGuild)[0]["COUNT(*)"];
-                maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * i.level))
-
-                idLength = i.idGuild.toString().length;
-                idLength = (idMaxLength - idLength) / 2;
-
-                nameLength = i.nom.length;
-                nameLength = (nameMaxLength - nameLength) / 2;
-
-                levelLength = i.level.toString().length;
-                levelLength = (levelMaxLength - levelLength) / 2;
-
-                guildmembersLenght = count.toString().length + 1 + maxMembers.toString().length;
-                guildmembersLenght = (guildmembersMaxLenght - guildmembersLenght) / 2;
-
-
-
-                str += "|" + " ".repeat(Math.floor(idLength)) + i.idGuild + " ".repeat(Math.ceil(idLength)) + "|"
-                    + " ".repeat(Math.floor(nameLength)) + i.nom + " ".repeat(Math.ceil(nameLength)) + "|"
-                    + " ".repeat(Math.floor(levelLength)) + i.level + " ".repeat(Math.ceil(levelLength)) + "|"
-                    + " ".repeat(Math.floor(guildmembersLenght)) + count + "/" + maxMembers + " ".repeat(Math.ceil(guildmembersLenght)) + "|\n"
-            }
-        } else {
-            str += Translator.getString(lang, "guild", "nothing_to_print");
+        for (let i in res) {
+            res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));
         }
-
-        str +=  Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]);
-
-        str += "```";
-        return str;
-
+        return {
+            guilds: res,
+            page: page,
+            maxPage: maxPage,
+        }
     }
 
 

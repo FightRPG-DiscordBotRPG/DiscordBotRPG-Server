@@ -9,7 +9,7 @@ const Discord = require("discord.js");
 class Marketplace {
 
     constructor() {
-        this.id = 0; 
+        this.id = 0;
         this.tax = 0;
         this.isActive = false;
     }
@@ -37,7 +37,13 @@ class Marketplace {
         let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ?", [this.id, idCharacter])[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, (page - 1) * perPage]);
-        return { res: res, maxPage: maxPage, page: page };
+
+        maxPage = maxPage > 0 ? maxPage : 1;
+        return {
+            res: res,
+            maxPage: maxPage,
+            page: page <= maxPage && page > 0 ? page : maxPage
+        };
     }
 
     getAllOrdersCorrespondingTo(itemName, level, page, lang) {
@@ -58,7 +64,12 @@ class Marketplace {
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
             [lang, this.id, itemName, level, perPage, (page - 1) * perPage]);
 
-        return { res: res, maxPage: maxPage, page: page };
+        maxPage = maxPage > 0 ? maxPage : 1;
+        return {
+            res: res,
+            maxPage: maxPage,
+            page: page <= maxPage && page > 0 ? page : maxPage
+        };
     }
 
     getAll(page) {
@@ -78,8 +89,12 @@ class Marketplace {
             [this.id, perPage, (page - 1) * perPage]);
 
 
-
-        return { res: res, maxPage: maxPage, page: page };
+        maxPage = maxPage > 0 ? maxPage : 1;
+        return {
+            res: res,
+            maxPage: maxPage,
+            page: page <= maxPage && page > 0 ? page : maxPage
+        };
     }
 
     getThisOrder(idItem) {
@@ -93,14 +108,30 @@ class Marketplace {
         return this.createShow(res, lang);
     }
 
+    apiCharacterOrders(idCharacter, page, lang) {
+        let res = this.getCharacterOrders(idCharacter, Number.parseInt(page));
+        return this.createApiShow(res, lang)
+    }
+
+
     showSearchOrder(itemName, level, page, lang) {
         let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
         return this.createShow(res, lang);
     }
 
+    apiSearchOrder(itemName, level, page, lang) {
+        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
+        return this.createApiShow(res, lang);
+    }
+
     showAll(page, lang) {
         let res = this.getAll(Number.parseInt(page));
         return this.createShow(res, lang);
+    }
+
+    apiShowAll(page, lang) {
+        let res = this.getAll(Number.parseInt(page));
+        return this.createApiShow(res, lang);
     }
 
     createShow(res, lang) {
@@ -121,6 +152,20 @@ class Marketplace {
         return str;
     }
 
+    createApiShow(res, lang) {
+        let orders = res.res;
+        let toApi = {
+            page: res.page,
+            maxPage: res.maxPage > 0 ? res.maxPage : 1,
+            orders: [],
+        }
+        for (let order of orders) {
+            let morder = new MarketplaceOrder(this.id, order.idItem, order.idCharacter, order.number, order.price);
+            toApi.orders.push(morder.toApi(lang));
+        }
+        return toApi;
+    }
+
 
 
     showItemOrder(idItem, character, lang) {
@@ -133,9 +178,22 @@ class Marketplace {
         return new Discord.RichEmbed()
             .setAuthor(item.getName(lang), Globals.addr + "images/items/" + item.image + ".png")
             .setColor(item.rarityColor)
-            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%"
-            , item.getDesc(lang))
+            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%", item.getDesc(lang))
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
+    }
+
+    apiItemOrder(idItem, character, lang) {
+        let item = new Item(idItem);
+        let compareStats = character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
+        if (compareStats != null) {
+            compareStats = compareStats.stats;
+        } else {
+            compareStats = {};
+        }
+        return {
+            item: item.toApi(lang),
+            equippedStats: compareStats,
+        };
     }
 
 
@@ -160,7 +218,7 @@ class Marketplace {
     }
 
 
-   
+
 
 }
 

@@ -33,7 +33,7 @@ class Item {
 
     loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = " + this.id + ";")[0];
+        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = ?;", [this.id])[0];
         this.idBaseItem = res["idBaseItem"];
         this.level = res["level"];
         this.image = res["imageItem"];
@@ -56,7 +56,7 @@ class Item {
 
     deleteItem() {
         this.stats.deleteStats();
-        conn.query("DELETE FROM items WHERE idItem = " + this.id + ";");
+        conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
     }
 
     static deleteItem(idItem) {
@@ -162,36 +162,42 @@ class Item {
      * API CALLS HERE
      */
 
-    toApi() {
+    toApi(lang) {
         let toApiObject = {
-            name: this.name,
-            desc: this.desc,
-            rarity: this.rarity,
+            name: this.getName(lang),
+            desc: this.getDesc(lang),
+            rarity: Translator.getString(lang, "rarities", this.rarity),
             rarityColor: this.rarityColor,
-            level: this.level,
-            typeName: this.typeName,
-            equipable: this.equipable === 1 ? true : false,
+            level: this.getLevel(),
+            type: Translator.getString(lang, "item_types", this.typeName),
+            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
+            power: this.getPower(),
+            equipable: this.isEquipable(),
             number: this.number,
             price: this.getCost(),
-            image: Globals.addr + "images/items/" + this.image + ".png",
+            isFavorite: this.isFavorite,
+            image: this.image,
+            usable: this.isUsable(),
+            stats: this.stats.toApi()
         };
-        if (this.equipable == true)
-            toApiObject.stats = this.stats.toApi();
-
         return toApiObject;
     }
 
-    toApiLight() {
+    toApiLight(lang) {
         let toApiObject = {
-            name: this.name,
-            desc: this.desc,
-            rarity: this.rarity,
+            name: this.getName(lang),
+            rarity: Translator.getString(lang, "rarities", this.rarity),
             rarityColor: this.rarityColor,
-            level: this.level,
-            typeName: this.typeName,
-            equipable: this.equipable === 1 ? true : false,
+            level: this.getLevel(),
+            type: Translator.getString(lang, "item_types", this.typeName),
+            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
+            power: this.getPower(),
+            equipable: this.isEquipable(),
             number: this.number,
-            image: Globals.addr + "images/items/" + this.image + ".png",
+            price: this.getCost(),
+            isFavorite: this.isFavorite,
+            image: this.image,
+            usable: this.isUsable(),
         };
         return toApiObject;
     }

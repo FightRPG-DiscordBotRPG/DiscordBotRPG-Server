@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class OtherModule extends GModule {
@@ -27,213 +28,213 @@ class OtherModule extends GModule {
         this.init();
         this.endLoading("Other");
     }
+    init() {
+        this.router = express.Router();
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+        // Add to router needed things
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_other", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_other", 1);
+    loadRoutes() {
+        this.router.get("/lang", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+            data.languages = Translator.getAvailableLanguages(res.locals.lang);
+            return res.json(data);
+        });
 
-        switch (command) {
-            case "lang":
-                if (args[0]) {
-                    if (Translator.isLangExist(args[0])) {
-                        Globals.connectedUsers[authorIdentifier].changeLang(args[0]);
-                        msg = Translator.getString(args[0], "languages", "lang_changed", [Translator.getString(args[0], "languages", args[0])])
-                    } else {
-                        msg = Translator.getString(lang, "errors", "languages_lang_dont_exist");
-                    }
+        this.router.post("/lang", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+            if (req.body.lang) {
+                if (Translator.isLangExist(req.body.lang)) {
+                    Globals.connectedUsers[res.locals.id].changeLang(req.body.lang);
+                    data.lang = req.body.lang;
+                    data.success = Translator.getString(req.body.lang, "languages", "lang_changed", [Translator.getString(req.body.lang, "languages", req.body.lang)])
                 } else {
-                    msg = Translator.getString(lang, "languages", "list_of_languages") + "\n" + Translator.getAvailableLanguages(lang);
+                    data.error = Translator.getString(res.locals.lang, "errors", "languages_lang_dont_exist");
                 }
-                break;
-            case "help":
-                msg = this.helpPanel(lang, parseInt(args[0], 10));
-                break;
-            case "settings":
-                let one = Emojis.getString("one");
-                let two = Emojis.getString("two");
-                let tempMsgContent = "**" + Translator.getString(lang, "settings_menu", "title") + "**\n\n" +
-                    one + " : " + "`" + Translator.getString(lang, "group", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isGroupMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n" +
-                    two + " : " + "`" + Translator.getString(lang, "marketplace", "settings_menu_mute", [(Globals.connectedUsers[authorIdentifier].isMarketplaceMuted() ? Translator.getString(lang, "general", "enable") : Translator.getString(lang, "general", "disable"))]) + "`\n\n";
-                let tempMsg = await message.channel.send(tempMsgContent).catch(e => null);
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "languages_lang_dont_exist");
+            }
+            return res.json(data);
+        });
 
-                await Promise.all([
-                    tempMsg.react(one),
-                    tempMsg.react(two)
-                ]).catch(e => null);
+        this.router.get("/help/:page?", async (req, res) => {
+            let data;
+            data = this.helpPanel(res.locals.lang, parseInt(req.params.page, 10));
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-                const filter = (reaction, user) => {
-                    return [one, two].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
-                };
-
-                const collected = await tempMsg.awaitReactions(filter, {
-                    max: 1,
-                    time: 20000
-                });
-                const reaction = collected.first();
-                if (reaction != null) {
-                    switch (reaction.emoji.id || reaction.emoji.name) {
-                        case one:
-                            if (Globals.connectedUsers[authorIdentifier].isGroupMuted()) {
-                                Globals.connectedUsers[authorIdentifier].muteGroup(false);
-                                msg = Translator.getString(lang, "group", "now_unmuted");
-                            } else {
-                                Globals.connectedUsers[authorIdentifier].muteGroup(true);
-                                msg = Translator.getString(lang, "group", "now_muted");
-                            }
-                            break;
-                        case two:
-                            if (Globals.connectedUsers[authorIdentifier].isMarketplaceMuted()) {
-                                Globals.connectedUsers[authorIdentifier].muteGroup(false);
-                                msg = Translator.getString(lang, "marketplace", "now_unmuted");
-                            } else {
-                                Globals.connectedUsers[authorIdentifier].muteGroup(true);
-                                msg = Translator.getString(lang, "marketplace", "now_muted");
-                            }
-                            break;
-                    }
+        this.router.get("/settings", async (req, res) => {
+            let data = {
+                isGroupMuted: Globals.connectedUsers[res.locals.id].isGroupMuted(),
+                isMarketplaceMuted: Globals.connectedUsers[res.locals.id].isMarketplaceMuted()
+            }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+        // TODO mute not working properly
+        this.router.post("/settings", async (req, res) => {
+            let data = {};
+            let success = "";
+            data.lang = res.locals.lang;
+            if (req.body.mGroup != null) {
+                if (Globals.connectedUsers[res.locals.id].isGroupMuted()) {
+                    Globals.connectedUsers[res.locals.id].muteGroup(false);
+                    success += Translator.getString(res.locals.lang, "group", "now_unmuted") + "\n";
+                } else {
+                    Globals.connectedUsers[res.locals.id].muteGroup(true);
+                    success += Translator.getString(res.locals.lang, "group", "now_muted") + "\n";
                 }
-                tempMsg.delete().catch(e => null);
-                break;
-        }
-
-        this.sendMessage(message, msg);
+            }
+            if (req.body.mMarket != null) {
+                if (Globals.connectedUsers[res.locals.id].isMarketplaceMuted()) {
+                    Globals.connectedUsers[res.locals.id].muteGroup(false);
+                    success += Translator.getString(res.locals.lang, "marketplace", "now_unmuted") + "\n";
+                } else {
+                    Globals.connectedUsers[res.locals.id].muteGroup(true);
+                    success += Translator.getString(res.locals.lang, "marketplace", "now_muted") + "\n";
+                }
+            }
+            if (success != "") {
+                data.success = success;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
+            }
+            return res.json(data);
+        });
     }
 
     helpPanel(lang, page) {
         let str = "";
         let maxPage = 6;
         page = page && page > 0 && page <= maxPage ? page : 1;
+        let data = {};
+        let commands = {};
 
         switch (page) {
             case 1:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
+                commands[Translator.getString(lang, "help_panel", "equipment_title")] = {
+                    "equipment/equiplist": Translator.getString(lang, "help_panel", "equipment"),
+                    "equip <itemID>": Translator.getString(lang, "help_panel", "equip"),
+                    "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)",
+                    "use <itemID>": Translator.getString(lang, "help_panel", "use"),
+                };
 
-                    "[" + Translator.getString(lang, "help_panel", "equipment_title") + "]\n" +
-                    "::equipment/equipList : " + Translator.getString(lang, "help_panel", "equipment") + "\n" +
-                    "::equip <itemID> : " + Translator.getString(lang, "help_panel", "equip") + "\n" +
-                    "::unequip <itemType> : " + Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)" + "\n" +
-                    "::use <itemID> : " + Translator.getString(lang, "help_panel", "use") + "\n" +
+                commands[Translator.getString(lang, "help_panel", "character_title")] = {
+                    "info": Translator.getString(lang, "help_panel", "info"),
+                    "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
+                    "leaderboard": Translator.getString(lang, "help_panel", "leaderboard"),
+                    "reset": Translator.getString(lang, "help_panel", "reset"),
+                };
 
-                    "[" + Translator.getString(lang, "help_panel", "character_title") + "]\n" +
-                    "::info : " + Translator.getString(lang, "help_panel", "info") + "\n" +
-                    "::up <statName> <number> : " + Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)\n" +
-                    "::leaderboard : " + Translator.getString(lang, "help_panel", "leaderboard") + "\n" +
-                    "::reset : " + Translator.getString(lang, "help_panel", "reset") + "\n" +
-
-                    "[" + Translator.getString(lang, "help_panel", "fight_title") + "]\n" +
-                    "::fight <monsterID> : " + Translator.getString(lang, "help_panel", "fight") + "\n" +
-                    "::grpfight <monsterID> : " + Translator.getString(lang, "help_panel", "grpfight") + "\n" +
-                    "::arena @Someone : " + Translator.getString(lang, "help_panel", "arenaMention") + "\n" +
-                    "::arena <playerID> : " + Translator.getString(lang, "help_panel", "arena") + "\n";
+                commands[Translator.getString(lang, "help_panel", "fight_title")] = {
+                    "fight <monsterID>": Translator.getString(lang, "help_panel", "fight"),
+                    "grpfight <monsterID>": Translator.getString(lang, "help_panel", "grpfight"),
+                    "arena @Someone": Translator.getString(lang, "help_panel", "arenaMention"),
+                    "arena <playerID>": Translator.getString(lang, "help_panel", "arena"),
+                }
                 break;
             case 2:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "inventory_title") + "]\n" +
-                    "::inv/inventory : " + Translator.getString(lang, "help_panel", "inv") + "\n" +
-                    "::item <itemID> : " + Translator.getString(lang, "help_panel", "item") + "\n" +
-                    "::itemfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemfav") + "\n" +
-                    "::itemunfav <itemID or itemType> : " + Translator.getString(lang, "help_panel", "itemunfav") + "\n" +
-                    "::sell <itemID> : " + Translator.getString(lang, "help_panel", "sell") + "\n" +
-                    "::sellall : " + Translator.getString(lang, "help_panel", "sellall") + "\n" +
-                    "::sendmoney <@mention or idCharacter> <value> : " + Translator.getString(lang, "help_panel", "sendmoney") + "\n";
+                commands[Translator.getString(lang, "help_panel", "inventory_title")] = {
+                    "inv/inventory": Translator.getString(lang, "help_panel", "inv"),
+                    "item <itemID>": Translator.getString(lang, "help_panel", "item"),
+                    "itemfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemfav"),
+                    "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
+                    "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
+                    "sellall": Translator.getString(lang, "help_panel", "sellall"),
+                    "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
+
+                }
                 break;
             case 3:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "areas_title") + "]\n" +
-                    "::area : " + Translator.getString(lang, "help_panel", "area") + "\n" +
-                    "::areas : " + Translator.getString(lang, "help_panel", "areas") + "\n" +
-                    "::areaconquest : " + Translator.getString(lang, "help_panel", "areaconquest") + "\n" +
-                    "::arealevelup : " + Translator.getString(lang, "help_panel", "arealevelup") + "\n" +
-                    "::areabonuseslist : " + Translator.getString(lang, "help_panel", "areabonuseslist") + "\n" +
-                    "::areaplayers <page> : " + Translator.getString(lang, "help_panel", "areaplayers") + "\n" +
-                    "::areaupbonus <bonus_identifier> <pts_to_allocate> : " + Translator.getString(lang, "help_panel", "areaupbonus") + "\n" +
-                    "::travel <areaID> : " + Translator.getString(lang, "help_panel", "travel") + "\n" +
-                    "::travelregion <regionID> : " + Translator.getString(lang, "help_panel", "travelregion") + "\n";
+                commands[Translator.getString(lang, "help_panel", "areas_title")] = {
+                    "area": Translator.getString(lang, "help_panel", "area"),
+                    "areas": Translator.getString(lang, "help_panel", "areas"),
+                    "areaconquest": Translator.getString(lang, "help_panel", "areaconquest"),
+                    "arealevelup": Translator.getString(lang, "help_panel", "arealevelup"),
+                    "areabonuseslist": Translator.getString(lang, "help_panel", "areabonuseslist"),
+                    "areaplayers <page>": Translator.getString(lang, "help_panel", "areaplayers"),
+                    "areaupbonus <bonus_identifier> <pts_to_allocate>": Translator.getString(lang, "help_panel", "areaupbonus"),
+                    "travel <areaID>": Translator.getString(lang, "help_panel", "travel"),
+                    "travelregion <regionID>": Translator.getString(lang, "help_panel", "travelregion"),
+                }
                 break;
             case 4:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "guilds_title") + "]\n" +
-                    "::guild : " + Translator.getString(lang, "help_panel", "guild") + "\n" +
-                    "::guilds <page> : " + Translator.getString(lang, "help_panel", "guilds") + "\n" +
-                    "::gcreate <name> : " + Translator.getString(lang, "help_panel", "gcreate") + "\n" +
-                    "::gdisband : " + Translator.getString(lang, "help_panel", "gdisband") + "\n" +
-                    "::gapply <guildID> : " + Translator.getString(lang, "help_panel", "gapply") + "\n" +
-                    "::gaccept <playerID> : " + Translator.getString(lang, "help_panel", "gaccept") + "\n" +
-                    "::gapplies : " + Translator.getString(lang, "help_panel", "gapplies") + "\n" +
-                    "::gapplyremove <applyID> : " + Translator.getString(lang, "help_panel", "gapplyremove") + "\n" +
-                    "::gappliesremove : " + Translator.getString(lang, "help_panel", "gappliesremove") + "\n" +
-                    "::gannounce <message> : " + Translator.getString(lang, "help_panel", "gannounce") + "\n" +
-                    "::gaddmoney <amount> : " + Translator.getString(lang, "help_panel", "gaddmoney") + "\n" +
-                    "::gremovemoney <message> : " + Translator.getString(lang, "help_panel", "gremovemoney") + "\n" +
-                    "::glevelup : " + Translator.getString(lang, "help_panel", "glevelup") + "\n" +
-                    "::genroll : " + Translator.getString(lang, "help_panel", "genroll") + "\n" +
-                    "::gunenroll : " + Translator.getString(lang, "help_panel", "gunenroll") + "\n" +
-                    "::gleave : " + Translator.getString(lang, "help_panel", "gleave") + "\n" +
-                    "::gmod <playerID> <rank> : " + Translator.getString(lang, "help_panel", "gmod") + "\n";
+                commands[Translator.getString(lang, "help_panel", "guilds_title")] = {
+                    "guild": Translator.getString(lang, "help_panel", "guild"),
+                    "guild": Translator.getString(lang, "help_panel", "guild"),
+                    "guilds <page>": Translator.getString(lang, "help_panel", "guilds"),
+                    "gcreate <name>": Translator.getString(lang, "help_panel", "gcreate"),
+                    "gdisband": Translator.getString(lang, "help_panel", "gdisband"),
+                    "gapply <guildID>": Translator.getString(lang, "help_panel", "gapply"),
+                    "gaccept <playerID>": Translator.getString(lang, "help_panel", "gaccept"),
+                    "gapplies": Translator.getString(lang, "help_panel", "gapplies"),
+                    "gapplyremove <applyID>": Translator.getString(lang, "help_panel", "gapplyremove"),
+                    "gappliesremove": Translator.getString(lang, "help_panel", "gappliesremove"),
+                    "gannounce <message>": Translator.getString(lang, "help_panel", "gannounce"),
+                    "gaddmoney <amount>": Translator.getString(lang, "help_panel", "gaddmoney"),
+                    "gremovemoney <message>": Translator.getString(lang, "help_panel", "gremovemoney"),
+                    "glevelup": Translator.getString(lang, "help_panel", "glevelup"),
+                    "genroll": Translator.getString(lang, "help_panel", "genroll"),
+                    "gunenroll": Translator.getString(lang, "help_panel", "gunenroll"),
+                    "gleave": Translator.getString(lang, "help_panel", "gleave"),
+                    "gmod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
+                }
                 break;
             case 5:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "groups_title") + "]\n" +
-                    "::grp : " + Translator.getString(lang, "help_panel", "grp") + "\n" +
-                    "::grpinvite @mention : " + Translator.getString(lang, "help_panel", "grpinvite_mention") + "\n" +
-                    "::grpleave : " + Translator.getString(lang, "help_panel", "grpleave") + "\n" +
-                    "::grpaccept : " + Translator.getString(lang, "help_panel", "grpaccept") + "\n" +
-                    "::grpdecline : " + Translator.getString(lang, "help_panel", "grpdecline") + "\n" +
-                    "::grpkick \"<name#tag>\" : " + Translator.getString(lang, "help_panel", "grpkick") + "\n" +
-                    "::grpswap \"<name#tag>\" : " + Translator.getString(lang, "help_panel", "grpswap") + "\n" +
-                    "::grpmute : " + Translator.getString(lang, "help_panel", "grpmute") + "\n" +
-                    "::grpunmute : " + Translator.getString(lang, "help_panel", "grpunmute") + "\n" +
+                commands[Translator.getString(lang, "help_panel", "groups_title")] = {
+                    "grp": Translator.getString(lang, "help_panel", "grp"),
+                    "grpinvite @mention": Translator.getString(lang, "help_panel", "grpinvite_mention"),
+                    "grpleave": Translator.getString(lang, "help_panel", "grpleave"),
+                    "grpaccept": Translator.getString(lang, "help_panel", "grpaccept"),
+                    "grpdecline": Translator.getString(lang, "help_panel", "grpdecline"),
+                    "grpkick \"<name#tag>\"": Translator.getString(lang, "help_panel", "grpkick"),
+                    "grpswap \"<name#tag>\"": Translator.getString(lang, "help_panel", "grpswap"),
+                    "grpmute": Translator.getString(lang, "help_panel", "grpmute"),
+                    "grpunmute": Translator.getString(lang, "help_panel", "grpunmute"),
+                }
 
-                    "[" + Translator.getString(lang, "help_panel", "market_title") + "]\n" +
-                    "::mkmylist : " + Translator.getString(lang, "help_panel", "mkmylist") + "\n" +
-                    "::mkplace <idItemInInventory> <nb> <price> : " + Translator.getString(lang, "help_panel", "mkplace") + "\n" +
-                    "::mkcancel <idItem> : " + Translator.getString(lang, "help_panel", "mkcancel") + "\n" +
-                    "::mkbuy <idItem> : " + Translator.getString(lang, "help_panel", "mkbuy") + "\n" +
-                    "::mksearch \"<itemName>\" <level> <page> : " + Translator.getString(lang, "help_panel", "mksearch") + "\n" +
-                    "::mkshow <page> : " + Translator.getString(lang, "help_panel", "mkshow") + "\n" +
-                    "::mksee <idItem> : " + Translator.getString(lang, "help_panel", "mksee") + "\n";
+                commands[Translator.getString(lang, "help_panel", "market_title")] = {
+                    "mkmylist": Translator.getString(lang, "help_panel", "mkmylist"),
+                    "mkplace <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
+                    "mkcancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
+                    "mkbuy <idItem>": Translator.getString(lang, "help_panel", "mkbuy"),
+                    "mksearch \"<itemName>\" <level> <page>": Translator.getString(lang, "help_panel", "mksearch"),
+                    "mkshow <page>": Translator.getString(lang, "help_panel", "mkshow"),
+                    "mksee <idItem>": Translator.getString(lang, "help_panel", "mksee"),
+                }
                 break;
 
             case 6:
-                str = "```apache\n" +
-                    "::" + Translator.getString(lang, "help_panel", "help") + "::\n" +
-                    "[" + Translator.getString(lang, "help_panel", "craft_title") + "]\n" +
-                    "::craftlist <page>: " + Translator.getString(lang, "help_panel", "craftlist") + "\n" +
-                    "::craftshow <idCraft> : " + Translator.getString(lang, "help_panel", "craftshow") + "\n" +
-                    "::craft <idCraft> : " + Translator.getString(lang, "help_panel", "craft") + "\n" +
-                    "::collect <idResource> : " + Translator.getString(lang, "help_panel", "collect") + "\n" +
+                commands[Translator.getString(lang, "help_panel", "craft_title")] = {
+                    "craftlist <page": Translator.getString(lang, "help_panel", "craftlist"),
+                    "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
+                    "craft <idCraft>": Translator.getString(lang, "help_panel", "craft"),
+                    "collect <idResource>": Translator.getString(lang, "help_panel", "collect"),
+                }
 
-                    "[" + Translator.getString(lang, "help_panel", "other_title") + "]\n" +
-                    "::lang : " + Translator.getString(lang, "help_panel", "lang") + "\n" +
-                    "::lang <languageShort> : " + Translator.getString(lang, "help_panel", "lang_param") + "\n" +
-                    "::settings : " + Translator.getString(lang, "help_panel", "settings") + "\n";
+                commands[Translator.getString(lang, "help_panel", "other_title")] = {
+                    "lang": Translator.getString(lang, "help_panel", "lang"),
+                    "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
+                    "settings": Translator.getString(lang, "help_panel", "settings"),
+                }
                 break;
         }
-        str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [page, maxPage]) + "```";
-        return str;
+
+        data.commands = commands;
+        data.page = page;
+        data.maxPage = maxPage;
+        return data;
     }
 }
 

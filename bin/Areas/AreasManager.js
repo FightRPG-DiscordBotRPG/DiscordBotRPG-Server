@@ -158,6 +158,10 @@ class AreasManager {
         return this.areas.get(idArea).toStr(lang);
     }
 
+    thisAreaToApi(idArea, lang) {
+        return this.areas.get(idArea).toApi(lang);
+    }
+
     /**
      * 
      * @param {number} idArea 
@@ -169,6 +173,10 @@ class AreasManager {
 
     seeAllAreasInThisRegion(area, lang) {
         return this.regions[area.idRegion].seeAreas(lang);
+    }
+
+    thisRegionToApi(currentArea, lang) {
+        return this.regions[currentArea.idRegion].toApi(lang);
     }
 
     canISellToThisArea(idArea) {

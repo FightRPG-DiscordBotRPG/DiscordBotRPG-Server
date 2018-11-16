@@ -9,7 +9,7 @@ class MarketplaceOrder {
         this.idMarketplace = idMarketplace;
         this.idItem = idItem;
         this.idCharacter = idCharacter;
-        this.number = number; 
+        this.number = number;
         this.price = price;
     }
 
@@ -29,6 +29,17 @@ class MarketplaceOrder {
         let item = new Item(this.idItem);
         let username = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter])[0]["userName"];
         return username + " - " + this.idItem + " - " + item.toStr(lang) + " - " + "x" + this.number + " - " + this.price + "G";
+    }
+
+    toApi(lang) {
+        let item = new Item(this.idItem);
+        let username = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter])[0]["userName"];
+        return {
+            seller_name: username,
+            idItem: this.idItem,
+            item: item.toApiLight(lang),
+            price: this.price,
+        }
     }
 
 

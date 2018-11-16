@@ -12,6 +12,7 @@
       "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
       "version": "1.0.0"
     },
+    "axios": "^0.18.0",
     "babel-runtime": {
       "integrity": "sha1-llxwWGaOgrVde/4E/yM3vItWR/4=",
       "requires": {
@@ -44,6 +45,7 @@
       "resolved": "https://registry.npmjs.org/bignumber.js/-/bignumber.js-4.0.4.tgz",
       "version": "4.0.4"
     },
+    "compression": "^1.7.3",
     "concat-stream": {
       "integrity": "sha1-CqxmL9Ur54lk1VMvaUeE5wEQrPc=",
       "requires": {
@@ -69,6 +71,7 @@
     "discord.js": "^11.4.2",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
+    "express-async-errors": "^3.1.1",
     "express-rate-limit": "^2.12.2",
     "get-port": {
       "integrity": "sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=",

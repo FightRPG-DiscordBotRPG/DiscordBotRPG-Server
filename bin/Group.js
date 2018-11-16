@@ -21,6 +21,9 @@ class Group {
          * @type {Array<User>}
          */
         this.pendingPlayers = {};
+        /**
+         * @type {User}
+         */
         this.leader = leader;
         this.doingSomething = false;
     }
@@ -116,8 +119,8 @@ class Group {
         return true;
     }
 
-    addPlayer(player, discordClient) {
-        this.playerJoinedBroadcast(player, discordClient);
+    addPlayer(player) {
+        this.playerJoinedBroadcast(player);
         player.character.pendingPartyInvite = null;
         delete this.pendingPlayers[player.id];
         this.players[player.id] = player;
@@ -125,13 +128,13 @@ class Group {
 
     }
 
-    kick(playername, discordClient) {
+    kick(playername) {
         for (let user in this.players) {
             user = this.players[user];
             if (user.username == playername) {
                 // Make sure it leaves the group
                 user.character.leaveGroup();
-                this.playerKickedBroadcast(user, discordClient);
+                this.playerKickedBroadcast(user);
                 delete this.players[user.id];
                 return true;
             }
@@ -185,9 +188,8 @@ class Group {
     /**
      * 
      * @param {User} player 
-     * @param {DiscordClient} discordClient 
      */
-    playerLeave(player, discordClient) {
+    playerLeave(player) {
         if (this.nbOfPlayers() > 1) {
             // Make character leave group
             //console.log(this.players);
@@ -201,7 +203,7 @@ class Group {
                 // Delete from list of players
                 delete this.players[player.id];
             }
-            this.playerLeaveBroadcast(player, discordClient);
+            this.playerLeaveBroadcast(player);
             //console.log(this);
         } else {
             this.disband();
@@ -209,51 +211,36 @@ class Group {
 
     }
 
-    playerLeaveBroadcast(player, discordClient) {
+    playerLeaveBroadcast(player) {
         // Send to leader
-        if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
-        }
-
+        this.leader.groupTell(Translator.getString(this.leader.getLang(), "group", "someone_left_the_group", [player.username]));
 
         // Send to rest of group
         for (let user in this.players) {
-            user = this.players[user];
-            if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_left_the_group", [player.username])).catch((e) => null);
-            }
+            this.players[user].groupTell(Translator.getString(this.players[user].getLang(), "group", "someone_left_the_group", [player.username]));
         }
     }
 
-    playerJoinedBroadcast(player, discordClient) {
+    playerJoinedBroadcast(player) {
         // Send to leader
-        if (!this.leader.isGroupMuted()) {;
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
-        }
+        this.leader.groupTell(Translator.getString(this.leader.getLang(), "group", "someone_joined_the_group", [player.username]));
         // Send to rest of group
         for (let user in this.players) {
-            user = this.players[user];
-            if (!user.isGroupMuted()) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "someone_joined_the_group", [player.username])).catch((e) => null);
-            }
+            this.players[user].groupTell(Translator.getString(this.players[user].getLang(), "group", "someone_joined_the_group", [player.username]));
         }
     }
 
-    playerDeclinedBroadcast(player, discordClient) {
-        if (!this.leader.isGroupMuted()) {
-            discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username])).catch((e) => null);
-        }
+    playerDeclinedBroadcast(player) {
+        this.leader.groupTell(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]));
     }
 
-    playerKickedBroadcast(player, discordClient) {
+    playerKickedBroadcast(player) {
         for (let user in this.players) {
             user = this.players[user];
             if (user == player) {
-                discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "you_ve_been_kicked")).catch((e) => null);
+                user.groupTell(Translator.getString(user.getLang(), "group", "you_ve_been_kicked"))
             } else {
-                if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "group", "user_kicked", [player.username])).catch((e) => null);
-                }
+                user.groupTell(Translator.getString(user.getLang(), "group", "user_kicked", [player.username]));
             }
         }
     }
@@ -290,7 +277,28 @@ class Group {
         return embed;
     }
 
-    fightEndBoardcast(discordClient, summary) {
+    toApi() {
+        let members = [];
+        for (let user in this.players) {
+            members.push(this.players[user].character.toApiSimple());
+        }
+
+        let invitedPlayers = [];
+        for (let user in this.pendingPlayers) {
+            invitedPlayers.push(this.pendingPlayers[user].character.toApiSimple())
+        }
+
+        return {
+            leader: this.leader.character.toApiSimple(),
+            members: members,
+            invitedPlayers: invitedPlayers,
+            avgPower: this.getAveragePower(),
+            numberOfPlayers: this.nbOfPlayers(),
+            numberOfInvitedPlayers: this.nbOfInvitedPlayers(),
+        }
+    }
+
+    async fightEndBoardcast(summary) {
         if (summary.winner == 0) {
             let str = "";
 
@@ -337,8 +345,8 @@ class Group {
                     str += drop_string;
                 }
 
+                this.leader.groupTell(str);
 
-                discordClient.users.get(this.leader.id).send(str).catch((e) => null);
             }
 
             // Send to rest of group
@@ -387,26 +395,20 @@ class Group {
                         str += drop_string;
                     }
 
-
-                    discordClient.users.get(user.id).send(str).catch((e) => null);
+                    user.groupTell(str);
                 }
             }
         } else {
-            if (!this.leader.isGroupMuted()) {
-                discordClient.users.get(this.leader.id).send(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight")).catch((e) => null);
-            }
+            this.leader.groupTell(Translator.getString(this.leader.getLang(), "fight_pve", "group_pm_lost_fight"));
             // Send to rest of group
             for (let user in this.players) {
                 user = this.players[user];
-                if (!user.isGroupMuted()) {
-                    discordClient.users.get(user.id).send(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight")).catch((e) => null);
-                }
+                user.groupTell(Translator.getString(user.getLang(), "fight_pve", "group_pm_lost_fight"));
             }
+
         }
 
     }
-
-
 
 
 }

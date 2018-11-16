@@ -3,7 +3,7 @@ const StatsPlayer = require("../Stats/StatsPlayer");
 const LevelSystem = require("../LevelSystem");
 const CharacterEquipement = require("../CharacterEquipement");
 
-class CharacterEntity extends WorldEntity{
+class CharacterEntity extends WorldEntity {
 
     /**
      * 

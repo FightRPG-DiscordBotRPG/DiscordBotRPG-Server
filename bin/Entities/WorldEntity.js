@@ -26,6 +26,10 @@ class WorldEntity {
         return this.level;
     }
 
+    getName() {
+        return this.name;
+    }
+
     // Critical hit
     isThisACriticalHit() {
         return Math.random() <= this.getCriticalHitChance() ? true : false;
@@ -57,7 +61,7 @@ class WorldEntity {
         let otherResist = (advWill) / max;
 
         // Cap to 50%;
-        stun        = stun > .5 ? .5 : stun;
+        stun = stun > .5 ? .5 : stun;
         otherResist = otherResist > .5 ? .5 : otherResist;
         let chanceToStun = stun >= otherResist ? stun : 0;
 

@@ -7,14 +7,22 @@ const Discord = require("discord.js");
 const User = require("../User");
 const Guild = require("../Guild");
 const PStatistics = require("../Achievement/PStatistics");
+const path = require('path');
+const conf = require("../../conf/conf");
+const express = require("express"),
+    app = express(),
+    port = 8880,
+    url = require('url'),
+    compression = require('compression');
+require('express-async-errors');
+app.listen(port, () => console.log("Starting RESTful api server on: " + port));
 
 class ModuleHandler extends GModule {
     constructor() {
         super();
         this.isReloadable = false;
-        this.prefixes = {};
-        this.prefix = "::";
         this.devMode = false;
+        this.isActive = false;
         /**
          * @type {Array<GModule>}
          */
@@ -23,97 +31,188 @@ class ModuleHandler extends GModule {
          * @type {Array<GModule>}
          */
         this.commandsReact = {};
+
         this.startLoading("ModuleHandler");
         this.init();
         this.endLoading("ModuleHandler");
     }
 
     init() {
+        app.use(express.urlencoded({
+            extended: true
+        }));
+        app.use(express.json());
+        //app.use(compression());
+        app.use("/game", this.checkAuth);
+        app.use("/game", async (req, res, next) => {
+            if (res.locals.id != null) {
+                if (Globals.connectedUsers[res.locals.id] != null) {
+                    next();
+                } else {
+                    await this.connectUser(res.locals.id);
+                    next();
+                }
+            } else {
+                return res.status(403).json({
+                    error: 'No credentials sent!'
+                });
+            }
+        });
+
+        this.router = express.Router();
+        this.router.use(this.checkAuth);
+        this.router.use(this.isAdmin);
+
+
+
+        app.use("/handler", this.router);
+
         this.loadAllModules();
-        this.loadPrefixes();
+        this.loadRoutes();
+        this.loadHelper();
+        this.crashHandler();
+
+    }
+
+    loadHelper() {
+        let helpersRouter = express.Router();
+        helpersRouter.get("/areas/resources", async (req, res) => {
+            let urlParts = url.parse(req.url, true);
+            let parameters = urlParts.query;
+            let lang = "en";
+            lang = parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en";
+            let ressources = conn.query("SELECT localizationareas.nameArea, localizationitems.nameItem FROM areasresources INNER JOIN localizationareas ON areasresources.idArea = localizationareas.idArea INNER JOIN localizationitems ON areasresources.idBaseItem = localizationitems.idBaseItem WHERE localizationareas.lang = ? AND localizationitems.lang = ? ORDER BY localizationareas.idArea", [lang, lang]);
+
+            let html = "<p>Res" + (lang == "fr" ? "s" : "") + "ources : ";
+            let precedName = "";
+            for (let r of ressources) {
+                if (precedName != r.nameArea) {
+                    html += "</p>";
+                    html += "<p>" + r.nameArea + "<br>";
+                    precedName = r.nameArea;
+                }
+                html += r.nameItem + ", ";
+            }
+            html += "</p>";
+            res.send(html);
+        });
+        app.use("/helpers", helpersRouter);
     }
 
     loadAllModules() {
+
         fs.readdirSync(__dirname + "/Modules/").forEach(file => {
             this.loadModule(file);
+            //app.use("/game", this.modules[file].router);
+        });
+
+
+        for (let mod in this.modules) {
+            //console.log(this.modules[mod].router);
+            if (this.modules[mod].router != null) {
+                app.use("/game/" + mod.split("Module")[0].toLowerCase(), this.modules[mod].router);
+            }
+        }
+        this.getAllRoutes();
+    }
+
+    async checkAuth(req, res, next) {
+        if (!req.headers.authorization) {
+            return res.status(403).json({
+                error: 'No credentials sent!'
+            });
+        } else {
+            let authToken = req.headers.authorization.slice(7);
+            let id = User.getUserId(authToken + "");
+            if (id) {
+                res.locals.id = id;
+                next();
+            } else {
+                return res.status(401).json({
+                    error: 'Unknown User!'
+                });
+            }
+        }
+
+    }
+
+    loadRoutes() {
+        app.post("/register", async (req, res) => {
+            if (req.body.key != null && req.body.key === conf.registerkey) {
+                if (req.body.username != null) {
+                    await this.connectUser(req.body.id, req.body.username, req.body.avatar);
+                    let result = conn.query("SELECT token FROM users WHERE idUser = ?;", [req.body.id]);
+                    let token;
+                    if (result[0]) {
+                        token = result[0].token;
+                    }
+                    return res.json({
+                        token: token
+                    });
+                }
+            }
+            return res.status(400).json({
+                error: 'Bad Request'
+            });
+        });
+
+        this.router.post("/test", async (req, res) => {
+            res.send(req.body);
+        });
+
+        this.router.post("/load_module", async (req, res) => {
+            if (this.loadModule(req.body.moduleName)) {
+                res.json({
+                    success: "Module " + req.body.moduleName + " loaded successfully !"
+                });
+            } else {
+                res.json({
+                    error: "An error occured when loading the module, module may not exist or can't be reloaded"
+                })
+            }
+        });
+
+        this.router.post("/disable_module", async (req, res) => {
+            if (this.disableModule(req.body.moduleName)) {
+                res.json({
+                    success: "Module " + req.body.moduleName + " disabled successfully !"
+                });
+            } else {
+                res.json({
+                    error: "This module doesn't exist"
+                })
+
+            }
+        });
+
+        this.router.post("/enable_module", async (req, res) => {
+            if (this.enableModule(req.body.moduleName)) {
+                res.json({
+                    success: "Module " + req.body.moduleName + " enabled successfully !"
+                });
+            } else {
+                res.json({
+                    error: "This module doesn't exist"
+                });
+            }
+        });
+
+        this.router.post("/load_all_modules", async (req, res) => {
+            this.loadAllModules();
+            res.json({
+                msg: "Done, check console for errors / warning"
+            });
+        });
+
+        this.router.get("/disabled_modules", async (req, res) => {
+            res.json({
+                msg: this.getDisabledModules()
+            });
         });
     }
 
-    async run(message) {
-        if (Globals.activated === false && Globals.admins.indexOf(message.author.id) === -1) {
-            return;
-        }
-
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let isAdmin = Globals.admins.indexOf(message.author.id) > -1;
-        let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
-        if (!message.content.startsWith(prefix)) return;
-
-        let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
-            return i % 2 ? v : v.split(' ')
-        })).filter(Boolean);
-
-        let command = args.shift();
-        command = command != null ? command.toLowerCase() : "";
-
-
-        if (!message.author.bot && command != null) {
-            let dt = Date.now();
-            PStatistics.logCommand(authorIdentifier, command, Date.now());
-            await this.connectUser(message);
-
-            // exec module corresponding to command
-            await this.executeCommand(message, command, args);
-
-
-            switch (command) {
-                case "prefix":
-                    msg = this.prefixCommand(message, command, args, "en");
-                    break;
-                case "load_module":
-                    if (isAdmin) {
-                        if (this.loadModule(args[0])) {
-                            msg = "Module " + args[0] + " loaded successfully !";
-                        } else {
-                            msg = "An error occured when loading the module, module may not exist or can't be reloaded";
-                        }
-                    }
-                    break;
-                case "disable_module":
-                    if (isAdmin) {
-                        if (this.disableModule(args[0])) {
-                            msg = "Module " + args[0] + " disabled successfully !";
-                        } else {
-                            msg = "This module doesn't exist";
-                        }
-                    }
-                    break;
-                case "enable_module":
-                    if (isAdmin) {
-                        if (this.enableModule(args[0])) {
-                            msg = "Module " + args[0] + " enabled successfully !";
-                        } else {
-                            msg = "This module doesn't exist";
-                        }
-                    }
-                    break;
-                case "load_all_modules":
-                    if (isAdmin) {
-                        this.loadAllModules();
-                        msg = "Done, check console for errors / warning";
-                    }
-                    break;
-                case "disabled_modules":
-                    if (isAdmin) {
-                        msg = this.getDisabledModules();
-                    }
-                    break;
-            }
-
-            this.sendMessage(message, msg);
-            //console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
-        }
+    getAllRoutes() {
+        //console.log(app._router);
     }
 
     getDisabledModules() {
@@ -164,47 +263,6 @@ class ModuleHandler extends GModule {
         return false;
     }
 
-    prefixCommand(message, command, args, lang) {
-        if (message.guild && message.author.id === message.guild.ownerID) {
-            if (args[0]) {
-                if (args[0].length <= 10) {
-                    let oldPrefix = this.getPrefix(message.guild.id);
-                    this.prefixChange(message.guild.id, args[0]);
-                    return new Discord.RichEmbed()
-                        .setColor([0, 128, 128])
-                        .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
-                        .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
-                        .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(message.guild.id));
-                } else {
-                    return Translator.getString(lang, "errors", "prefix_max_length", [10]);
-                }
-            } else {
-                return Translator.getString(lang, "errors", "prefix_undefined");
-            }
-        } else {
-            return Translator.getString(lang, "errors", "prefix_not_owner_server");
-        }
-    }
-
-    prefixChange(idServer, newPrefix) {
-        this.prefixes[idServer] = newPrefix;
-        conn.query("UPDATE serversstats SET serverPrefix = ? WHERE idServer = ?", [newPrefix, idServer]);
-    }
-
-    loadPrefixes() {
-        let prefixes = conn.query("SELECT idServer, serverPrefix FROM serversstats WHERE serverPrefix != '::'");
-        for (let result of prefixes) {
-            this.prefixes[result.idServer] = result.serverPrefix;
-        }
-    }
-
-    getPrefix(idServer) {
-        if (this.prefixes[idServer]) {
-            return this.prefixes[idServer];
-        }
-        return this.prefix;
-    }
-
     disableModule(moduleName) {
         if (moduleName != null) {
             moduleName = moduleName.split(".")[0];
@@ -227,43 +285,15 @@ class ModuleHandler extends GModule {
         return false;
     }
 
-    async executeCommand(message, command, args) {
-        let mod = this.commandsReact[command];
-        if (mod != null) {
-            if (mod.isActive) {
-                try {
-                    await mod.run(message, command, args);
-                } catch (err) {
-                    if (!this.devMode) {
-                        mod.isActive = false;
-                        let adminTell = "A module has been deactivated.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
-                        message.channel.send("Due to an error, this module is deactivated. The following commands will be disabled : " + mod.commands.toString()).catch((e) => null);
-                        message.client.users.get("241564725870198785").send(adminTell).catch((e) => console.log(adminTell));
-                    }
-                    throw err;
-                }
-            } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
-            }
-        }
-    }
+    async connectUser(id, username, avatar) {
+        let authorIdentifier = id;
 
-    async connectUser(message) {
-        let authorIdentifier = message.author.id;
-        let lang;
         if (!Globals.connectedUsers[authorIdentifier]) {
-            let characterLoadingMessage = null;
-            try {
-                characterLoadingMessage = await message.channel.send("<a:loading:393852367751086090> " + Translator.getString("en", "other", "loading_character"));
-            } catch (err) {}
-
             // Load User
-            Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, message.author.tag, message.author.avatarURL);
+            Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, username, avatar);
             Globals.connectedUsers[authorIdentifier].loadUser();
 
             Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
-
-            lang = Globals.connectedUsers[authorIdentifier].getLang();
 
             // Load Guild
             if (Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
@@ -272,22 +302,9 @@ class ModuleHandler extends GModule {
                     Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild].loadGuild(Globals.connectedUsers[authorIdentifier].character.idGuild);
                 }
             }
-            if (characterLoadingMessage != null) {
-                try {
-                    await characterLoadingMessage.edit("<:check:314349398811475968> " + Translator.getString(lang, "other", "character_loaded"));
-                } catch (err) {}
-            }
 
-        } else {
-            lang = Globals.connectedUsers[authorIdentifier].getLang();
         }
-
-
-
         if (Globals.connectedUsers[authorIdentifier].isNew) {
-            message.author.send(Translator.getString(lang, "help_panel", "tutorial", [Globals.help.tutorialLink])).catch((e) => {
-                console.log(e)
-            });
             Globals.connectedUsers[authorIdentifier].isNew = false;
         }
 

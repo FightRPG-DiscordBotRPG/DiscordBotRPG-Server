@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 class CraftingModule extends GModule {
     constructor() {
@@ -27,151 +28,172 @@ class CraftingModule extends GModule {
         this.endLoading("Crafting");
     }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        //let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        //let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        //let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+    init() {
+        this.router = express.Router();
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
+        // Add to router needed things
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_job", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        switch (command) {
-            case "craftlist":
-                if (craftingbuilding != null) {
-                    msg = craftingbuilding.craftingListToEmbed(args[0], lang);
+    loadRoutes() {
+        this.router.get("/craftlist/:page?", async (req, res) => {
+            let data = {};
+
+            if (res.locals.craftingbuilding != null) {
+                data = res.locals.craftingbuilding.craftingListToApi(req.params.page, res.locals.lang);
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
+            }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.get("/craftshow/:idCraft?", async (req, res) => {
+            let data = {};
+
+            if (res.locals.craftingbuilding != null) {
+                let craft = res.locals.craftingbuilding.getCraft(req.params.idCraft);
+                if (craft != null) {
+                    data.craft = craft.toApi(res.locals.lang);
                 } else {
-                    msg = Translator.getString(lang, "errors", "craft_no_building");
+                    data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_exist");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
+            }
 
-            case "craftshow":
-                if (craftingbuilding != null) {
-                    msg = craftingbuilding.craftToEmbed(args[0], lang);
-                } else {
-                    msg = Translator.getString(lang, "errors", "craft_no_building");
-                }
-                break;
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-            case "craft":
-                if (craftingbuilding != null) {
-                    // ToCraft = Craft type
-                    if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                        /**
-                         * @type {Craft}
-                         */
-                        let toCraft = craftingbuilding.getCraft(args[0]);
-                        if (toCraft) {
-                            if (Globals.connectedUsers[authorIdentifier].character.isCraftable(toCraft)) {
-                                if (Globals.connectedUsers[authorIdentifier].character.craft(toCraft)) {
-                                    msg = Translator.getString(lang, "craft", "craft_done", [Translator.getString(lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n";
+        this.router.post("/craft", async (req, res) => {
+            let data = {};
 
-                                    Globals.connectedUsers[authorIdentifier].character.waitForNextCraft(toCraft.itemInfo.idRarity);
+            if (res.locals.craftingbuilding != null) {
+                // ToCraft = Craft type
+                if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                    /**
+                     * @type {Craft}
+                     */
+                    let toCraft = res.locals.craftingbuilding.getCraft(req.body.idCraft);
+                    if (toCraft) {
+                        if (Globals.connectedUsers[res.locals.id].character.isCraftable(toCraft)) {
+                            if (Globals.connectedUsers[res.locals.id].character.craft(toCraft)) {
+                                data.success = Translator.getString(res.locals.lang, "craft", "craft_done", [Translator.getString(res.locals.lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n";
 
-                                    PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
-                                    // Seulement s'il n'est pas niveau max
-                                    if (Globals.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
-                                        let craftBonus = currentArea.getAllBonuses().xp_craft;
-                                        let craftXP = CraftSystem.getXP(Globals.connectedUsers[authorIdentifier].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
-                                        let craftXPBonus = craftBonus.getPercentageValue() * craftXP;
-                                        let totalCraftXP = craftXP + craftXPBonus;
+                                Globals.connectedUsers[res.locals.id].character.waitForNextCraft(toCraft.itemInfo.idRarity);
 
-                                        let craftCraftUP = Globals.connectedUsers[authorIdentifier].character.addCraftXP(totalCraftXP);
+                                PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
+                                // Seulement s'il n'est pas niveau max
+                                if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
+                                    let craftBonus = res.locals.currentArea.getAllBonuses().xp_craft;
+                                    let craftXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
+                                    let craftXPBonus = craftBonus.getPercentageValue() * craftXP;
+                                    let totalCraftXP = craftXP + craftXPBonus;
 
-                                        msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCraftXP, craftXPBonus]) + "\n";
+                                    let craftCraftUP = Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCraftXP);
 
-                                        if (craftCraftUP > 0) {
-                                            msg += Translator.getString(lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
-                                        }
+                                    data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCraftXP, craftXPBonus]) + "\n";
+
+                                    if (craftCraftUP > 0) {
+                                        data.success += Translator.getString(res.locals.lang, "resources", craftCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [craftCraftUP]);
                                     }
-
-                                } else {
-                                    msg = Translator.getString(lang, "errors", "craft_dont_have_required_items");
                                 }
+
                             } else {
-                                msg = Translator.getString(lang, "errors", "craft_dont_have_required_level", [toCraft.itemInfo.minLevel]);
+                                data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_have_required_items");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "craft_dont_exist");
+                            data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_have_required_level", [toCraft.itemInfo.minLevel]);
                         }
                     } else {
-                        msg = Translator.getString(lang, "errors", "craft_tired_wait_x_seconds", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                        data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_exist");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "craft_no_building");
+                    data.error = Translator.getString(res.locals.lang, "errors", "craft_tired_wait_x_seconds", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
                 }
-                break;
-            case "collect":
-                PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_job", 1);
-                let idToCollect = parseInt(args[0], 10);
-                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                    if (idToCollect && Number.isInteger(idToCollect)) {
-                        let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
-                        //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idToCollect);
-                        if (resourceToCollect) {
-                            let collectBonuses = currentArea.getAllBonuses();
-                            Globals.connectedUsers[authorIdentifier].character.waitForNextResource(resourceToCollect.idRarity);
-                            idToCollect = Globals.connectedUsers[authorIdentifier].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                            let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[authorIdentifier].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity);
-                            msg += Translator.getString(lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
-                            if (numberItemsCollected > 0) {
-                                if (idToCollect) {
-                                    Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idToCollect, numberItemsCollected);
-                                } else {
-                                    let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem])["insertId"];
-                                    Globals.connectedUsers[authorIdentifier].character.inv.addToInventory(idInsert, numberItemsCollected);
-                                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
+            }
 
-                                PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-                                msg += Translator.getString(lang, "resources", "collected_x_resource", [numberItemsCollected, Translator.getString(lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
+        this.router.post("/collect", async (req, res) => {
+            let data = {};
+
+            let idToCollect = parseInt(req.body.idResource, 10);
+            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                if (idToCollect && Number.isInteger(idToCollect)) {
+                    let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
+                    //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
+                    if (resourceToCollect) {
+                        let collectBonuses = res.locals.currentArea.getAllBonuses();
+                        Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity);
+                        idToCollect = Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity);
+                        data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
+                        if (numberItemsCollected > 0) {
+                            if (idToCollect) {
+                                Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idToCollect, numberItemsCollected);
                             } else {
-                                msg += Translator.getString(lang, "resources", "not_collected") + "\n";
-                            }
-                            // Si le joueur n'est pas max level en craft
-                            if (Globals.connectedUsers[authorIdentifier].character.getCraftLevel() < Globals.maxLevel) {
-                                let collectXP = CraftSystem.getXP(Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), Globals.connectedUsers[authorIdentifier].character.getCraftLevel(), resourceToCollect.idRarity, true) * Globals.collectTriesOnce;
-                                let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
-                                let totalCollectXP = collectXP + collectXPBonus;
-                                let collectCraftUP = Globals.connectedUsers[authorIdentifier].character.addCraftXP(totalCollectXP);
-                                msg += Translator.getString(lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
-                                if (collectCraftUP > 0) {
-                                    msg += Translator.getString(lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
-                                }
+                                let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem])["insertId"];
+                                Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idInsert, numberItemsCollected);
                             }
 
+                            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
+
+                            data.success += Translator.getString(res.locals.lang, "resources", "collected_x_resource", [numberItemsCollected, Translator.getString(res.locals.lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
                         } else {
-                            // error object don't exist
-                            msg = Translator.getString(lang, "resources", "resource_dont_exist");
+                            data.success += Translator.getString(res.locals.lang, "resources", "not_collected") + "\n";
                         }
+                        // Si le joueur n'est pas max level en craft
+                        if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
+                            let collectXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.getCraftLevel(), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), resourceToCollect.idRarity, true) * Globals.collectTriesOnce;
+                            let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
+                            let totalCollectXP = collectXP + collectXPBonus;
+                            let collectCraftUP = Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCollectXP);
+                            data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
+                            if (collectCraftUP > 0) {
+                                data.success += Translator.getString(res.locals.lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+                            }
+                        }
+
                     } else {
-                        msg = Translator.getString(lang, "errors", "collect_enter_id_to_collect");
+                        // error object don't exist
+                        data.error = Translator.getString(res.locals.lang, "resources", "resource_dont_exist");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "collect_tired_wait_x_seconds", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                    data.error = Translator.getString(res.locals.lang, "errors", "collect_enter_id_to_collect");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "collect_tired_wait_x_seconds", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            }
 
-            case "resources":
-                msg = Translator.getString(lang, "area", "follow_the_link") + "\n";
-                msg += "http://api.fight-rpg.com/areas/resources?lang=" + lang;
-                break;
-        }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-        this.sendMessage(message, msg);
+        this.router.get("/resources", async (req, res) => {
+            let data = {};
+
+            data.success = Translator.getString(lang, "area", "follow_the_link") + "\n";
+            data.success += "http://api.fight-rpg.com/helpers/areas/resources?lang=" + lang;
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+
+
     }
 }
 

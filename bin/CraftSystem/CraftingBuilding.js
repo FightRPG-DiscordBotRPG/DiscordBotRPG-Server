@@ -68,6 +68,31 @@ class CraftingBuilding {
         return str;
     }
 
+    craftingListToApi(page = 1, lang) {
+        let res = this.getCraftingList(page);
+        let toApi = {
+            page: res.page,
+            maxPage: res.maxPage > 0 ? res.maxPage : 1,
+            crafts: {},
+        }
+        let crafts = res.res;
+        let index = 1;
+        let indexOffset = (res.page - 1) * 10;
+
+        for (let craft of crafts) {
+            let craftToApi = {};
+            let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
+            craftToApi.name = itemName;
+            craftToApi.type = Translator.getString(lang, "item_types", craft.nomType);
+            craftToApi.minLevel = craft.minLevel < this.getMinLevel() ? this.getMinLevel() : craft.minLevel;
+            craftToApi.maxLevel = craft.maxLevel > this.getMaxLevel() ? this.getMaxLevel() : craft.maxLevel;
+            craftToApi.rarity = Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]);
+            toApi.crafts[(index + indexOffset)] = craftToApi;
+            index++;
+        }
+        return toApi;
+    }
+
     craftToEmbed(idCraft, lang) {
         let craft = this.getCraft(idCraft);
         if (craft != null) {
@@ -75,6 +100,7 @@ class CraftingBuilding {
         }
         return Translator.getString(lang, "errors", "craft_dont_exist");
     }
+
 
     getCraft(idCraft) {
         idCraft = this.getRealIdCraft(idCraft);

@@ -166,6 +166,14 @@ class CharacterInventory {
         return str;
     }
 
+    toApi(page, lang) {
+        let res = this.getAllItemsAtThisPage(page);
+        for (let item in res.items) {
+            res.items[item] = res.items[item].toApiLight(lang);
+        }
+        return res;
+    }
+
     /**
      * 
      * @param {number} idEmplacement 
@@ -307,49 +315,6 @@ class CharacterInventory {
             return res[0].idItem;
         }
         return 0;
-    }
-
-    /*
-     *      API CALLS
-     */
-    apiGetInv(page) {
-        page = page ? page - 1 : 0;
-        let keys = Object.keys(this.objects);
-        let apiReturn = {
-            nbrPages: 0,
-            inv: {}
-        };
-        if (keys.length > 0) {
-            // Doing pagination
-            let paginated = keys.slice(page * 8, (page + 1) * 8);
-            if (paginated.length === 0) {
-                page = 0;
-                paginated = keys.slice(page * 8, (page + 1) * 8)
-            }
-
-            // Create string for each objects
-            for (let i of paginated) {
-                apiReturn.inv[i] = this.objects[i].toApiLight();
-                /*{
-                    name: this.objects[i].name,
-                    desc: this.objects[i].desc,
-                    image: "http://192.168.1.20:8080/" + "images/items/" + this.objects[i].image + ".png",
-                    rarity: this.objects[i].rarity,
-                    rarityColor: this.objects[i].rarityColor,
-                    level: this.objects[i].level,
-                    typeName: this.objects[i].typeName,
-                    equipable: this.objects[i].equipable === 1 ? true : false,
-                    number: this.objects[i].number,
-                };*/
-            }
-        }
-        let nbrOfPages = keys.length > 0 ? Math.ceil(keys.length / 8) : 1;
-        apiReturn.nbrPages = nbrOfPages;
-        return apiReturn;
-    }
-
-    apiGetItem(id) {
-        return this.objects[id].toApi();
     }
 
 }

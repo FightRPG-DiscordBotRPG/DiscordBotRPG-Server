@@ -45,13 +45,12 @@ class Translator {
      * @returns {string} List of available language Localized
      */
     static getAvailableLanguages(lang) {
-        let tr = "";
-        let count = 0;
+        let data = {};
         for (let i in this.translations) {
-            count++;
-            tr += this.getString(lang, "languages", i) + " (" + i + ")" + (count == this.nbOfTranslations ? "" : ", ");
+            data[i] = this.getString(lang, "languages", i);
+            //+= this.getString(lang, "languages", i) + " (" + i + ")" + (count == this.nbOfTranslations ? "" : ", ");
         }
-        return tr;
+        return data;
     }
 
     static load(callback) {

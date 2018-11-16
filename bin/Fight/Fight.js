@@ -7,10 +7,11 @@ class Fight {
      * de worldEntities
      */
 
-    constructor(entities1, entities2) {
+    constructor(entities1, entities2, lang = "en") {
         /**
          * @type {Array<WorldEntity>}
          */
+        this.lang = lang;
         this.entities = [
             entities1,
             entities2
@@ -81,8 +82,8 @@ class Fight {
         this.summary.rounds.push({
             roundType: attacker._type,
             roundEntitiesIndex: indexEntities,
-            attackerName: attacker.name,
-            defenderName: defender.name,
+            attackerName: attacker.getName(this.lang),
+            defenderName: defender.getName(this.lang),
             attackerId: attacker.id,
             defenderId: defender.id,
             critical: critical,

@@ -22,7 +22,7 @@ class AreaTournament {
 
     initDatabase() {
         let res = conn.query("SELECT * FROM conquesttournamentinfo WHERE idArea = ?;", [this.idArea]);
-        if(!res[0]) {
+        if (!res[0]) {
             conn.query("INSERT INTO conquesttournamentinfo VALUES (?, 0, 0, NULL);", [this.idArea]);
         }
     }
@@ -37,7 +37,7 @@ class AreaTournament {
         date.setUTCHours(0);
         date.setUTCDate(date.getUTCDate() + 1);
         let res = conn.query("SELECT nextTournament FROM conquesttournamentinfo WHERE idArea = ?", [idArea])[0];
-        if(res && res.nextTournament != null) {
+        if (res && res.nextTournament != null) {
             date.setTime(res.nextTournament);
         }
         return date;
@@ -55,8 +55,8 @@ class AreaTournament {
         console.log((date.getTime() > actualDate.getTime() ? date.getTime() - actualDate.getTime() : 1000));*/
         //process.exit();
         conn.query("UPDATE conquesttournamentinfo SET nextTournament = ? WHERE idArea = ?;", [null, this.idArea]);
-        setTimeout(() => {            
-            this.startTournament(); 
+        setTimeout(() => {
+            this.startTournament();
         }, (date.getTime() > actualDate.getTime() ? date.getTime() - actualDate.getTime() : 1000));
     }
 
@@ -67,15 +67,15 @@ class AreaTournament {
     async startTournament() {
         this.isStarted = true;
         let inscriptions = conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idArea = ?", [this.idArea]);
-        if(inscriptions.length == 0) {
+        if (inscriptions.length == 0) {
             console.log("Area : " + this.idArea + ", No guilds registered, mission abort ! ");
             this.scheduleTournament();
             return;
         }
 
         console.log("Starting tournament for the area : " + this.idArea);
-        
-        for(let inscription of inscriptions) {
+
+        for (let inscription of inscriptions) {
             this.areasGuildsIncriptions.push(inscription.idGuild);
         }
         this.calculMaxRounds(this.areasGuildsIncriptions.length);
@@ -86,7 +86,7 @@ class AreaTournament {
         this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.areasGuildsIncriptions, this.idArea);
 
         await this.doFights();
-        
+
         this.endTournament();
 
 
@@ -102,7 +102,7 @@ class AreaTournament {
      */
     resetTournament() {
         conn.query("UPDATE conquesttournamentinfo SET started = 0, actualRound = 0 WHERE idArea = ?", [this.idArea]);
-        conn.query("DELETE FROM conquesttournamentrounds WHERE idArea = ?", [this.idArea]); 
+        conn.query("DELETE FROM conquesttournamentrounds WHERE idArea = ?", [this.idArea]);
         this.actualRound = 0;
         this.maxRounds = 0;
         this.rounds = {};
@@ -123,7 +123,7 @@ class AreaTournament {
      */
     async doFights() {
         await this.rounds[this.actualRound].doFights();
-        if(this.actualRound < this.maxRounds) {
+        if (this.actualRound < this.maxRounds) {
             this.actualRound++;
             conn.query("UPDATE conquesttournamentinfo SET actualRound = ? WHERE idArea = ?;", [this.actualRound, this.idArea]);
             this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.rounds[this.actualRound - 1].winners, this.idArea);
@@ -138,7 +138,7 @@ class AreaTournament {
     calculMaxRounds() {
         let n = this.areasGuildsIncriptions.length;
         let count = 0;
-        while(n > 0) {
+        while (n > 0) {
             n = Math.floor(n / 2);
             count++;
         }
@@ -173,7 +173,7 @@ class AreaTournament {
      * @param {string} lang 
      */
     static toDiscordEmbed(idArea, lang) {
-        if(AreaTournament.haveStartedByIdArea(idArea)) {
+        if (AreaTournament.haveStartedByIdArea(idArea)) {
             return Translator.getString(lang, "area", "conquest_ongoing");
         }
 
@@ -189,14 +189,14 @@ class AreaTournament {
         return conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea])[0].total;
     }
 
-    
+
     /**
      * End Tournament
      * then reset it
      */
     endTournament() {
         let oldOwner = Area.staticGetOwnerID(this.idArea);
-        if(oldOwner != this.rounds[this.maxRounds].winners[0]) {
+        if (oldOwner != this.rounds[this.maxRounds].winners[0]) {
             Area.resetBonuses(this.idArea);
             Area.oneLessLevel(this.idArea);
         }

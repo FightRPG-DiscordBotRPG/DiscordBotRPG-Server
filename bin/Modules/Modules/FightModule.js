@@ -18,6 +18,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const Character = require("../../Character");
+const express = require("express");
 
 
 class FightModule extends GModule {
@@ -29,107 +30,117 @@ class FightModule extends GModule {
         this.endLoading("Fight");
     }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+    init() {
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
-
-        switch (command) {
-            case "fight":
-                //Globals.fightManager.fightPvE(Globals.connectedUsers[authorIdentifier], message, args[0]);
-                let idEnemy = parseInt(args[0], 10);
-                if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                    if (idEnemy != null && Number.isInteger(idEnemy)) {
-                        let canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy, Globals.connectedUsers[authorIdentifier].character.getStat("perception"));
-                        let enemies = [];
-                        if (!canIFightTheMonster) {
-                            enemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy);
-                        } else {
-                            enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idEnemy);
-                        }
-                        Globals.fightManager.fightPvE([Globals.connectedUsers[authorIdentifier].character], enemies, message, canIFightTheMonster, lang);
-                        //Globals.fightManager.fightPvE(Globals.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
-
+    loadRoutes() {
+        this.router.post("/monster", async (req, res) => {
+            let data = {}
+            let idEnemy = parseInt(req.body.idMonster, 10);
+            if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                if (idEnemy != null && Number.isInteger(idEnemy)) {
+                    let canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                    let enemies = [];
+                    if (!canIFightTheMonster) {
+                        enemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
                     } else {
-                        // Error Message
-                        msg = Translator.getString(lang, "errors", "fight_enter_id_monster");
+                        enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
+                    }
+                    let response = Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
+                    if (response.error) {
+                        data.error = response.error;
+                    } else {
+                        data = response;
+                    }
+
+                } else {
+                    // Error Message
+                    data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
+            }
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/arena", async (req, res) => {
+            let data = {}
+            let idOtherPlayerCharacter = 0;
+            let mId = -1;
+            let response;
+            if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                // Ici on récupère l'id
+                if (req.body.mention) {
+                    mId = req.body.mention;
+                } else if (req.body.idCharacter) {
+                    idOtherPlayerCharacter = parseInt(req.body.idCharacter, 10);
+                    if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
+                        mId = Leaderboard.idOf(idOtherPlayerCharacter);
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "fight_impossible_in_town");
+                    // useless
+                    data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_choose_enemy");
                 }
-                break;
-
-
-            case "arena":
-                firstMention = mentions.first();
-                let idOtherPlayerCharacter = 0;
-                let mId = -1;
-                if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                    // Ici on récupère l'id
-                    if (firstMention) {
-                        mId = firstMention.id;
-                    } else if (args[0]) {
-                        idOtherPlayerCharacter = parseInt(args[0], 10);
-                        if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                            mId = Leaderboard.idOf(idOtherPlayerCharacter);
-                        }
-                    } else {
-                        // useless
-                        msg = Translator.getString(lang, "errors", "fight_pvp_choose_enemy");
-                    }
-                    // Ici on lance le combat si connecté
-                    if (Globals.connectedUsers[mId]) {
-                        if (authorIdentifier !== mId) {
-                            Globals.fightManager.fightPvP([Globals.connectedUsers[authorIdentifier].character], [Globals.connectedUsers[mId].character], message, lang);
+                // Ici on lance le combat si connecté
+                if (Globals.connectedUsers[mId]) {
+                    if (res.locals.id !== mId) {
+                        response = Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [Globals.connectedUsers[mId].character], res.locals.id, res.locals.lang);
+                        if (response.error != null) {
+                            data.error = response.error;
                         } else {
-                            msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself");
+                            data = response;
                         }
-
                     } else {
-                        if (mId != -1 && User.exist(mId)) {
-                            if (authorIdentifier !== mId) {
-                                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                                    let notConnectedEnemy = new User(mId);
-                                    notConnectedEnemy.loadUser();
-                                    notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
+                        data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
+                    }
 
-                                    Globals.fightManager.fightPvP([Globals.connectedUsers[authorIdentifier].character], [notConnectedEnemy.character], message, lang);
+                } else {
+                    if (mId != -1 && User.exist(mId)) {
+                        if (res.locals.id !== mId) {
+                            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                                let notConnectedEnemy = new User(mId);
+                                notConnectedEnemy.loadUser();
+                                notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
+
+                                response = Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [notConnectedEnemy.character], res.locals.id, res.locals.lang);
+
+                                if (response.error != null) {
+                                    data.error = response.error;
                                 } else {
-                                    msg = Translator.getString(lang, "errors", "generic_tired", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
+                                    data = response;
                                 }
                             } else {
-                                msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_yourself");
+                                data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "fight_pvp_not_same_area");
+                            data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
                         }
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_not_same_area");
                     }
-                } else {
-                    msg = Translator.getString(lang, "errors", "fight_pvp_cant_fight_here");
                 }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_here");
+            }
 
-                break;
-        }
 
-        this.sendMessage(message, msg);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
     }
+
 }
 
 module.exports = FightModule;

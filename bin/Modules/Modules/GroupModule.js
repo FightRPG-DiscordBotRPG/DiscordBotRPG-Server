@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class GroupModule extends GModule {
@@ -27,245 +28,301 @@ class GroupModule extends GModule {
         this.init();
         this.endLoading("Group");
     }
+    init() {
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_groups", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+    loadRoutes() {
+        this.router.post("/notifications/mute", async (req, res) => {
+            let data = {}
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_groups", 1);
+            Globals.connectedUsers[res.locals.id].muteGroup(true);
+            data.success = Translator.getString(res.locals.lang, "group", "now_muted");
 
-        switch (command) {
-            case "grpmute":
-                Globals.connectedUsers[authorIdentifier].muteGroup(true);
-                msg = Translator.getString(lang, "group", "now_muted")
-                break;
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-            case "grpunmute":
-                Globals.connectedUsers[authorIdentifier].muteGroup(false);
-                msg = Translator.getString(lang, "group", "now_unmuted");
-                break;
+        this.router.post("/notifications/unmute", async (req, res) => {
+            let data = {}
 
-            case "grpkick":
-                if (args[0]) {
-                    if (group != null) {
-                        if (!group.doingSomething) {
-                            if (group.leader == Globals.connectedUsers[authorIdentifier]) {
-                                let grptokick = args[0];
-                                if (grptokick != Globals.connectedUsers[authorIdentifier].username) {
-                                    if (group.kick(grptokick, message.client)) {
-                                        msg = Translator.getString(lang, "group", "user_kicked", [grptokick]);
-                                    } else {
-                                        if (group.cancelInvite(grptokick)) {
-                                            msg = Translator.getString(lang, "group", "invite_cancel", [grptokick]);
-                                        } else {
-                                            msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [grptokick]);
-                                        }
-                                    }
-                                } else {
-                                    msg = Translator.getString(lang, "errors", "group_cant_kick_yourself");
-                                }
-                            } else {
-                                msg = Translator.getString(lang, "errors", "group_not_leader");
-                            }
-                        } else {
-                            msg = Translator.getString(lang, "errors", "group_occupied");
-                        }
-                    } else {
-                        msg = Translator.getString(lang, "errors", "group_not_in_group");
-                    }
-                } else {
-                    msg = Translator.getString(lang, "errors", "group_user_kick_empty_name");
-                }
-                break;
-            case "grpswap":
-                if (args[0]) {
-                    if (group != null) {
-                        if (!group.doingSomething) {
-                            if (group.leader == Globals.connectedUsers[authorIdentifier]) {
-                                let grptoswap = args[0];
-                                if (grptoswap != Globals.connectedUsers[authorIdentifier].getUsername()) {
-                                    if (group.swap(grptoswap, message.client)) {
-                                        msg = Translator.getString(lang, "group", "user_swaped", [grptoswap]);
-                                    } else {
-                                        msg = Translator.getString(lang, "errors", "group_user_not_in_your_group", [grptoswap]);
-                                    }
-                                } else {
-                                    msg = Translator.getString(lang, "errors", "group_cant_swap_yourself");
-                                }
-                            } else {
-                                msg = Translator.getString(lang, "errors", "group_not_leader");
-                            }
-                        } else {
-                            msg = Translator.getString(lang, "errors", "group_occupied");
-                        }
-                    } else {
-                        msg = Translator.getString(lang, "errors", "group_not_in_group");
-                    }
-                } else {
-                    msg = Translator.getString(lang, "errors", "group_user_swap_empty_name");
-                }
-                break;
-            case "grpleave":
+            Globals.connectedUsers[res.locals.id].muteGroup(false);
+            data.success = Translator.getString(res.locals.lang, "group", "now_unmuted");
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/kick", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            if (req.body.username) {
                 if (group != null) {
                     if (!group.doingSomething) {
-                        group.playerLeave(Globals.connectedUsers[authorIdentifier], message.client);
-                        msg = Translator.getString(lang, "group", "you_left");
+                        if (group.leader == Globals.connectedUsers[res.locals.id]) {
+                            let grptokick = req.body.username;
+                            if (grptokick != Globals.connectedUsers[res.locals.id].getUsername()) {
+                                if (group.kick(grptokick, null)) {
+                                    data.success = Translator.getString(res.locals.lang, "group", "user_kicked", [grptokick]);
+                                } else {
+                                    if (group.cancelInvite(grptokick)) {
+                                        data.success = Translator.getString(res.locals.lang, "group", "invite_cancel", [grptokick]);
+                                    } else {
+                                        data.error = Translator.getString(res.locals.lang, "errors", "group_user_not_in_your_group", [grptokick]);
+                                    }
+                                }
+                            } else {
+                                data.error = Translator.getString(res.locals.lang, "errors", "group_cant_kick_yourself");
+                            }
+                        } else {
+                            data.error = Translator.getString(res.locals.lang, "errors", "group_not_leader");
+                        }
                     } else {
-                        msg = Translator.getString(lang, "errors", "group_occupied");
+                        data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_user_kick_empty_name");
+            }
 
-            case "grpinvite":
-                firstMention = mentions.first();
-                // Si pas dans un groupe le créer
-                if (group == null) {
-                    Globals.connectedUsers[authorIdentifier].character.group = new Group(Globals.connectedUsers[authorIdentifier]);
-                }
-                group = Globals.connectedUsers[authorIdentifier].character.group;
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-                if (group.leader === Globals.connectedUsers[authorIdentifier]) {
+        this.router.post("/swap", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            if (req.body.username) {
+                if (group != null) {
                     if (!group.doingSomething) {
-                        if (group.nbOfInvitedPlayers() < 5) {
-                            if (firstMention) {
-                                if (firstMention.id != authorIdentifier) {
-                                    if (Globals.connectedUsers[firstMention.id]) {
-                                        if (Globals.connectedUsers[firstMention.id].character.group === null) {
-                                            if (Globals.connectedUsers[firstMention.id].character.pendingPartyInvite == null) {
-                                                group.invite(Globals.connectedUsers[firstMention.id]);
-                                                firstMention.send(Translator.getString(Globals.connectedUsers[firstMention.id].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[authorIdentifier].username, "::grpaccept", "::grpdecline"])).catch((e) => null);
-                                                msg = Translator.getString(lang, "group", "invitation_sent");
-                                            } else {
-                                                msg = Translator.getString(lang, "errors", "group_invite_waiting");
-                                            }
+                        if (group.leader == Globals.connectedUsers[res.locals.id]) {
+                            let grptoswap = req.body.username;
+                            if (grptoswap != Globals.connectedUsers[res.locals.id].getUsername()) {
+                                if (group.swap(grptoswap, null)) {
+                                    data.success = Translator.getString(res.locals.lang, "group", "user_swaped", [grptoswap]);
+                                } else {
+                                    data.error = Translator.getString(res.locals.lang, "errors", "group_user_not_in_your_group", [grptoswap]);
+                                }
+                            } else {
+                                data.error = Translator.getString(res.locals.lang, "errors", "group_cant_swap_yourself");
+                            }
+                        } else {
+                            data.error = Translator.getString(res.locals.lang, "errors", "group_not_leader");
+                        }
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_user_swap_empty_name");
+            }
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/leave", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            if (group != null) {
+                if (!group.doingSomething) {
+                    group.playerLeave(Globals.connectedUsers[res.locals.id], null);
+                    data.success = Translator.getString(res.locals.lang, "group", "you_left");
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
+            }
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/invite", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+
+
+            // Si pas dans un groupe le créer
+            if (group == null) {
+                Globals.connectedUsers[res.locals.id].character.group = new Group(Globals.connectedUsers[res.locals.id]);
+            }
+            group = Globals.connectedUsers[res.locals.id].character.group;
+
+            if (group.leader === Globals.connectedUsers[res.locals.id]) {
+                if (!group.doingSomething) {
+                    if (group.nbOfInvitedPlayers() < 5) {
+                        if (req.body.mention) {
+                            if (req.body.mention != res.locals.id) {
+                                if (Globals.connectedUsers[req.body.mention]) {
+                                    if (Globals.connectedUsers[req.body.mention].character.group === null) {
+                                        if (Globals.connectedUsers[req.body.mention].character.pendingPartyInvite == null) {
+                                            group.invite(Globals.connectedUsers[req.body.mention]);
+                                            Globals.connectedUsers[req.body.mention].groupTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[res.locals.id].username, "::grpaccept", "::grpdecline"]));
+                                            data.success = Translator.getString(res.locals.lang, "group", "invitation_sent");
                                         } else {
-                                            msg = Translator.getString(lang, "errors", "group_invite_already_in_group");
+                                            data.error = Translator.getString(res.locals.lang, "errors", "group_invite_waiting");
                                         }
                                     } else {
-                                        msg = Translator.getString(lang, "errors", "group_user_not_connected");
+                                        data.error = Translator.getString(res.locals.lang, "errors", "group_invite_already_in_group");
                                     }
                                 } else {
-                                    msg = Translator.getString(lang, "errors", "group_cant_invite_yourself");
+                                    data.error = Translator.getString(res.locals.lang, "errors", "group_user_not_connected");
                                 }
                             } else {
-                                // error
-                                msg = "Use the command like this \"::grpinvite @someone\"";
+                                data.error = Translator.getString(res.locals.lang, "errors", "group_cant_invite_yourself");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "group_cant_invite_more_than", [5]);
+                            // error
+                            data.error = "Use the command like this \"::grpinvite @someone\"";
                         }
-
                     } else {
-                        msg = Translator.getString(lang, "errors", "group_occupied");
+                        data.error = Translator.getString(res.locals.lang, "errors", "group_cant_invite_more_than", [5]);
                     }
 
                 } else {
-                    msg = Translator.getString(lang, "errors", "group_not_leader");
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
                 }
-                break;
 
-            case "grpaccept":
-                if (group == null) {
-                    if (pending != null) {
-                        if (!pending.doingSomething) {
-                            if (!pending.isFull()) {
-                                pending.addPlayer(Globals.connectedUsers[authorIdentifier], message.client);
-                                msg = Translator.getString(lang, "group", "you_joined");
-                            } else {
-                                msg = Translator.getString(lang, "errors", "group_full_join");
-                            }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_not_leader");
+            }
+
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/accept", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            let pending = res.locals.pending;
+
+
+            if (group == null) {
+                if (pending != null) {
+                    if (!pending.doingSomething) {
+                        if (!pending.isFull()) {
+                            pending.addPlayer(Globals.connectedUsers[res.locals.id], null);
+                            data.success = Translator.getString(res.locals.lang, "group", "you_joined");
                         } else {
-                            msg = Translator.getString(lang, "errors", "group_occupied");
+                            data.error = Translator.getString(res.locals.lang, "errors", "group_full_join");
                         }
-
                     } else {
-                        msg = Translator.getString(lang, "errors", "group_you_dont_receive_invitation");
+                        data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
                     }
-                } else {
-                    msg = Translator.getString(lang, "errors", "group_already_in_group");
-                }
-                break;
 
-            case "grpdecline":
-                if (group == null) {
-                    if (pending != null) {
-                        pending.playerDeclinedBroadcast(Globals.connectedUsers[authorIdentifier], message.client);
-                        Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite = null;
-                        msg = Translator.getString(lang, "group", "you_declined");
-                    } else {
-                        msg = Translator.getString(lang, "errors", "group_you_dont_receive_invitation");
-                    }
                 } else {
-                    msg = Translator.getString(lang, "errors", "group_already_in_group");
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_you_dont_receive_invitation");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_already_in_group");
+            }
 
-            case "grp":
-                if (group != null) {
-                    msg = group.toStr(lang);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+
+        this.router.post("/decline", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            let pending = res.locals.pending;
+
+
+            if (group == null) {
+                if (pending != null) {
+                    pending.playerDeclinedBroadcast(Globals.connectedUsers[res.locals.id], null);
+                    Globals.connectedUsers[res.locals.id].character.pendingPartyInvite = null;
+                    data.success = Translator.getString(res.locals.lang, "group", "you_declined");
                 } else {
-                    msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_you_dont_receive_invitation");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_already_in_group");
+            }
 
-            case "grpfight":
-                PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
-                let idEnemyGroup = parseInt(args[0], 10);
-                if (group != null) {
-                    if (group.leader === Globals.connectedUsers[authorIdentifier]) {
-                        if (!group.doingSomething) {
-                            if (group.allInSameArea()) {
-                                if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                                    if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
-                                        let grpEnemies = [];
-                                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idEnemyGroup);
-                                        if (grpEnemies == null) {
-                                            grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[authorIdentifier].character.getIdArea(), idEnemyGroup);
-                                        }
-                                        Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, message, true, lang);
-                                        //Globals.fightManager.fightPvE(Globals.connectedUsers[authorIdentifier], message, idEnemy, canIFightTheMonster);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.get("/show", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            let pending = res.locals.pending;
+
+            if (group != null) {
+                data = group.toApi();
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
+            }
+
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.post("/fight/monster", async (req, res) => {
+            let data = {}
+            let group = res.locals.group;
+            let pending = res.locals.pending;
+
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
+            let idEnemyGroup = parseInt(req.body.idMonster, 10);
+            if (group != null) {
+                if (group.leader === Globals.connectedUsers[res.locals.id]) {
+                    if (!group.doingSomething) {
+                        if (group.allInSameArea()) {
+                            if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                                if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
+                                    let grpEnemies = [];
+                                    grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                                    if (grpEnemies == null) {
+                                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                                    }
+                                    let response = Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
+                                    if (response.error != null) {
+                                        data.error = response.error;
                                     } else {
-                                        // Error Message
-                                        msg = Translator.getString(lang, "errors", "fight_enter_id_monster");
+                                        data = response;
                                     }
+                                    //Globals.fightManager.fightPvE(Globals.connectedUsers[res.locals.id], message, idEnemy, canIFightTheMonster);
                                 } else {
-                                    msg = Translator.getString(lang, "errors", "fight_impossible_in_town");
+                                    // Error Message
+                                    data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
                                 }
                             } else {
-                                msg = Translator.getString(lang, "errors", "group_not_same_area");
+                                data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
                             }
-
                         } else {
-                            msg = Translator.getString(lang, "errors", "group_occupied");
+                            data.error = Translator.getString(res.locals.lang, "errors", "group_not_same_area");
                         }
+
                     } else {
-                        msg = Translator.getString(lang, "errors", "group_not_leader");
+                        data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "group_not_in_group");
+                    data.error = Translator.getString(res.locals.lang, "errors", "group_not_leader");
                 }
-                break;
-        }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
+            }
 
-        this.sendMessage(message, msg);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
     }
 }
 

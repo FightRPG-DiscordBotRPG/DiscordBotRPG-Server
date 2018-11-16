@@ -4,7 +4,7 @@ const Stats = require("./Stats.js");
 const Globals = require("../Globals.js");
 const Translator = require("../Translator/Translator");
 
-class StatsItems extends Stats{
+class StatsItems extends Stats {
 
     constructor(id) {
         super(id, id);
@@ -15,7 +15,7 @@ class StatsItems extends Stats{
 
     loadStats() {
         // load from database
-        let res = conn.query("SELECT DISTINCT value, nom FROM itemsstats INNER JOIN stats ON itemsstats.idStat = stats.idStat WHERE idItem = " + this.id);
+        let res = conn.query("SELECT DISTINCT value, nom FROM itemsstats INNER JOIN stats ON itemsstats.idStat = stats.idStat WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
             this[res[stat].nom] = res[stat].value;
         }
@@ -34,7 +34,7 @@ class StatsItems extends Stats{
      * @param {Array<number>} idItems 
      */
     static deleteStatsMultiple(idItems) {
-        if(idItems.toString().length > 0) {
+        if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
             conn.query("DELETE FROM itemsstats WHERE idItem IN " + itemsToDelete + ";");
         }
@@ -49,7 +49,7 @@ class StatsItems extends Stats{
         for (let stat in Globals.statsIds) {
             if (this[stat] > 0 || compareStats[stat]) {
                 let diff = compareStats[stat] >= 0 ? " -> " + (this[stat] - compareStats[stat]) : " -> 0";
-                
+
                 noStats = false;
                 let end = "";
                 let beforeNumber = "";

@@ -4,6 +4,28 @@ const Emojis = require("./Emojis");
 
 class Leaderboard {
 
+    static getPlayerLeaderboard(id) {
+        let actualRank = Leaderboard.getPlayerRank(id);
+        let maximumRank = Leaderboard.getMaximumRank();
+        let offset = actualRank - 6;
+
+        if (actualRank <= 5) {
+            offset = 0;
+        }
+        if (maximumRank - actualRank < 5) {
+            offset -= 5 - (maximumRank - actualRank);
+        }
+
+        offset = offset >= 0 ? offset : 0;
+
+        let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, users.isConnected, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
+        let data = {
+            rankings: res,
+            offset: offset
+        }
+        return data;
+    }
+
     static playerLeaderboardToStr(id) {
         let str = "`";
         let usernameMaxLength = 34;
@@ -24,10 +46,10 @@ class Leaderboard {
         let maximumRank = Leaderboard.getMaximumRank();
         let offset = actualRank - 6;
 
-        if(actualRank <= 5) {
+        if (actualRank <= 5) {
             offset = 0;
-        } 
-        if(maximumRank - actualRank < 5) {
+        }
+        if (maximumRank - actualRank < 5) {
             offset -= 5 - (maximumRank - actualRank);
         }
 
@@ -35,7 +57,7 @@ class Leaderboard {
 
 
         str += "|  rank  |   id   |             username             |    honor    |    level    |  connected  |\n" +
-               "|________|________|__________________________________|_____________|_____________|_____________|\n";
+            "|________|________|__________________________________|_____________|_____________|_____________|\n";
         let res = conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, users.isConnected, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
 
         //console.log("offset : " + offset + " | rank : " + actualRank + " | max rank : " + maximumRank + " | nb affiche : " + res.length);
@@ -47,7 +69,7 @@ class Leaderboard {
             idLength = i.idCharacter.toString().length;
             idLength = (idMaxLength - idLength) / 2;
 
-            if(i.userName.length >= usernameMaxLength) {
+            if (i.userName.length >= usernameMaxLength) {
                 i.userName = i.userName.substring(0, usernameMaxLength - 5) + "...";
             }
             usernameLength = i.userName.length;
@@ -64,15 +86,15 @@ class Leaderboard {
             statusLength = connected.length;
             statusLength = (statusMaxLength - statusLength) / 2;
 
-            
-            str += "|" + " ".repeat(Math.floor(rankLength)) + offset + " ".repeat(Math.ceil(rankLength)) + "|"
-                + " ".repeat(Math.floor(idLength)) + i.idCharacter + " ".repeat(Math.ceil(idLength)) + "|"
-                + " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|"
-                + " ".repeat(Math.floor(honorLength)) + i.Honor + " ".repeat(Math.ceil(honorLength)) + "|"
-                + " ".repeat(Math.floor(levelLength)) + i.actualLevel + " ".repeat(Math.ceil(levelLength)) + "|"
-                + " ".repeat(Math.floor(statusLength)) + connected + " ".repeat(Math.floor(statusLength)) + "|\n";
 
-                offset++;
+            str += "|" + " ".repeat(Math.floor(rankLength)) + offset + " ".repeat(Math.ceil(rankLength)) + "|" +
+                " ".repeat(Math.floor(idLength)) + i.idCharacter + " ".repeat(Math.ceil(idLength)) + "|" +
+                " ".repeat(Math.floor(usernameLength)) + i.userName + " ".repeat(Math.ceil(usernameLength)) + "|" +
+                " ".repeat(Math.floor(honorLength)) + i.Honor + " ".repeat(Math.ceil(honorLength)) + "|" +
+                " ".repeat(Math.floor(levelLength)) + i.actualLevel + " ".repeat(Math.ceil(levelLength)) + "|" +
+                " ".repeat(Math.floor(statusLength)) + connected + " ".repeat(Math.floor(statusLength)) + "|\n";
+
+            offset++;
         }
         str += "`";
         return str;
@@ -88,7 +110,7 @@ class Leaderboard {
 
     static getPlayerRank(id) {
         let res = conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, charactershonor.idCharacter, charactershonor.Honor FROM charactershonor, (select @rn:=0) row_nums GROUP BY charactershonor.idCharacter ORDER BY charactershonor.Honor DESC) user_ranks WHERE idCharacter = ?;", [id]);
-        
+
         return res != null && res[0] ? res[0].rank : 1;
     }
 
@@ -96,7 +118,7 @@ class Leaderboard {
         let res = conn.query("SELECT COUNT(*) as count FROM charactershonor");
         return res != null && res[0] ? res[0].count : 1;
     }
-    
+
 
 
 }

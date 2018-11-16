@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class TravelModule extends GModule {
@@ -28,190 +29,157 @@ class TravelModule extends GModule {
         this.endLoading("Travel");
     }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
-        // travel related
-        let wantedAreaToTravel, areaObjectTravel, costs, checkEmoji, xmarkEmoji, realWaitTime, tempMsg;
-
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
-
-        switch (command) {
-            case "area":
-                msg = Globals.areasManager.seeThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea(), lang);
-                break;
-
-            case "areas":
-                msg = Globals.areasManager.seeAllAreasInThisRegion(currentArea, lang);
-                break;
-
-            case "travel":
-                wantedAreaToTravel = parseInt(args[0], 10);
-                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                    if (Globals.areasManager.existInRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel)) {
-                        areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
-                        if (areaObjectTravel.getID() == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
-                            msg = Translator.getString(lang, "errors", "travel_already_here");
-                        } else {
-
-                            costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
-                            checkEmoji = Emojis.getID("vmark");
-                            xmarkEmoji = Emojis.getID("xmark");
-                            realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
-                            tempMsg = await message.channel.send(this.travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel)).catch(e => null);
-                            await Promise.all([
-                                tempMsg.react(checkEmoji),
-                                tempMsg.react(xmarkEmoji)
-                            ]).catch(e => null);
-
-                            const filter = (reaction, user) => {
-                                return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                            };
-
-
-                            const collected = await tempMsg.awaitReactions(filter, {
-                                max: 1,
-                                time: 10000
-                            });
-                            const reaction = collected.first();
-                            if (reaction != null) {
-                                switch (reaction.emoji.id) {
-                                    case checkEmoji:
-                                        if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                                            // Update le compte de joueurs
-                                            wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
-
-                                            // change de zone
-                                            Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
-
-                                            // Messages
-                                            msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
-                                            msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                                        } else {
-                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                                        }
-
-                                        break;
-
-                                    case xmarkEmoji:
-                                        msg = Translator.getString(lang, "travel", "travel_cancel");
-                                        break;
-                                }
-                            }
-                            tempMsg.delete().catch(e => null);
-                        }
-
-                    } else {
-                        msg = Translator.getString(lang, "errors", "travel_area_dont_exist");
-                    }
-                } else {
-                    msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                }
-                break;
-
-            case "travelregion":
-                wantedAreaToTravel = parseInt(args[0], 10);
-                if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                    if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel)) {
-                        areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[authorIdentifier].character.getIDRegion(), wantedAreaToTravel);
-                        if (areaObjectTravel.getID() == Globals.connectedUsers[authorIdentifier].character.getIdArea()) {
-                            msg = Translator.getString(lang, "errors", "travel_already_here");
-                        } else {
-                            costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[authorIdentifier].character.getIdArea(), areaObjectTravel.getID());
-                            checkEmoji = Emojis.getID("vmark");
-                            xmarkEmoji = Emojis.getID("xmark");
-                            realWaitTime = Globals.connectedUsers[authorIdentifier].character.getWaitTimeTravel(costs.timeToWait) / 1000;
-                            tempMsg = await message.channel.send(this.travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel)).catch(e => null);
-                            await Promise.all([
-                                tempMsg.react(checkEmoji),
-                                tempMsg.react(xmarkEmoji)
-                            ]).catch(e => null);
-
-                            const filter = (reaction, user) => {
-                                return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                            };
-
-
-                            const collected = await tempMsg.awaitReactions(filter, {
-                                max: 1,
-                                time: 10000
-                            });
-                            const reaction = collected.first();
-                            if (reaction != null) {
-                                switch (reaction.emoji.id) {
-                                    case checkEmoji:
-                                        if (Globals.connectedUsers[authorIdentifier].character.canDoAction()) {
-                                            // Update le compte de joueurs
-                                            if (Globals.connectedUsers[authorIdentifier].character.doIHaveEnoughMoney(costs.goldPrice)) {
-                                                wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
-
-                                                // change de zone
-                                                Globals.connectedUsers[authorIdentifier].character.changeArea(wantedAreaToTravel, costs.timeToWait);
-                                                Globals.connectedUsers[authorIdentifier].character.removeMoney(costs.goldPrice);
-
-                                                // Messages
-                                                msg = Translator.getString(lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(lang)]);
-                                                msg += "\n" + Translator.getString(lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                                            } else {
-                                                msg = "Not enough Gold";
-                                            }
-
-                                        } else {
-                                            msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                                        }
-
-                                        break;
-
-                                    case xmarkEmoji:
-                                        msg = Translator.getString(lang, "travel", "travel_cancel");
-                                        break;
-                                }
-                            }
-                            tempMsg.delete().catch(e => null);
-                        }
-
-                    } else {
-                        msg = Translator.getString(lang, "errors", "travel_area_dont_exist");
-                    }
-                } else {
-                    msg = Translator.getString(lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[authorIdentifier].character.getExhaust()]);
-                }
-                break;
-            case "areaplayers":
-                apPage = parseInt(args[0], 10);
-                if (!apPage || !Number.isInteger(apPage)) {
-                    apPage = 1;
-                }
-                msg = Globals.areasManager.getPlayersOf(Globals.connectedUsers[authorIdentifier].character.getIdArea(), apPage, lang);
-                break;
-        }
-
-        this.sendMessage(message, msg);
+    init() {
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_areas", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
     }
 
-    travelMessage(lang, authorIdentifier, realWaitTime, costs, areaObjectTravel) {
-        return new Discord.RichEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(lang, "travel", "travel_planning", [Globals.connectedUsers[authorIdentifier].character.getArea().getName(lang), areaObjectTravel.getName(lang)]))
-            .addField(Translator.getString(lang, "travel", "wait_time_title"), Translator.getString(lang, "travel", "wait_time_body", [realWaitTime, costs.timeToWait - realWaitTime]), true)
-            .addField(Translator.getString(lang, "travel", "gold_price_title"), Translator.getString(lang, "travel", "gold_price_body", [costs.goldPrice]), true)
-            .addField(Translator.getString(lang, "travel", "sure_to_travel_title"), Translator.getString(lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+    loadRoutes() {
+        this.router.get("/area", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            data.area = Globals.areasManager.thisAreaToApi(res.locals.currentArea.id, res.locals.lang);
+            return res.json(data);
+        });
+
+        this.router.get("/region", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            data.region = Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);
+            return res.json(data);
+        });
+
+        this.router.get("/info/:idArea?", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            let wantedAreaToTravel = parseInt(req.params.idArea, 10);
+            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                if (Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
+                    let areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                        data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
+                    } else {
+                        let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
+                        let realWaitTime = Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                        data = {
+                            from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
+                            to_name: areaObjectTravel.getName(res.locals.lang),
+                            realWaitTime: realWaitTime,
+                            costs: costs,
+                        }
+                    }
+
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            }
+            return res.json(data);
+        });
+
+        this.router.post("/toarea", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            let wantedAreaToTravel = parseInt(req.body.idArea, 10);
+            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                if (Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
+                    let areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                        data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
+                    } else {
+                        let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
+                        // Get area to switch
+                        wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+                        // change de zone
+                        Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+
+                        // Messages
+                        data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                    }
+
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            }
+            return res.json(data);
+        });
+
+        this.router.get("/inforegion/:idArea?", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            let wantedAreaToTravel = parseInt(req.params.idArea, 10);
+            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
+                    let areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                        data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
+                    } else {
+                        let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
+                        let realWaitTime = Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                        data = {
+                            from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
+                            to_name: areaObjectTravel.getName(res.locals.lang),
+                            realWaitTime: realWaitTime,
+                            costs: costs,
+                        }
+                    }
+
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            }
+            return res.json(data);
+        });
+
+        this.router.post("/toRegion", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+            let wantedAreaToTravel = parseInt(req.body.idArea, 10);
+            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
+                    let areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                        data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
+                    } else {
+                        let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
+                        wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+
+                        // change de region
+                        Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+                        Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice);
+
+                        data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                    }
+
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            }
+            return res.json(data);
+        });
+
+        this.router.get("/players/:page?", async (req, res) => {
+            let data = {}
+            req.params.page = parseInt(req.params.page, 10);
+            data = Globals.areasManager.getPlayersOf(Globals.connectedUsers[res.locals.id].character.getIdArea(), req.params.page, res.locals.lang);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
     }
 }
 

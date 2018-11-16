@@ -29,8 +29,7 @@ class CharacterEquipement {
             embed = new Discord.RichEmbed()
                 .setAuthor(item.getName(lang) + (item.isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + item.image + ".png")
                 .setColor(item.rarityColor)
-                .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")"
-                , item.getDesc(lang))
+                .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", item.getDesc(lang))
                 .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr({}, lang));
         } else {
             embed = "``` " + Translator.getString(lang, "inventory_equipment", "nothing_in_this_slot") + " ```";
@@ -106,10 +105,18 @@ class CharacterEquipement {
     getAllItems() {
         let res = conn.query("SELECT itemstypes.nomType, charactersequipements.idItem FROM charactersequipements INNER JOIN itemstypes ON itemstypes.idType = charactersequipements.idType WHERE charactersequipements.idCharacter = ?;", [this.id]);
         let items = [];
-        for(let i in res) {
+        for (let i in res) {
             items[i] = Item.newItem(res[i].idItem, res[i].nomType);
         }
         return items;
+    }
+
+    toApi(lang) {
+        let res = this.getAllItems();
+        for (let i in res) {
+            res[i] = res[i].toApiLight(lang);
+        }
+        return res;
     }
 
     isSlotFree(idEmplacement) {
@@ -119,7 +126,7 @@ class CharacterEquipement {
 
     getItem(idEmplacement) {
         let res = conn.query("SELECT itemstypes.nomType, charactersequipements.idItem FROM charactersequipements INNER JOIN itemstypes ON itemstypes.idType = charactersequipements.idType WHERE charactersequipements.idCharacter = ? AND itemstypes.idType = ?;", [this.id, idEmplacement]);
-        if(res[0]) {
+        if (res[0]) {
             return Item.newItem(res[0].idItem, res[0].nomType);
         }
         return null;
@@ -137,7 +144,12 @@ class CharacterEquipement {
     }
 
     apiGetAllImages() {
-        let toReturn = {head: "", chest: "", legs: "", weapon: ""};
+        let toReturn = {
+            head: "",
+            chest: "",
+            legs: "",
+            weapon: ""
+        };
 
         for (let i in this.objects) {
             toReturn[this.objects[i].typeName] = Globals.addr + "images/items/" + this.objects[i].image + ".png";

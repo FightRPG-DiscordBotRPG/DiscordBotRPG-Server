@@ -603,7 +603,15 @@ class Character extends CharacterEntity {
     }
 
     toStrSimple() {
-        return this.name + " | " + this.getLevel() + " | " + this.getPower() + "%";
+        return this.getName() + " | " + this.getLevel() + " | " + this.getPower() + "%";
+    }
+
+    toApiSimple() {
+        return {
+            name: this.getName(),
+            level: this.getLevel(),
+            power: this.getPower(),
+        }
     }
 
     static exist(id) {

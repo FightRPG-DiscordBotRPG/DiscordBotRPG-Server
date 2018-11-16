@@ -17,7 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
-
+const express = require("express");
 
 class NonameModule extends GModule {
     constructor() {
@@ -26,6 +26,18 @@ class NonameModule extends GModule {
         this.startLoading("Noname");
         this.init();
         this.endLoading("Noname");
+    }
+
+    init() {
+        //this.router = express.Router();
+        //app.use("/", this.router);
+
+        this.loadRoutes();
+        this.crashHandler();
+    }
+
+    loadRoutes() {
+
     }
 
     async run(message, command, args) {

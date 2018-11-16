@@ -28,7 +28,7 @@ class StatsPlayer extends Stats {
             } else {
                 statStr = otherStats[stat].toString();
             }
-            
+
             let nbrChar = statLocaleString.length + 2;
             let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
             beforeNumber += " ".repeat(lessSpaces);
@@ -36,7 +36,7 @@ class StatsPlayer extends Stats {
                 end += "\n"
                 count = 0;
             } else {
-                
+
                 end += " ".repeat(3) + "|" + " ".repeat(3);
             }
             count++;
@@ -50,7 +50,7 @@ class StatsPlayer extends Stats {
     reset() {
         for (let stat in Globals.statsIds) {
             this[stat] = 0;
-            conn.query("UPDATE statscharacters SET value = " + this[stat] + " WHERE idStat = " + Globals.statsIds[stat] + " AND idCharacter = " + this.id);
+            conn.query("UPDATE statscharacters SET value = ? WHERE idStat = ? AND idCharacter = ?;", [this[stat], Globals.statsIds[stat], this.id]);
         }
     }
 
@@ -69,7 +69,7 @@ class StatsPlayer extends Stats {
     // Load from DB
     loadStat(id) {
         this.id = id;
-        let res = conn.query("SELECT DISTINCT value, nom FROM statscharacters INNER JOIN stats ON statscharacters.idStat = stats.idStat WHERE idCharacter = " + this.id);
+        let res = conn.query("SELECT DISTINCT value, nom FROM statscharacters INNER JOIN stats ON statscharacters.idStat = stats.idStat WHERE idCharacter = ?;", [this.id]);
         for (let stat in res) {
             this[res[stat].nom] = parseInt(res[stat].value, 10);
         }

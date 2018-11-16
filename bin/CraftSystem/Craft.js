@@ -22,7 +22,7 @@ class Craft {
         INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
         WHERE craftitemsneeded.IdCraftItem = ?;
         `, [id]);
-        if(res[0]) {
+        if (res[0]) {
             res = res[0];
             this.exist = true;
             this.itemInfo = {
@@ -46,7 +46,7 @@ class Craft {
             INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
             WHERE craftitemsneeded.IdCraftItem = ?;`, [id]);
 
-            for(let item of res) {
+            for (let item of res) {
                 this.requiredItems.push({
                     idBase: item.idBaseItem,
                     typename: item.nomType,
@@ -62,18 +62,17 @@ class Craft {
         let desc = Item.getDesc(lang, this.itemInfo.idBase);
         let itemName = Item.getName(lang, this.itemInfo.idBase);
         let embed = new Discord.RichEmbed()
-                .setAuthor(itemName, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
-                .setColor(this.itemInfo.rarityColor)
-                .addField(Translator.getString(lang, "item_types", this.itemInfo.typename) + " (" + Translator.getString(lang, "item_sous_types", this.itemInfo.stypename) + ")" + " | " + Translator.getString(lang, "rarities", this.itemInfo.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.itemInfo.minLevel + "-" + this.itemInfo.maxLevel + " | "
-                , desc)
-                .addField(Translator.getString(lang, "craft", "needed_items"), this.requiredItemsToStr(lang));
+            .setAuthor(itemName, Globals.addr + "images/items/" + this.itemInfo.image + ".png")
+            .setColor(this.itemInfo.rarityColor)
+            .addField(Translator.getString(lang, "item_types", this.itemInfo.typename) + " (" + Translator.getString(lang, "item_sous_types", this.itemInfo.stypename) + ")" + " | " + Translator.getString(lang, "rarities", this.itemInfo.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + this.itemInfo.minLevel + "-" + this.itemInfo.maxLevel + " | ", desc)
+            .addField(Translator.getString(lang, "craft", "needed_items"), this.requiredItemsToStr(lang));
         return embed;
     }
 
     requiredItemsToStr(lang) {
         let str = "```\n" + Translator.getString(lang, "craft", "header_required") + "\n";
 
-        for(let item of this.requiredItems) {
+        for (let item of this.requiredItems) {
             let itemName = Item.getName(lang, item.idBase);
             str += "\n";
             str += itemName + " - " + Translator.getString(lang, "item_types", item.typename) + " - " + Translator.getString(lang, "item_sous_types", item.stypename) + " - " + Translator.getString(lang, "rarities", item.rarity) + " - x" + item.number;
@@ -81,6 +80,31 @@ class Craft {
 
         str += "```";
         return str;
+    }
+
+    toApi(lang) {
+        let craft = {};
+        craft.name = Item.getName(lang, this.itemInfo.idBase);
+        craft.desc = Item.getDesc(lang, this.itemInfo.idBase);
+        craft.image = this.itemInfo.image;
+        craft.rarityColor = this.itemInfo.rarityColor;
+        craft.rarity = Translator.getString(lang, "rarities", this.itemInfo.rarity);
+        craft.type = Translator.getString(lang, "item_types", this.itemInfo.typename);
+        craft.subType = Translator.getString(lang, "item_sous_types", this.itemInfo.stypename);
+        craft.minLevel = this.itemInfo.minLevel;
+        craft.maxLevel = this.itemInfo.maxLevel;
+        craft.requiredItems = [];
+
+        for (let item of this.requiredItems) {
+            craft.requiredItems.push({
+                name: Item.getName(lang, item.idBase),
+                type: Translator.getString(lang, "item_types", item.typename),
+                subType: Translator.getString(lang, "item_sous_types", item.stypename),
+                rarity: Translator.getString(lang, "rarities", item.rarity),
+                number: item.number,
+            })
+        }
+        return craft;
     }
 
     canBeCraft(buildingRarityLevel) {

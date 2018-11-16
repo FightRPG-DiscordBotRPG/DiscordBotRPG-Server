@@ -28,6 +28,7 @@ class CityArea extends Area {
         }
 
         let craftingbuilding = this.getService("craftingbuilding");
+
         let forge;
         if (craftingbuilding != null) {
             let lvl = Translator.getString(lang, "general", "lvl");
@@ -40,6 +41,26 @@ class CityArea extends Area {
             .addField(Translator.getString(lang, "general", "description"), this.getDesc(lang) + "\n\nAvancement de la ville : **" + 1 + "**")
             .addField("Services", "```- Marché " + tax + "\n" + forge + "```")
             .setImage(this.image);
+    }
+
+    toApi(lang) {
+        let apiObj = super.toApi(lang);
+        let craftingbuilding = this.getService("craftingbuilding");
+        apiObj.tax = this.services.marketplace.getTax() * 100;
+        let minLevel = 0,
+            maxLevel = 0,
+            isActive = false;
+        if (craftingbuilding != null) {
+            minLevel = craftingbuilding.getMinLevel();
+            maxLevel = craftingbuilding.getMaxLevel();
+            isActive = craftingbuilding.isActive == true;
+        }
+        apiObj.craft = {
+            isActive: isActive,
+            minLevel: minLevel,
+            maxLevel: maxLevel,
+        }
+        return apiObj;
     }
 
 

@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class EquipmentModule extends GModule {
@@ -28,104 +29,107 @@ class EquipmentModule extends GModule {
         this.endLoading("Equipment");
     }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+    init() {
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_equipment", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_equipment", 1);
+    loadRoutes() {
+        this.router.post("/equip", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
 
-        switch (command) {
-            case "equip":
-                let toEquip = parseInt(args[0], 10);
-                msg = "";
-                //console.log((toEquip));
-                if (toEquip != null && Number.isInteger(toEquip)) {
-                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toEquip)) {
-                        if (Globals.connectedUsers[authorIdentifier].character.getInv().isEquipable(toEquip)) {
-                            let tItemToEquip = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(toEquip);
-                            if (Globals.connectedUsers[authorIdentifier].character.getLevel() >= tItemToEquip.getLevel()) {
-                                let swapItem = Globals.connectedUsers[authorIdentifier].character.getEquipement().equip(tItemToEquip.id);
-                                Globals.connectedUsers[authorIdentifier].character.getInv().deleteFromInventory(tItemToEquip);
-                                if (swapItem > 0) {
-                                    Globals.connectedUsers[authorIdentifier].character.getInv().addToInventory(swapItem);
-                                }
-                                msg = Translator.getString(lang, "inventory_equipment", "item_equiped");
-                            } else {
-                                msg = Translator.getString(lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
+            let toEquip = parseInt(req.body.idItem, 10);
+            //console.log((toEquip));
+            if (toEquip != null && Number.isInteger(toEquip)) {
+                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toEquip)) {
+                    if (Globals.connectedUsers[res.locals.id].character.getInv().isEquipable(toEquip)) {
+                        let tItemToEquip = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toEquip);
+                        if (Globals.connectedUsers[res.locals.id].character.getLevel() >= tItemToEquip.getLevel()) {
+                            let swapItem = Globals.connectedUsers[res.locals.id].character.getEquipement().equip(tItemToEquip.id);
+                            Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(tItemToEquip);
+                            if (swapItem > 0) {
+                                Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                             }
-
+                            data.success = Translator.getString(res.locals.id, "inventory_equipment", "item_equiped");
                         } else {
-                            msg = Translator.getString(lang, "errors", "item_you_cant_equip");
+                            data.error = Translator.getString(res.locals.id, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
                         }
+
                     } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have");
+                        data.error = Translator.getString(res.locals.id, "errors", "item_you_cant_equip");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "item_enter_id_to_equip");
+                    data.error = Translator.getString(res.locals.id, "errors", "item_you_dont_have");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.id, "errors", "item_enter_id_to_equip");
+            }
 
-            case "unequip":
-                let toUnequip = this.getEquipableIDType(args[0]);
-                msg = "";
-                if (toUnequip != -1 && Number.isInteger(toUnequip)) {
-                    //let swapItem = Globals.connectedUsers[authorIdentifier].character.equ
-                    let itemToInventory = Globals.connectedUsers[authorIdentifier].character.equipement.unEquip(toUnequip);
-                    if (itemToInventory > 0) {
-                        Globals.connectedUsers[authorIdentifier].character.getInv().addToInventory(itemToInventory);
-                        msg = Translator.getString(lang, "inventory_equipment", "item_unequiped");
-                    } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have_item_equiped_here");
-                    }
+            return res.json(data);
+        });
 
+        this.router.post("/unequip", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+
+            let toUnequip = this.getEquipableIDType(req.body.idItem);
+            if (toUnequip != -1 && Number.isInteger(toUnequip)) {
+                //let swapItem = Globals.connectedUsers[res.locals.id].character.equ
+                let itemToInventory = Globals.connectedUsers[res.locals.id].character.equipement.unEquip(toUnequip);
+                if (itemToInventory > 0) {
+                    Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(itemToInventory);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_unequiped");
                 } else {
-                    msg = Translator.getString(lang, "errors", "item_you_have_to_choose_type_to_unequip");
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_item_equiped_here");
                 }
-                break;
 
-            case "equiplist":
-            case "equipment":
-                msg = "```" + Globals.connectedUsers[authorIdentifier].character.equipement.toStr(lang) + "```";
-                break;
-            case "use":
-                let toUse = parseInt(args[0], 10);
-                msg = "";
-                //console.log((toEquip));
-                if (toUse != null && Number.isInteger(toUse)) {
-                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(toUse)) {
-                        let itemToUse = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(toUse);
-                        if (Globals.connectedUsers[authorIdentifier].character.canUse(itemToUse)) {
-                            Globals.connectedUsers[authorIdentifier].character.use(itemToUse, toUse);
-                            msg = itemToUse.resultToString(lang);
-                        } else {
-                            msg = Translator.getString(lang, "errors", "item_you_cant_use");
-                        }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "item_you_have_to_choose_type_to_unequip");
+            }
+
+            return res.json(data);
+        });
+
+        this.router.get("/show", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+            data.items = Globals.connectedUsers[res.locals.id].character.equipement.toApi(res.locals.lang);
+            return res.json(data);
+        });
+
+        this.router.post("/use", async (req, res) => {
+            let data = {}
+            data.lang = res.locals.lang;
+
+            let toUse = parseInt(req.body.idItem, 10);
+
+            if (toUse != null && Number.isInteger(toUse)) {
+                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toUse)) {
+                    let itemToUse = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toUse);
+                    if (Globals.connectedUsers[res.locals.id].character.canUse(itemToUse)) {
+                        Globals.connectedUsers[res.locals.id].character.use(itemToUse, toUse);
+                        data.success = itemToUse.resultToString(res.locals.lang);
                     } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have");
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_cant_use");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "item_enter_id_to_use");
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                 }
-                break;
-        }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "item_enter_id_to_use");
+            }
 
-        this.sendMessage(message, msg);
+            return res.json(data);
+        });
+
     }
 }
 

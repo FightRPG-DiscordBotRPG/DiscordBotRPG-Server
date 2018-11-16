@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class ConquestModule extends GModule {
@@ -27,96 +28,102 @@ class ConquestModule extends GModule {
         this.init();
         this.endLoading("Conquest");
     }
+    init() {
+        this.router = express.Router();
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+        // Add to router needed things
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_conquest", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
-        switch (command) {
-            case "arealevelup":
-                tGuildId = Globals.connectedUsers[authorIdentifier].character.idGuild;
-                if (currentArea.getOwnerID() === tGuildId) {
-                    if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                            if (!currentArea.isMaxLevel()) {
-                                let toLevelUpArea = currentArea.getPriceNextLevel();
-                                if (Globals.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
-                                    currentArea.levelUp();
-                                    Globals.connectedGuilds[tGuildId].removeMoneyDirect(toLevelUpArea);
-                                    msg = Translator.getString(lang, "area", "level_up") + "\n";
-                                    msg += Translator.getString(lang, "guild", "you_paid_x", [toLevelUpArea]);
-                                } else {
-                                    msg = Translator.getString(lang, "errors", "guild_you_dont_have_enough_money");
-                                }
+    loadRoutes() {
+        this.router.post("/area/levelup", async (req, res) => {
+            let data = {};
+            let tGuildId = Globals.connectedUsers[res.locals.id].character.idGuild;
+            if (res.locals.currentArea.getOwnerID() === tGuildId) {
+                if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
+                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                        if (!res.locals.currentArea.isMaxLevel()) {
+                            let toLevelUpArea = res.locals.currentArea.getPriceNextLevel();
+                            if (Globals.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
+                                res.locals.currentArea.levelUp();
+                                Globals.connectedGuilds[tGuildId].removeMoneyDirect(toLevelUpArea);
+                                data.success = Translator.getString(res.locals.lang, "area", "level_up") + "\n";
+                                data.success += Translator.getString(res.locals.lang, "guild", "you_paid_x", [toLevelUpArea]);
                             } else {
-                                msg = Translator.getString(lang, "errors", "area_at_max_level");
+                                data.error = Translator.getString(res.locals.lang, "errors", "guild_you_dont_have_enough_money");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            data.error = Translator.getString(res.locals.lang, "errors", "area_at_max_level");
                         }
                     } else {
-                        msg = Translator.getString(lang, "errors", "guild_dont_have_permission_to_levelup_area");
+                        data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "guild_dont_own_this_area");
+                    data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_have_permission_to_levelup_area");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
+            }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-            case "areaupbonus":
-                tGuildId = Globals.connectedUsers[authorIdentifier].character.idGuild;
-                if (currentArea.getOwnerID() === tGuildId) {
-                    if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[authorIdentifier].character.id].rank === 3) {
-                        if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                            if (currentArea.isBonusAvailable(args[0])) {
-                                args[1] = args[1] != null ? Number.parseInt(args[1]) : 1000;
-                                args[1] = args[1] > 0 ? args[1] : 1000;
-                                if (currentArea.haveThisAmountOfStatPoints(args[1])) {
-                                    currentArea.upStat(args[0], args[1]);
-                                    msg = Translator.getString(lang, "area", "up_stat", [Translator.getString(lang, "bonuses", args[0]), args[1]]);
-                                } else {
-                                    msg = Translator.getString(lang, "errors", "area_dont_have_enough_stat_points");
-                                }
+        this.router.post("/area/bonus/up", async (req, res) => {
+            let data = {};
+            let tGuildId = Globals.connectedUsers[res.locals.id].character.idGuild;
+            if (res.locals.currentArea.getOwnerID() === tGuildId) {
+                if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
+                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                        if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
+                            req.body.number = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
+                            req.body.number = req.body.number > 0 ? req.body.number : 1000;
+                            if (res.locals.currentArea.haveThisAmountOfStatPoints(req.body.number)) {
+                                res.locals.currentArea.upStat(req.body.bonus_identifier, req.body.number);
+                                data.success = Translator.getString(res.locals.lang, "area", "up_stat", [Translator.getString(res.locals.lang, "bonuses", req.body.bonus_identifier), req.body.number]);
                             } else {
-                                msg = Translator.getString(lang, "errors", "area_bonus_not_available");
+                                data.error = Translator.getString(res.locals.lang, "errors", "area_dont_have_enough_stat_points");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "guild_tournament_started_generic");
+                            data.error = Translator.getString(res.locals.lang, "errors", "area_bonus_not_available");
                         }
                     } else {
-                        msg = Translator.getString(lang, "errors", "generic_cant_do_that");
+                        data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "guild_dont_own_this_area");
+                    data.error = Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
                 }
-                break;
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
+            }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-            case "areabonuseslist":
-                msg = currentArea.listOfBonusesToStr(lang);
-                break;
 
-            case "areaconquest":
-                msg = Globals.areasManager.seeConquestOfThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea(), lang);
-                break;
-        }
+        this.router.get("/area/bonuses", async (req, res) => {
+            let data = {};
+            data = res.locals.currentArea.getListOfBonuses(res.locals.lang);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-        this.sendMessage(message, msg);
+        this.router.get("/area", async (req, res) => {
+            let data = {};
+            data = res.locals.currentArea.getConquest(res.locals.lang);
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+
+
+
     }
 }
 

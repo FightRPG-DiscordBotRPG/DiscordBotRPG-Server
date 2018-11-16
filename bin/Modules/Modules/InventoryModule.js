@@ -17,6 +17,7 @@ const PStatistics = require("../../Achievement/PStatistics");
 const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
+const express = require("express");
 
 
 class InventoryModule extends GModule {
@@ -28,219 +29,252 @@ class InventoryModule extends GModule {
         this.endLoading("Inventory");
     }
 
-    async run(message, command, args) {
-        let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let group = Globals.connectedUsers[authorIdentifier].character.group;
-        let lang = Globals.connectedUsers[authorIdentifier].getLang();
-        let pending = Globals.connectedUsers[authorIdentifier].character.pendingPartyInvite;
-        let marketplace = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "marketplace");
-        let craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[authorIdentifier].character.getIdArea(), "craftingbuilding");
-        let currentArea = Globals.connectedUsers[authorIdentifier].character.getArea();
-        let tLootSystem = new LootSystem();
-        let uIDGuild;
-        let tGuildId = 0;
-        let firstMention;
-        let err = [];
-        let apPage;
-        let nb;
-        let temp;
-        let doIHaveThisItem = false;
+    init() {
+        this.router = express.Router();
 
-        PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_inventory", 1);
+        // Add to router needed things
+        this.loadNeededVariables();
+        this.router.use((req, res, next) => {
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_inventory", 1);
+            next();
+        });
+        this.reactHandler();
+        this.loadRoutes();
+        this.crashHandler();
+    }
 
-        switch (command) {
-            case "item":
-                let idItemToSee = parseInt(args[0], 10);
-                doIHaveThisItem = false;
-                if (idItemToSee !== undefined && Number.isInteger(idItemToSee)) {
-                    doIHaveThisItem = Globals.connectedUsers[authorIdentifier].character.getInv().doIHaveThisItem(idItemToSee);
-                    if (doIHaveThisItem) {
-                        let itemToSee = Globals.connectedUsers[authorIdentifier].character.getInv().getItem(idItemToSee);
-                        let equippedStats = Globals.connectedUsers[authorIdentifier].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
-                        if (equippedStats != null)
-                            equippedStats = equippedStats.stats;
-                        msg = Globals.connectedUsers[authorIdentifier].character.getInv().seeThisItem(idItemToSee, equippedStats, lang);
+    loadRoutes() {
+        this.router.get("/item/:idItem?", async (req, res) => {
+            let idItemToSee = parseInt(req.params.idItem, 10);
+            let doIHaveThisItem = false;
+            let itemToSee;
+            let data = {};
+            data.lang = res.locals.lang;
+
+            if (idItemToSee != null && Number.isInteger(idItemToSee)) {
+                doIHaveThisItem = Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
+                if (doIHaveThisItem) {
+                    itemToSee = Globals.connectedUsers[res.locals.id].character.getInv().getItem(idItemToSee);
+                    let equippedStats = Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
+                    if (equippedStats != null)
+                        equippedStats = equippedStats.stats;
+                    else
+                        equippedStats = {};
+                    data.item = itemToSee.toApi(res.locals.lang);;
+                    data.equippedStats = equippedStats;
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+
+            } else {
+                idItemToSee = this.getEquipableIDType(req.params.idItem);
+                if (idItemToSee > 0) {
+                    itemToSee = Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(idItemToSee);
+                    if (itemToSee != null) {
+                        data.item = itemToSee.toApi(res.locals.lang);
                     } else {
-                        msg = "```" + Translator.getString(lang, "errors", "item_you_dont_have_this_item") + "```";
+                        data.error = Translator.getString(res.locals.lang, "inventory_equipment", "nothing_in_this_slot");
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_choose_id_or_equipement");
+                }
+
+            }
+            return res.json(data);
+
+        });
+
+        this.router.post("/itemfav", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+
+            let idItemToFav = parseInt(req.body.idItem, 10);
+            if (idItemToFav != null && Number.isInteger(idItemToFav)) {
+                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
+                    Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            } else {
+                idItemToFav = this.getEquipableIDType(req.body.idItem);
+                if (idItemToFav > 0) {
+                    if (Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToFav) != null) {
+                        Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToFav, true);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            }
+            return res.json(data);
+        });
+
+        this.router.post("/itemunfav", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+
+            let idItemToUnFav = parseInt(req.body.idItem, 10);
+            if (idItemToUnFav != null && Number.isInteger(idItemToUnFav)) {
+                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
+                    Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            } else {
+                idItemToUnFav = this.getEquipableIDType(req.body.idItem);
+                if (idItemToUnFav > 0) {
+                    if (Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToUnFav) != null) {
+                        Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToUnFav, false);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
                     }
 
                 } else {
-                    idItemToSee = this.getEquipableIDType(args[0]);
-                    if (idItemToSee > 0) {
-                        msg = Globals.connectedUsers[authorIdentifier].character.equipement.seeThisItem(idItemToSee, lang);
-                    } else {
-                        msg = "```" + Translator.getString(lang, "errors", "item_choose_id_or_equipement") + "```";
-                    }
-
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
                 }
-                break;
+            }
 
-            case "itemfav":
-                let idItemToFav = parseInt(args[0], 10);
-                if (idItemToFav !== undefined && Number.isInteger(idItemToFav)) {
-                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(idItemToFav)) {
-                        Globals.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToFav, true);
-                        msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
-                    } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                    }
-                } else {
-                    idItemToFav = this.getEquipableIDType(args[0]);
-                    if (idItemToFav > 0) {
-                        if (Globals.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToFav) != null) {
-                            Globals.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToFav, true);
-                            msg = Translator.getString(lang, "inventory_equipment", "item_tag_as_favorite");
-                        } else {
-                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                        }
-                    } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                    }
-                }
-                break;
+            return res.json(data);
+        });
 
-            case "itemunfav":
-                let idItemToUnFav = parseInt(args[0], 10);
-                if (idItemToUnFav !== undefined && Number.isInteger(idItemToUnFav)) {
-                    if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(idItemToUnFav)) {
-                        Globals.connectedUsers[authorIdentifier].character.setItemFavoriteInv(idItemToUnFav, false);
-                        msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
-                    } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                    }
-                } else {
-                    idItemToUnFav = this.getEquipableIDType(args[0]);
-                    if (idItemToUnFav > 0) {
-                        if (Globals.connectedUsers[authorIdentifier].character.haveThisObjectEquipped(idItemToUnFav) != null) {
-                            Globals.connectedUsers[authorIdentifier].character.setItemFavoriteEquip(idItemToUnFav, false);
-                            msg = Translator.getString(lang, "inventory_equipment", "item_untag_as_favorite");
-                        } else {
-                            msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                        }
+        this.router.get("/show/:page?", async (req, res) => {
+            let data = {};
 
-                    } else {
-                        msg = Translator.getString(lang, "errors", "item_you_dont_have_this_item");
-                    }
-                }
-                break;
+            let invPage = parseInt(req.params.page, 10);
+            if (invPage != null && Number.isInteger(invPage)) {
+                //msg = Globals.connectedUsers[res.locals.id].character.inv.seeThisItem(invIdItem);
+                data = Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang);
+            } else {
+                data = Globals.connectedUsers[res.locals.id].character.inv.toApi(0, res.locals.lang);
+            }
 
-            case "inv":
-            case "inventory":
-                let invPage = parseInt(args[0], 10);
-                msg = "";
-                if (invPage && Number.isInteger(invPage)) {
-                    //msg = Globals.connectedUsers[authorIdentifier].character.inv.seeThisItem(invIdItem);
-                    msg = Globals.connectedUsers[authorIdentifier].character.inv.toStr(invPage, lang);
-                } else {
-                    msg = Globals.connectedUsers[authorIdentifier].character.inv.toStr(0, lang);
-                }
-                break;
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
 
-            case "sell":
-                let sellIdItem = parseInt(args[0], 10);
-                let numberOfItemsToSell = parseInt(args[1], 10);
-                numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
-                //console.log(numberOfItemsToSell);
-                msg = "";
-                if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                    if (sellIdItem != null && Number.isInteger(sellIdItem)) {
-                        if (Globals.connectedUsers[authorIdentifier].character.haveThisObject(sellIdItem)) {
-                            if (!Globals.connectedUsers[authorIdentifier].character.isItemFavorite(sellIdItem)) {
-                                let itemValue = Globals.connectedUsers[authorIdentifier].character.sellThisItem(sellIdItem, numberOfItemsToSell);
-                                if (itemValue > 0) {
-                                    msg = numberOfItemsToSell == 1 ? Translator.getString(lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(lang, "economic", "sell_for_x_plural", [itemValue]);
-                                } else {
-                                    // N'arrivera jamais normalement mais bon
-                                    msg = Translator.getString(lang, "errors", "item_you_dont_have");
-                                }
+        this.router.post("/sell", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+
+            let sellIdItem = parseInt(req.body.idItem, 10);
+            let numberOfItemsToSell = parseInt(req.body.number, 10);
+            numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
+
+            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                if (sellIdItem != null && Number.isInteger(sellIdItem)) {
+                    if (Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
+                        if (!Globals.connectedUsers[res.locals.id].character.isItemFavorite(sellIdItem)) {
+                            let itemValue = Globals.connectedUsers[res.locals.id].character.sellThisItem(sellIdItem, numberOfItemsToSell);
+                            if (itemValue > 0) {
+                                data.success = numberOfItemsToSell == 1 ? Translator.getString(res.locals.lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(res.locals.lang, "economic", "sell_for_x_plural", [itemValue]);
                             } else {
-                                msg = Translator.getString(lang, "errors", "item_cant_sell_favorite");
+                                // N'arrivera jamais normalement mais bon
+                                data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                             }
                         } else {
-                            msg = Translator.getString(lang, "errors", "item_you_dont_have");
+                            data.error = Translator.getString(res.locals.lang, "errors", "item_cant_sell_favorite");
                         }
-
-
                     } else {
-                        msg = Translator.getString(lang, "errors", "economic_enter_id_item_to_sell");
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                     }
-                } else {;
-                    msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
-                }
-                break;
 
-            case "sellall":
-                if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[authorIdentifier].character.getIdArea())) {
-                    let allSelled = Globals.connectedUsers[authorIdentifier].character.sellAllInventory();
-                    if (allSelled > 0) {
-                        msg = Translator.getString(lang, "economic", "sell_all_for_x", [allSelled]);
+
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "economic_enter_id_item_to_sell");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
+            }
+
+            return res.json(data);
+        });
+
+        this.router.post("/sellall", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+
+            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                let allSelled = Globals.connectedUsers[res.locals.id].character.sellAllInventory();
+                if (allSelled > 0) {
+                    data.success = Translator.getString(res.locals.lang, "economic", "sell_all_for_x", [allSelled]);
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_sell_nothing");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
+            }
+
+            return res.json(data);
+        });
+
+        this.router.post("/sendmoney", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+
+            // req.body.id, req.body.isMention, req.body.amount
+
+            let idOtherPlayerCharacter = 0;
+            let mId = -1;
+            // Ici on récupère l'id
+            if (req.body.isMention) {
+                mId = req.body.id;
+            } else if (req.body.id) {
+                idOtherPlayerCharacter = parseInt(req.body.id, 10);
+                if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
+                    mId = Leaderboard.idOf(idOtherPlayerCharacter);
+                }
+            }
+
+            let userSendMoney, userReceiveMoney;
+
+            // Si connecté
+            if (Globals.connectedUsers[mId]) {
+                if (res.locals.id !== mId) {
+                    userSendMoney = Globals.connectedUsers[res.locals.id];
+                    userReceiveMoney = Globals.connectedUsers[mId];
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_send_money_to_youself");
+                }
+            } else {
+                if (mId != -1 && User.exist(mId)) {
+                    if (res.locals.id !== mId) {
+                        userSendMoney = Globals.connectedUsers[res.locals.id];
+                        userReceiveMoney = new User(mId);
+                        userReceiveMoney.loadUser();
                     } else {
-                        msg = Translator.getString(lang, "errors", "economic_cant_sell_nothing");
+                        data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_send_money_to_youself");
                     }
                 } else {
-                    msg = Translator.getString(lang, "errors", "economic_have_to_be_in_town");
+                    data.error = Translator.getString(res.locals.lang, "errors", "generic_user_dont_exist");
                 }
-                break;
+            }
 
-            case "sendmoney":
-                firstMention = mentions.first();
-                let idOtherPlayerCharacter = 0;
-                let mId = -1;
-                // Ici on récupère l'id
-                if (firstMention) {
-                    mId = firstMention.id;
-                } else if (args[0]) {
-                    idOtherPlayerCharacter = parseInt(args[0], 10);
-                    if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                        mId = Leaderboard.idOf(idOtherPlayerCharacter);
-                    }
-                }
-
-                let userSendMoney, userReceiveMoney;
-
-                // Si connecté
-                if (Globals.connectedUsers[mId]) {
-                    if (authorIdentifier !== mId) {
-                        userSendMoney = Globals.connectedUsers[authorIdentifier];
-                        userReceiveMoney = Globals.connectedUsers[mId];
+            if (userSendMoney != null && userReceiveMoney != null) {
+                req.body.amount = parseInt(req.body.amount, 10);
+                if (req.body.amount > 0) {
+                    if (userSendMoney.character.doIHaveEnoughMoney(req.body.amount)) {
+                        userSendMoney.character.removeMoney(req.body.amount);
+                        userReceiveMoney.character.addMoney(req.body.amount);
+                        data.success = Translator.getString(res.locals.lang, "economic", "send_money_to", [req.body.amount, userReceiveMoney.getUsername()]);
                     } else {
-                        msg = Translator.getString(lang, "errors", "economic_cant_send_money_to_youself");
+                        data.error = Translator.getString(res.locals.lang, "errors", "economic_dont_have_enough_money");
                     }
                 } else {
-                    if (mId != -1 && User.exist(mId)) {
-                        if (authorIdentifier !== mId) {
-                            userSendMoney = Globals.connectedUsers[authorIdentifier];
-                            userReceiveMoney = new User(mId);
-                            userReceiveMoney.loadUser();
-                        } else {
-                            msg = Translator.getString(lang, "errors", "economic_cant_send_money_to_youself");
-                        }
-                    } else {
-                        msg = Translator.getString(lang, "errors", "generic_user_dont_exist");
-                    }
+                    data.error = Translator.getString(res.locals.lang, "errors", "economic_minimum_send_gold");
                 }
+            }
 
-                if(userSendMoney != null && userReceiveMoney != null) {
-                    args[1] = parseInt(args[1], 10);
-                    if(args[1] > 0) {
-                        if(userSendMoney.character.doIHaveEnoughMoney(args[1])) {
-                            userSendMoney.character.removeMoney(args[1]);
-                            userReceiveMoney.character.addMoney(args[1]);
-                            msg = Translator.getString(lang, "economic", "send_money_to", [args[1], userReceiveMoney.getUsername()]);
-                        } else {
-                            msg = Translator.getString(lang, "errors", "economic_dont_have_enough_money");
-                        }
-                    } else {
-                        msg = Translator.getString(lang, "errors", "economic_minimum_send_gold");
-                    }
-                }
-                break;
-        }
+            return res.json(data);
+        });
 
-        this.sendMessage(message, msg);
+
     }
+
 }
 
 module.exports = InventoryModule;

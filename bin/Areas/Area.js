@@ -122,6 +122,21 @@ class Area {
         return str;
     }
 
+    getMonstersToApiLight(lang) {
+        let monsters = [];
+        for (let i in this.monsters) {
+            let level = this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : this.minMaxLevelToString();
+            level = this.monsters[i].needToBeMaxLevel() == true ? this.maxLevel : level;
+            monsters.push({
+                name: this.monsters[i].getName(lang),
+                type: Translator.getString(lang, "monsters_types", this.monsters[i].type),
+                level: level,
+                number: this.monsters[i].numberOfMonsters,
+            });
+        }
+        return monsters;
+    }
+
     /**
      * 
      * @param {string} lang 
@@ -165,6 +180,39 @@ class Area {
         return str + "`";
     }
 
+    getResourcesApiLight(lang) {
+        let trees = [],
+            ores = [],
+            plants = [];
+        for (let i = 0; i < this.resources.length; i++) {
+
+            let resource = {
+                id: i + 1,
+                name: Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem),
+                rarity: Translator.getString(lang, "rarities", this.resources[i]["nomRarity"]),
+            }
+
+            switch (this.resources[i]["nomSousType"]) {
+                case "wood":
+                    trees.push(resource);
+                    break;
+                case "ore":
+                    ores.push(resource);
+                    break;
+                case "plant":
+                    plants.push(resource);
+                    break;
+
+            }
+        }
+        return {
+            trees: trees,
+            ores: ores,
+            plants: plants,
+        }
+
+    }
+
     /**
      * 
      * @param {number} idEmplacementMonstre 
@@ -204,30 +252,22 @@ class Area {
      * @param {string} lang 
      */
     getPlayers(page, lang) {
-        page = page;
+        page = page >= 0 ? page : 1;
         let perPage = 10;
-        let str = "```";
-        str += Translator.getString(lang, "area", "list_of_players_in_area", [this.getName(lang)]) + "\n\n";
+        /**/
         let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ?", [this.id])[0]["COUNT(*)"] / perPage);;
 
         page = page > maxPage || page <= 0 ? 1 : page;
-
-
         let indexPage = (page - 1) * perPage;
 
         let players = conn.query("SELECT characters.idCharacter, users.userName, levels.actualLevel FROM characters INNER JOIN users ON users.idCharacter = characters.idCharacter INNER JOIN levels ON levels.idCharacter = characters.idCharacter WHERE users.isConnected = true AND characters.idArea = ? ORDER BY actualLevel DESC LIMIT ? OFFSET ?;", [this.id, perPage, indexPage]);
-
-        if (players.length > indexPage) {
-            for (let player of players) {
-                str += Translator.getString(lang, "area", "player", [player.idCharacter, player.userName, player.actualLevel]) + "\n\n";
-            }
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n";
+        return {
+            area_name: this.getName(lang),
+            page: page,
+            maxPage: maxPage,
+            players: players,
         }
 
-        str += "\n" + Translator.getString(lang, "general", "page") + " : " + page + " / " + maxPage;
-        str += "```";
-        return str;
     }
 
     /**
@@ -261,6 +301,19 @@ class Area {
         str += "```";
 
         return str;
+    }
+
+    apiGetBonuses(lang) {
+        let res = conn.query("SELECT * FROM areasbonuses WHERE idArea = ?;", [this.id]);
+        let bonuses = [];
+        for (let o of res) {
+            if (o.value > 0) {
+                let bonus = new AreaBonus(o.idBonusTypes);
+                bonus.setValue(o.value);
+                bonuses.push(bonus.toApi(lang));
+            }
+        }
+        return bonuses;
     }
 
     /**
@@ -340,6 +393,16 @@ class Area {
         return str;
     }
 
+    getListOfBonuses(lang) {
+        let bonuses = {};
+        for (let bonus of this.authorizedBonuses) {
+            bonuses[bonus] = Translator.getString(lang, "bonuses", bonus);
+        }
+        return {
+            bonuses: bonuses
+        };
+    }
+
     statsAndLevelToStr() {
         let str = "```\n";
         let res = conn.query("SELECT areas.AreaLevel as level, statPoints, price FROM areas INNER JOIN areaslevels ON areaslevels.idAreaLevel = areas.AreaLevel WHERE idArea = ?;", [this.id])[0];
@@ -349,6 +412,15 @@ class Area {
         str += "```";
 
         return str;
+    }
+
+    apiGetStatsAndLevel() {
+        let res = conn.query("SELECT areas.AreaLevel as level, statPoints, price FROM areas INNER JOIN areaslevels ON areaslevels.idAreaLevel = areas.AreaLevel WHERE idArea = ?;", [this.id])[0];
+        return {
+            level: res.level,
+            statPoints: res.statPoints,
+            price: res.price,
+        }
     }
 
     getName(lang = "en") {
@@ -508,6 +580,21 @@ class Area {
         return this;
     }
 
+    toApi(lang) {
+        return {
+            name: this.getName(lang),
+            levels: this.minMaxLevelToString(),
+            type: this.areaType,
+            owner: this.getOwner(lang),
+            haveOwner: this.haveOwner(),
+            image: this.image,
+            desc: this.getDesc(lang),
+            minimum_quality: Translator.getString(lang, "rarities", this.getMinItemQuality()),
+            monsters: this.getMonstersToApiLight(lang),
+            resources: this.getResourcesApiLight(lang),
+        }
+    }
+
     /**
      * 
      * @param {string} lang 
@@ -519,6 +606,21 @@ class Area {
             .addField(Translator.getString(lang, "area", "conquest"), "```" + AreaTournament.toDiscordEmbed(this.id, lang) + "```")
             .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(lang))
             .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(lang));
+    }
+
+    getConquest(lang) {
+        let temp = this.apiGetStatsAndLevel();
+        return {
+            name: this.getName(lang),
+            image: this.image,
+            levels: this.minMaxLevelToString(),
+            owner: this.getOwner(lang),
+            bonuses: this.apiGetBonuses(lang),
+            level: temp.level,
+            statPoints: temp.statPoints,
+            price: temp.price,
+            tournament_info: AreaTournament.toDiscordEmbed(this.id, lang)
+        }
     }
 
     /**
