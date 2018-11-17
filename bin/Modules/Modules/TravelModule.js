@@ -154,15 +154,18 @@ class TravelModule extends GModule {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
                         let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
-                        wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+                        if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(costs.goldPrice)) {
+                            wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
-                        // change de region
-                        Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
-                        Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice);
+                            // change de region
+                            Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+                            Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice);
 
-                        data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                            data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                        } else {
+                            data.error = Translator.getString(res.locals.lang, "errors", "economic_dont_have_enough_money");
+                        }
                     }
-
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
                 }

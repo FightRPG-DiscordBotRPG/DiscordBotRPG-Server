@@ -33,7 +33,7 @@ class NonameModule extends GModule {
         //app.use("/", this.router);
 
         this.loadRoutes();
-        this.crashHandler();
+        //this.crashHandler();
     }
 
     loadRoutes() {

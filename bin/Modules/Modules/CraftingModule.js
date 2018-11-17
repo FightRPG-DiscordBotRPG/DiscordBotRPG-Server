@@ -185,8 +185,8 @@ class CraftingModule extends GModule {
         this.router.get("/resources", async (req, res) => {
             let data = {};
 
-            data.success = Translator.getString(lang, "area", "follow_the_link") + "\n";
-            data.success += "http://api.fight-rpg.com/helpers/areas/resources?lang=" + lang;
+            data.success = Translator.getString(res.locals.lang, "area", "follow_the_link") + "\n";
+            data.success += "http://api.fight-rpg.com/helpers/areas/resources?lang=" + res.locals.lang;
 
             data.lang = res.locals.lang;
             return res.json(data);
