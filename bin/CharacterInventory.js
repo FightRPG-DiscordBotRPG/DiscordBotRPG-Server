@@ -21,7 +21,7 @@ class CharacterInventory {
 
     isEquipable(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
 
         if (isEquipable[0]) {
             return isEquipable[0].equipable == 1;
@@ -120,7 +120,7 @@ class CharacterInventory {
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let items = [];
 
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
 
         for (let i in res) {
             let item = Item.newItem(res[i].idItem, res[i].nomSousType);
@@ -285,7 +285,7 @@ class CharacterInventory {
     // If inventory is empty => throw err 
     getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
         let item = Item.newItem(res[0].idItem, res[0].nomSousType);
         item.number = res[0].number;
         return item;
@@ -310,7 +310,7 @@ class CharacterInventory {
      */
     getIdItemOfThisEmplacement(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
         if (res[0]) {
             return res[0].idItem;
         }

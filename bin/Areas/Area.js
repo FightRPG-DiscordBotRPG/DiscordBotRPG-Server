@@ -113,9 +113,9 @@ class Area {
             let level = this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : this.minMaxLevelToString();
             level = this.monsters[i].needToBeMaxLevel() == true ? this.maxLevel : level;
             if (this.monsters[i].numberOfMonsters > 1) {
-                str += Translator.getString(lang, "area", "monster_group", [i, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster_group", [i + 1, this.monsters[i].getName(lang), this.monsters[i].numberOfMonsters - 1, level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, this.monsters[i].getName(lang), level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
+                str += Translator.getString(lang, "area", "monster", [i + 1, this.monsters[i].getName(lang), level, Translator.getString(lang, "monsters_types", this.monsters[i].type)]) + "\n";
             }
         }
         str += "`";
@@ -219,6 +219,7 @@ class Area {
      * @returns {MonstreGroupe} Returns null if no monsters
      */
     getMonsterId(idEmplacementMonstre) {
+        idEmplacementMonstre -= 1;
         if (idEmplacementMonstre < this.monsters.length && idEmplacementMonstre >= 0) {
             //return this.monsters[idEmplacementMonstre].getMonstersIDs()[0];
             //return idEmplacementMonstre;

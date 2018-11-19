@@ -11,8 +11,8 @@ class FightPvE extends Fight {
      * @param {Character} entities1 
      * @param {Monstre} entities2 
      */
-    constructor(entities1, entities2) {
-        super(entities1, entities2);
+    constructor(entities1, entities2, lang) {
+        super(entities1, entities2, lang);
     }
 
 

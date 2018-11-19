@@ -44,21 +44,20 @@ class TravelModule extends GModule {
     loadRoutes() {
         this.router.get("/area", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
             data.area = Globals.areasManager.thisAreaToApi(res.locals.currentArea.id, res.locals.lang);
             return res.json(data);
         });
 
         this.router.get("/region", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
             data.region = Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.get("/info/:idArea?", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
+            console.log(req.params);
             let wantedAreaToTravel = parseInt(req.params.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
@@ -82,12 +81,12 @@ class TravelModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.post("/toarea", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
             let wantedAreaToTravel = parseInt(req.body.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
@@ -111,12 +110,12 @@ class TravelModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.get("/inforegion/:idArea?", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
             let wantedAreaToTravel = parseInt(req.params.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
@@ -140,12 +139,12 @@ class TravelModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.post("/toRegion", async (req, res) => {
             let data = {}
-            data.lang = res.locals.lang;
             let wantedAreaToTravel = parseInt(req.body.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {
@@ -172,6 +171,7 @@ class TravelModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 

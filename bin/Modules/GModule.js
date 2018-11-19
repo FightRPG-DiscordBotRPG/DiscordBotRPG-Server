@@ -55,7 +55,7 @@ class GModule {
 
                         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
-                        let adminTell = "A module has crashed.\n" + mod.commands.toString() + "\n" + "User that have crashed the command : " + Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown";
+                        let adminTell = "A module has crashed.\n" + this.commands.toString() + "\n" + "User that have crashed the command : " + Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown";
                         try {
                             await axios.post("http://127.0.0.1:48921", {
                                 id: "241564725870198785",
@@ -91,6 +91,14 @@ class GModule {
 
     loadNeededVariables() {
         this.router.use((req, res, next) => {
+            for (let i in req.body) {
+                req.body[i] = decodeURIComponent(req.body[i]);
+            }
+
+            for (let i in req.query) {
+                req.query[i] = decodeURIComponent(req.query[i]);
+            }
+
             res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
             res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
             res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;

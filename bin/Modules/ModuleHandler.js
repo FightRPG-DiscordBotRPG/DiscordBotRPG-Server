@@ -103,16 +103,7 @@ class ModuleHandler extends GModule {
 
         fs.readdirSync(__dirname + "/Modules/").forEach(file => {
             this.loadModule(file);
-            //app.use("/game", this.modules[file].router);
         });
-
-
-        for (let mod in this.modules) {
-            //console.log(this.modules[mod].router);
-            if (this.modules[mod].router != null) {
-                app.use("/game/" + mod.split("Module")[0].toLowerCase(), this.modules[mod].router);
-            }
-        }
         this.getAllRoutes();
     }
 
@@ -162,11 +153,11 @@ class ModuleHandler extends GModule {
 
         this.router.post("/load_module", async (req, res) => {
             if (this.loadModule(req.body.moduleName)) {
-                res.json({
+                return res.json({
                     success: "Module " + req.body.moduleName + " loaded successfully !"
                 });
             } else {
-                res.json({
+                return res.json({
                     error: "An error occured when loading the module, module may not exist or can't be reloaded"
                 })
             }
@@ -174,11 +165,11 @@ class ModuleHandler extends GModule {
 
         this.router.post("/disable_module", async (req, res) => {
             if (this.disableModule(req.body.moduleName)) {
-                res.json({
+                return res.json({
                     success: "Module " + req.body.moduleName + " disabled successfully !"
                 });
             } else {
-                res.json({
+                return res.json({
                     error: "This module doesn't exist"
                 })
 
@@ -187,11 +178,11 @@ class ModuleHandler extends GModule {
 
         this.router.post("/enable_module", async (req, res) => {
             if (this.enableModule(req.body.moduleName)) {
-                res.json({
+                return res.json({
                     success: "Module " + req.body.moduleName + " enabled successfully !"
                 });
             } else {
-                res.json({
+                return res.json({
                     error: "This module doesn't exist"
                 });
             }
@@ -199,13 +190,13 @@ class ModuleHandler extends GModule {
 
         this.router.post("/load_all_modules", async (req, res) => {
             this.loadAllModules();
-            res.json({
+            return res.json({
                 msg: "Done, check console for errors / warning"
             });
         });
 
         this.router.get("/disabled_modules", async (req, res) => {
-            res.json({
+            return res.json({
                 msg: this.getDisabledModules()
             });
         });
@@ -245,8 +236,8 @@ class ModuleHandler extends GModule {
                         let mod = new moduleObject();
                         if (mod.isModule) {
                             this.modules[moduleName] = mod;
-                            for (let cmd of mod.commands) {
-                                this.commandsReact[cmd] = mod;
+                            if (mod.router != null) {
+                                app.use("/game/" + moduleName.split("Module")[0].toLowerCase(), this.modules[moduleName].router);
                             }
                             return true;
                         } else {
