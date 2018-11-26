@@ -127,7 +127,7 @@ class OtherModule extends GModule {
                     "equipment/equiplist": Translator.getString(lang, "help_panel", "equipment"),
                     "equip <itemID>": Translator.getString(lang, "help_panel", "equip"),
                     "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)",
-                    "use <itemID>": Translator.getString(lang, "help_panel", "use"),
+                    "use <itemID> <amount>": Translator.getString(lang, "help_panel", "use"),
                 };
 
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
@@ -225,7 +225,7 @@ class OtherModule extends GModule {
 
                 commands[Translator.getString(lang, "help_panel", "shop_title")] = {
                     "sitems <page>": Translator.getString(lang, "help_panel", "sitems"),
-                    "sbuy <idItem>": Translator.getString(lang, "help_panel", "sbuy"),
+                    "sbuy <idItem> <amount>": Translator.getString(lang, "help_panel", "sbuy"),
                 }
 
                 commands[Translator.getString(lang, "help_panel", "other_title")] = {
