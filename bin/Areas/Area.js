@@ -64,7 +64,7 @@ class Area {
 
         res = conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idMonstreGroupe = monstresgroupes.idMonstreGroupe WHERE areasmonsters.idArea = ?;", [this.id]);
         //res = conn.query("SELECT DISTINCT monstres.idMonstre, monstres.name, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstres.idMonstre AND areasmonsters.idArea = " + this.id + ";");
-        let arrOfMonstersGroup = {};
+        let arrOfMonstersGroup = new Map();
         for (let i in res) {
             let monsterLight = {
                 id: res[i]["idMonstre"],
@@ -74,16 +74,17 @@ class Area {
             }
 
             let idToString = res[i]["idMonstreGroupe"].toString();
-            if (Object.keys(arrOfMonstersGroup).indexOf(idToString) == -1) {
-                arrOfMonstersGroup[idToString] = [];
+            if (arrOfMonstersGroup.get(idToString) == null) {
+                arrOfMonstersGroup.set(idToString, []);
             }
 
-            arrOfMonstersGroup[idToString].push(monsterLight);
+            arrOfMonstersGroup.get(idToString).push(monsterLight);
         }
 
-        for (let i in arrOfMonstersGroup) {
+
+        for (let [key, value] of arrOfMonstersGroup) {
             let grpMonster = new MonstreGroupe();
-            grpMonster.setMonsters(arrOfMonstersGroup[i]);
+            grpMonster.setMonsters(value);
 
             this.monsters.push(grpMonster);
 

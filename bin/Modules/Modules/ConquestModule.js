@@ -45,7 +45,7 @@ class ConquestModule extends GModule {
     loadRoutes() {
         this.router.post("/area/levelup", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.idGuild;
+            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (res.locals.currentArea.getOwnerID() === tGuildId) {
                 if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
                     if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
@@ -77,7 +77,7 @@ class ConquestModule extends GModule {
 
         this.router.post("/area/bonus/up", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.idGuild;
+            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (res.locals.currentArea.getOwnerID() === tGuildId) {
                 if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
                     if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {

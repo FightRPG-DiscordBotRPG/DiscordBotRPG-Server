@@ -151,6 +151,10 @@
     "now_unmuted": "Notificações de mercados agora estão ativadas",
     "settings_menu_mute": "%s Notificações de mercados"
   },
+  "shop": {
+    "you_buy": "You've bought \"%s\" x%d for the price : %dG",
+    "header": "idItem - Nome [xNúmero] - Tipo - Level - Raridade - Preço"
+  },
   "group": {
     "you_left": "Você saiu do seu grupo",
     "invitation_sent": "Convite para juntar-se ao grupo enviado",
@@ -200,7 +204,10 @@
     "list": "List of areas",
     "list_regions_connected": "Regiões conectadas",
     "no_connected_regions": "Nenhuma região conectada à esta região",
-    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo."
+    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo.",
+    "service_marketplace": "Marketplace (Tax: %d%)",
+    "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
+    "service_shop": "Shop (Tax: %d%)"
   },
   "bonuses": {
     "bonuses": "Bônus",
@@ -428,7 +435,8 @@
     "armor": "Armadura",
     "loot_box_equipment": "Caixa de Equipamento",
     "reset_time_potion": "Anti-Cansaço",
-    "founder_box": "Recompensa de Fundador"
+    "founder_box": "Recompensa de Fundador",
+    "random_loot_box_equipment": "Random Equipment Box"
   },
   "stats": {
     "strength": "Força",
@@ -444,7 +452,9 @@
   },
   "lootboxes": {
     "open_message": "Você abriu uma caixa de espólios, você ganhou:\n",
-    "no_drop": "Você abriu uma caixa de espólios, mas não ganhou nada!"
+    "open_message_mult": "Você abriu %d caixas de espólios, você ganhou:\n",
+    "no_drop": "Você abriu uma caixa de espólios, mas não ganhou nada!",
+    "no_drop_mult": "Você abriu %d caixas de espólios, mas não ganhou nada!"
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
@@ -547,6 +557,10 @@
     "craft": "Cria a receita de um ID específico",
     "collect": "Coleta o recurso de um ID específico",
     "resources": "Mostra todos recursos por área",
+
+    "shop_title": "Shop",
+    "sitems": "Show all the available items to buy in this city at given page",
+    "sbuy": "Buy the item of given ID",
 
     "settings": "Mostra o menu de configurações"
   },

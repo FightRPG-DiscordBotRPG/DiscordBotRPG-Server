@@ -217,10 +217,15 @@ class OtherModule extends GModule {
 
             case 6:
                 commands[Translator.getString(lang, "help_panel", "craft_title")] = {
-                    "craftlist <page": Translator.getString(lang, "help_panel", "craftlist"),
+                    "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
                     "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
                     "craft <idCraft>": Translator.getString(lang, "help_panel", "craft"),
                     "collect <idResource>": Translator.getString(lang, "help_panel", "collect"),
+                }
+
+                commands[Translator.getString(lang, "help_panel", "shop_title")] = {
+                    "sitems <page>": Translator.getString(lang, "help_panel", "sitems"),
+                    "sbuy <idItem>": Translator.getString(lang, "help_panel", "sbuy"),
                 }
 
                 commands[Translator.getString(lang, "help_panel", "other_title")] = {

@@ -45,6 +45,7 @@ class TravelModule extends GModule {
         this.router.get("/area", async (req, res) => {
             let data = {}
             data.area = Globals.areasManager.thisAreaToApi(res.locals.currentArea.id, res.locals.lang);
+            data.lang = res.locals.lang;
             return res.json(data);
         });
 
@@ -57,7 +58,6 @@ class TravelModule extends GModule {
 
         this.router.get("/info/:idArea?", async (req, res) => {
             let data = {}
-            console.log(req.params);
             let wantedAreaToTravel = parseInt(req.params.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel)) {

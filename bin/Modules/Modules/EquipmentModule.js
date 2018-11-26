@@ -110,12 +110,14 @@ class EquipmentModule extends GModule {
             data.lang = res.locals.lang;
 
             let toUse = parseInt(req.body.idItem, 10);
+            let number = parseInt(req.body.amount, 10);
+            //number = number > 0 ? number : 1;
 
             if (toUse != null && Number.isInteger(toUse)) {
                 if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toUse)) {
                     let itemToUse = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toUse);
                     if (Globals.connectedUsers[res.locals.id].character.canUse(itemToUse)) {
-                        Globals.connectedUsers[res.locals.id].character.use(itemToUse, toUse);
+                        Globals.connectedUsers[res.locals.id].character.use(itemToUse, toUse, number);
                         data.success = itemToUse.resultToString(res.locals.lang);
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_cant_use");

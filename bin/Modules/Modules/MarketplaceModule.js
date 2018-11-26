@@ -90,7 +90,7 @@ class MarketplaceModule extends GModule {
                                             }
                                         } else {
                                             Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
-                                            data.error = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
+                                            data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
                                         }
                                     } else {
                                         data.error = Translator.getString(res.locals.lang, "errors", "marketplace_favorite_sell_impossible");

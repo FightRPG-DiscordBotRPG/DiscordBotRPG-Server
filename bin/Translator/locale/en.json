@@ -151,6 +151,10 @@
     "now_unmuted": "Marketplaces notifications are now activated",
     "settings_menu_mute": "%s Marketplaces notifications"
   },
+  "shop": {
+    "you_buy": "You've bought \"%s\" x%d for the price of: %dG",
+    "header": "ID - Name [xAmount] - Type - Level - Rarity - Price"
+  },
   "group": {
     "you_left": "You left your group",
     "invitation_sent": "Invitation to join the group sent",
@@ -200,7 +204,10 @@
     "list": "List of areas",
     "list_regions_connected": "Connected regions",
     "no_connected_regions": "No regions connected to this region",
-    "follow_the_link": "You can have the list of resources at the link bellow."
+    "follow_the_link": "You can have the list of resources at the link bellow.",
+    "service_marketplace": "Marketplace (Tax: %d%)",
+    "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
+    "service_shop": "Shop (Tax: %d%)"
   },
   "bonuses": {
     "bonuses": "Bonuses",
@@ -428,7 +435,8 @@
     "armor": "Armor",
     "loot_box_equipment": "Equipment Box",
     "reset_time_potion": "Anti-Tiredness",
-    "founder_box": "Founder Reward"
+    "founder_box": "Founder Reward",
+    "random_loot_box_equipment": "Random Equipment Box"
   },
   "stats": {
     "strength": "Strength",
@@ -444,7 +452,9 @@
   },
   "lootboxes": {
     "open_message": "You opened a loot box, you get:\n",
-    "no_drop": "You opened a loot box, but you didn't get anything!"
+    "open_message_mult": "You opened %d loot boxes, you get:\n",
+    "no_drop": "You opened a loot box, but you didn't get anything!",
+    "no_drop_mult": "You opened %d loot boxes, but you didn't get anything!"
   },
   "potions": {
     "drink": "You drank: \"%s\"\n",
@@ -547,6 +557,10 @@
     "craft": "Craft the recipe of given ID",
     "collect": "Collect the resource of given ID",
     "resources": "Show all the resources per area",
+
+    "shop_title": "Shop",
+    "sitems": "Show all the available items to buy in this city at given page",
+    "sbuy": "Buy the item of given ID",
 
     "settings": "Shows the settings menu"
   },

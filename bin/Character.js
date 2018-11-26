@@ -443,10 +443,19 @@ class Character extends CharacterEntity {
      * 
      * @param {Consumable} itemToUse 
      */
-    use(itemToUse, idEmplacement) {
+    use(itemToUse, idEmplacement, amount) {
         if (this.canUse(itemToUse)) {
-            this.getInv().removeSomeFromInventory(idEmplacement, 1, true);
-            itemToUse.use(this);
+            amount = amount > 0 ? amount : 1;
+            amount = amount > itemToUse.number ? itemToUse.number : (amount < 1 ? 1 : amount);
+            if (itemToUse.canBeMultUsed == false) {
+                amount = 1;
+            }
+            this.getInv().removeSomeFromInventory(idEmplacement, amount, true);
+            itemToUse.prepareToUse();
+            console.log(amount);
+            for (let i = 0; i < amount; i++) {
+                itemToUse.use(this);
+            }
         }
     }
 
@@ -520,7 +529,7 @@ class Character extends CharacterEntity {
     }
 
     isInGuild() {
-        return this.idGuild > 0;
+        return this.getIDGuild() > 0;
     }
 
     addCraftXP(xp) {
@@ -583,6 +592,11 @@ class Character extends CharacterEntity {
 
     isItemFavorite(idEmplacement) {
         return this.getInv().getItem(idEmplacement).isFavorite;
+    }
+
+    getIDGuild() {
+        let res = conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [this.id]);
+        return res[0] != null ? res[0].idGuild : 0;
     }
 
     /**

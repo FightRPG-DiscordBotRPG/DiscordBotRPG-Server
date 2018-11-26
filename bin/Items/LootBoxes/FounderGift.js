@@ -1,7 +1,5 @@
-const LootSystem = require("../LootSystem");
+const LootSystem = require("../../LootSystem");
 const LootBox = require("./LootBox");
-const conn = require("../../conf/mysql");
-const Globals = require("../Globals");
 
 
 class FounderGift extends LootBox {
@@ -10,6 +8,7 @@ class FounderGift extends LootBox {
     }
 
     use(character) {
+        this.numberOfUse++;
         let ls = new LootSystem();
         let items = [5, 10, 15, 20, 41];
         let numbers = [1, 1, 1, 1, 10];

@@ -30,14 +30,6 @@ class GModule {
         this.isLoaded = true;
     }
 
-    sendMessage(message, msg) {
-        msg != null && msg != "" ? message.channel.send(msg).catch((error) => {
-            message.author.send(error.message).catch((e) => {
-                console.log(e)
-            });
-        }) : null;
-    }
-
     crashHandler() {
         if (this.router != null) {
             this.router.use(async (err, req, res, next) => {
@@ -55,7 +47,8 @@ class GModule {
 
                         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
-                        let adminTell = "A module has crashed.\n" + this.commands.toString() + "\n" + "User that have crashed the command : " + Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown";
+                        let adminTell = "A module has crashed.\n" + this.commands.toString() + "\n" + "User that have crashed the command : " + (Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown");
+
                         try {
                             await axios.post("http://127.0.0.1:48921", {
                                 id: "241564725870198785",
@@ -104,6 +97,7 @@ class GModule {
             res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
             res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
             res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
+            res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
             res.locals.currentArea = Globals.connectedUsers[res.locals.id].character.getArea();
             res.locals.tLootSystem = new LootSystem();
             next();

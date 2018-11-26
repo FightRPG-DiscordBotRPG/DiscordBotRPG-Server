@@ -6,6 +6,7 @@ const Translator = require("../Translator/Translator");
 const Marketplace = require("../Marketplace/Marketplace");
 const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const AreaTournament = require("../AreaTournament/AreaTournament");
+const Shop = require("../Shops/Shop");
 
 class CityArea extends Area {
 
@@ -13,12 +14,17 @@ class CityArea extends Area {
         super(id, id);
         this.services = {
             "marketplace": new Marketplace(),
-            "craftingbuilding": new CraftingBuilding()
+            "craftingbuilding": new CraftingBuilding(),
+            "shop": null,
         }
 
         this.authorizedBonuses = ["xp_craft"];
         this.services.marketplace.loadMakerplace(this.id);
         this.services.craftingbuilding.load(this.id);
+        let res = conn.query("SELECT idShop FROM areasshops WHERE idArea = ?;", [this.id]);
+        if (res[0] != null) {
+            this.services.shop = new Shop(res[0].idShop);
+        }
     }
 
     toStr(lang) {
@@ -46,19 +52,38 @@ class CityArea extends Area {
     toApi(lang) {
         let apiObj = super.toApi(lang);
         let craftingbuilding = this.getService("craftingbuilding");
-        apiObj.tax = this.services.marketplace.getTax() * 100;
+        let shopbuilding = this.getService("shop");
         let minLevel = 0,
             maxLevel = 0,
-            isActive = false;
+            isActive = false,
+            tax = 0;
         if (craftingbuilding != null) {
             minLevel = craftingbuilding.getMinLevel();
             maxLevel = craftingbuilding.getMaxLevel();
             isActive = craftingbuilding.isActive == true;
+
         }
         apiObj.craft = {
             isActive: isActive,
             minLevel: minLevel,
             maxLevel: maxLevel,
+        }
+
+        apiObj.marketplace = {
+            tax: this.services.marketplace.getTax() * 100,
+            isActive: true,
+        }
+
+        isActive = false;
+        tax = 0;
+        if (shopbuilding != null) {
+            isActive = shopbuilding.isActive();
+            tax = shopbuilding.getTax() * 100;
+        }
+
+        apiObj.shop = {
+            isActive: isActive,
+            tax: tax,
         }
         return apiObj;
     }

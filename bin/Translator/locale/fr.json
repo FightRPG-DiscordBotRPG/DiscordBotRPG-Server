@@ -151,6 +151,10 @@
     "now_unmuted": "Les notifications en rapport avec l'hôtel des ventes sont maintenant activées",
     "settings_menu_mute": "%s les notifications en rapport avec l'hôtel des ventes"
   },
+  "shop": {
+    "you_buy": "Vous avez acheté \"%s\" x%d pour le prix de : %dG",
+    "header": "ID - Nom [xNombre] - Type - Niveau - Rareté - Prix"
+  },
   "group": {
     "you_left": "Vous avez quitté votre groupe",
     "invitation_sent": "Invitation à rejoindre le groupe envoyée",
@@ -200,7 +204,10 @@
     "list": "Liste des zones",
     "list_regions_connected": "Régions connecté",
     "no_connected_regions": "Pas de régions connectés à cette région",
-    "follow_the_link": "Vous pouvez obtenir la liste des ressources à l'adresse suivante:"
+    "follow_the_link": "Vous pouvez obtenir la liste des ressources à l'adresse suivante:",
+    "service_marketplace": "Hotel de Vente (Taxes : %d%)",
+    "service_forge": "Forge (Fabrication : Niv. %d - %d)",
+    "service_shop": "Magasin (Taxes : %d%)"
   },
   "bonuses": {
     "bonuses": "Bonus",
@@ -346,6 +353,7 @@
     "user_attacked": "%s attaque %s !",
     "onfight_user_attack": "%s attaque le monstre %s et lui inflige %d points de dégâts",
     "onfight_monster_attack": "%s attaque le joueur %s et lui inflige %d points de dégâts",
+    "drop_item": "Vous avez gagné un équipement (%s) ! Bravo !",
     "drop_item_equip": "Vous avez gagné un équipement (%s) !",
     "drop_item_equip_plur": "Vous avez gagné des équipements (%s) !",
     "drop_item_other": "Vous avez gagné un objet (%s) !",
@@ -427,7 +435,8 @@
     "armor": "Armure",
     "loot_box_equipment": "Coffre d'équipements",
     "reset_time_potion": "Anti-Fatigue",
-    "founder_box": "Récompense de Fondateur"
+    "founder_box": "Récompense de Fondateur",
+    "random_loot_box_equipment": "Coffre d'équipements aléatoire"
   },
   "stats": {
     "strength": "Force",
@@ -443,7 +452,9 @@
   },
   "lootboxes": {
     "open_message": "Vous avez ouvert un coffre à butin, vous obtenez :\n",
-    "no_drop": "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !"
+    "open_message_mult": "Vous avez ouvert %d coffres à butin, vous obtenez :\n",
+    "no_drop": "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !",
+    "no_drop_mult": "Vous avez ouvert %d coffres à butin, cependant vous n'avez rien eu !"
   },
   "potions": {
     "drink": "Vous avez bu : \"%s\"\n",
@@ -541,11 +552,15 @@
     "mksee": "Affiche l'objet <idItem>",
 
     "craft_title": "Métiers",
-    "craftlist": "Affiche la liste des recettes disponibles dans la ville, a la page souhaité",
+    "craftlist": "Affiche la liste des recettes disponibles dans la ville, à la page souhaité",
     "craftshow": "Affiche la recette d'identifiant idCraft",
     "craft": "Fabrique l'objet dont l'id est passé en paramètre",
     "collect": "Collecte la ressource dont l'id est passé en paramètre",
     "resources": "Affiche toutes les ressources par zone",
+
+    "shop_title": "Magasin",
+    "sitems": "Affiche la liste des objets disponibles, à la page souhaité",
+    "sbuy": "Achète l'objet dont l'id est passé en paramètre",
 
     "settings": "Affiche le menu des paramètres"
   },

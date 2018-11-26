@@ -1,6 +1,6 @@
-const Item = require("./Item");
-const Consumable = require("./Consumable");
-const Translator = require("../Translator/Translator");
+const Item = require("../Item");
+const Consumable = require("../Consumable");
+const Translator = require("../../Translator/Translator");
 
 
 class LootBox extends Consumable {
@@ -10,10 +10,7 @@ class LootBox extends Consumable {
             items: [],
             gold: 0
         }
-    }
-
-    use(character) {
-        throw "Must be implemented - LootBox";
+        this.canBeMultUsed = true;
     }
 
     addItem(id, number) {
@@ -29,9 +26,8 @@ class LootBox extends Consumable {
     }
 
     resultToString(lang) {
-        let msg = Translator.getString(lang, "lootboxes", "open_message");
+        let msg = this.numberOfUse > 1 ? Translator.getString(lang, "lootboxes", "open_message_mult", [this.numberOfUse]) : Translator.getString(lang, "lootboxes", "open_message");
         let drop = false;
-
         if (this.openResult.items.length > 0) {
             for (let i = 0; i < this.openResult.items.length; i++) {
                 msg += Item.getName(lang, this.openResult.items[i].id) + " [x" + this.openResult.items[i].number + "]";
@@ -47,7 +43,7 @@ class LootBox extends Consumable {
         }
 
         if (drop == false) {
-            msg = Translator.getString(lang, "lootboxes", "no_drop");
+            msg = this.numberOfUse > 1 ? Translator.getString(lang, "lootboxes", "no_drop_mult", [this.numberOfUse]) : Translator.getString(lang, "lootboxes", "no_drop");
         }
 
         return msg;

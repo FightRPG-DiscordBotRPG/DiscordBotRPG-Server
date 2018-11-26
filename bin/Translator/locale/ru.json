@@ -151,6 +151,10 @@
     "now_unmuted": "Уведомления рынка сейчас включены",
     "settings_menu_mute": "%s уведомлений рынка"
   },
+  "shop": {
+    "you_buy": "You've bought \"%s\" x%d for the price : %dG",
+    "header": "ID Предмета - Имя [xЧисло] - Тип - Уровень - Редкость - Цена"
+  },
   "group": {
     "you_left": "Вы покинули свою группу",
     "invitation_sent": "Приглашение в группу отправлено",
@@ -200,7 +204,10 @@
     "list": "Список территорий",
     "list_regions_connected": "Связанные регионы",
     "no_connected_regions": "Нет регионов, связанных с этим регионом",
-    "follow_the_link": "Вы можете получить список ресурсов по ссылке ниже."
+    "follow_the_link": "Вы можете получить список ресурсов по ссылке ниже.",
+    "service_marketplace": "Marketplace (Tax: %d%)",
+    "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
+    "service_shop": "Shop (Tax: %d%)"
   },
   "bonuses": {
     "bonuses": "Бонусы",
@@ -428,7 +435,8 @@
     "armor": "Броня",
     "loot_box_equipment": "Коробка Снаряжения",
     "reset_time_potion": "Анти-Усталость",
-    "founder_box": "Вознаграждение Основателя"
+    "founder_box": "Вознаграждение Основателя",
+    "random_loot_box_equipment": "Random Equipment Box (RushB)"
   },
   "stats": {
     "strength": "Сила",
@@ -444,7 +452,9 @@
   },
   "lootboxes": {
     "open_message": "Вы открыли ящик с добычей, вы получаете:\n",
-    "no_drop": "Вы открыли ящик с добычей, но ничего не получили!"
+    "open_message_mult": "You opened %d loot boxes, you get:\n",
+    "no_drop": "Вы открыли ящик с добычей, но ничего не получили!",
+    "no_drop_mult": "You opened %d loot boxes, but you didn't get anything!"
   },
   "potions": {
     "drink": "Вы выпили: \"%s\"\n",
@@ -547,6 +557,10 @@
     "craft": "Изготавливает по рецепту данного ID",
     "collect": "Соберает ресурс данного ID",
     "resources": "Показывает все ресурсы на территории",
+
+    "shop_title": "Shop",
+    "sitems": "Show all the available items to buy in this city at given page",
+    "sbuy": "Buy the item of given ID",
 
     "settings": "Показывает меню настроек"
   },

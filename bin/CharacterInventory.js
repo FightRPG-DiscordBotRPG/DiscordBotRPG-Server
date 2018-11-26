@@ -200,7 +200,7 @@ class CharacterInventory {
 
     getNumberOfItem() {
         let res = conn.query("SELECT COUNT(*) as cnt FROM charactersinventory WHERE idCharacter = ?;", [this.id]);
-        return res[0].cnt;
+        return res[0] != null ? res[0].cnt : 0;
     }
 
     /**

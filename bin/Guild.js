@@ -42,7 +42,7 @@ class Guild {
         this.id = res;
 
         // Insert guild master
-        conn.query("INSERT INTO guildsmembers VALUES(" + idCharacter + ", " + res + " , 3)")
+        conn.query("INSERT INTO guildsmembers VALUES(?, ?, 3)", [idCharacter, res])
 
         // Add To MemberList
         res = conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter])[0];
@@ -96,22 +96,12 @@ class Guild {
     addMember(idAsk, idOther, rank, lang) {
         rank = rank ? rank : 1;
         let err = [];
-        let res;
-        if (this.members[idAsk].rank > 1) {
+        if (this.getRankCharacter(idAsk) > 1) {
             if (!this.isMaxMembersLimitReached()) {
-                res = conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idOther])[0];
-                this.members[idOther] = {
-                    name: res["userName"],
-                    rank: 1,
-                    idUser: res["idUser"],
-                    level: res["actualLevel"],
-                }
-                conn.query("INSERT INTO guildsmembers VALUES(" + idOther + ", " + this.id + ", " + rank + " );");
-                this.nbrMembers++;
+                conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
-
         } else {
             err.push(Translator.getString(lang, "errors", "guild_cant_invite_players"));
         }
@@ -120,16 +110,15 @@ class Guild {
 
     removeMember(idAsk, idOther, lang) {
         let err = [];
-        if (this.members[idOther]) {
-            if (this.members[idAsk].rank > this.members[idOther].rank || idAsk == idOther) {
-                if (this.members[idOther].rank < 3) {
-                    delete this.members[idOther];
-                    conn.query("DELETE FROM guildsmembers WHERE idCharacter = " + idOther + ";");
-                    this.nbrMembers--;
+        if (this.isMember(idOther)) {
+            let meRank = this.getRankCharacter(idAsk);
+            let otherRank = this.getRankCharacter(idOther);
+            if (meRank > otherRank || idAsk == idOther) {
+                if (otherRank < 3) {
+                    conn.query("DELETE FROM guildsmembers WHERE idCharacter = ?;", [idOther]);
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_cant_leave_guild_as_gm"));
                 }
-
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_kick"));
             }
@@ -142,35 +131,30 @@ class Guild {
 
     updateMember(idAsk, idOther, rank, lang) {
         let err = [];
-        if (this.members[idOther]) {
-            if (this.members[idAsk].rank > this.members[idOther].rank && rank < this.members[idAsk].rank) {
-                conn.query("UPDATE guildsmembers SET idGuildRank = " + rank + " WHERE idCharacter = " + idOther + ";");
-                this.members[idOther].rank = rank;
+        if (this.isMember(idOther)) {
+            let meRank = this.getRankCharacter(idAsk);
+            let otherRank = this.getRankCharacter(idOther);
+            if (meRank > otherRank && rank < meRank) {
+                conn.query("UPDATE guildsmembers SET idGuildRank = ? WHERE idCharacter = ?;", [rank, idOther]);
             } else {
                 err.push(Translator.getString(lang, "errors", "generic"));
             }
         } else {
             err.push(Translator.getString(lang, "errors", "guild_member_dont_exist"));
         }
-
         return err;
     }
 
 
     disband(connectedUsers) {
         conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
-        conn.query("DELETE FROM guildsmembers WHERE idGuild = " + this.id);
-        conn.query("DELETE FROM guildsappliances WHERE idGuild = " + this.id);
-        conn.query("DELETE FROM guilds WHERE idGuild = " + this.id);
-        for (let i in this.members) {
-            if (connectedUsers[this.members[i].idUser]) {
-                connectedUsers[this.members[i].idUser].character.idGuild = 0;
-            }
-        }
+        conn.query("DELETE FROM guildsmembers WHERE idGuild = ?;", [this.id]);
+        conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
+        conn.query("DELETE FROM guilds WHERE idGuild = ?;", [this.id]);
     }
 
     canCancelApplies(idCharacter) {
-        return this.members[idCharacter].rank > 1 ? true : false;
+        return this.getRankCharacter(idCharacter) > 1 ? true : false;
     }
 
 
@@ -178,7 +162,7 @@ class Guild {
     // Guild Load
     loadGuild(id) {
         // Info guild
-        let res = conn.query("SELECT * FROM guilds WHERE idGuild = " + id + ";")[0];
+        let res = conn.query("SELECT * FROM guilds WHERE idGuild = ?;", [id])[0];
         this.message = res["message"];
         this.name = res["nom"];
         this.id = id;
@@ -200,41 +184,8 @@ class Guild {
 
     }
 
-    toStr(lang) {
-        this.loadMoney();
-        let membersStr = "```";
-        let rmStr = "";
-        let roStr = "";
-        let rgmStr = "";
-        for (let i in this.members) {
-            switch (this.members[i].rank) {
-                case 1:
-                    rmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "member") + "\n";
-                    break;
-                case 2:
-                    roStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "officer") + "\n";
-                    break;
-                case 3:
-                    rgmStr += i + " | " + this.members[i].name + " | " + Translator.getString(lang, "guild", "guild_master") + "\n";
-                    break;
-            }
-        }
-
-        membersStr += rgmStr + roStr + rmStr + "```";
-
-        let embed = new Discord.RichEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(this.name, "https://upload.wikimedia.org/wikipedia/commons/b/b4/Guild-logo-01_.png")
-            .addField(Translator.getString(lang, "guild", "guild_announcement"), (this.message ? this.message : Translator.getString(lang, "guild", "no_guild_announcement")))
-            .addField(Translator.getString(lang, "guild", "members_out_of", [this.nbrMembers, (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level))]), membersStr)
-            .addField(Translator.getString(lang, "guild", "level_out_of", [this.level, Globals.guilds.maxLevel]), Translator.getString(lang, "guild", "required_to_level_up", [this.getNextLevelPrice()]), true)
-            .addField(Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [this.money]), true);
-
-        return embed;
-    }
-
     toApi() {
-        this.loadMoney();
+        this.loadGuild(this.id);
         let toApi = {
             members: this.members,
             name: this.name,
@@ -243,7 +194,7 @@ class Guild {
             maxMembers: Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level),
             level: this.level,
             maxLevel: Globals.guilds.maxLevel,
-            nextLevelPrice: this.getNextLevelPrice(),
+            nextLevelPrice: this.getNextLevelPrice(this.level),
             money: this.money,
 
         }
@@ -251,20 +202,30 @@ class Guild {
     }
 
     getIdUserByIdCharacter(idCharacter) {
-        return this.members[idCharacter] ? this.members[idCharacter].idUser : null;
+        let res = conn.query("SELECT idUser FROM users INNER JOIN guildsmembers ON guildsmembers.idCharacter = users.idCharacter WHERE idGuild = ?;", [this.id]);
+        return res[0] != null ? res[0].idUser : null;
     }
 
     isMaxMembersLimitReached() {
-        return Object.keys(this.members).length < (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level)) ? false : true;
+        let maxMembers = Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level);
+        let actualMembers = conn.query("SELECT COUNT(*) as nbrMembers FROM guildsmembers WHERE idGuild = ?;", [this.id])[0].nbrMembers;
+        return actualMembers >= maxMembers;
+    }
+
+    isMember(idCharacter) {
+        return conn.query("SELECT idCharacter FROM guildsmembers WHERE idGuild = ? AND idCharacter = ?;", [this.id, idCharacter])[0] != null;
+    }
+
+    getRankCharacter(idCharacter) {
+        let crank = conn.query("SELECT idGuildRank FROM guildsmembers WHERE idCharacter = ?;", [idCharacter]);
+        return crank[0] != null ? crank[0].idGuildRank : 1;
     }
 
     setMessage(idCharacter, message, lang) {
         let err = [];
-
         if (message.length < 255) {
-            if (this.members[idCharacter].rank >= 2) {
-                this.message = message;
-                this.saveMessage();
+            if (this.getRankCharacter(idCharacter) >= 2) {
+                this.saveMessage(message);
             } else {
                 err.push(Translator.getString(lang, "errors", "you_dont_have_right_to_change_announcement"));
             }
@@ -275,16 +236,8 @@ class Guild {
         return err;
     }
 
-    saveMessage() {
-        conn.query("UPDATE guilds SET message = ? WHERE idGuild = " + this.id, [this.message]);
-    }
-
-    saveMoney() {
-        conn.query("UPDATE guilds SET argent = " + this.money + " WHERE idGuild = " + this.id);
-    }
-
-    saveLevel() {
-        conn.query("UPDATE guilds SET level = " + this.level + " WHERE idGuild = " + this.id);
+    saveMessage(message) {
+        conn.query("UPDATE guilds SET message = ? WHERE idGuild = ?;", [message, this.id]);
     }
 
     /**
@@ -294,7 +247,7 @@ class Guild {
      */
     static addMoney(idGuild, number) {
         number = number > 0 ? number : -number;
-        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?", [number, idGuild]);
+        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, idGuild]);
     }
 
     /**
@@ -304,7 +257,7 @@ class Guild {
      */
     static removeMoney(idGuild, number) {
         number = number > 0 ? number : -number;
-        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?", [number, idGuild]);
+        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, idGuild]);
     }
 
     /**
@@ -312,7 +265,7 @@ class Guild {
      * @param {number} number 
      */
     addMoneyDirect(number) {
-        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?", [number, this.id]);
+        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, this.id]);
     }
 
     /**
@@ -320,7 +273,7 @@ class Guild {
      * @param {number} number 
      */
     removeMoneyDirect(number) {
-        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?", [number, this.id]);
+        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, this.id]);
     }
 
     /**
@@ -329,8 +282,6 @@ class Guild {
      */
     addMoney(number) {
         if (number > 0) {
-            /*this.money += number;
-            this.saveMoney();*/
             this.addMoneyDirect(number);
             return true;
         }
@@ -338,13 +289,16 @@ class Guild {
 
     }
 
+    getMoney() {
+        return conn.query("SELECT argent FROM guilds WHERE idGuild = ?;", [this.id])[0].argent;
+    }
+
     /**
      * 
      * @param {number} number 
      */
     haveThisMoney(number) {
-        this.loadMoney();
-        return this.money >= number;
+        return this.getMoney() >= number;
     }
 
     /**
@@ -353,11 +307,9 @@ class Guild {
      */
     removeMoney(number, idCharacter, lang) {
         let err = [];
-        this.loadMoney();
-        if (this.money >= number && number > 0) {
-            if (this.members[idCharacter].rank == 3) {
-                this.money -= number;
-                this.saveMoney();
+        if (this.getMoney() >= number && number > 0) {
+            if (this.getRankCharacter(idCharacter) == 3) {
+                this.removeMoneyDirect(number);
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_remove_money"));
             }
@@ -368,10 +320,6 @@ class Guild {
         return err;
     }
 
-    loadMoney() {
-        this.money = conn.query("SELECT argent FROM guilds WHERE idGuild = ?;", [this.id])[0].argent;
-    }
-
     /**
      * 
      * @param {number} idCharacter 
@@ -380,33 +328,45 @@ class Guild {
      */
     levelUp(idCharacter, lang) {
         let err = [];
-        this.loadMoney();
-        if (this.members[idCharacter].rank >= 2) {
-            if (this.level < Globals.guilds.maxLevel) {
-                if (this.money >= this.getNextLevelPrice()) {
-                    this.money -= this.getNextLevelPrice();
-                    this.saveMoney();
-                    this.level += 1;
-                    this.saveLevel();
+        if (this.getRankCharacter(idCharacter) >= 2) {
+            let lvl = this.getLevel();
+            if (lvl < Globals.guilds.maxLevel) {
+                let priceNextLevel = this.getNextLevelPrice(lvl);
+                let money = this.getMoney();
+                if (money >= priceNextLevel) {
+                    this.removeMoneyDirect(priceNextLevel);
+                    this.addLevel(1);
                 } else {
-                    err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [this.getNextLevelPrice() - this.money]));
+                    err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [priceNextLevel - money]));
                 }
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_already_max_level"));
             }
-
-
         } else {
             err.psuh(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
         }
-
-
         return err;
     }
 
-    getNextLevelPrice() {
-        return Globals.guilds.basePriceLevel * this.level * Globals.guilds.multBasePricePerLevel;
+    getNextLevelPrice(level) {
+        if (level != null) {
+            return Globals.guilds.basePriceLevel * level * Globals.guilds.multBasePricePerLevel;
+        }
+        return Globals.guilds.basePriceLevel * this.getLevel() * Globals.guilds.multBasePricePerLevel;
     }
+
+    /**
+     * @returns {number}
+     */
+    getLevel() {
+        return conn.query("SELECT level FROM guilds WHERE idGuild = ?;", [this.id])[0].level;
+    }
+
+    addLevel(number = 1) {
+        conn.query("UPDATE guilds SET level = level + ? WHERE idGuild = ?;", [number, this.id]);
+    }
+
+
 
     /**
      * 
@@ -473,7 +433,7 @@ class Guild {
      * 
      */
     deleteGuildAppliances() {
-        conn.query("DELETE FROM guildsappliances WHERE idGuild = " + this.id);
+        conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
     }
 
     /*
@@ -587,7 +547,7 @@ class Guild {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level ASC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
+        let res = conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level DESC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
 
         for (let i in res) {
             res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));

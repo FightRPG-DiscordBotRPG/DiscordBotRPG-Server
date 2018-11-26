@@ -138,6 +138,28 @@ var Globals = {
                 break;
         }
         return rarityName;
+    },
+    getDropChances: (idRarity) => {
+        idRarity = parseInt(idRarity);
+        let drop = 0;
+        switch (idRarity) {
+            case 1:
+                drop = rarityChances.commun;
+                break;
+            case 2:
+                drop = rarityChances.rare;
+                break;
+            case 3:
+                drop = rarityChances.superieur;
+                break;
+            case 4:
+                drop = rarityChances.epique;
+                break;
+            case 5:
+                drop = rarityChances.legendaire;
+                break;
+        }
+        return drop;
     }
 }
 

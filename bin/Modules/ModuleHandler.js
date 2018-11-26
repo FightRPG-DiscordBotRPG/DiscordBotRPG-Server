@@ -288,9 +288,10 @@ class ModuleHandler extends GModule {
 
             // Load Guild
             if (Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
-                if (!Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild]) {
-                    Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild] = new Guild();
-                    Globals.connectedGuilds[Globals.connectedUsers[authorIdentifier].character.idGuild].loadGuild(Globals.connectedUsers[authorIdentifier].character.idGuild);
+                let idGuild = Globals.connectedUsers[authorIdentifier].character.getIDGuild();
+                if (!Globals.connectedGuilds[idGuild]) {
+                    Globals.connectedGuilds[idGuild] = new Guild();
+                    Globals.connectedGuilds[idGuild].loadGuild(idGuild);
                 }
             }
 
