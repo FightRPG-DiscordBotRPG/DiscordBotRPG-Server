@@ -450,9 +450,9 @@ class Character extends CharacterEntity {
             if (itemToUse.canBeMultUsed == false) {
                 amount = 1;
             }
+            amount = amount > 100 ? 100 : amount;
             this.getInv().removeSomeFromInventory(idEmplacement, amount, true);
             itemToUse.prepareToUse();
-            console.log(amount);
             for (let i = 0; i < amount; i++) {
                 itemToUse.use(this);
             }

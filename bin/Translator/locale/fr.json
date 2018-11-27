@@ -128,7 +128,10 @@
 
     "prefix_max_length": "Le prefix ne doit pas dépasser %d caractères",
     "prefix_undefined": "Le prefix doit au moins contenir 1 caractère",
-    "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le prefix"
+    "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le prefix",
+
+    "shop_item_dont_exist": "Vous devez choisir un objet qui existe",
+    "shop_no_build": "Il n'y a pas de magasin dans cette zone"
   },
   "craft": {
     "header_required": "Nom - Type - Sous-Type - Rareté - Nombre",

@@ -128,7 +128,10 @@
 
     "prefix_max_length": "The prefix must not exceed a length of %d characters",
     "prefix_undefined": "The prefix must at least be 1 character long",
-    "prefix_not_owner_server": "You must own this server to change the prefix"
+    "prefix_not_owner_server": "You must own this server to change the prefix",
+
+    "shop_item_dont_exist": "You must choose an existing item",
+    "shop_no_build": "There is no shop in this area"
   },
   "craft": {
     "header_required": "Name - Type - Subtype - Rarity - Number",

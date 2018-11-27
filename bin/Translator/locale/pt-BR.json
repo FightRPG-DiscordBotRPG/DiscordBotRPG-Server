@@ -128,7 +128,10 @@
 
     "prefix_max_length": "O prefixo não deve exceder o comprimento de %d caracteres",
     "prefix_undefined": "O prefixo deve ter pelo menos 1 caractere",
-    "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo"
+    "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
+
+    "shop_item_dont_exist": "You must choose an existing item",
+    "shop_no_build": "There is no shop in this area"
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",
@@ -139,7 +142,7 @@
   "marketplace": {
     "placed": "Seu item agora está à venda",
     "placed_plur": "Seus itens agora estão à venda",
-    "header_str": "Jogador - idItem - Nome - Tipo - Level - Raridade - Poder - Número - Preço da Unidade",
+    "header_str": "Jogador - idItem - Nome - Tipo - Nvl. - Raridade - Poder - Número - Preço da Unidade",
     "retrieve": "Você recuperou seu item",
     "retrieve_plur": "Você recuperou seus itens",
     "you_sold_plur": "Você vendeu %d itens por %dG",
@@ -152,8 +155,8 @@
     "settings_menu_mute": "%s Notificações de mercados"
   },
   "shop": {
-    "you_buy": "You've bought \"%s\" x%d for the price : %dG",
-    "header": "idItem - Nome [xNúmero] - Tipo - Level - Raridade - Preço"
+    "you_buy": "Você comprou \"%s\" x%d pelo preço de: %dG",
+    "header": "ID - Nome [xQtd.] - Tipo - Nível - Raridade - Preço"
   },
   "group": {
     "you_left": "Você saiu do seu grupo",
@@ -179,12 +182,12 @@
     "settings_menu_mute": "%s Notificações de grupo"
   },
   "area": {
-    "monster": "ID: %d | %s | Nvl: %s | Tipo: %s",
+    "monster": "ID: %d | %s | Nvl.: %s | Tipo: %s",
     "resources": "Recursos da área:",
     "resource": "- ID: %d | %s | %s",
     "list_of_players_in_area": "Lista de jogadores da área %s:",
     "player": "ID: %d | Nome: %s | Nível: %d",
-    "wild_area": "%d | %s | Levels: %s",
+    "wild_area": "%d | %s | Níveis: %s",
     "city_area": "%d | %s (Cidade) | Nível: %s",
     "dungeon_area": "%d | %s (Masmorra) | Nível: %s",
     "no_description": "Nenhuma descrição disponível para esta área",
@@ -192,22 +195,19 @@
     "minimum_quality": "Qualidade mínima para um item:",
     "you_claimed": "Você reivindicou esta área",
     "owned_by": "Propriedade de",
-    "monster_group": "ID: %d | %s (+%d mais) | Nvl Méd: %s | Tipo: %s",
+    "monster_group": "ID: %d | %s (+%d mais) | Nvl. Méd: %s | Tipo: %s",
     "conquest": "Incursão",
     "conquest_next": "Próxima incursão:\n- %s\n- Número de guildas inscritas: %d",
     "conquest_ongoing": "Incursão em progresso",
     "area_progression": "Progressão da área",
     "level_up": "A área passou de nível",
     "bonus_list_header": "Identificador => Refere-se à",
-    "up_stat": "Este bonus %s have gained %d points",
-    "areas": "Areas",
-    "list": "List of areas",
+    "up_stat": "Este bônus %s ganhou %d points",
+    "areas": "Áreas",
+    "list": "Lista de áreas",
     "list_regions_connected": "Regiões conectadas",
     "no_connected_regions": "Nenhuma região conectada à esta região",
-    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo.",
-    "service_marketplace": "Marketplace (Tax: %d%)",
-    "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
-    "service_shop": "Shop (Tax: %d%)"
+    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo."
   },
   "bonuses": {
     "bonuses": "Bônus",
@@ -358,7 +358,7 @@
     "drop_item_equip_plur": "Você ganhou equipamentos (%s)!",
     "drop_item_other": "Você ganhou um item (%s)!",
     "drop_item_other_plur": "Você ganhou itens (%s)!",
-    "level_up": "Parabéns! Você ganhou: %d nvl. Agora você é nível: %d!",
+    "level_up": "Parabéns! Você ganhou: %d nível. Agora você é nível: %d!",
     "money_gain": "Você ganhou: %d G",
     "xp_gain": "Você ganhou: %d XP",
     "nothing_gain": "Você não ganhou nada!",
@@ -403,7 +403,6 @@
     "fr": "Francês",
     "en": "Inglês",
     "pt-BR": "Português Brasileiro",
-    "ru": "Russo",
     "list_of_languages": "Lista de línguas disponíveis (use o atalho para mudar de língua)",
     "lang_changed": "Língua alterada com sucesso, o bot agora responderá em %s"
   },
@@ -436,7 +435,7 @@
     "loot_box_equipment": "Caixa de Equipamento",
     "reset_time_potion": "Anti-Cansaço",
     "founder_box": "Recompensa de Fundador",
-    "random_loot_box_equipment": "Random Equipment Box"
+    "random_loot_box_equipment": "Caixa de Equipamento Aleatório"
   },
   "stats": {
     "strength": "Força",
@@ -452,9 +451,8 @@
   },
   "lootboxes": {
     "open_message": "Você abriu uma caixa de espólios, você ganhou:\n",
-    "open_message_mult": "Você abriu %d caixas de espólios, você ganhou:\n",
-    "no_drop": "Você abriu uma caixa de espólios, mas não ganhou nada!",
-    "no_drop_mult": "Você abriu %d caixas de espólios, mas não ganhou nada!"
+    "no_drop": "Você abriu uma caixa de espólios, mas você não ganhou nada!",
+    "no_drop_mult": "Você abriu %d caixas de espólios, mas você não ganhou nada!"
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
@@ -497,7 +495,7 @@
     "arenaMention": "Lhe permite atacar o jogador mencionado",
     "arena": "Lhe permite atacar o jogador selecionado",
 
-    "areas_title": "Areas",
+    "areas_title": "Áreas",
     "area": "Mostra a informação da área em que você está",
     "areas": "Mostra todas áreas",
     "areaconquest": "Mostra a próxima incursão para esta área",
@@ -558,9 +556,9 @@
     "collect": "Coleta o recurso de um ID específico",
     "resources": "Mostra todos recursos por área",
 
-    "shop_title": "Shop",
-    "sitems": "Show all the available items to buy in this city at given page",
-    "sbuy": "Buy the item of given ID",
+    "shop_title": "Loja",
+    "sitems": "Mostra todos os itens disponíveis para comprar nesta cidade em uma página específica",
+    "sbuy": "Compra o item com o ID especificado",
 
     "settings": "Mostra o menu de configurações"
   },

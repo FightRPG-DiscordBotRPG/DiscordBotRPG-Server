@@ -70,31 +70,34 @@ class ShopModule extends GModule {
             amount = amount > 0 ? amount : 1;
 
             if (res.locals.shop != null) {
-                let item = await res.locals.shop.getItem(toBuy);
-                if (item != null) {
-                    let totalPrice = item.price * amount;
-                    let tax = 0;
-                    if (res.locals.currentArea.haveOwner()) {
-                        tax = Math.round(res.locals.shop.getTax() * totalPrice);
-                        totalPrice = totalPrice + tax;
-                    }
-                    if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(totalPrice)) {
-                        if (res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount)) {
-                            if (tax > 0) {
-                                Guild.addMoney(res.locals.currentArea.getOwnerID(), tax);
+                if (!isNaN(toBuy)) {
+                    let item = await res.locals.shop.getItem(toBuy);
+                    if (item != null) {
+                        let totalPrice = item.price * amount;
+                        let tax = 0;
+                        if (res.locals.currentArea.haveOwner()) {
+                            tax = Math.round(res.locals.shop.getTax() * totalPrice);
+                            totalPrice = totalPrice + tax;
+                        }
+                        if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(totalPrice)) {
+                            if (res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount)) {
+                                if (tax > 0) {
+                                    Guild.addMoney(res.locals.currentArea.getOwnerID(), tax);
+                                }
+                                Globals.connectedUsers[res.locals.id].character.removeMoney(totalPrice);
+                                data.success = Translator.getString(res.locals.lang, "shop", "you_buy", [item.getName(res.locals.lang), amount, totalPrice]);
+                            } else {
+                                data.error = Translator.getString(res.locals.lang, "errors", "shop_item_dont_exist");
                             }
-                            Globals.connectedUsers[res.locals.id].character.removeMoney(totalPrice);
-                            data.success = Translator.getString(res.locals.lang, "shop", "you_buy", [item.getName(res.locals.lang), amount, totalPrice]);
                         } else {
-                            data.error = Translator.getString(res.locals.lang, "errors", "item_dont_exist");
+                            data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_enough_money");
                         }
                     } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "no_money");
+                        data.error = Translator.getString(res.locals.lang, "errors", "shop_item_dont_exist");
                     }
                 } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "shop_not_item");
+                    data.error = Translator.getString(res.locals.lang, "errors", "shop_item_dont_exist");
                 }
-
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "shop_no_building");
             }

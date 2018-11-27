@@ -128,7 +128,10 @@
 
     "prefix_max_length": "Префикс не должен превышать длину %d символов",
     "prefix_undefined": "Префикс должен содержать не менее 1 символа",
-    "prefix_not_owner_server": "Вы должны владеть этим сервером, чтобы изменить префикс"
+    "prefix_not_owner_server": "Вы должны владеть этим сервером, чтобы изменить префикс",
+
+    "shop_item_dont_exist": "You must choose an existing item",
+    "shop_no_build": "There is no shop in this area"
   },
   "craft": {
     "header_required": "Имя - Тип - Подтип - Редкость - Число",
