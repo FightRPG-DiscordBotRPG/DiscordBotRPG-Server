@@ -224,6 +224,8 @@ Item.newItem = (idItem, stype) => {
             return new FounderGift(idItem);
         case "random_loot_box_equipment":
             return new EquipmentRandomLootBox(idItem);
+        case "horse":
+            return new Horse(idItem);
         default:
             return new Item(idItem);
     }
@@ -236,3 +238,4 @@ const Consumable = require("./Consumable");
 const ResetTimePotion = require("./ResetTimePotion");
 const FounderGift = require("./LootBoxes/FounderGift");
 const EquipmentRandomLootBox = require("./LootBoxes/EquipmentRandomLootBox");
+const Horse = require("./Mounts/Horse");

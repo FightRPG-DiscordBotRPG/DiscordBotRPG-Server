@@ -1,6 +1,6 @@
 ﻿-- Вещи
 
-INSERT INTO localizationitems VALUES
+INSERT IGNORE INTO localizationitems VALUES
 (1, "ru", "Рудиментарный Меч", "Простейший меч, сделанный в основном из дерева."),
 (2, "ru", "Серебряный Меч", "Серебряный меч, ты боишься оборотней?"),
 (3, "ru", "Железный Меч", "Железный меч, ничего более банального."),
@@ -48,7 +48,7 @@ INSERT INTO localizationitems VALUES
 -- Регионы
 
 -- Остров Развращенных
-INSERT INTO localizationareas VALUES
+INSERT IGNORE INTO localizationareas VALUES
 (1, "ru", "Булдарский Лес", "Этот лес приветствует большое количество новичков, желающих отправиться в приключение, к сожалению для них, приключение не из легких, даже здесь."),
 (2, "ru", "Скалистые Равнины", "Эта равнина наполнена магией. Големы рождаются из этой магии и с тех пор бродят здесь."),
 (3, "ru", "Буквальный Тупик", "Когда-то этот тупик гудел жизнью, но годами зло разлагало место и разрушало все на своем пути."),
@@ -58,7 +58,7 @@ INSERT INTO localizationareas VALUES
 (7, "ru", "Низовой пожар", "Здесь жарко, не правда ли? Да, это так.");
 
 -- Монстры
-INSERT INTO localizationmonsters VALUES
+INSERT IGNORE INTO localizationmonsters VALUES
 (1, "ru", "Висп"),
 (2, "ru", "Слизь"),
 (3, "ru", "Ядовитая Слизь"),
@@ -91,7 +91,7 @@ INSERT INTO localizationmonsters VALUES
 (30, "ru", "Пылкий Бугимен");
 
 -- Тумирон
-INSERT INTO localizationareas VALUES
+INSERT IGNORE INTO localizationareas VALUES
 (8, "ru", "Тумирон", "Город-порт Тумирон, так полон жизни. Действительно, это точка входа в новый мир. Она богата и активна, благодаря своему рынку и внешней торговле. Здесь также есть плодородные земли, которыми местные лидеры не стесняются пользоваться."),
 (9, "ru", "Тумиронский Сгоревший Лес", "Ранее пышный лес, Тумиронский Сгоревший Лес теперь тень своего собственного. В первые дни колонизации раса орков начала атаковать и пытаться победить ряды колонизаторов. Но колонизаторам, благодаря их мощной ударной силе, удалось их преодолеть. Но это ничего не говорит о неизменной мотивации орков, которые заняли позицию в лесу."),
 (10, "ru", "Тумиронские Холмы", "Холмы на севере Тумирона усеяны тропинками, ведущими в горы. К сожалению, там не интересно, они неиспользуемы и полны диких животных. Но это, однако, обязательный путь, для тех, кто хочет отправиться дальше на север, к пещерам."),
@@ -101,7 +101,7 @@ INSERT INTO localizationareas VALUES
 (14, "ru", "Тумиронский Пустынный Форпост", "Важный форпост, Пустынный Форпост, позволяет авантюристам подготовиться к великому путешествию в пустыню.");
 
 -- Монстры
-INSERT INTO localizationmonsters VALUES
+INSERT IGNORE INTO localizationmonsters VALUES
 (31, "ru", "Футгарек-Воин"),
 (32, "ru", "Футгарек-Лучник"),
 (33, "ru", "Футгарек-Берсеркер"),
@@ -118,7 +118,7 @@ INSERT INTO localizationmonsters VALUES
 (44, "ru", "Тумиронская Красноглазая Летающая Змея");
 
 -- Тусомуена
-INSERT INTO localizationareas VALUES
+INSERT IGNORE INTO localizationareas VALUES
 (15, "ru", "Себсибену", "Сепсибену типичный пустынный город. Он может воспользоваться водными путями Западного Фонтана. Сейчас это самая важная точка в регионе с точки зрения торговли."),
 (16, "ru", "Западный Фонтан", "Этот город окружен магией, источники воды кажутся неисчерпаемыми. Во времена колонизации этого города не существовало, фактически он был построен очень быстро."),
 (17, "ru", "Опустошенная Треснувшая Пустыня", "Кусок пустыни с гигантскими насекомыми. Эта область интересна только минералами. Трещины в ней уже убили не одного."),
@@ -128,7 +128,7 @@ INSERT INTO localizationareas VALUES
 (21, "ru", "Забытые Гробницы", "Эти древние гробницы наполнены темной магией, вы словно слышите вдалеке некую черную мессу. Что бы это могло быть?");
 
 -- Монстры
-INSERT INTO localizationmonsters VALUES
+INSERT IGNORE INTO localizationmonsters VALUES
 (45, "ru", "Агрессивный Гигантский Блуждающий Жук"),
 (46, "ru", "Гигантский Богомол"),
 (47, "ru", "Гигантский Жук-Носорог"),
@@ -142,7 +142,7 @@ INSERT INTO localizationmonsters VALUES
 (55, "ru", "Страж Могил");
 
 -- Демонический Регион
-INSERT INTO localizationareas VALUES
+INSERT IGNORE INTO localizationareas VALUES
 (22, "ru", "Северный Экспедиционный Форпост", "Северная экспедиция была организована вскоре после начала колонизации, однако свой путь на север она начала лишь совсем недавно. Тем не менее, достигнутый прогресс впечатляет. Построен аванпост со всеми удобствами. Настоящая проблема в демонах."),
 (23, "ru", "Лавовые Трещины", "Эти лавовые трещины являются результатом интенсивной вулканической активности в регионе. Элементальные существа рождаются там, прогулка через этот регион не доставит удовольствия."),
 (24, "ru", "Взрывоопасные Вулканы", "Эти вулканы являются концентратом тепла, пепла и дыма. Помимо наполнения элементальными существами, существуют демоны. Раз вы пришли сюда, вы должны пожалеть об этом."),
@@ -151,7 +151,7 @@ INSERT INTO localizationareas VALUES
 (27, "ru", "Демоническая Цитадель", "Демоническая цитадель, сердце региона. Наполненный грязью, демонами и страданиями. Если вы здесь, то, безусловно, для того чтобы освободить регион от гнета демона, который там находится.");
 
 -- Монстры
-INSERT INTO localizationmonsters VALUES
+INSERT IGNORE INTO localizationmonsters VALUES
 (56, "ru", "Расплавленный Голем"),
 (57, "ru", "Элементаль Лавы"),
 (58, "ru", "Огненный Элементаль"),
@@ -169,6 +169,6 @@ INSERT INTO localizationmonsters VALUES
 (70, "ru", "Демон Древних Времен");
 
 -- Lootboxes Random
-INSERT INTO `localizationitems` VALUES ('43', 'en', 'Pandrandom & Pic Box', 'A box that should give you a chance to get efficient equipment.');
+INSERT IGNORE INTO `localizationitems` VALUES ('43', 'ru', 'Pandrandom & Pic Box', 'A box that should give you a chance to get efficient equipment.');
 
-INSERT INTO `localizationitems` VALUES ('44', 'en', 'Pandrandom Lay Gendary Box', 'An extraordinary box, filled with nothing most of the time. But who can let you see from time to time an exceptional equipment.');
+INSERT IGNORE INTO `localizationitems` VALUES ('44', 'ru', 'Pandrandom Lay Gendary Box', 'An extraordinary box, filled with nothing most of the time. But who can let you see from time to time an exceptional equipment.');

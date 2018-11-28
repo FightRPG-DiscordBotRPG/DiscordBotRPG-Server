@@ -125,9 +125,17 @@ class CharacterEquipement {
     }
 
     getItem(idEmplacement) {
-        let res = conn.query("SELECT itemstypes.nomType, charactersequipements.idItem FROM charactersequipements INNER JOIN itemstypes ON itemstypes.idType = charactersequipements.idType WHERE charactersequipements.idCharacter = ? AND itemstypes.idType = ?;", [this.id, idEmplacement]);
+        let res = conn.query("SELECT itemstypes.nomType, charactersequipements.idItem, itemssoustypes.nomSousType FROM charactersequipements INNER JOIN items ON items.idItem = charactersequipements.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE charactersequipements.idCharacter = ? AND itemstypes.idType = ?;", [this.id, idEmplacement]);
         if (res[0]) {
-            return Item.newItem(res[0].idItem, res[0].nomType);
+            return Item.newItem(res[0].idItem, res[0].nomSousType);
+        }
+        return null;
+    }
+
+    getItemByTypeName(typeName) {
+        let res = conn.query("SELECT itemstypes.nomType, charactersequipements.idItem, itemssoustypes.nomSousType FROM charactersequipements INNER JOIN items ON items.idItem = charactersequipements.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE charactersequipements.idCharacter = ? AND itemstypes.nomType = ?;", [this.id, typeName]);
+        if (res[0]) {
+            return Item.newItem(res[0].idItem, res[0].nomSousType);
         }
         return null;
     }
@@ -144,12 +152,7 @@ class CharacterEquipement {
     }
 
     apiGetAllImages() {
-        let toReturn = {
-            head: "",
-            chest: "",
-            legs: "",
-            weapon: ""
-        };
+        let toReturn = {};
 
         for (let i in this.objects) {
             toReturn[this.objects[i].typeName] = Globals.addr + "images/items/" + this.objects[i].image + ".png";

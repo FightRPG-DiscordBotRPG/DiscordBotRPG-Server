@@ -130,8 +130,8 @@
     "prefix_undefined": "O prefixo deve ter pelo menos 1 caractere",
     "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
 
-    "shop_item_dont_exist": "You must choose an existing item",
-    "shop_no_build": "There is no shop in this area"
+    "shop_item_dont_exist": "Você precisa escolher um item existente",
+    "shop_no_build": "Não há loja nesta área"
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",
@@ -207,7 +207,10 @@
     "list": "Lista de áreas",
     "list_regions_connected": "Regiões conectadas",
     "no_connected_regions": "Nenhuma região conectada à esta região",
-    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo."
+    "follow_the_link": "Você pode ter a lista de recursos através do link abaixo.",
+    "service_marketplace": "Mercado (Taxa: %d%)",
+    "service_forge": "Ferreiro (Criação: Nvl. %d - %d)",
+    "service_shop": "Loja (Taxa: %d%)"
   },
   "bonuses": {
     "bonuses": "Bônus",
@@ -340,7 +343,8 @@
     "travel_to_area_exhaust": "Você está cansado, você terá que esperar %d segundos antes de fazer algo novamente",
     "travel_planning": "Planejando viagem de \"%s\" para \"%s\"",
     "wait_time_title": "Tempo de espera estimado",
-    "wait_time_body": "%d segundos (Graças à sua constituição você ganhou %d segundos)",
+    "wait_time_body": "%d segundos",
+    "wait_time_body_with_mount": "%d segundos (Thanks to your mount you've gained %d segundos)",
     "gold_price_title": "Custo de ouro estimado",
     "gold_price_body": "%d G",
     "sure_to_travel_title": "Você tem certeza que quer viajar?",
@@ -403,6 +407,7 @@
     "fr": "Francês",
     "en": "Inglês",
     "pt-BR": "Português Brasileiro",
+    "ru": "Russian",
     "list_of_languages": "Lista de línguas disponíveis (use o atalho para mudar de língua)",
     "lang_changed": "Língua alterada com sucesso, o bot agora responderá em %s"
   },
@@ -423,7 +428,8 @@
     "herbs": "Erva",
     "resource": "Recurso",
     "lootbox": "Caixa de Espólios",
-    "potion": "Poção"
+    "potion": "Poção",
+    "mount": "Mount"
   },
   "item_sous_types": {
     "wood": "Madeira",
@@ -435,7 +441,8 @@
     "loot_box_equipment": "Caixa de Equipamento",
     "reset_time_potion": "Anti-Cansaço",
     "founder_box": "Recompensa de Fundador",
-    "random_loot_box_equipment": "Caixa de Equipamento Aleatório"
+    "random_loot_box_equipment": "Caixa de Equipamento Aleatório",
+    "horse": "Horse"
   },
   "stats": {
     "strength": "Força",
@@ -451,6 +458,7 @@
   },
   "lootboxes": {
     "open_message": "Você abriu uma caixa de espólios, você ganhou:\n",
+    "open_message_mult": "Você abriu %d caixas de espólios, você ganhou:\n",
     "no_drop": "Você abriu uma caixa de espólios, mas você não ganhou nada!",
     "no_drop_mult": "Você abriu %d caixas de espólios, mas você não ganhou nada!"
   },

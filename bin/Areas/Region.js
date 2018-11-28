@@ -125,7 +125,7 @@ class Region {
                 id: key,
                 name: this.connectedAreas.get(key).getName(lang),
                 levels: this.connectedAreas.get(key).minMaxLevelToString(),
-                region_name: Region.staticGetName(this.connectedAreas.get(key).idRegion),
+                region_name: Region.staticGetName(this.connectedAreas.get(key).idRegion, lang),
                 type: this.connectedAreas.get(key).areaType
             });
         }

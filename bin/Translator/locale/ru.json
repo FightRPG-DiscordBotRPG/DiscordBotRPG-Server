@@ -343,11 +343,12 @@
     "travel_to_area_exhaust": "Вы устали, вам придется подождать %d секунд, прежде чем делать что-то снова",
     "travel_planning": "Планирование поездки из \"%s\" в \"%s\"",
     "wait_time_title": "Ожидаемое время ожидания",
-    "wait_time_body": "%d секунд (Благодаря вашему телосложению вы получили %d секунд)",
+    "wait_time_body": "%d секунд",
+    "wait_time_body_with_mount": "%d секунд (Thanks to your mount you've gained %d seconds)",
     "gold_price_title": "Ожидаемая стоимость в золоте",
     "gold_price_body": "%d G",
     "sure_to_travel_title": "Вы уверены, что хотите путешествовать?",
-    "sure_to_travel_body": "%s => Yes\n%s => No",
+    "sure_to_travel_body": "%s => да\n%s => Нет",
     "travel_cancel": "Вы отменили свою поездку"
   },
   "fight_pve": {
@@ -427,7 +428,8 @@
     "herbs": "Трава",
     "resource": "Ресурс",
     "lootbox": "КоробкаДобычи",
-    "potion": "Зелье"
+    "potion": "Зелье",
+    "mount": "Mount"
   },
   "item_sous_types": {
     "wood": "Древесина",
@@ -439,7 +441,8 @@
     "loot_box_equipment": "Коробка Снаряжения",
     "reset_time_potion": "Анти-Усталость",
     "founder_box": "Вознаграждение Основателя",
-    "random_loot_box_equipment": "Random Equipment Box (RushB)"
+    "random_loot_box_equipment": "Random Equipment Box",
+    "horse": "Horse"
   },
   "stats": {
     "strength": "Сила",

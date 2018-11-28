@@ -521,10 +521,10 @@ class Character extends CharacterEntity {
     }
 
     getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
-        this.updateStats();
-        let conReduction = Math.floor(this.getStat("constitution") / 20);
-        conReduction = conReduction > waitTime / 2 ? waitTime / 2 : conReduction;
-        let baseTimeToWait = (waitTime - conReduction) * 1000;
+        let mount = this.getEquipement().getItemByTypeName("mount");
+        let multiplier = mount != null ? mount.getTravelReductionModifier() : 1;
+        let baseTimeToWait = Math.floor((waitTime * multiplier)) * 1000;
+        console.log(baseTimeToWait);
         return baseTimeToWait;
     }
 

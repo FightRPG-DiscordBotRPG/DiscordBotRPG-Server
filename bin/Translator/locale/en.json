@@ -343,7 +343,8 @@
     "travel_to_area_exhaust": "You are tired, you will have to wait %d seconds before doing something again",
     "travel_planning": "Planning travel from \"%s\" to \"%s\"",
     "wait_time_title": "Expected wait time",
-    "wait_time_body": "%d seconds (Thanks to your constitution you've gained %d seconds)",
+    "wait_time_body": "%d seconds",
+    "wait_time_body_with_mount": "%d seconds (Thanks to your mount you've gained %d seconds)",
     "gold_price_title": "Expected gold cost",
     "gold_price_body": "%d G",
     "sure_to_travel_title": "Are you sure you want to travel?",
@@ -427,7 +428,8 @@
     "herbs": "Herb",
     "resource": "Resource",
     "lootbox": "LootBox",
-    "potion": "Potion"
+    "potion": "Potion",
+    "mount": "Mount"
   },
   "item_sous_types": {
     "wood": "Wood",
@@ -439,7 +441,8 @@
     "loot_box_equipment": "Equipment Box",
     "reset_time_potion": "Anti-Tiredness",
     "founder_box": "Founder Reward",
-    "random_loot_box_equipment": "Random Equipment Box"
+    "random_loot_box_equipment": "Random Equipment Box",
+    "horse": "Horse"
   },
   "stats": {
     "strength": "Strength",
