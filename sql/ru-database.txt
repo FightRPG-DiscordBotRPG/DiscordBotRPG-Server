@@ -172,3 +172,11 @@ INSERT IGNORE INTO localizationmonsters VALUES
 INSERT IGNORE INTO `localizationitems` VALUES ('43', 'ru', 'Pandrandom & Pic Box', 'A box that should give you a chance to get efficient equipment.');
 
 INSERT IGNORE INTO `localizationitems` VALUES ('44', 'ru', 'Pandrandom Lay Gendary Box', 'An extraordinary box, filled with nothing most of the time. But who can let you see from time to time an exceptional equipment.');
+
+-- New items ?
+INSERT INTO itemslocalizations VALUES
+(45, "ru", "Chaos Sword", "This sword is made of magic from chaos shards from another dimension."), 
+(46, "ru", "Chaos Chest Armor", "This chest armor is made of magic from chaos shards from another dimension."),
+(47, "ru", "Chaos Leggings", "Theses leggings are made of magic from chaos shards from another dimension."),
+(48, "ru", "Chaos Helmet", "This helmet is made of magic from chaos shards from another dimension."),
+(49, "ru", "Chaos Shard", "Crystallized chaos from another dimension. As you get closer you can hear screams, cries and a strange and continuous noise from this object.");

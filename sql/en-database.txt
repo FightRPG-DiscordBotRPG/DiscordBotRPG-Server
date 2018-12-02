@@ -173,3 +173,11 @@ INSERT INTO localizationmonsters VALUES
 INSERT INTO `localizationitems` VALUES ('43', 'en', 'Pandrandom & Pic Box', 'A box that should give you a chance to get efficient equipment.');
 
 INSERT INTO `localizationitems` VALUES ('44', 'en', 'Pandrandom Lay Gendary Box', 'An extraordinary box, filled with nothing most of the time. But who can let you see from time to time an exceptional equipment.');
+
+-- New items ?
+INSERT INTO itemslocalizations VALUES
+(45, "en", "Chaos Sword", "This sword is made of magic from chaos shards from another dimension."), 
+(46, "en", "Chaos Chest Armor", "This chest armor is made of magic from chaos shards from another dimension."),
+(47, "en", "Chaos Leggings", "Theses leggings are made of magic from chaos shards from another dimension."),
+(48, "en", "Chaos Helmet", "This helmet is made of magic from chaos shards from another dimension."),
+(49, "en", "Chaos Shard", "Crystallized chaos from another dimension. As you get closer you can hear screams, cries and a strange and continuous noise from this object.");

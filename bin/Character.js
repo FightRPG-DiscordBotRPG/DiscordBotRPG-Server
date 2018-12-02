@@ -583,7 +583,8 @@ class Character extends CharacterEntity {
     }
 
     getAmountOfThisItem(idEmplacement) {
-        return this.getInv().getItem(idEmplacement).number;
+        let item = this.getInv().getItem(idEmplacement);
+        return item != null ? item.number : 0;
     }
 
     getIdOfThisIdBase(idBaseItem, level = 1) {
@@ -591,7 +592,8 @@ class Character extends CharacterEntity {
     }
 
     isItemFavorite(idEmplacement) {
-        return this.getInv().getItem(idEmplacement).isFavorite;
+        let item = this.getInv().getItem(idEmplacement);
+        return item != null ? item.isFavorite : false;
     }
 
     getIDGuild() {
@@ -617,7 +619,7 @@ class Character extends CharacterEntity {
     }
 
     toStrSimple() {
-        return this.getName() + " | " + this.getLevel() + " | " + this.getPower() + "%";
+        return this.getName() + " | " + this.getLevel() + " | " + this.getPower() + "";
     }
 
     toApiSimple() {

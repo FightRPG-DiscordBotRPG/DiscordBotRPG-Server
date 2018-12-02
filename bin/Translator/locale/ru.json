@@ -401,7 +401,8 @@
     "rare": "Редкий",
     "superior": "Превосходный",
     "epic": "Эпичный",
-    "legendary": "Легендарный"
+    "legendary": "Легендарный",
+    "mythic": "Мифический"
   },
   "languages": {
     "fr": "Французский",
@@ -442,7 +443,8 @@
     "reset_time_potion": "Анти-Усталость",
     "founder_box": "Вознаграждение Основателя",
     "random_loot_box_equipment": "Random Equipment Box",
-    "horse": "Horse"
+    "horse": "Horse",
+    "crystal": "Cyrstal"
   },
   "stats": {
     "strength": "Сила",

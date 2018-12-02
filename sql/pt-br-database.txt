@@ -169,6 +169,14 @@ INSERT INTO localizationmonsters VALUES
 
 
 -- Lootboxes Random
-INSERT INTO `localizationitems` VALUES ('43', 'en', 'Pandoraleatória & Caixa Pica', 'Uma caixa que deve dar-lhe uma chance de conseguir equipamento eficiente.');
+INSERT INTO `localizationitems` VALUES ('43', 'pt-br', 'Pandoraleatória & Caixa Pica', 'Uma caixa que deve dar-lhe uma chance de conseguir equipamento eficiente.');
 
-INSERT INTO `localizationitems` VALUES ('44', 'en', 'Caixa Lem Dária Pandoraleatória', 'Uma caixa extraordinária, cheia de nada na maioria das vezes. Mas esta de tempos em tempos pode deixá-lo obter um equipamento excepcional.');
+INSERT INTO `localizationitems` VALUES ('44', 'pt-br', 'Caixa Lem Dária Pandoraleatória', 'Uma caixa extraordinária, cheia de nada na maioria das vezes. Mas esta de tempos em tempos pode deixá-lo obter um equipamento excepcional.');
+
+-- New items ?
+INSERT INTO itemslocalizations VALUES
+(45, "pt-br", "Chaos Sword", "This sword is made of magic from chaos shards from another dimension."), 
+(46, "pt-br", "Chaos Chest Armor", "This chest armor is made of magic from chaos shards from another dimension."),
+(47, "pt-br", "Chaos Leggings", "Theses leggings are made of magic from chaos shards from another dimension."),
+(48, "pt-br", "Chaos Helmet", "This helmet is made of magic from chaos shards from another dimension."),
+(49, "pt-br", "Chaos Shard", "Crystallized chaos from another dimension. As you get closer you can hear screams, cries and a strange and continuous noise from this object.");

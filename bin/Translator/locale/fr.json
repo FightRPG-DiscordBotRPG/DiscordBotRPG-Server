@@ -401,7 +401,8 @@
     "rare": "Rare",
     "superior": "Supérieur",
     "epic": "Epique",
-    "legendary": "Légendaire"
+    "legendary": "Légendaire",
+    "mythic": "Mythique"
   },
   "languages": {
     "fr": "Français",
@@ -442,7 +443,8 @@
     "reset_time_potion": "Anti-Fatigue",
     "founder_box": "Récompense de Fondateur",
     "random_loot_box_equipment": "Coffre d'équipements aléatoire",
-    "horse": "Cheval"
+    "horse": "Cheval",
+    "crystal": "Cristal"
   },
   "stats": {
     "strength": "Force",

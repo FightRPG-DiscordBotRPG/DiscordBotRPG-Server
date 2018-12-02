@@ -177,7 +177,8 @@ class AreaTournament {
             return Translator.getString(lang, "area", "conquest_ongoing");
         }
 
-        return Translator.getString(lang, "area", "conquest_next", [AreaTournament.getNextTournament(idArea).toLocaleString(lang + "-" + lang.toUpperCase()) + " UTC", AreaTournament.getNumberOfGuildsEnrolled(idArea)]);
+        let langStr = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
+        return Translator.getString(lang, "area", "conquest_next", [AreaTournament.getNextTournament(idArea).toLocaleString(langStr) + " UTC", AreaTournament.getNumberOfGuildsEnrolled(idArea)]);
     }
 
     /**

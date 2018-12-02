@@ -29,7 +29,7 @@ class CharacterEquipement {
             embed = new Discord.RichEmbed()
                 .setAuthor(item.getName(lang) + (item.isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + item.image + ".png")
                 .setColor(item.rarityColor)
-                .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", item.getDesc(lang))
+                .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "" + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", item.getDesc(lang))
                 .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr({}, lang));
         } else {
             embed = "``` " + Translator.getString(lang, "inventory_equipment", "nothing_in_this_slot") + " ```";

@@ -401,7 +401,8 @@
     "rare": "Raro",
     "superior": "Superior",
     "epic": "Épico",
-    "legendary": "Lendário"
+    "legendary": "Lendário",
+    "mythic": "Mítico"
   },
   "languages": {
     "fr": "Francês",
@@ -429,7 +430,8 @@
     "resource": "Recurso",
     "lootbox": "Caixa de Espólios",
     "potion": "Poção",
-    "mount": "Mount"
+    "mount": "Mount",
+    "crystal": "Cyrstal"
   },
   "item_sous_types": {
     "wood": "Madeira",

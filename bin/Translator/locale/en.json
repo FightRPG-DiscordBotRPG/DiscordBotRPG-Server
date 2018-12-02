@@ -401,7 +401,8 @@
     "rare": "Rare",
     "superior": "Superior",
     "epic": "Epic",
-    "legendary": "Legendary"
+    "legendary": "Legendary",
+    "mythic": "Mythic"
   },
   "languages": {
     "fr": "French",
@@ -442,7 +443,8 @@
     "reset_time_potion": "Anti-Tiredness",
     "founder_box": "Founder Reward",
     "random_loot_box_equipment": "Random Equipment Box",
-    "horse": "Horse"
+    "horse": "Horse",
+    "crystal": "Cyrstal"
   },
   "stats": {
     "strength": "Strength",
