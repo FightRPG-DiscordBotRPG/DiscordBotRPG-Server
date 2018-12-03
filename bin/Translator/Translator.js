@@ -88,6 +88,18 @@ class Translator {
         }
     }
 
+    static loadBosses() {
+        let res = conn.query("SELECT * FROM localizationbosses");
+        let languages = conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["bossesNames"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["bossesNames"][trad.idBoss] = trad.nameBoss;
+        }
+    }
+
     static loadAreasBases() {
         let res = conn.query("SELECT * FROM localizationareas");
         let languages = conn.query("SELECT * FROM languages");

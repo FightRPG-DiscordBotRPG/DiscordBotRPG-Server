@@ -38,6 +38,15 @@ class CharacterInventory {
         }
     }
 
+    static addToInventory(idCharacter, idItem, number) {
+        number = number > 0 ? number : 1;
+        if (CharacterInventory.isThisItemInInventory(idCharacter, idItem)) {
+            conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, idCharacter, idItem]);
+        } else {
+            conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [idCharacter, idItem, number]);
+        }
+    }
+
     /*
     modInventory(idItem, number) {
         number = number ? number : 1;
@@ -255,6 +264,12 @@ class CharacterInventory {
         return res[0] != null;
     }
 
+    static isThisItemInInventory(idCharacter, idItem) {
+        idItem = idItem >= 0 ? idItem : 0;
+        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [idCharacter, idItem]);
+        return res[0] != null;
+    }
+
 
     /**
      * @deprecated
@@ -272,6 +287,15 @@ class CharacterInventory {
     getIdOfThisIdBase(idBaseItem, level = 1) {
         level = level >= 1 ? level : 1;
         let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
+        if (res[0]) {
+            return res[0].idItem;
+        }
+        return null;
+    }
+
+    static getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
+        level = level >= 1 ? level : 1;
+        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, idCharacter]);
         if (res[0]) {
             return res[0].idItem;
         }

@@ -1,5 +1,4 @@
 const conn = require("../../conf/mysql");
-const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const AreaTournamentRound = require("./AreaTournamentRound");
 

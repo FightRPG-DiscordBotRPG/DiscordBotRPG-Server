@@ -464,6 +464,13 @@
     "no_drop": "Você abriu uma caixa de espólios, mas você não ganhou nada!",
     "no_drop_mult": "Você abriu %d caixas de espólios, mas você não ganhou nada!"
   },
+  "world_bosses": {
+    "no_world_boss": "There is no world boss here",
+    "spawn_date": "Spawn Date: %s",
+    "last_boss_never_fight": "You have not fought in a world boss fight yet",
+    "boss_fight_recap_damage_dealt": "Damage Dealt: %d (Rank: %d)",
+    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)"
+  },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
     "reset_time": "Você sente seu cansaço indo embora, seu tempo de cansaço foi redefinido"

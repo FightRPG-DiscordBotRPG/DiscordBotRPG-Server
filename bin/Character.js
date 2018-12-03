@@ -524,7 +524,6 @@ class Character extends CharacterEntity {
         let mount = this.getEquipement().getItemByTypeName("mount");
         let multiplier = mount != null ? mount.getTravelReductionModifier() : 1;
         let baseTimeToWait = Math.floor((waitTime * multiplier)) * 1000;
-        console.log(baseTimeToWait);
         return baseTimeToWait;
     }
 

@@ -464,6 +464,13 @@
     "no_drop": "You opened a loot box, but you didn't get anything!",
     "no_drop_mult": "You opened %d loot boxes, but you didn't get anything!"
   },
+  "world_bosses": {
+    "no_world_boss": "There is no world boss here",
+    "spawn_date": "Spawn Date: %s",
+    "last_boss_never_fight": "You have not fought in a world boss fight yet",
+    "boss_fight_recap_damage_dealt": "Damage Dealt: %d (Rank: %d)",
+    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)"
+  },
   "potions": {
     "drink": "You drank: \"%s\"\n",
     "reset_time": "You feel your tiredness leaving, your tiredness time has been reset"

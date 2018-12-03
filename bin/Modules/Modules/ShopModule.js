@@ -23,7 +23,7 @@ const express = require("express");
 class ShopModule extends GModule {
     constructor() {
         super();
-        this.commands = ["sbuy"];
+        this.commands = ["sbuy", "sitems"];
         this.startLoading("Shop");
         this.init();
         this.endLoading("Shop");

@@ -11,6 +11,7 @@ const ModuleHandler = require("./bin/Modules/ModuleHandler");
 const User = require("./bin/User");
 const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
+const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
 const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
@@ -69,6 +70,9 @@ syncStartWith = Date.now();
 console.log("Loading Fight Manager...");
 Globals.fightManager = new FightManager();
 console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+let wbs = new WorldBossSpawner();
+wbs.startUp();
 
 
 var connectedUsers = {};

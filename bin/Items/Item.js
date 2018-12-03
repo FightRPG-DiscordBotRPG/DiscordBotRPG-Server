@@ -90,11 +90,27 @@ class Item {
         for (let i of statsPossible) {
             let statPower = 0;
             if (i != "armor") {
-                statPower = this.stats[i] / (Globals.maxLevel * 2);
+                statPower = this.stats[i] / (50 * 2);
             } else {
-                statPower = this.stats[i] / Math.ceil((8 * (Math.pow(Globals.maxLevel, 2)) / 7) / 4.5);
+                statPower = this.stats[i] / Math.ceil((8 * (Math.pow(50, 2)) / 7) / 4.5);
             }
-            power += statPower;
+            let mult = 1;
+            switch (i) {
+                case "intellect":
+                case "wisdom":
+                case "luck":
+                case "perception":
+                    mult = 0.25;
+                    break;
+                case "dexterity":
+                    mult = 0.8;
+                    break;
+                case "will":
+                case "charisma":
+                case "armor":
+                    mult = 0.6;
+            }
+            power += statPower * mult;
         }
         return Math.floor(power / 5 * 100);
     }

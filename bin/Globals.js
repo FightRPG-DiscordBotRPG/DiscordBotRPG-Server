@@ -50,6 +50,7 @@ let rarityChances = {
     superieur: 6 / 100,
     epique: 0.9 / 100,
     legendaire: 0.1 / 100,
+    mythic: 0.01 / 100
 }
 
 let collectChances = {
@@ -58,6 +59,7 @@ let collectChances = {
     superieur: 9 / 100,
     epique: 1.25 / 100,
     legendaire: 0.25 / 100,
+    mythic: 0.025 / 100
 }
 
 var Globals = {
@@ -136,6 +138,9 @@ var Globals = {
             case 5:
                 rarityName = "legendary";
                 break;
+            case 6:
+                rarityName = "mythic";
+                break;
         }
         return rarityName;
     },
@@ -157,6 +162,9 @@ var Globals = {
                 break;
             case 5:
                 drop = rarityChances.legendaire;
+                break;
+            case 6:
+                drop = rarityChances.mythic;
                 break;
         }
         return drop;

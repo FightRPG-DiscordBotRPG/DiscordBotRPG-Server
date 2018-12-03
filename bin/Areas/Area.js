@@ -5,6 +5,7 @@ const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 const Discord = require("discord.js");
 const AreaBonus = require("./AreaBonus");
+const WorldBoss = require("../WorldBosses/WorldBoss");
 
 class Area {
 
@@ -634,6 +635,19 @@ class Area {
 
     minMaxLevelToString() {
         return this.minLevel != this.maxLevel ? this.minLevel + "-" + this.maxLevel : this.maxLevel + "";
+    }
+
+    /**
+     * @returns {WorldBoss}
+     */
+    async getWorldBoss() {
+        let res = conn.query("SELECT idSpawnedBoss FROM bossspawninfo WHERE idArea = ?;", [this.id]);
+        if (res[0]) {
+            let wb = new WorldBoss(res[0].idSpawnedBoss);
+            await wb.load();
+            return wb;
+        }
+        return null;
     }
 
 }

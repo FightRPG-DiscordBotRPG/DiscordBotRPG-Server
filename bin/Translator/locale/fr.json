@@ -464,6 +464,13 @@
     "no_drop": "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !",
     "no_drop_mult": "Vous avez ouvert %d coffres à butin, cependant vous n'avez rien eu !"
   },
+  "world_bosses": {
+    "no_world_boss": "Il n'y a pas de Boss Mondiaux ici",
+    "spawn_date": "Prochaine Apparition: %s",
+    "last_boss_never_fight": "Vous n'avez pas encore combattu de boss mondial",
+    "boss_fight_recap_damage_dealt": "Dommages Infligés : %d (Ragn : %d)",
+    "boss_fight_recap_attack_count": "Nombre d'Attaques : %d (Rang : %d)"
+  },
   "potions": {
     "drink": "Vous avez bu : \"%s\"\n",
     "reset_time": "Vous sentez votre fatigue partir, votre temps de fatigue a été réinitialisé"
