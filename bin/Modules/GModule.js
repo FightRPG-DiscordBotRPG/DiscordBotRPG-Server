@@ -50,7 +50,7 @@ class GModule {
                         let adminTell = "A module has crashed.\n" + this.commands.toString() + "\n" + "User that have crashed the command : " + (Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown");
 
                         try {
-                            await axios.post("http://127.0.0.1:48921", {
+                            await axios.post("http://127.0.0.1:48921/usr", {
                                 id: "241564725870198785",
                                 message: adminTell,
                             });

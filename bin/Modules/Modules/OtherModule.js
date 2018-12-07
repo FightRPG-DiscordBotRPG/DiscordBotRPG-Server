@@ -116,7 +116,7 @@ class OtherModule extends GModule {
 
     helpPanel(lang, page) {
         let str = "";
-        let maxPage = 6;
+        let maxPage = 7;
         page = page && page > 0 && page <= maxPage ? page : 1;
         let data = {};
         let commands = {};
@@ -228,12 +228,20 @@ class OtherModule extends GModule {
                     "sbuy <idItem> <amount>": Translator.getString(lang, "help_panel", "sbuy"),
                 }
 
+                commands[Translator.getString(lang, "help_panel", "world_boss_title")] = {
+                    "wbfight/wbattack": Translator.getString(lang, "help_panel", "wbfight"),
+                    "wbshowall": Translator.getString(lang, "help_panel", "wbshowall"),
+                    "wblastinfo": Translator.getString(lang, "help_panel", "wblastinfo"),
+                }
+                break;
+            case 7:
                 commands[Translator.getString(lang, "help_panel", "other_title")] = {
                     "lang": Translator.getString(lang, "help_panel", "lang"),
                     "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
                     "settings": Translator.getString(lang, "help_panel", "settings"),
                 }
                 break;
+
         }
 
         data.commands = commands;

@@ -131,7 +131,7 @@
     "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
 
     "shop_item_dont_exist": "Você precisa escolher um item existente",
-    "shop_no_build": "Não há loja nesta área"
+    "shop_no_building": "Não há loja nesta área"
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",
@@ -314,7 +314,8 @@
     "power": "Poder",
     "item_tag_as_favorite": "Este item agora está marcado como favorito",
     "item_untag_as_favorite": "Este item não está mais marcado como favorito",
-    "item_no_stats": "Este item não tem nenhum atributo"
+    "item_no_stats": "Este item não tem nenhum atributo",
+    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)"
   },
   "character": {
     "reset_done": "Redefinição completa!",
@@ -444,7 +445,8 @@
     "reset_time_potion": "Anti-Cansaço",
     "founder_box": "Recompensa de Fundador",
     "random_loot_box_equipment": "Caixa de Equipamento Aleatório",
-    "horse": "Horse"
+    "horse": "Horse",
+    "energy_potion": "Toning Potion"
   },
   "stats": {
     "strength": "Força",
@@ -473,7 +475,8 @@
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
-    "reset_time": "Você sente seu cansaço indo embora, seu tempo de cansaço foi redefinido"
+    "reset_time": "Você sente seu cansaço indo embora, seu tempo de cansaço foi redefinido",
+    "reduce_time": "You feel invigorated, your tiredness time has been reduced by: %d%"
   },
   "vote_daily": {
     "you_voted": "Você votou no bot, obrigado!\n",
@@ -576,6 +579,11 @@
     "shop_title": "Loja",
     "sitems": "Mostra todos os itens disponíveis para comprar nesta cidade em uma página específica",
     "sbuy": "Compra o item com o ID especificado",
+
+    "world_boss_title": "World Bosses",
+    "wbfight": "Attack the World Boss if there is one in the area where you are",
+    "wbshowall": "Displays infos about World Bosses",
+    "wbastinfo": "Show your stats for the last boss you killed",
 
     "settings": "Mostra o menu de configurações"
   },

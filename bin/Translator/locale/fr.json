@@ -131,7 +131,7 @@
     "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le prefix",
 
     "shop_item_dont_exist": "Vous devez choisir un objet qui existe",
-    "shop_no_build": "Il n'y a pas de magasin dans cette zone"
+    "shop_no_building": "Il n'y a pas de magasin dans cette zone"
   },
   "craft": {
     "header_required": "Nom - Type - Sous-Type - Rareté - Nombre",
@@ -314,7 +314,8 @@
     "power": "Puissance",
     "item_tag_as_favorite": "Cet objet est maintenant marqué comme favori",
     "item_untag_as_favorite": "Cet objet n'est désormais plus marqué comme favori",
-    "item_no_stats": "Cet objet n'a pas de stats !"
+    "item_no_stats": "Cet objet n'a pas de stats !",
+    "wait_time_reduction": "(Réduit le temps de fatigue restant de %d%)"
   },
   "character": {
     "reset_done": "Réinitialisation terminée !",
@@ -444,7 +445,8 @@
     "founder_box": "Récompense de Fondateur",
     "random_loot_box_equipment": "Coffre d'équipements aléatoire",
     "horse": "Cheval",
-    "crystal": "Cristal"
+    "crystal": "Cristal",
+    "energy_potion": "Potion Tonifiante"
   },
   "stats": {
     "strength": "Force",
@@ -468,12 +470,13 @@
     "no_world_boss": "Il n'y a pas de Boss Mondiaux ici",
     "spawn_date": "Prochaine Apparition: %s",
     "last_boss_never_fight": "Vous n'avez pas encore combattu de boss mondial",
-    "boss_fight_recap_damage_dealt": "Dommages Infligés : %d (Ragn : %d)",
+    "boss_fight_recap_damage_dealt": "Dommages Infligés : %d (Rang : %d)",
     "boss_fight_recap_attack_count": "Nombre d'Attaques : %d (Rang : %d)"
   },
   "potions": {
     "drink": "Vous avez bu : \"%s\"\n",
-    "reset_time": "Vous sentez votre fatigue partir, votre temps de fatigue a été réinitialisé"
+    "reset_time": "Vous sentez votre fatigue partir, votre temps de fatigue a été réinitialisé",
+    "reduce_time": "Vous vous sentez revigoré, votre temps de fatigue à été réduit de : %d%"
   },
   "vote_daily": {
     "you_voted": "Vous avez voté pour le bot, merci à vous !\n",
@@ -576,6 +579,11 @@
     "shop_title": "Magasin",
     "sitems": "Affiche la liste des objets disponibles, à la page souhaité",
     "sbuy": "Achète l'objet dont l'id est passé en paramètre",
+
+    "world_boss_title": "Boss Mondiaux",
+    "wbfight": "Attaque le Boss Mondial qui se trouve quand la zone où vous êtes",
+    "wbshowall": "Affiche des informations sur les Boss Mondiaux",
+    "wbastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
 
     "settings": "Affiche le menu des paramètres"
   },

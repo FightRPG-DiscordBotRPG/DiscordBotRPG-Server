@@ -12,6 +12,7 @@ const User = require("./bin/User");
 const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
 const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
+const axios = require("axios").default;
 const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
@@ -23,20 +24,19 @@ dbl.webhook.on('ready', hook => {
 
 if (conf.env === "prod") {
 
-    dbl.webhook.on('vote', vote => {
-        if (User.exist(vote.user)) {
-            let user = new User(vote.user);
-            user.loadUser();
+    dbl.webhook.on('vote', async (vote) => {
+        let idAndLang = User.getIdAndLang(vote.user);
+        if (idAndLang != null) {
             let ls = new LootSystem();
-            ls.giveToPlayer(user.character, 41, 1, vote.isWeekend ? 2 : 1);
-            let lang = user.getLang();
+            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1);
+            let lang = idAndLang.lang;
             let msg = Translator.getString(lang, "vote_daily", "you_voted");
             if (vote.isWeekend) {
                 msg += Translator.getString(lang, "vote_daily", "vote_week_end");
             } else {
                 msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
             }
-            user.tell(msg);
+            User.tell(vote.user, msg);
         }
 
     });

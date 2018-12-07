@@ -2,6 +2,7 @@ const conn = require("../../conf/mysql.js");
 const Translator = require("../Translator/Translator");
 const WorldBoss = require("./WorldBoss");
 const LootSystem = require("../LootSystem");
+const axios = require("axios").default;
 
 class WorldBossSpawner {
     async startUp() {
@@ -79,47 +80,272 @@ class WorldBossSpawner {
         return toApi;
     }
 
+    static async getStatsFromFight(spawnedBossId) {
+        return conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId])[0];
+    }
+
     async spawnBoss() {
         let res = conn.query("SELECT idArea, bosses.idBoss, hpBase FROM bossspawninfo INNER JOIN bosses ON bosses.idBoss = bossspawninfo.idBoss;")[0];
-        let hp = 3000;
         let idInsert = conn.query("INSERT INTO spawnedbosses VALUES (NULL, ?, ?, ?)", [hp, hp, res.idBoss])["insertId"];
         conn.query("INSERT INTO spawnedbossesareas VALUES (?, ?);", [idInsert, res.idArea]);
+        conn.query("INSERT INTO wbrewardstates VALUES (?, 0)", [idInsert]);
         conn.query("UPDATE bossspawninfo SET idSpawnedBoss = ? WHERE bossspawninfo.idBoss = ?;", [idInsert, res.idBoss]);
+        WorldBossSpawner.announceWorldBossSpawn();
+    }
+
+    static async announceWorldBossSpawn() {
+        let binfo = await WorldBossSpawner.getBossesInfos();
+        binfo = binfo.bosses[0];
+        let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName;
+        WorldBossSpawner.wbTell(str);
+    }
+
+    static async announceNextBoss(oldWorldBossId) {
+        let binfo = await WorldBossSpawner.getBossesInfos();
+        binfo = binfo.bosses[0];
+        let statsFight = await WorldBossSpawner.getStatsFromFight(oldWorldBossId);
+        let date = new Date();
+        date.setTime(binfo.spawnDate);
+        let str = "";
+
+        let damageGap = (statsFight.highestDamages - statsFight.averageDamages) / statsFight.averageDamages;
+        let dmgImpressive = "";
+        if (damageGap >= 2 && damageGap < 4) {
+            dmgImpressive = "Wow Nice!";
+        } else if (damageGap >= 4 && damageGap < 10) {
+            dmgImpressive = "That's someone with a real dedication in killing things!"
+        } else if (damageGap >= 10) {
+            dmgImpressive = "Well, it's clear that he did all the job! Good job!"
+        }
+
+        let attackGap = (statsFight.totalAttacks - statsFight.averageAttackCount) / statsFight.averageAttackCount;
+        let atkImpressive = "";
+        if (attackGap >= 2 && attackGap < 4) {
+            atkImpressive = "Someone really like doing bot commands!";
+        } else if (attackGap >= 4 && attackGap < 10) {
+            atkImpressive = "I don't even want to count how much commands he must have done!"
+        } else if (attackGap >= 10) {
+            atkImpressive = "Well, how is this even possible! Well done!"
+        }
+
+        str += "Thanks to all participants the current World Boss has been slain! Here are some stats about the great fight against it:\n";
+        str += "\\`\\`\\`" +
+            "Average damage dealt: " + statsFight.averageDamages + "\n" +
+            "The #1 player damage-wise dealt: " + statsFight.highestDamages + " damage points! That's about x" + damageGap.toFixed(2) + " more than the average damage dealt! " + dmgImpressive + "\n\n" +
+            "Total attacks dealt: " + statsFight.totalAttacks + "\n" +
+            "Average number of attacks: " + statsFight.averageAttackCount + "\n" +
+            "The #1 player in attack count dealt: " + statsFight.highestAttackCount + " attacks! That's about x" + attackGap.toFixed(2) + " more than the average attack count! " + atkImpressive + "\\`\\`\\`" + "\n";
+        str += "Your rewards is being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
+        str += "Next boss will arrive soon, here are some informations about the next boss spawn!\n";
+        str += "\\`\\`\\`" + Translator.getString("en", "world_bosses", "spawn_date", [date.toLocaleString("en-EN") + " UTC"]) + "\\`\\`\\`";
+        WorldBossSpawner.wbTell(str);
     }
 
     static async giveRewards(worldBossId) {
-        WorldBossSpawner.giveRewardsToTopDamage(worldBossId);
-        WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId);
+        conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
+        // Must be redone to know if players got the rewards
+        await Promise.all([WorldBossSpawner.giveRewardsToTopDamage(worldBossId), WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId)]);
+        conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
     }
 
     static async giveRewardsToTopDamage(worldBossId) {
-        let lt = new LootSystem();
-        let res = conn.query("SELECT idCharacter, damage FROM charactersattacks WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC", [worldBossId]);
-        let i = 1;
-        for (let info of res) {
-            if (i < 11) {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 10);
-            } else if (i >= 11 && i <= 100) {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 5);
-            } else {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 1);
-            }
-        }
+        WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
     }
 
     static async giveRewardsToTopAttackCount(worldBossId) {
-        let res = conn.query("SELECT idCharacter, attackCount FROM charactersattacks WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC", [worldBossId]);
-        let i = 1
+        WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
+    }
+
+    static giveToRewardsToPlayers(worldBossId) {
+        let res = conn.query("SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC", [worldBossId]);
+        let rank = 1
         let lt = new LootSystem();
         for (let info of res) {
-            if (i < 11) {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 10);
-            } else if (i >= 11 && i <= 100) {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 5);
-            } else {
-                lt.giveToPlayerDatabase(info.idCharacter, 49, 1, 1);
+            let items = WorldBossSpawner.getRewardsByRank(rank, info.actualLevel);
+            for (let item of items) {
+                lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number);
             }
+            rank++;
         }
+    }
+
+    static getRewardsByRank(rank, level) {
+        let crystals = 1;
+        let items = [];
+        if (rank == 1) {
+            crystals = 100;
+            items.push({
+                id: 44,
+                number: 50,
+                level: level
+            }, {
+                id: 51,
+                number: 5,
+                level: level
+            });
+        } else if (rank == 2) {
+            crystals = 85;
+            items.push({
+                id: 44,
+                number: 40,
+                level: level
+            }, {
+                id: 55,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 3 && rank <= 5) {
+            crystals = 70;
+            items.push({
+                id: 44,
+                number: 30,
+                level: level
+            }, {
+                id: 54,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 6 && rank <= 25) {
+            crystals = 50;
+            items.push({
+                id: 44,
+                number: 20,
+                level: level
+            }, {
+                id: 53,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 26 && rank <= 50) {
+            crystals = 30;
+            items.push({
+                id: 44,
+                number: 15,
+                level: level
+            }, {
+                id: 52,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 51 && rank <= 250) {
+            crystals = 20;
+            items.push({
+                id: 44,
+                number: 12,
+                level: level
+            }, {
+                id: 51,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 251 && rank <= 500) {
+            crystals = 10;
+            items.push({
+                id: 43,
+                number: 16,
+                level: level
+            }, {
+                id: 50,
+                number: 10,
+                level: level
+            });
+        } else if (rank >= 501 && rank <= 1000) {
+            crystals = 8;
+            items.push({
+                id: 43,
+                number: 14,
+                level: level
+            }, {
+                id: 50,
+                number: 8,
+                level: level
+            });
+        } else if (rank >= 1001 && rank <= 2000) {
+            crystals = 7;
+            items.push({
+                id: 43,
+                number: 12,
+                level: level
+            }, {
+                id: 50,
+                number: 7,
+                level: level
+            });
+        } else if (rank >= 2001 && rank <= 3000) {
+            crystals = 6;
+            items.push({
+                id: 43,
+                number: 10,
+                level: level
+            }, {
+                id: 50,
+                number: 6,
+                level: level
+            });
+        } else if (rank >= 3001 && rank <= 4000) {
+            crystals = 5;
+            items.push({
+                id: 43,
+                number: 8,
+                level: level
+            }, {
+                id: 50,
+                number: 5,
+                level: level
+            });
+        } else if (rank >= 4001 && rank <= 5000) {
+            crystals = 4;
+            items.push({
+                id: 43,
+                number: 6,
+                level: level
+            }, {
+                id: 50,
+                number: 4,
+                level: level
+            });
+        } else if (rank >= 5001 && rank <= 7500) {
+            crystals = 3;
+            items.push({
+                id: 43,
+                number: 4,
+                level: level
+            }, {
+                id: 50,
+                number: 3,
+                level: level
+            });
+        } else if (rank >= 7501 && rank <= 10000) {
+            crystals = 2;
+            items.push({
+                id: 43,
+                number: 2,
+                level: level
+            }, {
+                id: 50,
+                number: 2,
+                level: level
+            });
+        } else {
+            crystals = 1;
+            items.push({
+                id: 43,
+                number: 1,
+                level: level
+            }, {
+                id: 50,
+                number: 1,
+                level: level
+            });
+
+        }
+
+        items.push({
+            id: 49,
+            number: crystals,
+            level: 1
+        });
+        return items;
     }
 
     static async getRankDamage(idCharacter, idSpawnedBoss) {
@@ -132,6 +358,11 @@ class WorldBossSpawner {
         return res != null && res[0] ? res[0].rank : 1;
     }
 
+    /**
+     * 
+     * @param {Character} character 
+     * @param {WorldBoss} wb 
+     */
     static async userAttack(character, wb) {
         let damage = character.damageCalcul();
         let isCriticalHit = character.isThisACriticalHit();
@@ -147,6 +378,7 @@ class WorldBossSpawner {
             await wbs.reset();
             await wbs.init();
             await wbs.startUp();
+            WorldBossSpawner.announceNextBoss(wb.id);
         }
         character.waitForNextPvPFight();
         return {
@@ -169,6 +401,7 @@ class WorldBossSpawner {
         let res = conn.query("SELECT * FROM charactersattacks WHERE charactersattacks.idCharacter = ? AND charactersattacks.idSpawnedBoss NOT IN (SELECT bossspawninfo.idSpawnedBoss FROM bossspawninfo WHERE bossspawninfo.idSpawnedBoss != NULL) ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;", [idCharacter]);
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
+            await wb.load();
             return {
                 damage: res[0].damage,
                 attackCount: res[0].attackCount,
@@ -178,6 +411,16 @@ class WorldBossSpawner {
             }
         }
         return null;
+    }
+
+    static async wbTell(msg) {
+        try {
+            await axios.post("http://127.0.0.1:48921/wb", {
+                message: msg,
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 

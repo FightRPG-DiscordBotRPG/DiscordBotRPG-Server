@@ -131,7 +131,7 @@
     "prefix_not_owner_server": "Вы должны владеть этим сервером, чтобы изменить префикс",
 
     "shop_item_dont_exist": "You must choose an existing item",
-    "shop_no_build": "There is no shop in this area"
+    "shop_no_building": "There is no shop in this area"
   },
   "craft": {
     "header_required": "Имя - Тип - Подтип - Редкость - Число",
@@ -314,7 +314,8 @@
     "power": "Мощность",
     "item_tag_as_favorite": "Теперь этот предмет помечен как избранный",
     "item_untag_as_favorite": "Этот предмет больше не помечен как избранное",
-    "item_no_stats": "Этот предмет не имеет характеристик"
+    "item_no_stats": "Этот предмет не имеет характеристик",
+    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)"
   },
   "character": {
     "reset_done": "Сброс завершен!",
@@ -444,7 +445,8 @@
     "founder_box": "Вознаграждение Основателя",
     "random_loot_box_equipment": "Random Equipment Box",
     "horse": "Horse",
-    "crystal": "Cyrstal"
+    "crystal": "Cyrstal",
+    "energy_potion": "Toning Potion"
   },
   "stats": {
     "strength": "Сила",
@@ -473,7 +475,8 @@
   },
   "potions": {
     "drink": "Вы выпили: \"%s\"\n",
-    "reset_time": "Вы чувствуете, что ваша усталость уходит, ваше время усталости было сброшено"
+    "reset_time": "Вы чувствуете, что ваша усталость уходит, ваше время усталости было сброшено",
+    "reduce_time": "You feel invigorated, your tiredness time has been reduced by: %d%"
   },
   "vote_daily": {
     "you_voted": "Вы проголосовали за бота, спасибо вам!\n",
@@ -576,6 +579,11 @@
     "shop_title": "Shop",
     "sitems": "Show all the available items to buy in this city at given page",
     "sbuy": "Buy the item of given ID",
+
+    "world_boss_title": "World Bosses",
+    "wbfight": "Attack the World Boss if there is one in the area where you are",
+    "wbshowall": "Displays infos about World Bosses",
+    "wbastinfo": "Show your stats for the last boss you killed",
 
     "settings": "Показывает меню настроек"
   },

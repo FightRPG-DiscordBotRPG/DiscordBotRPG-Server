@@ -1,4 +1,4 @@
-const Translator = require("../Translator/Translator");
+const Translator = require("../../Translator/Translator");
 const Potion = require("./Potion");
 
 class ResetTimePotion extends Potion {

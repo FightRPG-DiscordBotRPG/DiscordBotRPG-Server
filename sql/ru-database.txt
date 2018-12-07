@@ -179,4 +179,15 @@ INSERT INTO itemslocalizations VALUES
 (46, "ru", "Chaos Chest Armor", "This chest armor is made of magic from chaos shards from another dimension."),
 (47, "ru", "Chaos Leggings", "Theses leggings are made of magic from chaos shards from another dimension."),
 (48, "ru", "Chaos Helmet", "This helmet is made of magic from chaos shards from another dimension."),
-(49, "ru", "Chaos Shard", "Crystallized chaos from another dimension. As you get closer you can hear screams, cries and a strange and continuous noise from this object.");
+(49, "ru", "Chaos Shard", "Crystallized chaos from another dimension. As you get closer you can hear screams, cries and a strange and continuous noise from this object."),
+(50, "ru", "Homemade Energy Drink", "This drink is probably the least effective that exists, but you will still feel a little less tired."),
+(51, "ru", "Energy Drink", "One of the most popular drinks to avoid sleeping!"),
+(52, "ru", "Exotic Energy Drink", "A drink with an extraordinary taste, surely the best on the market."),
+(53, "ru", "Golden Energy Drink", "A golden drink is something you've never seen before! It also seems to have a very special taste!"),
+(54, "ru", "Multicoloured Energy Drink", "You are facing a magnificent spectacle, this drink is illuminated with colors. Its taste is, like its colour, just as varied."),
+(55, "ru", "Divine Energy Drink", "This drink seems to be a gift from the gods, it shines on all sides and seems to want to be drunk at all costs.");
+
+INSERT INTO localizationbosses VALUES (1, "ru", "Clusters of Spirits of Ancient Adventurers"),
+(2, "ru", "Angry Nature Spirit"),
+(3, "ru", "Spirit of an Ancient Desert God"),
+(4, "ru", "Demon World Destroyer");

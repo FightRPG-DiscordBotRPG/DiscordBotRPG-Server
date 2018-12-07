@@ -117,6 +117,16 @@ class Character extends CharacterEntity {
         this.setWaitTime(0);
     }
 
+    /**
+     * 
+     * @param {Number} percentage 
+     */
+    reduceWaitTime(percentage = 0) {
+        percentage = percentage >= 0 && percentage <= 1 ? percentage : 0;
+        let reduce = this.getExhaustMillis() * percentage;
+        this.setWaitTime(this.getWaitTime() - reduce);
+    }
+
     setWaitTime(time) {
         this.canFightAt = time;
     }

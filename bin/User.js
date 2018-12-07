@@ -97,6 +97,16 @@ class User {
         return res[0] != null;
     }
 
+    static getCharacterId(idUser) {
+        let res = conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [idUser]);
+        return res[0] != null ? res[0].idCharacter : null;
+    }
+
+    static getIdAndLang(idUser) {
+        let res = conn.query("SELECT idCharacter, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE users.idUser = ?;", [idUser]);
+        return res[0] != null ? res[0] : null;
+    }
+
     getUsername() {
         return this.username;
     }
@@ -157,14 +167,24 @@ class User {
 
     async tell(str) {
         try {
-            await axios.post("http://127.0.0.1:48921", {
+            await axios.post("http://127.0.0.1:48921/usr", {
                 id: this.id,
                 message: str,
             });
         } catch (e) {
             console.log(e);
         }
+    }
 
+    static async tell(id, str) {
+        try {
+            await axios.post("http://127.0.0.1:48921/usr", {
+                id: id,
+                message: str,
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     //Affichage

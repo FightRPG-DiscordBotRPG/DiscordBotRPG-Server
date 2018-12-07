@@ -242,6 +242,8 @@ Item.newItem = (idItem, stype) => {
             return new EquipmentRandomLootBox(idItem);
         case "horse":
             return new Horse(idItem);
+        case "energy_potion":
+            return new EnergyPotion(idItem);
         default:
             return new Item(idItem);
     }
@@ -251,7 +253,8 @@ module.exports = Item;
 
 const EquipmentLootBox = require("./LootBoxes/EquipmentLootBox");
 const Consumable = require("./Consumable");
-const ResetTimePotion = require("./ResetTimePotion");
+const ResetTimePotion = require("./Potions/ResetTimePotion");
 const FounderGift = require("./LootBoxes/FounderGift");
 const EquipmentRandomLootBox = require("./LootBoxes/EquipmentRandomLootBox");
 const Horse = require("./Mounts/Horse");
+const EnergyPotion = require("./Potions/EnergyPotion");

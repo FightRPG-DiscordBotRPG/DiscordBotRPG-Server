@@ -1,5 +1,5 @@
-const Translator = require("../Translator/Translator");
-const Consumable = require("./Consumable");
+const Translator = require("../../Translator/Translator");
+const Consumable = require("../Consumable");
 
 class Potion extends Consumable {
     constructor(id) {

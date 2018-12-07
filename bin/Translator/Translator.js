@@ -145,6 +145,7 @@ Translator.loadItemsBases();
 Translator.loadAreasBases();
 Translator.loadRegionsBases();
 Translator.loadMonstersBases();
+Translator.loadBosses();
 
 /*
 var sizeof = require('object-sizeof');
