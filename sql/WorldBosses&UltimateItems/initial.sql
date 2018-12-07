@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`wbrewardstates` (
   PRIMARY KEY (`idSpawnedBoss`),
   CONSTRAINT `fk_WBRewardStates_SpawnedBosses1`
     FOREIGN KEY (`idSpawnedBoss`)
-    REFERENCES `discord_bot_rpg`.`SpawnedBosses` (`idSpawnedBoss`)
+    REFERENCES `discord_bot_rpg`.`spawnedbosses` (`idSpawnedBoss`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB

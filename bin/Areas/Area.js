@@ -642,7 +642,7 @@ class Area {
      */
     async getWorldBoss() {
         let res = conn.query("SELECT idSpawnedBoss FROM bossspawninfo WHERE idArea = ?;", [this.id]);
-        if (res[0]) {
+        if (res[0] != null && res[0].idSpawnedBoss != null) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();
             return wb;
