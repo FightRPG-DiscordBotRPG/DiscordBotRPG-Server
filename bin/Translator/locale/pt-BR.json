@@ -314,8 +314,8 @@
     "power": "Poder",
     "item_tag_as_favorite": "Este item agora está marcado como favorito",
     "item_untag_as_favorite": "Este item não está mais marcado como favorito",
-    "item_no_stats": "Este item não tem nenhum atributo",
-    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)"
+    "item_no_stats": "Este item não possui nenhum atributo",
+    "wait_time_reduction": "(Reduz o tempo de fatiga restante em %d%)"
   },
   "character": {
     "reset_done": "Redefinição completa!",
@@ -345,7 +345,7 @@
     "travel_planning": "Planejando viagem de \"%s\" para \"%s\"",
     "wait_time_title": "Tempo de espera estimado",
     "wait_time_body": "%d segundos",
-    "wait_time_body_with_mount": "%d segundos (Thanks to your mount you've gained %d segundos)",
+    "wait_time_body_with_mount": "%d segundos (Graças à sua montaria, você ganhou %d segundos)",
     "gold_price_title": "Custo de ouro estimado",
     "gold_price_body": "%d G",
     "sure_to_travel_title": "Você tem certeza que quer viajar?",
@@ -431,8 +431,7 @@
     "resource": "Recurso",
     "lootbox": "Caixa de Espólios",
     "potion": "Poção",
-    "mount": "Mount",
-    "crystal": "Cyrstal"
+    "mount": "Montaria"
   },
   "item_sous_types": {
     "wood": "Madeira",
@@ -445,8 +444,9 @@
     "reset_time_potion": "Anti-Cansaço",
     "founder_box": "Recompensa de Fundador",
     "random_loot_box_equipment": "Caixa de Equipamento Aleatório",
-    "horse": "Horse",
-    "energy_potion": "Toning Potion"
+    "horse": "Cavalo",
+    "crystal": "Cristal",
+    "energy_potion": "Poção de Tonificação"
   },
   "stats": {
     "strength": "Força",
@@ -467,16 +467,16 @@
     "no_drop_mult": "Você abriu %d caixas de espólios, mas você não ganhou nada!"
   },
   "world_bosses": {
-    "no_world_boss": "There is no world boss here",
-    "spawn_date": "Spawn Date: %s",
-    "last_boss_never_fight": "You have not fought in a world boss fight yet",
-    "boss_fight_recap_damage_dealt": "Damage Dealt: %d (Rank: %d)",
-    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)"
+    "no_world_boss": "Não há chefe global aqui",
+    "spawn_date": "Data de Spawn: %s",
+    "last_boss_never_fight": "Você não lutou em uma batalha de chefe global ainda",
+    "boss_fight_recap_damage_dealt": "Dano Causado: %d (Classificação: %d)",
+    "boss_fight_recap_attack_count": "Número de Ataques: %d (Classificação: %d)"
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
     "reset_time": "Você sente seu cansaço indo embora, seu tempo de cansaço foi redefinido",
-    "reduce_time": "You feel invigorated, your tiredness time has been reduced by: %d%"
+    "reduce_time": "Você se sente revigorado, seu tempo de cansaço foi reduzido em: %d%"
   },
   "vote_daily": {
     "you_voted": "Você votou no bot, obrigado!\n",
@@ -506,7 +506,7 @@
     "character_title": "Personagem",
     "info": "Mostra as informações do seu personagem",
     "up": "Adiciona ao atributo <statName> um número de Pontos",
-    "leaderboard": "Mostra seu ranking PvP",
+    "leaderboard": "Mostra sua classificação PvP",
     "reset": "Lhe permite redefinir seus atributos",
 
     "fight_title": "Lutas",
@@ -580,10 +580,10 @@
     "sitems": "Mostra todos os itens disponíveis para comprar nesta cidade em uma página específica",
     "sbuy": "Compra o item com o ID especificado",
 
-    "world_boss_title": "World Bosses",
-    "wbfight": "Attack the World Boss if there is one in the area where you are",
-    "wbshowall": "Displays infos about World Bosses",
-    "wbastinfo": "Show your stats for the last boss you killed",
+    "world_boss_title": "Chefes Globais",
+    "wbfight": "Ataca o Chefe Global caso haja um na área onde você está",
+    "wbshowall": "Mostra informações sobre Chefes Globais",
+    "wbastinfo": "Mostra seus status do último chefe que você matou",
 
     "settings": "Mostra o menu de configurações"
   },

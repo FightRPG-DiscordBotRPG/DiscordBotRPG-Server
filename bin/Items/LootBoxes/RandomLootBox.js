@@ -1,6 +1,5 @@
 const Globals = require("../../Globals");
 const LootBox = require("./LootBox");
-const LootSystem = require("../../LootSystem");
 
 
 class RandomLootBox extends LootBox {
@@ -23,6 +22,7 @@ class RandomLootBox extends LootBox {
 
     use(character) {
         this.numberOfUse++;
+        const LootSystem = require("../../LootSystem");
         let ls = new LootSystem();
         let totalDrop = 0;
         //console.log("Random Loot Box");

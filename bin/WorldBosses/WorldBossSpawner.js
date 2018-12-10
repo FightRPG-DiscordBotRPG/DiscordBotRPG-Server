@@ -86,7 +86,7 @@ class WorldBossSpawner {
 
     async spawnBoss() {
         let res = conn.query("SELECT idArea, bosses.idBoss, hpBase FROM bossspawninfo INNER JOIN bosses ON bosses.idBoss = bossspawninfo.idBoss;")[0];
-        let idInsert = conn.query("INSERT INTO spawnedbosses VALUES (NULL, ?, ?, ?)", [hp, hp, res.idBoss])["insertId"];
+        let idInsert = conn.query("INSERT INTO spawnedbosses VALUES (NULL, ?, ?, ?)", [res.hpBase, res.hpBase, res.idBoss])["insertId"];
         conn.query("INSERT INTO spawnedbossesareas VALUES (?, ?);", [idInsert, res.idArea]);
         conn.query("INSERT INTO wbrewardstates VALUES (?, 0)", [idInsert]);
         conn.query("UPDATE bossspawninfo SET idSpawnedBoss = ? WHERE bossspawninfo.idBoss = ?;", [idInsert, res.idBoss]);

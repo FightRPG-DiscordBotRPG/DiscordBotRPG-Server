@@ -1,6 +1,4 @@
-const LootSystem = require("../../LootSystem");
 const LootBox = require("./LootBox");
-
 
 class FounderGift extends LootBox {
     constructor(id) {
@@ -9,6 +7,7 @@ class FounderGift extends LootBox {
 
     use(character) {
         this.numberOfUse++;
+        const LootSystem = require("../../LootSystem");
         let ls = new LootSystem();
         let items = [5, 10, 15, 20, 41];
         let numbers = [1, 1, 1, 1, 10];
