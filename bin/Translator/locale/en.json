@@ -490,12 +490,17 @@
 
     "inventory_title": "Inventory",
     "inv": "Shows the inventory",
+    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
     "item": "Shows the information of the selected item",
     "itemfav": "Tag an item as favorite to prevent its sale",
     "itemunfav": "Untag and item tag as favorite",
     "sell": "Sells the selected item",
     "sellall": "Sells all the inventory items",
     "sendmoney": "Send money to a player",
+
+    "filters_title": "Filters",
+    "rarities": "Displays the ids of every rarities",
+    "types": "Displays the ids of every item types",
 
     "equipment_title": "Equipment",
     "equipment": "Shows equipped items",
@@ -583,7 +588,7 @@
     "world_boss_title": "World Bosses",
     "wbfight": "Attack the World Boss if there is one in the area where you are",
     "wbshowall": "Displays infos about World Bosses",
-    "wbastinfo": "Show your stats for the last boss you killed",
+    "wblastinfo": "Show your stats for the last boss you killed",
 
     "settings": "Shows the settings menu"
   },

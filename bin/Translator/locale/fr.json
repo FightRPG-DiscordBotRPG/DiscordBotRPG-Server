@@ -490,12 +490,17 @@
 
     "inventory_title": "Inventaire",
     "inv": "Affiche l'inventaire",
+    "inv_filter": "Affiche l'inventaire et filtre les résultats. Filtres possibles : rarity,level,type",
     "item": "Affiche les informations sur l'objet choisi",
     "itemfav": "Marque un objet comme favori pour empêcher sa vente",
     "itemunfav": "Enlève la marque favori d'un objet pour qu'il puisse être vendu",
     "sell": "Vend l'objet choisi",
     "sellall": "Vend tous les objets de l'inventaire",
     "sendmoney": "Envoi de l'argent à un joueur",
+
+    "filters_title": "Filtres",
+    "rarities": "Affiche les identifiants correspondants à chaque rareté",
+    "types": "Affiche les identifiants correspondants à chaque types d'objets",
 
     "equipment_title": "Equipement",
     "equipment": "Affiche les objets équipés",
@@ -583,7 +588,7 @@
     "world_boss_title": "Boss Mondiaux",
     "wbfight": "Attaque le Boss Mondial qui se trouve quand la zone où vous êtes",
     "wbshowall": "Affiche des informations sur les Boss Mondiaux",
-    "wbastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
+    "wblastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
 
     "settings": "Affiche le menu des paramètres"
   },

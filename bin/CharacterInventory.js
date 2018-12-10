@@ -122,19 +122,47 @@ class CharacterInventory {
         return value;
     }
 
-    getAllItemsAtThisPage(page) {
+
+
+    /**
+     * 
+     * @param {*} page 
+     * @param {{rarity: Number, type: Number, level: Number}} params 
+     */
+    getAllItemsAtThisPage(page, params) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
-        let maxPage = Math.ceil(this.getNumberOfItem() / perPage);
+        let maxPage = Math.ceil(this.getNumberOfItem(params) / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
-        let items = [];
+        let items = {};
+        let more = "";
+        let sqlParams = [this.id, perPage, (page - 1) * perPage];
+        if (params != null) {
+            let moreValue = null;
+            if (params.rarity != null && params.rarity > 0) {
+                more += "idRarity = ?";
+                moreValue = params.rarity;
+            } else if (params.level != null && params.level > 0) {
+                more += "level = ?";
+                moreValue = params.level;
+            } else if (params.type != null && params.type > 0) {
+                more += "idType = ?";
+                moreValue = params.type;
+            }
 
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT ? OFFSET ?;", [this.id, perPage, (page - 1) * perPage]);
+            if (moreValue != null) {
+                more = "WHERE " + more;
+                sqlParams.splice(1, 0, moreValue);
+            }
+
+        }
+
+        let res = conn.query("SELECT * FROM (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory " + more + " LIMIT ? OFFSET ? ;", sqlParams);
 
         for (let i in res) {
             let item = Item.newItem(res[i].idItem, res[i].nomSousType);
             item.number = res[i].number;
-            items[i] = item;
+            items[res[i].idEmplacement] = item;
         }
 
         return {
@@ -175,8 +203,14 @@ class CharacterInventory {
         return str;
     }
 
-    toApi(page, lang) {
-        let res = this.getAllItemsAtThisPage(page);
+    /**
+     * 
+     * @param {*} page 
+     * @param {*} lang 
+     * @param {{rarity: Number,type: Number,level: Number}} params
+     */
+    toApi(page, lang, params) {
+        let res = this.getAllItemsAtThisPage(page, params);
         for (let item in res.items) {
             res.items[item] = res.items[item].toApiLight(lang);
         }
@@ -207,8 +241,29 @@ class CharacterInventory {
         return this.getNumberOfItem() == 0;
     }
 
-    getNumberOfItem() {
-        let res = conn.query("SELECT COUNT(*) as cnt FROM charactersinventory WHERE idCharacter = ?;", [this.id]);
+    getNumberOfItem(params) {
+        let sqlParams = [this.id];
+        let more = "";
+        if (params != null) {
+            let moreValue = null;
+            if (params.rarity != null && params.rarity > 0) {
+                more += "idRarity = ?";
+                moreValue = params.rarity;
+            } else if (params.level != null && params.level > 0) {
+                more += "level = ?";
+                moreValue = params.level;
+            } else if (params.type != null && params.type > 0) {
+                more += "idType = ?";
+                moreValue = params.type;
+            }
+
+            if (moreValue != null) {
+                more = "AND " + more;
+                sqlParams.push(moreValue);
+            }
+
+        }
+        let res = conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? " + more + ";", sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
 

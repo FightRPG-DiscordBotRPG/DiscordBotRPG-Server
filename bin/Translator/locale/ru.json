@@ -490,12 +490,17 @@
 
     "inventory_title": "Инвентарь",
     "inv": "Показывает инвентарь",
+    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
     "item": "Отображает информацию о выбранном предмете",
     "itemfav": "Помечает предмет как избранное, чтобы предотвратить его продажу",
     "itemunfav": "Снимает статус избранного с предмета",
     "sell": "Продает выбранный предмет",
     "sellall": "Продает все предметы в инвентаре",
     "sendmoney": "Отправляет деньги игроку",
+
+    "filters_title": "Filters",
+    "rarities": "Displays the ids of every rarities",
+    "types": "Displays the ids of every item types",
 
     "equipment_title": "Снаряжение",
     "equipment": "Показывает экипированные предметы",
@@ -583,7 +588,7 @@
     "world_boss_title": "World Bosses",
     "wbfight": "Attack the World Boss if there is one in the area where you are",
     "wbshowall": "Displays infos about World Bosses",
-    "wbastinfo": "Show your stats for the last boss you killed",
+    "wblastinfo": "Show your stats for the last boss you killed",
 
     "settings": "Показывает меню настроек"
   },

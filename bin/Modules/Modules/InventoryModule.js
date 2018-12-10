@@ -144,14 +144,24 @@ class InventoryModule extends GModule {
 
         this.router.get("/show/:page?", async (req, res) => {
             let data = {};
-
-            let invPage = parseInt(req.params.page, 10);
-            if (invPage != null && Number.isInteger(invPage)) {
-                //msg = Globals.connectedUsers[res.locals.id].character.inv.seeThisItem(invIdItem);
-                data = Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang);
-            } else {
-                data = Globals.connectedUsers[res.locals.id].character.inv.toApi(0, res.locals.lang);
+            let params = {
+                rarity: 0,
+                type: 0,
+                level: 0
             }
+            if (req.query.idRarity != null) {
+                params.rarity = parseInt(req.query.idRarity);
+            } else if (req.query.idType != null) {
+                params.type = parseInt(req.query.idType);
+            } else if (req.query.level != null) {
+                params.level = parseInt(req.query.level);
+            }
+            let invPage = parseInt(req.params.page, 10);
+            if (invPage == null || invPage != null && !Number.isInteger(invPage)) {
+                invPage = 0;
+            }
+
+            data = Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang, params);
 
             data.lang = res.locals.lang;
             return res.json(data);

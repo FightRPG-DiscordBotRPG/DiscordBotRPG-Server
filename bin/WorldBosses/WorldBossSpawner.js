@@ -112,9 +112,9 @@ class WorldBossSpawner {
         let dmgImpressive = "";
         if (damageGap >= 2 && damageGap < 4) {
             dmgImpressive = "Wow Nice!";
-        } else if (damageGap >= 4 && damageGap < 10) {
+        } else if (damageGap >= 4 && damageGap < 5) {
             dmgImpressive = "That's someone with a real dedication in killing things!"
-        } else if (damageGap >= 10) {
+        } else if (damageGap >= 5) {
             dmgImpressive = "Well, it's clear that he did all the job! Good job!"
         }
 
@@ -122,9 +122,9 @@ class WorldBossSpawner {
         let atkImpressive = "";
         if (attackGap >= 2 && attackGap < 4) {
             atkImpressive = "Someone really like doing bot commands!";
-        } else if (attackGap >= 4 && attackGap < 10) {
+        } else if (attackGap >= 4 && attackGap < 5) {
             atkImpressive = "I don't even want to count how much commands he must have done!"
-        } else if (attackGap >= 10) {
+        } else if (attackGap >= 5) {
             atkImpressive = "Well, how is this even possible! Well done!"
         }
 

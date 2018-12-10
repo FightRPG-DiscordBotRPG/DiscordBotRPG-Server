@@ -112,6 +112,44 @@ class OtherModule extends GModule {
             }
             return res.json(data);
         });
+
+        this.router.get("/rarities", async (req, res) => {
+            let data = {};
+
+            let dbRes = conn.query("SELECT * FROM itemsrarities");
+            data.rarities = [];
+            for (let result of dbRes) {
+                data.rarities.push({
+                    idRarity: result.idRarity,
+                    rarityName: Translator.getString(res.locals.lang, "rarities", result.nomRarity),
+                    rarityColor: result.couleurRarity
+                })
+            }
+
+            data.lang = res.locals.lang;
+
+            return res.json(data);
+        });
+
+        this.router.get("/types", async (req, res) => {
+            let data = {};
+
+            let dbRes = conn.query("SELECT * FROM itemstypes");
+            data.types = [];
+            for (let result of dbRes) {
+                data.types.push({
+                    idType: result.idType,
+                    typeName: Translator.getString(res.locals.lang, "item_types", result.nomType),
+                    equipable: result.equipable,
+                    stackable: result.stackable,
+                    usable: result.usable,
+                });
+            }
+
+            data.lang = res.locals.lang;
+
+            return res.json(data);
+        });
     }
 
     helpPanel(lang, page) {
@@ -147,13 +185,18 @@ class OtherModule extends GModule {
             case 2:
                 commands[Translator.getString(lang, "help_panel", "inventory_title")] = {
                     "inv/inventory": Translator.getString(lang, "help_panel", "inv"),
+                    "inv/inventory <filter> <filterValue>": Translator.getString(lang, "help_panel", "inv_filter"),
                     "item <itemID>": Translator.getString(lang, "help_panel", "item"),
                     "itemfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemfav"),
                     "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                     "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                     "sellall": Translator.getString(lang, "help_panel", "sellall"),
                     "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
+                }
 
+                commands[Translator.getString(lang, "help_panel", "filters_title")] = {
+                    "rarities": Translator.getString(lang, "help_panel", "filter_rarities"),
+                    "types": Translator.getString(lang, "help_panel", "filter_types"),
                 }
                 break;
             case 3:
