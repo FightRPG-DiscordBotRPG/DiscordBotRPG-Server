@@ -490,7 +490,7 @@
 
     "inventory_title": "Inventário",
     "inv": "Mostra o inventário",
-    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
+    "inv_filter": "Mostra o inventário e filtra os resultados. Os filtros são: rarity, level, type",
     "item": "Mostra a informação do item selecionado",
     "itemfav": "Marca um item como favorito para impedir que ele seja vendido",
     "itemunfav": "Desmarca um item como favorito",
@@ -498,9 +498,9 @@
     "sellall": "Vende todos itens no inventário",
     "sendmoney": "Envia dinheiro para um jogador",
 
-    "filters_title": "Filters",
-    "rarities": "Displays the ids of every rarities",
-    "types": "Displays the ids of every item types",
+    "filters_title": "Filtros",
+    "rarities": "Mostra os IDs de todas as raridades",
+    "types": "Motra os IDs de todos tipos de itens",
 
     "equipment_title": "Equipamento",
     "equipment": "Mostra itens equipados",
@@ -588,7 +588,7 @@
     "world_boss_title": "Chefes Globais",
     "wbfight": "Ataca o Chefe Global caso haja um na área onde você está",
     "wbshowall": "Mostra informações sobre Chefes Globais",
-    "wblastinfo": "Mostra seus status do último chefe que você matou",
+    "wbastinfo": "Mostra seus status do último chefe que você matou",
 
     "settings": "Mostra o menu de configurações"
   },

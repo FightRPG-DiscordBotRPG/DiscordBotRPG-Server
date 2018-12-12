@@ -84,23 +84,31 @@ class GModule {
 
     loadNeededVariables() {
         this.router.use((req, res, next) => {
-            for (let i in req.body) {
-                req.body[i] = decodeURIComponent(req.body[i]);
+            if (Globals.connectedUsers[res.locals.id].isLoaded = true) {
+                for (let i in req.body) {
+                    req.body[i] = decodeURIComponent(req.body[i]);
+                }
+
+                for (let i in req.query) {
+                    req.query[i] = decodeURIComponent(req.query[i]);
+                }
+
+                res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
+                res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
+                res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
+                res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
+                res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
+                res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
+                res.locals.currentArea = Globals.connectedUsers[res.locals.id].character.getArea();
+                res.locals.tLootSystem = new LootSystem();
+                next();
+            } else {
+                console.log("yep async bullshit !");
+                res.json({
+                    error: "Your character is loading, you must wait a little."
+                });
             }
 
-            for (let i in req.query) {
-                req.query[i] = decodeURIComponent(req.query[i]);
-            }
-
-            res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
-            res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
-            res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
-            res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
-            res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
-            res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
-            res.locals.currentArea = Globals.connectedUsers[res.locals.id].character.getArea();
-            res.locals.tLootSystem = new LootSystem();
-            next();
         });
 
     }

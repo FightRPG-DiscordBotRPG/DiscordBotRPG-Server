@@ -499,8 +499,8 @@
     "sendmoney": "Отправляет деньги игроку",
 
     "filters_title": "Filters",
-    "rarities": "Displays the ids of every rarities",
-    "types": "Displays the ids of every item types",
+    "rarities": "Displays the ids of every raritie",
+    "types": "Displays the ids of every item type",
 
     "equipment_title": "Снаряжение",
     "equipment": "Показывает экипированные предметы",

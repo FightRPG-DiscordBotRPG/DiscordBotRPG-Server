@@ -499,8 +499,8 @@
     "sendmoney": "Send money to a player",
 
     "filters_title": "Filters",
-    "rarities": "Displays the ids of every rarities",
-    "types": "Displays the ids of every item types",
+    "rarities": "Displays the ids of every rarity",
+    "types": "Displays the ids of every item type",
 
     "equipment_title": "Equipment",
     "equipment": "Shows equipped items",
