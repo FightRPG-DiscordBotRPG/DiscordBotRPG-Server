@@ -136,7 +136,8 @@ class CharacterInventory {
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let items = {};
         let more = "";
-        let sqlParams = [this.id, perPage, (page - 1) * perPage];
+        let offset = (page - 1) * perPage;
+        let sqlParams = [this.id, perPage, offset];
         if (params != null) {
             let moreValue = null;
             if (params.rarity != null && params.rarity > 0) {
@@ -157,7 +158,7 @@ class CharacterInventory {
 
         }
 
-        let res = conn.query("SELECT * FROM (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory " + more + " LIMIT ? OFFSET ? ;", sqlParams);
+        let res = conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
 
         for (let i in res) {
             let item = Item.newItem(res[i].idItem, res[i].nomSousType);

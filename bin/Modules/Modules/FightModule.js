@@ -48,20 +48,23 @@ class FightModule extends GModule {
             let idEnemy = parseInt(req.body.idMonster, 10);
             if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                 if (idEnemy != null && Number.isInteger(idEnemy)) {
-                    let canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
-                    let enemies = [];
-                    if (!canIFightTheMonster) {
-                        enemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
+                    if (res.locals.currentArea.getMonsterId(idEnemy) != null) {
+                        let canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                        let enemies = [];
+                        if (!canIFightTheMonster) {
+                            enemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
+                        } else {
+                            enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
+                        }
+                        let response = Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
+                        if (response.error) {
+                            data.error = response.error;
+                        } else {
+                            data = response;
+                        }
                     } else {
-                        enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
+                        data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
                     }
-                    let response = Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
-                    if (response.error) {
-                        data.error = response.error;
-                    } else {
-                        data = response;
-                    }
-
                 } else {
                     // Error Message
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");

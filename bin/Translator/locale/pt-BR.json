@@ -76,6 +76,7 @@
     "fight_enter_id_monster": "Você precisa digitar o ID do monstro com quem deseja lutar",
     "fight_impossible_in_town": "Você não pode lutar na cidade",
     "fight_already_in": "Você já está lutando, quando você terminar você pode começar outra luta",
+    "fight_monter_dont_exist": "O monstro que você tentou atacar não existe",
     "travel_already_here": "Você já está nesta área",
     "travel_area_dont_exist": "Esta área não existe",
     "travel_tired_wait_x": "Você está cansado demais para viajar, você deve esperar: %d segundos",
@@ -320,8 +321,8 @@
   "character": {
     "reset_done": "Redefinição completa!",
     "attribute_up_to": "O atributo %s aumentou e agora tem %d pontos",
-    "attribute_x_points_available": "Não há %d ponto restante para alocar",
-    "attribute_x_points_available_plural": "Não há %d pontos restantes para alocar",
+    "attribute_x_points_available": "Há %d ponto restante para alocar",
+    "attribute_x_points_available_plural": "Há %d pontos restantes para alocar",
     "info_attributes_title": "Atributos | %d ponto para distribuir (Preço de redefinição %dG)",
     "info_attributes_title_plur": "Atributos | %d pontos para distribuir (Preço de redefinição %dG)",
     "maximum_level": "Nível Máx.",

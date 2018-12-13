@@ -77,7 +77,7 @@ class MarketplaceModule extends GModule {
                                 if (nb >= nbOfItemsToPlace) {
                                     if (!Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem)) {
                                         if (res.locals.currentArea.haveOwner()) {
-                                            let marketplaceTax = priceToPlace * res.locals.marketplace.getTax();
+                                            let marketplaceTax = Math.round(priceToPlace * res.locals.marketplace.getTax());
                                             if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(marketplaceTax)) {
                                                 // enlever la taxe
                                                 Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);

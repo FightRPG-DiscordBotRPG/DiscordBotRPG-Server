@@ -76,6 +76,7 @@
     "fight_enter_id_monster": "Вы должны ввести ID монстра, если вы хотите сражаться",
     "fight_impossible_in_town": "Вы не можете драться в городе",
     "fight_already_in": "Вы уже в бою, как только вы закончите вы можете начать новый",
+    "fight_monter_dont_exist": "Чудовище, с которым ты пытаешься сражаться, не существует",
     "travel_already_here": "Вы уже находитесь на этой территории",
     "travel_area_dont_exist": "Этой территории не существует",
     "travel_tired_wait_x": "Вы слишком устали, чтобы путешествовать, вы должны подождать: %d секунд",
@@ -208,9 +209,9 @@
     "list_regions_connected": "Связанные регионы",
     "no_connected_regions": "Нет регионов, связанных с этим регионом",
     "follow_the_link": "Вы можете получить список ресурсов по ссылке ниже.",
-    "service_marketplace": "Marketplace (Tax: %d%)",
-    "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
-    "service_shop": "Shop (Tax: %d%)"
+    "service_marketplace": "Рынок (Налог: %d%)",
+    "service_forge": "Кузнец (ремесло: Ур. %d - %d)",
+    "service_shop": "Магазин (Налог: %d%)"
   },
   "bonuses": {
     "bonuses": "Бонусы",
@@ -315,7 +316,7 @@
     "item_tag_as_favorite": "Теперь этот предмет помечен как избранный",
     "item_untag_as_favorite": "Этот предмет больше не помечен как избранное",
     "item_no_stats": "Этот предмет не имеет характеристик",
-    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)"
+    "wait_time_reduction": "(Снижает время остаточной усталости на %d%)"
   },
   "character": {
     "reset_done": "Сброс завершен!",
@@ -444,9 +445,9 @@
     "reset_time_potion": "Анти-Усталость",
     "founder_box": "Вознаграждение Основателя",
     "random_loot_box_equipment": "Random Equipment Box",
-    "horse": "Horse",
-    "crystal": "Cyrstal",
-    "energy_potion": "Toning Potion"
+    "horse": "Лошадь",
+    "crystal": "Кирсталь",
+    "energy_potion": "Тонизирующее зелье"
   },
   "stats": {
     "strength": "Сила",
@@ -462,16 +463,16 @@
   },
   "lootboxes": {
     "open_message": "Вы открыли ящик с добычей, вы получаете:\n",
-    "open_message_mult": "You opened %d loot boxes, you get:\n",
+    "open_message_mult": "Ты открыл %d коробок с награбленным, ты понял:\n",
     "no_drop": "Вы открыли ящик с добычей, но ничего не получили!",
-    "no_drop_mult": "You opened %d loot boxes, but you didn't get anything!"
+    "no_drop_mult": "Ты открыл %d коробку с награбленным, но ничего не получил!"
   },
   "world_bosses": {
-    "no_world_boss": "There is no world boss here",
-    "spawn_date": "Spawn Date: %s",
-    "last_boss_never_fight": "You have not fought in a world boss fight yet",
-    "boss_fight_recap_damage_dealt": "Damage Dealt: %d (Rank: %d)",
-    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)"
+    "no_world_boss": "Здесь нет мирового босса",
+    "spawn_date": "Дата порождения: %s",
+    "last_boss_never_fight": "Ты еще не сражался в бою мирового босса.",
+    "boss_fight_recap_damage_dealt": "Ущерб Считается: %d (ранг: %d)",
+    "boss_fight_recap_attack_count": "Атака графа: %d (ранг: %d)"
   },
   "potions": {
     "drink": "Вы выпили: \"%s\"\n",
@@ -581,14 +582,14 @@
     "collect": "Соберает ресурс данного ID",
     "resources": "Показывает все ресурсы на территории",
 
-    "shop_title": "Shop",
-    "sitems": "Show all the available items to buy in this city at given page",
-    "sbuy": "Buy the item of given ID",
+    "shop_title": "цех",
+    "sitems": "Показать все доступные товары для покупки в этом городе на данной странице",
+    "sbuy": "Купить предмет данного ID",
 
-    "world_boss_title": "World Bosses",
-    "wbfight": "Attack the World Boss if there is one in the area where you are",
-    "wbshowall": "Displays infos about World Bosses",
-    "wblastinfo": "Show your stats for the last boss you killed",
+    "world_boss_title": "Мировые Боссы",
+    "wbfight": "Атакуйте мирового босса, если он есть в том районе, где вы находитесь.",
+    "wbshowall": "Отображает информацию о мировых боссах",
+    "wblastinfo": "Покажите вашу статистику по последнему боссу, которого вы убили.",
 
     "settings": "Показывает меню настроек"
   },

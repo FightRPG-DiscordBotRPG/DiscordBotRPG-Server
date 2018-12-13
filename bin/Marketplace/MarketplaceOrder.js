@@ -33,6 +33,7 @@ class MarketplaceOrder {
 
     toApi(lang) {
         let item = new Item(this.idItem);
+        item.number = this.number;
         let username = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter])[0]["userName"];
         return {
             seller_name: username,

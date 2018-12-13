@@ -287,18 +287,22 @@ class GroupModule extends GModule {
                         if (group.allInSameArea()) {
                             if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                                 if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
-                                    let grpEnemies = [];
-                                    grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
-                                    if (grpEnemies == null) {
-                                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
-                                    }
-                                    let response = Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
-                                    if (response.error != null) {
-                                        data.error = response.error;
+                                    if (res.locals.currentArea.getMonsterId(idEnemy) != null) {
+                                        let grpEnemies = [];
+                                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                                        if (grpEnemies == null) {
+                                            grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                                        }
+                                        let response = Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
+                                        if (response.error != null) {
+                                            data.error = response.error;
+                                        } else {
+                                            data = response;
+                                        }
+                                        //Globals.fightManager.fightPvE(Globals.connectedUsers[res.locals.id], message, idEnemy, canIFightTheMonster);
                                     } else {
-                                        data = response;
+                                        data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
                                     }
-                                    //Globals.fightManager.fightPvE(Globals.connectedUsers[res.locals.id], message, idEnemy, canIFightTheMonster);
                                 } else {
                                     // Error Message
                                     data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");

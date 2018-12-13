@@ -101,11 +101,11 @@ INSERT INTO localizationareas VALUES
 
 -- Monsters
 INSERT INTO localizationmonsters VALUES
-(31, "pt-BR", "Guerreiro Wutgarek Warrior"),
-(32, "pt-BR", "Arqueiro Wutgarek Archer"),
-(33, "pt-BR", "Berserker Wutgarek Berserker"),
-(34, "pt-BR", "Feiticeiro Wutgarek Wizard"),
-(35, "pt-BR", "Sargento Wutgarek Sergeant"),
+(31, "pt-BR", "Guerreiro Wutgarek"),
+(32, "pt-BR", "Arqueiro Wutgarek"),
+(33, "pt-BR", "Berserker Wutgarek"),
+(34, "pt-BR", "Feiticeiro Wutgarek"),
+(35, "pt-BR", "Sargento Wutgarek"),
 (36, "pt-BR", "Urso"),
 (37, "pt-BR", "Grandioso Urso de Tywardreath"),
 (38, "pt-BR", "Golem de Pedra"),

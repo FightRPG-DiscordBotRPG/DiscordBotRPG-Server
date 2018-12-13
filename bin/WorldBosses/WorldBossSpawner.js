@@ -81,7 +81,7 @@ class WorldBossSpawner {
     }
 
     static async getStatsFromFight(spawnedBossId) {
-        return conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId])[0];
+        return conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages, SUM(damage) as totalDamage FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId])[0];
     }
 
     async spawnBoss() {
@@ -108,33 +108,33 @@ class WorldBossSpawner {
         date.setTime(binfo.spawnDate);
         let str = "";
 
-        let damageGap = (statsFight.highestDamages - statsFight.averageDamages) / statsFight.averageDamages;
+        let damageGap = statsFight.highestDamages / statsFight.totalDamage * 100;
         let dmgImpressive = "";
         if (damageGap >= 2 && damageGap < 4) {
             dmgImpressive = "Wow Nice!";
-        } else if (damageGap >= 4 && damageGap < 5) {
+        } else if (damageGap >= 4 && damageGap < 8) {
             dmgImpressive = "That's someone with a real dedication in killing things!"
-        } else if (damageGap >= 5) {
+        } else if (damageGap >= 8) {
             dmgImpressive = "Well, it's clear that he did all the job! Good job!"
         }
 
-        let attackGap = (statsFight.totalAttacks - statsFight.averageAttackCount) / statsFight.averageAttackCount;
+        let attackGap = statsFight.highestAttackCount / statsFight.totalAttacks * 100;
         let atkImpressive = "";
         if (attackGap >= 2 && attackGap < 4) {
             atkImpressive = "Someone really like doing bot commands!";
-        } else if (attackGap >= 4 && attackGap < 5) {
+        } else if (attackGap >= 4 && attackGap < 8) {
             atkImpressive = "I don't even want to count how much commands he must have done!"
-        } else if (attackGap >= 5) {
+        } else if (attackGap >= 8) {
             atkImpressive = "Well, how is this even possible! Well done!"
         }
 
         str += "Thanks to all participants the current World Boss has been slain! Here are some stats about the great fight against it:\n";
         str += "\\`\\`\\`" +
             "Average damage dealt: " + statsFight.averageDamages + "\n" +
-            "The #1 player damage-wise dealt: " + statsFight.highestDamages + " damage points! That's about x" + damageGap.toFixed(2) + " more than the average damage dealt! " + dmgImpressive + "\n\n" +
+            "The #1 player damage-wise dealt: " + statsFight.highestDamages + " damage points! That's about " + damageGap.toFixed(2) + "% of the total damage inflicted! " + dmgImpressive + "\n\n" +
             "Total attacks dealt: " + statsFight.totalAttacks + "\n" +
             "Average number of attacks: " + statsFight.averageAttackCount + "\n" +
-            "The #1 player in attack count dealt: " + statsFight.highestAttackCount + " attacks! That's about x" + attackGap.toFixed(2) + " more than the average attack count! " + atkImpressive + "\\`\\`\\`" + "\n";
+            "The #1 player in attack count dealt: " + statsFight.highestAttackCount + " attacks! That's about " + attackGap.toFixed(2) + "% of the total attack count! " + atkImpressive + "\\`\\`\\`" + "\n";
         str += "Your rewards is being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
         str += "Next boss will arrive soon, here are some informations about the next boss spawn!\n";
         str += "\\`\\`\\`" + Translator.getString("en", "world_bosses", "spawn_date", [date.toLocaleString("en-EN") + " UTC"]) + "\\`\\`\\`";
@@ -179,9 +179,9 @@ class WorldBossSpawner {
                 number: 50,
                 level: level
             }, {
-                id: 51,
+                id: 41,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank == 2) {
             crystals = 85;
@@ -192,7 +192,7 @@ class WorldBossSpawner {
             }, {
                 id: 55,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 3 && rank <= 5) {
             crystals = 70;
@@ -203,7 +203,7 @@ class WorldBossSpawner {
             }, {
                 id: 54,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 6 && rank <= 25) {
             crystals = 50;
@@ -214,7 +214,7 @@ class WorldBossSpawner {
             }, {
                 id: 53,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 26 && rank <= 50) {
             crystals = 30;
@@ -225,7 +225,7 @@ class WorldBossSpawner {
             }, {
                 id: 52,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 51 && rank <= 250) {
             crystals = 20;
@@ -236,7 +236,7 @@ class WorldBossSpawner {
             }, {
                 id: 51,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 251 && rank <= 500) {
             crystals = 10;
@@ -247,7 +247,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 10,
-                level: level
+                level: 1
             });
         } else if (rank >= 501 && rank <= 1000) {
             crystals = 8;
@@ -258,7 +258,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 8,
-                level: level
+                level: 1
             });
         } else if (rank >= 1001 && rank <= 2000) {
             crystals = 7;
@@ -269,7 +269,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 7,
-                level: level
+                level: 1
             });
         } else if (rank >= 2001 && rank <= 3000) {
             crystals = 6;
@@ -280,7 +280,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 6,
-                level: level
+                level: 1
             });
         } else if (rank >= 3001 && rank <= 4000) {
             crystals = 5;
@@ -291,7 +291,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 5,
-                level: level
+                level: 1
             });
         } else if (rank >= 4001 && rank <= 5000) {
             crystals = 4;
@@ -302,7 +302,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 4,
-                level: level
+                level: 1
             });
         } else if (rank >= 5001 && rank <= 7500) {
             crystals = 3;
@@ -313,7 +313,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 3,
-                level: level
+                level: 1
             });
         } else if (rank >= 7501 && rank <= 10000) {
             crystals = 2;
@@ -324,7 +324,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 2,
-                level: level
+                level: 1
             });
         } else {
             crystals = 1;
@@ -335,7 +335,7 @@ class WorldBossSpawner {
             }, {
                 id: 50,
                 number: 1,
-                level: level
+                level: 1
             });
 
         }
