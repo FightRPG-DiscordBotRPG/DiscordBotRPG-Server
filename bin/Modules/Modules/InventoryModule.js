@@ -253,7 +253,7 @@ class InventoryModule extends GModule {
             } else if (req.body.id) {
                 idOtherPlayerCharacter = parseInt(req.body.id, 10);
                 if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                    mId = Leaderboard.idOf(idOtherPlayerCharacter);
+                    mId = User.getIDByIDCharacter(idOtherPlayerCharacter);
                 }
             }
 

@@ -88,7 +88,7 @@ class FightModule extends GModule {
                 } else if (req.body.idCharacter) {
                     idOtherPlayerCharacter = parseInt(req.body.idCharacter, 10);
                     if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                        mId = Leaderboard.idOf(idOtherPlayerCharacter);
+                        mId = User.getIDByIDCharacter(idOtherPlayerCharacter);
                     }
                 } else {
                     // useless

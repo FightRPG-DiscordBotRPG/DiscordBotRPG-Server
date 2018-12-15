@@ -107,6 +107,11 @@ class User {
         return res[0] != null ? res[0] : null;
     }
 
+    static getIDByIDCharacter(idCharacter) {
+        let res = conn.query("SELECT idUser FROM users WHERE idCharacter = ?;", [idCharacter]);
+        return res[0] != null ? res[0].idUser : null;
+    }
+
     getUsername() {
         return this.username;
     }
