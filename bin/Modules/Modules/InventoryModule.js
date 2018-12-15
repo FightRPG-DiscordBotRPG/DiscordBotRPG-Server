@@ -51,6 +51,11 @@ class InventoryModule extends GModule {
             let data = {};
             data.lang = res.locals.lang;
 
+            if (req.params.idItem == "last") {
+                let idInventory = Globals.connectedUsers[res.locals.id].character.getInv().getNumberOfItem();
+                idItemToSee = idInventory;
+            }
+
             if (idItemToSee != null && Number.isInteger(idItemToSee)) {
                 doIHaveThisItem = Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
                 if (doIHaveThisItem) {
@@ -62,11 +67,12 @@ class InventoryModule extends GModule {
                         equippedStats = {};
                     data.item = itemToSee.toApi(res.locals.lang);;
                     data.equippedStats = equippedStats;
+                    data.idInInventory = idItemToSee;
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
                 }
-
             } else {
+                data.idInInventory = req.params.idItem;
                 idItemToSee = this.getEquipableIDType(req.params.idItem);
                 if (idItemToSee > 0) {
                     itemToSee = Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(idItemToSee);
@@ -78,7 +84,6 @@ class InventoryModule extends GModule {
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_choose_id_or_equipement");
                 }
-
             }
             return res.json(data);
 
@@ -207,9 +212,22 @@ class InventoryModule extends GModule {
         this.router.post("/sellall", async (req, res) => {
             let data = {};
             data.lang = res.locals.lang;
+            let params = {
+                rarity: 0,
+                type: 0,
+                level: 0
+            }
+
+            if (req.body.idRarity != null) {
+                params.rarity = parseInt(req.body.idRarity);
+            } else if (req.body.idType != null) {
+                params.type = parseInt(req.body.idType);
+            } else if (req.body.level != null) {
+                params.level = parseInt(req.body.level);
+            }
 
             if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                let allSelled = Globals.connectedUsers[res.locals.id].character.sellAllInventory();
+                let allSelled = Globals.connectedUsers[res.locals.id].character.sellAllInventory(params);
                 if (allSelled > 0) {
                     data.success = Translator.getString(res.locals.lang, "economic", "sell_all_for_x", [allSelled]);
                 } else {

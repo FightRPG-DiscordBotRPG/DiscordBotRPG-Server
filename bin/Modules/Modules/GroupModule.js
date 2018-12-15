@@ -287,7 +287,7 @@ class GroupModule extends GModule {
                         if (group.allInSameArea()) {
                             if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                                 if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
-                                    if (res.locals.currentArea.getMonsterId(idEnemy) != null) {
+                                    if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
                                         let grpEnemies = [];
                                         grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
                                         if (grpEnemies == null) {

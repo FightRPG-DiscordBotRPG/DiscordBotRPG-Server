@@ -343,9 +343,9 @@ class Character extends CharacterEntity {
         return value;
     }
 
-    sellAllInventory() {
-        let value = this.getInv().getAllInventoryValue();
-        this.getInv().deleteAllFromInventory();
+    sellAllInventory(params) {
+        let value = this.getInv().getAllInventoryValue(params);
+        this.getInv().deleteAllFromInventory(params);
         this.addMoney(value);
         PStatistics.incrStat(this.id, "gold_sell", value);
         return value;

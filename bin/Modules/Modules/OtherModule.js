@@ -164,7 +164,7 @@ class OtherModule extends GModule {
                 commands[Translator.getString(lang, "help_panel", "equipment_title")] = {
                     "equipment/equiplist": Translator.getString(lang, "help_panel", "equipment"),
                     "equip <itemID>": Translator.getString(lang, "help_panel", "equip"),
-                    "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest,head,legs,weapon)",
+                    "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest, head, legs, weapon, horse)",
                     "use <itemID> <amount>": Translator.getString(lang, "help_panel", "use"),
                 };
 
@@ -202,7 +202,7 @@ class OtherModule extends GModule {
             case 3:
                 commands[Translator.getString(lang, "help_panel", "areas_title")] = {
                     "area": Translator.getString(lang, "help_panel", "area"),
-                    "areas": Translator.getString(lang, "help_panel", "areas"),
+                    "areas/regions": Translator.getString(lang, "help_panel", "areas"),
                     "areaconquest": Translator.getString(lang, "help_panel", "areaconquest"),
                     "arealevelup": Translator.getString(lang, "help_panel", "arealevelup"),
                     "areabonuseslist": Translator.getString(lang, "help_panel", "areabonuseslist"),

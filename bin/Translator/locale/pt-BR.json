@@ -211,7 +211,10 @@
     "follow_the_link": "Você pode ter a lista de recursos através do link abaixo.",
     "service_marketplace": "Mercado (Taxa: %d%)",
     "service_forge": "Ferreiro (Criação: Nvl. %d - %d)",
-    "service_shop": "Loja (Taxa: %d%)"
+    "service_shop": "Loja (Taxa: %d%)",
+    "conquest_actual_level": "Actual level: %d",
+    "conquest_points_to_distribute": "Points to distribute: %d",
+    "conquest_price_to_next_level": "Price to next level: %dG"
   },
   "bonuses": {
     "bonuses": "Bônus",
@@ -492,7 +495,7 @@
     "inventory_title": "Inventário",
     "inv": "Mostra o inventário",
     "inv_filter": "Mostra o inventário e filtra os resultados. Os filtros são: rarity, level, type",
-    "item": "Mostra a informação do item selecionado",
+    "item": "Mostra a informação do item selecionado. For equipped items use: head, chest, legs, weapon or horse instead of id.",
     "itemfav": "Marca um item como favorito para impedir que ele seja vendido",
     "itemunfav": "Desmarca um item como favorito",
     "sell": "Vende o item selecionado",

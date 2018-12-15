@@ -211,7 +211,10 @@
     "follow_the_link": "Вы можете получить список ресурсов по ссылке ниже.",
     "service_marketplace": "Рынок (Налог: %d%)",
     "service_forge": "Кузнец (ремесло: Ур. %d - %d)",
-    "service_shop": "Магазин (Налог: %d%)"
+    "service_shop": "Магазин (Налог: %d%)",
+    "conquest_actual_level": "Фактический уровень: %d",
+    "conquest_points_to_distribute": "Очки для распространения: %d",
+    "conquest_price_to_next_level": "Цена до следующего уровня: %dG"
   },
   "bonuses": {
     "bonuses": "Бонусы",
@@ -492,7 +495,7 @@
     "inventory_title": "Инвентарь",
     "inv": "Показывает инвентарь",
     "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
-    "item": "Отображает информацию о выбранном предмете",
+    "item": "Отображает информацию о выбранном предмете. Для использования оборудованных объектов: head, chest, legs, weapon или horse вместо ID.",
     "itemfav": "Помечает предмет как избранное, чтобы предотвратить его продажу",
     "itemunfav": "Снимает статус избранного с предмета",
     "sell": "Продает выбранный предмет",

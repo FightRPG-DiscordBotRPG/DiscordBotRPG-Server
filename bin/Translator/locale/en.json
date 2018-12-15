@@ -76,6 +76,7 @@
     "fight_enter_id_monster": "You must enter the monster's ID if you want to fight",
     "fight_impossible_in_town": "You can't fight in town",
     "fight_already_in": "You're already in a fight, once you finish you can start a new one",
+    "fight_monter_dont_exist": "The monster you're trying to fight doesn't exist",
     "travel_already_here": "You're already in this area",
     "travel_area_dont_exist": "This area doesn't exist",
     "travel_tired_wait_x": "You're too tired to travel, you must wait: %d seconds",
@@ -210,7 +211,10 @@
     "follow_the_link": "You can have the list of resources at the link bellow.",
     "service_marketplace": "Marketplace (Tax: %d%)",
     "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
-    "service_shop": "Shop (Tax: %d%)"
+    "service_shop": "Shop (Tax: %d%)",
+    "conquest_actual_level": "Actual level: %d",
+    "conquest_points_to_distribute": "Points to distribute: %d",
+    "conquest_price_to_next_level": "Price to next level: %dG"
   },
   "bonuses": {
     "bonuses": "Bonuses",
@@ -490,8 +494,8 @@
 
     "inventory_title": "Inventory",
     "inv": "Shows the inventory",
-    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
-    "item": "Shows the information of the selected item",
+    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity, level, type",
+    "item": "Shows the information of the selected item. For equipped items use: head, chest, legs, weapon or horse instead of id.",
     "itemfav": "Tag an item as favorite to prevent its sale",
     "itemunfav": "Untag and item tag as favorite",
     "sell": "Sells the selected item",

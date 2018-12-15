@@ -100,25 +100,68 @@ class CharacterInventory {
     /**
      * Delete all objects from inventory
      */
-    deleteAllFromInventory() {
+    deleteAllFromInventory(params) {
+
+        let more = "";
+        let sqlParams = [this.id];
+        if (params != null) {
+            let moreValue = null;
+            if (params.rarity != null && params.rarity > 0) {
+                more += "idRarity = ?";
+                moreValue = params.rarity;
+            } else if (params.level != null && params.level > 0) {
+                more += "level = ?";
+                moreValue = params.level;
+            } else if (params.type != null && params.type > 0) {
+                more += "idType = ?";
+                moreValue = params.type;
+            }
+
+            if (moreValue != null) {
+                more = "AND " + more;
+                sqlParams.push(moreValue);
+            }
+
+        }
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
+        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
         let ids = [];
         for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
         // Delete from inventory
-        conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem WHERE idCharacter = ? AND favorite = 0", [this.id]);
+        conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
 
         // Delete items
         Item.deleteItems(ids);
     }
 
-    getAllInventoryValue() {
-        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0", [this.id])[0]["value"];
+    getAllInventoryValue(params) {
+        let more = "";
+        let sqlParams = [this.id];
+        if (params != null) {
+            let moreValue = null;
+            if (params.rarity != null && params.rarity > 0) {
+                more += "idRarity = ?";
+                moreValue = params.rarity;
+            } else if (params.level != null && params.level > 0) {
+                more += "level = ?";
+                moreValue = params.level;
+            } else if (params.type != null && params.type > 0) {
+                more += "idType = ?";
+                moreValue = params.type;
+            }
+
+            if (moreValue != null) {
+                more = "AND " + more;
+                sqlParams.push(moreValue);
+            }
+
+        }
+        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams)[0]["value"];
         return value;
     }
 
