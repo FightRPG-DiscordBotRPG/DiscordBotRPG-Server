@@ -5,7 +5,6 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const LootSystem = require("../../LootSystem");
 const AreasManager = require("../../Areas/AreasManager");
-const Leaderboard = require("../../Leaderboard");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");

@@ -470,6 +470,11 @@
     "no_drop": "Вы открыли ящик с добычей, но ничего не получили!",
     "no_drop_mult": "Ты открыл %d коробку с награбленным, но ничего не получил!"
   },
+  "leaderboards": {
+    "arena": "Рейтинговая таблица PvP",
+    "wb_damage": "Всемирный босс: повреждение",
+    "wb_attacks": "Всемирный босс: Атака графа"
+  },
   "world_bosses": {
     "no_world_boss": "Здесь нет мирового босса",
     "spawn_date": "Дата порождения: %s",
@@ -480,7 +485,7 @@
   "potions": {
     "drink": "Вы выпили: \"%s\"\n",
     "reset_time": "Вы чувствуете, что ваша усталость уходит, ваше время усталости было сброшено",
-    "reduce_time": "You feel invigorated, your tiredness time has been reduced by: %d%"
+    "reduce_time": "Ты чувствуешь себя бодрым, время усталости сократилось на порядок: %d%"
   },
   "vote_daily": {
     "you_voted": "Вы проголосовали за бота, спасибо вам!\n",
@@ -494,7 +499,7 @@
 
     "inventory_title": "Инвентарь",
     "inv": "Показывает инвентарь",
-    "inv_filter": "Shows the inventory and filter the results. Filters are: rarity,level,type",
+    "inv_filter": "Показывает инвентаризацию и фильтрует результаты. Фильтры - да: rarity,level,type",
     "item": "Отображает информацию о выбранном предмете. Для использования оборудованных объектов: head, chest, legs, weapon или horse вместо ID.",
     "itemfav": "Помечает предмет как избранное, чтобы предотвратить его продажу",
     "itemunfav": "Снимает статус избранного с предмета",
@@ -502,9 +507,9 @@
     "sellall": "Продает все предметы в инвентаре",
     "sendmoney": "Отправляет деньги игроку",
 
-    "filters_title": "Filters",
-    "rarities": "Displays the ids of every raritie",
-    "types": "Displays the ids of every item type",
+    "filters_title": "фильтры",
+    "rarities": "Отображает идентификационные данные всех колесниц.",
+    "types": "Отображает идентификаторы каждого типа товаров",
 
     "equipment_title": "Снаряжение",
     "equipment": "Показывает экипированные предметы",
@@ -593,6 +598,7 @@
     "wbfight": "Атакуйте мирового босса, если он есть в том районе, где вы находитесь.",
     "wbshowall": "Отображает информацию о мировых боссах",
     "wblastinfo": "Покажите вашу статистику по последнему боссу, которого вы убили.",
+    "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack counts (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
 
     "settings": "Показывает меню настроек"
   },

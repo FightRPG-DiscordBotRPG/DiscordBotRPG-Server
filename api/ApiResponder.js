@@ -8,7 +8,6 @@ const Globals = require("../bin/Globals.js");
 const LootSystem = require("../bin/LootSystem.js");
 const AreasManager = require("../bin/Areas/AreasManager.js");
 const sizeof = require('object-sizeof');
-const Leaderboard = require("../bin/Leaderboard.js");
 const Guild = require("../bin/Guild.js");
 const https = require('https');
 const fs = require('fs');

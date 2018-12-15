@@ -470,6 +470,11 @@
     "no_drop": "Vous avez ouvert un coffre à butin, cependant vous n'avez rien eu !",
     "no_drop_mult": "Vous avez ouvert %d coffres à butin, cependant vous n'avez rien eu !"
   },
+  "leaderboards": {
+    "arena": "Classement JcJ",
+    "wb_damage": "Boss Mondial: Dégâts",
+    "wb_attacks": "Boss Mondial: Nombre d'Attaques"
+  },
   "world_bosses": {
     "no_world_boss": "Il n'y a pas de Boss Mondiaux ici",
     "spawn_date": "Prochaine Apparition: %s",
@@ -593,6 +598,7 @@
     "wbfight": "Attaque le Boss Mondial qui se trouve quand la zone où vous êtes",
     "wbshowall": "Affiche des informations sur les Boss Mondiaux",
     "wblastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
+    "wbleaderboard": "Affiche le classement des meilleurs joueurs en terme soit de dégâts (damage) soit de nombre d'attaques (attacks) pour le dernier Boss Mondial auquel vous avez participé. Les types sont: damage,attacks",
 
     "settings": "Affiche le menu des paramètres"
   },

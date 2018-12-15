@@ -5,7 +5,6 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const LootSystem = require("../../LootSystem");
 const AreasManager = require("../../Areas/AreasManager");
-const Leaderboard = require("../../Leaderboard");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -153,7 +152,6 @@ class OtherModule extends GModule {
     }
 
     helpPanel(lang, page) {
-        let str = "";
         let maxPage = 7;
         page = page && page > 0 && page <= maxPage ? page : 1;
         let data = {};
@@ -195,8 +193,8 @@ class OtherModule extends GModule {
                 }
 
                 commands[Translator.getString(lang, "help_panel", "filters_title")] = {
-                    "rarities": Translator.getString(lang, "help_panel", "filter_rarities"),
-                    "types": Translator.getString(lang, "help_panel", "filter_types"),
+                    "rarities": Translator.getString(lang, "help_panel", "rarities"),
+                    "types": Translator.getString(lang, "help_panel", "types"),
                 }
                 break;
             case 3:
@@ -275,6 +273,7 @@ class OtherModule extends GModule {
                     "wbfight/wbattack": Translator.getString(lang, "help_panel", "wbfight"),
                     "wbshowall": Translator.getString(lang, "help_panel", "wbshowall"),
                     "wblastinfo": Translator.getString(lang, "help_panel", "wblastinfo"),
+                    "wbleaderboard <type>": Translator.getString(lang, "help_panel", "wbleaderboard"),
                 }
                 break;
             case 7:

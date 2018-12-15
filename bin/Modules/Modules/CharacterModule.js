@@ -5,7 +5,7 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const LootSystem = require("../../LootSystem");
 const AreasManager = require("../../Areas/AreasManager");
-const Leaderboard = require("../../Leaderboard");
+const LeaderboardPvP = require("../../Leaderboards/LeaderboardPvP");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -46,7 +46,8 @@ class CharacterModule extends GModule {
 
     loadRoutes() {
         this.router.get("/leaderboard", async (req, res) => {
-            let data = Leaderboard.getPlayerLeaderboard(Globals.connectedUsers[res.locals.id].character.id);
+            let ld = new LeaderboardPvP(Globals.connectedUsers[res.locals.id].character.id);
+            let data = ld.getPlayerLeaderboard();
             data.lang = res.locals.lang;
             return res.json(
                 data

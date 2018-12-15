@@ -5,7 +5,6 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const LootSystem = require("../../LootSystem");
 const AreasManager = require("../../Areas/AreasManager");
-const Leaderboard = require("../../Leaderboard");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -19,6 +18,8 @@ const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
 const WorldBossSpawner = require("../../WorldBosses/WorldBossSpawner");
+const LeaderboardWBDamage = require("../../Leaderboards/LeaderboardWBDamage");
+const LeaderboardWBAttacks = require("../../Leaderboards/LeaderboardWBAttacks");
 
 
 class WorldBosses extends GModule {
@@ -92,6 +93,20 @@ class WorldBosses extends GModule {
 
             data.worldBoss = await WorldBossSpawner.getLastBossCharacterStats(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
 
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.get("/leaderboard/damage", async (req, res) => {
+            let ld = new LeaderboardWBDamage(Globals.connectedUsers[res.locals.id].character.id);
+            let data = ld.getPlayerLeaderboard();
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
+        this.router.get("/leaderboard/attacks", async (req, res) => {
+            let ld = new LeaderboardWBAttacks(Globals.connectedUsers[res.locals.id].character.id);
+            let data = ld.getPlayerLeaderboard();
             data.lang = res.locals.lang;
             return res.json(data);
         });
