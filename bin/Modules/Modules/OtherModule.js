@@ -54,7 +54,7 @@ class OtherModule extends GModule {
             data.lang = res.locals.lang;
             if (req.body.lang) {
                 if (Translator.isLangExist(req.body.lang)) {
-                    Globals.connectedUsers[res.locals.id].changeLang(req.body.lang);
+                    await Globals.connectedUsers[res.locals.id].changeLang(req.body.lang);
                     data.lang = req.body.lang;
                     data.success = Translator.getString(req.body.lang, "languages", "lang_changed", [Translator.getString(req.body.lang, "languages", req.body.lang)])
                 } else {
@@ -88,19 +88,19 @@ class OtherModule extends GModule {
             data.lang = res.locals.lang;
             if (req.body.mGroup != null) {
                 if (Globals.connectedUsers[res.locals.id].isGroupMuted()) {
-                    Globals.connectedUsers[res.locals.id].muteGroup(false);
+                    await Globals.connectedUsers[res.locals.id].muteGroup(false);
                     success += Translator.getString(res.locals.lang, "group", "now_unmuted") + "\n";
                 } else {
-                    Globals.connectedUsers[res.locals.id].muteGroup(true);
+                    await Globals.connectedUsers[res.locals.id].muteGroup(true);
                     success += Translator.getString(res.locals.lang, "group", "now_muted") + "\n";
                 }
             }
             if (req.body.mMarket != null) {
                 if (Globals.connectedUsers[res.locals.id].isMarketplaceMuted()) {
-                    Globals.connectedUsers[res.locals.id].muteGroup(false);
+                    await Globals.connectedUsers[res.locals.id].muteMarketplace(false);
                     success += Translator.getString(res.locals.lang, "marketplace", "now_unmuted") + "\n";
                 } else {
-                    Globals.connectedUsers[res.locals.id].muteGroup(true);
+                    await Globals.connectedUsers[res.locals.id].muteMarketplace(true);
                     success += Translator.getString(res.locals.lang, "marketplace", "now_muted") + "\n";
                 }
             }
@@ -115,7 +115,7 @@ class OtherModule extends GModule {
         this.router.get("/rarities", async (req, res) => {
             let data = {};
 
-            let dbRes = conn.query("SELECT * FROM itemsrarities");
+            let dbRes = await conn.query("SELECT * FROM itemsrarities");
             data.rarities = [];
             for (let result of dbRes) {
                 data.rarities.push({
@@ -133,7 +133,7 @@ class OtherModule extends GModule {
         this.router.get("/types", async (req, res) => {
             let data = {};
 
-            let dbRes = conn.query("SELECT * FROM itemstypes");
+            let dbRes = await conn.query("SELECT * FROM itemstypes");
             data.types = [];
             for (let result of dbRes) {
                 data.types.push({

@@ -51,20 +51,20 @@ class InventoryModule extends GModule {
             data.lang = res.locals.lang;
 
             if (req.params.idItem == "last") {
-                let idInventory = Globals.connectedUsers[res.locals.id].character.getInv().getNumberOfItem();
+                let idInventory = await Globals.connectedUsers[res.locals.id].character.getInv().getNumberOfItem();
                 idItemToSee = idInventory;
             }
 
             if (idItemToSee != null && Number.isInteger(idItemToSee)) {
-                doIHaveThisItem = Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
+                doIHaveThisItem = await Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
                 if (doIHaveThisItem) {
-                    itemToSee = Globals.connectedUsers[res.locals.id].character.getInv().getItem(idItemToSee);
-                    let equippedStats = Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
+                    itemToSee = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(idItemToSee);
+                    let equippedStats = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
                     if (equippedStats != null)
                         equippedStats = equippedStats.stats;
                     else
                         equippedStats = {};
-                    data.item = itemToSee.toApi(res.locals.lang);;
+                    data.item = await itemToSee.toApi(res.locals.lang);;
                     data.equippedStats = equippedStats;
                     data.idInInventory = idItemToSee;
                 } else {
@@ -74,9 +74,9 @@ class InventoryModule extends GModule {
                 data.idInInventory = req.params.idItem;
                 idItemToSee = this.getEquipableIDType(req.params.idItem);
                 if (idItemToSee > 0) {
-                    itemToSee = Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(idItemToSee);
+                    itemToSee = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(idItemToSee);
                     if (itemToSee != null) {
-                        data.item = itemToSee.toApi(res.locals.lang);
+                        data.item = await itemToSee.toApi(res.locals.lang);
                     } else {
                         data.error = Translator.getString(res.locals.lang, "inventory_equipment", "nothing_in_this_slot");
                     }
@@ -94,8 +94,8 @@ class InventoryModule extends GModule {
 
             let idItemToFav = parseInt(req.body.idItem, 10);
             if (idItemToFav != null && Number.isInteger(idItemToFav)) {
-                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
-                    Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
+                    await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
                     data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
@@ -103,8 +103,8 @@ class InventoryModule extends GModule {
             } else {
                 idItemToFav = this.getEquipableIDType(req.body.idItem);
                 if (idItemToFav > 0) {
-                    if (Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToFav) != null) {
-                        Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToFav, true);
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToFav) != null) {
+                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToFav, true);
                         data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
@@ -122,8 +122,8 @@ class InventoryModule extends GModule {
 
             let idItemToUnFav = parseInt(req.body.idItem, 10);
             if (idItemToUnFav != null && Number.isInteger(idItemToUnFav)) {
-                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
-                    Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
+                    await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
                     data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
@@ -131,8 +131,8 @@ class InventoryModule extends GModule {
             } else {
                 idItemToUnFav = this.getEquipableIDType(req.body.idItem);
                 if (idItemToUnFav > 0) {
-                    if (Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToUnFav) != null) {
-                        Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToUnFav, false);
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToUnFav) != null) {
+                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToUnFav, false);
                         data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
@@ -165,7 +165,7 @@ class InventoryModule extends GModule {
                 invPage = 0;
             }
 
-            data = Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang, params);
+            data = await Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang, params);
 
             data.lang = res.locals.lang;
             return res.json(data);
@@ -181,9 +181,9 @@ class InventoryModule extends GModule {
 
             if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                 if (sellIdItem != null && Number.isInteger(sellIdItem)) {
-                    if (Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
-                        if (!Globals.connectedUsers[res.locals.id].character.isItemFavorite(sellIdItem)) {
-                            let itemValue = Globals.connectedUsers[res.locals.id].character.sellThisItem(sellIdItem, numberOfItemsToSell);
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
+                        if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(sellIdItem)) {
+                            let itemValue = await Globals.connectedUsers[res.locals.id].character.sellThisItem(sellIdItem, numberOfItemsToSell);
                             if (itemValue > 0) {
                                 data.success = numberOfItemsToSell == 1 ? Translator.getString(res.locals.lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(res.locals.lang, "economic", "sell_for_x_plural", [itemValue]);
                             } else {
@@ -226,7 +226,7 @@ class InventoryModule extends GModule {
             }
 
             if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                let allSelled = Globals.connectedUsers[res.locals.id].character.sellAllInventory(params);
+                let allSelled = await Globals.connectedUsers[res.locals.id].character.sellAllInventory(params);
                 if (allSelled > 0) {
                     data.success = Translator.getString(res.locals.lang, "economic", "sell_all_for_x", [allSelled]);
                 } else {
@@ -253,7 +253,7 @@ class InventoryModule extends GModule {
             } else if (req.body.id) {
                 idOtherPlayerCharacter = parseInt(req.body.id, 10);
                 if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                    mId = User.getIDByIDCharacter(idOtherPlayerCharacter);
+                    mId = await User.getIDByIDCharacter(idOtherPlayerCharacter);
                 }
             }
 
@@ -268,11 +268,11 @@ class InventoryModule extends GModule {
                     data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_send_money_to_youself");
                 }
             } else {
-                if (mId != -1 && User.exist(mId)) {
+                if (mId != -1 && await User.exist(mId)) {
                     if (res.locals.id !== mId) {
                         userSendMoney = Globals.connectedUsers[res.locals.id];
                         userReceiveMoney = new User(mId);
-                        userReceiveMoney.loadUser();
+                        await userReceiveMoney.loadUser();
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_send_money_to_youself");
                     }
@@ -284,9 +284,11 @@ class InventoryModule extends GModule {
             if (userSendMoney != null && userReceiveMoney != null) {
                 req.body.amount = parseInt(req.body.amount, 10);
                 if (req.body.amount > 0) {
-                    if (userSendMoney.character.doIHaveEnoughMoney(req.body.amount)) {
-                        userSendMoney.character.removeMoney(req.body.amount);
-                        userReceiveMoney.character.addMoney(req.body.amount);
+                    if (await userSendMoney.character.doIHaveEnoughMoney(req.body.amount)) {
+                        await Promise.all([
+                            userSendMoney.character.removeMoney(req.body.amount),
+                            userReceiveMoney.character.addMoney(req.body.amount),
+                        ])
                         data.success = Translator.getString(res.locals.lang, "economic", "send_money_to", [req.body.amount, userReceiveMoney.getUsername()]);
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "economic_dont_have_enough_money");

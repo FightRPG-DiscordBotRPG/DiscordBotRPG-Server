@@ -1,10 +1,7 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
-const Globals = require("../Globals");
-const Translator = require("../Translator/Translator");
 const MarketplaceOrder = require("./MarketplaceOrder");
 const Item = require("../Items/Item.js");
-const Discord = require("discord.js");
 
 class Marketplace {
 
@@ -14,8 +11,8 @@ class Marketplace {
         this.isActive = false;
     }
 
-    loadMakerplace(idArea) {
-        let res = conn.query("SELECT * FROM marketplaces WHERE idArea = ?", [idArea]);
+    async loadMakerplace(idArea) {
+        let res = await conn.query("SELECT * FROM marketplaces WHERE idArea = ?", [idArea]);
         if (res[0]) {
             this.id = res[0]["idMarketplace"];
             this.tax = res[0]["tax"];
@@ -23,20 +20,17 @@ class Marketplace {
         }
     }
 
-    saveOrder(order) {
-        conn.query();
-    }
-
     getTax() {
         return this.tax;
     }
 
-    getCharacterOrders(idCharacter, page) {
+    async getCharacterOrders(idCharacter, page) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 5;
-        let maxPage = Math.ceil(conn.query("SELECT COUNT(*) FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ?", [this.id, idCharacter])[0]["COUNT(*)"] / perPage);
+        let res = await conn.query("SELECT COUNT(*) FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ?", [this.id, idCharacter]);
+        let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
-        let res = conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, (page - 1) * perPage]);
+        res = await conn.query("SELECT * FROM marketplacesorders WHERE idMarketplace = ? AND idCharacter = ? ORDER BY price DESC LIMIT ? OFFSET ?", [this.id, idCharacter, perPage, (page - 1) * perPage]);
 
         maxPage = maxPage > 0 ? maxPage : 1;
         return {
@@ -46,18 +40,19 @@ class Marketplace {
         };
     }
 
-    getAllOrdersCorrespondingTo(itemName, level, page, lang) {
+    async getAllOrdersCorrespondingTo(itemName, level, page, lang) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 5;
 
-        let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM marketplacesorders
+        let res = await conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ?`,
-            [lang, this.id, itemName, level])[0]["COUNT(*)"] / perPage);
+            [lang, this.id, itemName, level]);
+        let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
-        let res = conn.query(`SELECT * FROM marketplacesorders
+        res = await conn.query(`SELECT * FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
@@ -72,17 +67,18 @@ class Marketplace {
         };
     }
 
-    getAll(page) {
+    async getAll(page) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 5;
-        let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM marketplacesorders
+        let res = await conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC`,
-            [this.id])[0]["COUNT(*)"] / perPage);
+            [this.id]);
+        let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let res = conn.query(`SELECT * FROM marketplacesorders
+        res = await conn.query(`SELECT * FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC LIMIT ? OFFSET ?`,
@@ -97,62 +93,28 @@ class Marketplace {
         };
     }
 
-    getThisOrder(idItem) {
+    async getThisOrder(idItem) {
         idItem = idItem ? idItem : null;
-        let res = conn.query("SELECT * FROM marketplacesorders WHERE idItem = ?", [idItem]);
+        let res = await conn.query("SELECT * FROM marketplacesorders WHERE idItem = ?", [idItem]);
         return res[0] ? new MarketplaceOrder(res[0]["idMarketplace"], idItem, res[0]["idCharacter"], res[0]["number"], res[0]["price"]) : null;
     }
 
-    showCharacterOrders(idCharacter, page, lang) {
-        let res = this.getCharacterOrders(idCharacter, Number.parseInt(page));
-        return this.createShow(res, lang);
+    async apiCharacterOrders(idCharacter, page, lang) {
+        let res = await this.getCharacterOrders(idCharacter, Number.parseInt(page));
+        return await this.createApiShow(res, lang)
     }
 
-    apiCharacterOrders(idCharacter, page, lang) {
-        let res = this.getCharacterOrders(idCharacter, Number.parseInt(page));
-        return this.createApiShow(res, lang)
+    async apiSearchOrder(itemName, level, page, lang) {
+        let res = await this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
+        return await this.createApiShow(res, lang);
     }
 
-
-    showSearchOrder(itemName, level, page, lang) {
-        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
-        return this.createShow(res, lang);
+    async apiShowAll(page, lang) {
+        let res = await this.getAll(Number.parseInt(page));
+        return await this.createApiShow(res, lang);
     }
 
-    apiSearchOrder(itemName, level, page, lang) {
-        let res = this.getAllOrdersCorrespondingTo(itemName, level, Number.parseInt(page), lang);
-        return this.createApiShow(res, lang);
-    }
-
-    showAll(page, lang) {
-        let res = this.getAll(Number.parseInt(page));
-        return this.createShow(res, lang);
-    }
-
-    apiShowAll(page, lang) {
-        let res = this.getAll(Number.parseInt(page));
-        return this.createApiShow(res, lang);
-    }
-
-    createShow(res, lang) {
-        let str = "```\n";
-        str += Translator.getString(lang, "marketplace", "header_str") + "\n\n";
-        let orders = res.res;
-        if (orders.length > 0) {
-            for (let order of orders) {
-                let morder = new MarketplaceOrder(this.id, order.idItem, order.idCharacter, order.number, order.price);
-                str += morder.toStr(lang) + "\n";
-            }
-            str += "\n";
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n\n";
-        }
-        str += Translator.getString(lang, "general", "page_out_of_x", [res.page, res.maxPage > 0 ? res.maxPage : 1])
-        str += "```";
-        return str;
-    }
-
-    createApiShow(res, lang) {
+    async createApiShow(res, lang) {
         let orders = res.res;
         let toApi = {
             page: res.page,
@@ -161,37 +123,22 @@ class Marketplace {
         }
         for (let order of orders) {
             let morder = new MarketplaceOrder(this.id, order.idItem, order.idCharacter, order.number, order.price);
-            toApi.orders.push(morder.toApi(lang));
+            toApi.orders.push(await morder.toApi(lang));
         }
         return toApi;
     }
 
-
-
-    showItemOrder(idItem, character, lang) {
+    async apiItemOrder(idItem, character, lang) {
         let item = new Item(idItem);
-        let compareStats = character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
-        if (compareStats != null) {
-            compareStats = compareStats.stats;
-        }
-
-        return new Discord.RichEmbed()
-            .setAuthor(item.getName(lang), Globals.addr + "images/items/" + item.image + ".png")
-            .setColor(item.rarityColor)
-            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "", item.getDesc(lang))
-            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
-    }
-
-    apiItemOrder(idItem, character, lang) {
-        let item = new Item(idItem);
-        let compareStats = character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
+        await item.loadItem();
+        let compareStats = await character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
         if (compareStats != null) {
             compareStats = compareStats.stats;
         } else {
             compareStats = {};
         }
         return {
-            item: item.toApi(lang),
+            item: await item.toApi(lang),
             equippedStats: compareStats,
         };
     }

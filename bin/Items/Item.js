@@ -24,16 +24,13 @@ class Item {
         this.stats = new StatsItems(id);
         this.number = 1;
         this.isFavorite = false;
-
-        // Functions0
-        this.loadItem();
-
     }
 
 
-    loadItem() {
+    async loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = ?;", [this.id])[0];
+        let res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE items.idItem = ?;", [this.id]);
+        res = res[0];
         this.idBaseItem = res["idBaseItem"];
         this.level = res["level"];
         this.image = res["imageItem"];
@@ -52,27 +49,28 @@ class Item {
         this.stackable = res["stackable"];
         this.usable = res["usable"];
         this.isFavorite = res["favorite"];
+        await this.stats.loadStats();
     }
 
-    deleteItem() {
-        this.stats.deleteStats();
-        conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
+    async deleteItem() {
+        await this.stats.deleteStats();
+        await conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
     }
 
-    static deleteItem(idItem) {
-        StatsItems.deleteStats(idItem);
-        conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
+    static async deleteItem(idItem) {
+        await StatsItems.deleteStats(idItem);
+        await conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
     }
 
     /**
      * 
      * @param {Array<number>} idItems 
      */
-    static deleteItems(idItems) {
+    static async deleteItems(idItems) {
         if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
-            StatsItems.deleteStatsMultiple(idItems);
-            conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
+            await StatsItems.deleteStatsMultiple(idItems);
+            await conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
         }
     }
 
@@ -84,7 +82,7 @@ class Item {
         return this.idRarity;
     }
 
-    getPower() {
+    async getPower() {
         let statsPossible = Object.keys(Globals.statsIds);
         let power = 0;
         for (let i of statsPossible) {
@@ -115,10 +113,10 @@ class Item {
         return Math.floor(power / 5 * 100);
     }
 
-    setFavorite(value) {
+    async setFavorite(value) {
         value = value != false && value != true ? false : value;
         this.isFavorite = value;
-        conn.query("UPDATE items SET favorite = ? WHERE idItem = ?", [this.isFavorite, this.id]);
+        await conn.query("UPDATE items SET favorite = ? WHERE idItem = ?", [this.isFavorite, this.id]);
     }
 
     getEquipTypeID() {
@@ -144,11 +142,6 @@ class Item {
      */
     isUsable() {
         return this.usable;
-    }
-
-    toStr(lang) {
-        let numberStr = this.number > 1 ? " [x" + this.number + "]" : "";
-        return this.getName(lang) + (this.isFavorite == true ? " ★" : "") + numberStr + " - " + Translator.getString(lang, "item_types", this.typeName) + " (" + Translator.getString(lang, "item_sous_types", this.sousTypeName) + ")" + " - " + this.level + " - " + Translator.getString(lang, "rarities", this.rarity) + " - " + this.getPower() + "%";
     }
 
     getCost(number) {
@@ -178,7 +171,7 @@ class Item {
      * API CALLS HERE
      */
 
-    toApi(lang) {
+    async toApi(lang) {
         let toApiObject = {
             name: this.getName(lang),
             desc: this.getDesc(lang),
@@ -187,7 +180,7 @@ class Item {
             level: this.getLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
             subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
-            power: this.getPower(),
+            power: await this.getPower(),
             equipable: this.isEquipable(),
             number: this.number,
             price: this.getCost(),
@@ -199,7 +192,7 @@ class Item {
         return toApiObject;
     }
 
-    toApiLight(lang) {
+    async toApiLight(lang) {
         let toApiObject = {
             name: this.getName(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
@@ -207,7 +200,7 @@ class Item {
             level: this.getLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
             subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
-            power: this.getPower(),
+            power: await this.getPower(),
             equipable: this.isEquipable(),
             number: this.number,
             price: this.getCost(),
@@ -218,35 +211,39 @@ class Item {
         return toApiObject;
     }
 
-    static getType(idItem) {
-        let res = conn.query("SELECT itemstypes.nomType FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idItem = ?", [idItem]);
-        if (res[0]) {
-            return res[0].nomType;
-        }
-        return "unknown";
-    }
-
 }
 
-Item.newItem = (idItem, stype) => {
+Item.newItem = async (idItem, stype) => {
+    let itemToReturn;
     switch (stype) {
         case "consumable":
-            return new Consumable(idItem);
+            itemToReturn = new Consumable(idItem);
+            break;
         case "loot_box_equipment":
-            return new EquipmentLootBox(idItem);
+            itemToReturn = new EquipmentLootBox(idItem);
+            break;
         case "reset_time_potion":
-            return new ResetTimePotion(idItem);
+            itemToReturn = new ResetTimePotion(idItem);
+            break;
         case "founder_box":
-            return new FounderGift(idItem);
+            itemToReturn = new FounderGift(idItem);
+            break;
         case "random_loot_box_equipment":
-            return new EquipmentRandomLootBox(idItem);
+            itemToReturn = new EquipmentRandomLootBox(idItem);
+            break;
         case "horse":
-            return new Horse(idItem);
+            itemToReturn = new Horse(idItem);
+            break;
         case "energy_potion":
-            return new EnergyPotion(idItem);
+            itemToReturn = new EnergyPotion(idItem);
+            break;
         default:
-            return new Item(idItem);
+            itemToReturn = new Item(idItem);
+            break;
     }
+    await itemToReturn.loadItem();
+
+    return itemToReturn;
 };
 
 module.exports = Item;

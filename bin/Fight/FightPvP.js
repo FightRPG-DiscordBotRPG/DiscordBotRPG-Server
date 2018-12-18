@@ -2,43 +2,47 @@ const Fight = require("./Fight");
 
 class FightPvP extends Fight {
 
-    getAvgHonorTeam(idTeam) {
+    async getAvgHonorTeam(idTeam) {
         let avg = 0;
         for (let i in this.entities[idTeam]) {
-            avg += this.entities[idTeam][i].getHonor();
+            avg += await this.entities[idTeam][i].getHonor();
         }
         return Math.round(avg / this.entities[idTeam].length);
     }
 
-    getTotalHonorTeams() {
-        let totals = [0,0];
-        for(let i in this.entities) {
-            for(let character of this.entities[i]) {
-                totals[i] += character.getHonor();
+    async getTotalHonorTeams() {
+        let totals = [0, 0];
+        for (let i in this.entities) {
+            for (let character of this.entities[i]) {
+                totals[i] += await character.getHonor();
             }
         }
         return totals;
     }
 
-    addHonorToThisTeam(idTeam, honor) {
+    async addHonorToThisTeam(idTeam, honor) {
         honor = Math.round(honor / this.entities[idTeam].length);
-        for(let character of this.entities[idTeam]) {
-            character.addHonorPoints(honor);
+        let promises = [];
+        for (let character of this.entities[idTeam]) {
+            promises.push(character.addHonorPoints(honor));
         }
+        await Promise.all(promises);
     }
 
-    removeHonorToThisTeam(idTeam, honor) {
+    async removeHonorToThisTeam(idTeam, honor) {
         honor = Math.round(honor / this.entities[idTeam].length);
-        for(let character of this.entities[idTeam]) {
-            character.removeHonorPoints(honor);
+        let promises = [];
+        for (let character of this.entities[idTeam]) {
+            promises.push(character.removeHonorPoints(honor));
         }
+        await Promise.all(promises);
     }
 
-    endFight() {
-        let teamsHonor = this.getTotalHonorTeams();
+    async endFight() {
+        let teamsHonor = await this.getTotalHonorTeams();
         let honor = 0;
         let baseHonor = 10;
-        if(this.winnerGroup === 0) {
+        if (this.winnerGroup === 0) {
             if (teamsHonor[0] === teamsHonor[1]) {
                 honor = baseHonor;
             } else if (teamsHonor[0] > teamsHonor[1]) {
@@ -63,8 +67,10 @@ class FightPvP extends Fight {
 
         honor = honor * this.entities[this.winnerGroup].length;
 
-        this.addHonorToThisTeam(this.winnerGroup, honor);
-        this.removeHonorToThisTeam(this.winnerGroup === 0 ? 1 : 0, honor);
+        await Promise.all([
+            this.addHonorToThisTeam(this.winnerGroup, honor),
+            this.removeHonorToThisTeam(this.winnerGroup === 0 ? 1 : 0, honor)
+        ]);
         this.summary.honor = honor;
 
         for (let entity of this.entities[0]) {

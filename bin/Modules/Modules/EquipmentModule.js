@@ -48,14 +48,14 @@ class EquipmentModule extends GModule {
             let toEquip = parseInt(req.body.idItem, 10);
             //console.log((toEquip));
             if (toEquip != null && Number.isInteger(toEquip)) {
-                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toEquip)) {
-                    if (Globals.connectedUsers[res.locals.id].character.getInv().isEquipable(toEquip)) {
-                        let tItemToEquip = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toEquip);
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(toEquip)) {
+                    if (await Globals.connectedUsers[res.locals.id].character.getInv().isEquipable(toEquip)) {
+                        let tItemToEquip = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(toEquip);
                         if (Globals.connectedUsers[res.locals.id].character.getLevel() >= tItemToEquip.getLevel()) {
-                            let swapItem = Globals.connectedUsers[res.locals.id].character.getEquipement().equip(tItemToEquip.id);
-                            Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(tItemToEquip);
+                            let swapItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().equip(tItemToEquip.id);
+                            await Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(tItemToEquip);
                             if (swapItem > 0) {
-                                Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
+                                await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                             }
                             data.success = Translator.getString(res.locals.id, "inventory_equipment", "item_equiped");
                         } else {
@@ -82,9 +82,9 @@ class EquipmentModule extends GModule {
             let toUnequip = this.getEquipableIDType(req.body.idItem);
             if (toUnequip != -1 && Number.isInteger(toUnequip)) {
                 //let swapItem = Globals.connectedUsers[res.locals.id].character.equ
-                let itemToInventory = Globals.connectedUsers[res.locals.id].character.equipement.unEquip(toUnequip);
+                let itemToInventory = await Globals.connectedUsers[res.locals.id].character.equipement.unEquip(toUnequip);
                 if (itemToInventory > 0) {
-                    Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(itemToInventory);
+                    await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(itemToInventory);
                     data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_unequiped");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_item_equiped_here");
@@ -100,7 +100,7 @@ class EquipmentModule extends GModule {
         this.router.get("/show", async (req, res) => {
             let data = {};
             data.lang = res.locals.lang;
-            data.items = Globals.connectedUsers[res.locals.id].character.equipement.toApi(res.locals.lang);
+            data.items = await Globals.connectedUsers[res.locals.id].character.equipement.toApi(res.locals.lang);
             return res.json(data);
         });
 
@@ -113,10 +113,10 @@ class EquipmentModule extends GModule {
             //number = number > 0 ? number : 1;
 
             if (toUse != null && Number.isInteger(toUse)) {
-                if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toUse)) {
-                    let itemToUse = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toUse);
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(toUse)) {
+                    let itemToUse = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(toUse);
                     if (Globals.connectedUsers[res.locals.id].character.canUse(itemToUse)) {
-                        Globals.connectedUsers[res.locals.id].character.use(itemToUse, toUse, number);
+                        await Globals.connectedUsers[res.locals.id].character.use(itemToUse, toUse, number);
                         data.success = itemToUse.resultToString(res.locals.lang);
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_cant_use");

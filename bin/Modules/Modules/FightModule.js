@@ -55,7 +55,7 @@ class FightModule extends GModule {
                         } else {
                             enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
                         }
-                        let response = Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
+                        let response = await Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
                         if (response.error) {
                             data.error = response.error;
                         } else {
@@ -88,7 +88,7 @@ class FightModule extends GModule {
                 } else if (req.body.idCharacter) {
                     idOtherPlayerCharacter = parseInt(req.body.idCharacter, 10);
                     if (idOtherPlayerCharacter && Number.isInteger(idOtherPlayerCharacter)) {
-                        mId = User.getIDByIDCharacter(idOtherPlayerCharacter);
+                        mId = await User.getIDByIDCharacter(idOtherPlayerCharacter);
                     }
                 } else {
                     // useless
@@ -97,7 +97,7 @@ class FightModule extends GModule {
                 // Ici on lance le combat si connecté
                 if (Globals.connectedUsers[mId]) {
                     if (res.locals.id !== mId) {
-                        response = Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [Globals.connectedUsers[mId].character], res.locals.id, res.locals.lang);
+                        response = await Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [Globals.connectedUsers[mId].character], res.locals.id, res.locals.lang);
                         if (response.error != null) {
                             data.error = response.error;
                         } else {
@@ -108,14 +108,14 @@ class FightModule extends GModule {
                     }
 
                 } else {
-                    if (mId != -1 && User.exist(mId)) {
+                    if (mId != -1 && await User.exist(mId)) {
                         if (res.locals.id !== mId) {
                             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                                 let notConnectedEnemy = new User(mId);
-                                notConnectedEnemy.loadUser();
+                                await notConnectedEnemy.loadUser();
                                 notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
 
-                                response = Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [notConnectedEnemy.character], res.locals.id, res.locals.lang);
+                                response = await Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [notConnectedEnemy.character], res.locals.id, res.locals.lang);
 
                                 if (response.error != null) {
                                     data.error = response.error;

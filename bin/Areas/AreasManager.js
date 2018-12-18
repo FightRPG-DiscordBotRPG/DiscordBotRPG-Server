@@ -18,53 +18,58 @@ class AreasManager {
         this.regions = {};
         this.paths = new Graph();
         this.pathsGoldCosts = new Graph();
-
-        this.loadRegions();
-        this.loadAreas();
-        // Inter regions paths
-        this.loadConnectedAreas();
-        this.loadPaths();
     }
 
-    loadConnectedAreas() {
+    async loadAreasManager() {
+        await this.loadRegions();
+        await Promise.all([
+            this.loadAreas(),
+            this.loadPaths()
+        ]);
+        await this.loadConnectedAreas();
+    }
+
+    async loadConnectedAreas() {
         for (let rk of Object.keys(this.regions)) {
-            let res = conn.query("SELECT idArea2 as idArea FROM areaspaths WHERE areaspaths.idArea1 IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?) AND areaspaths.idArea2 NOT IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?)", [rk, rk]);
+            let res = await conn.query("SELECT idArea2 as idArea FROM areaspaths WHERE areaspaths.idArea1 IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?) AND areaspaths.idArea2 NOT IN (SELECT idArea FROM areasregions WHERE areasregions.idRegion = ?)", [rk, rk]);
             for (let find of res) {
                 this.regions[rk].addConnectedArea(this.areas.get(find.idArea));
             }
         }
     }
 
-    loadRegions() {
-        let res = conn.query("SELECT idRegion FROM regions");
+    async loadRegions() {
+        let res = await conn.query("SELECT idRegion FROM regions");
         for (let region of res) {
             this.regions[region.idRegion] = new Region(region.idRegion);
         }
     }
 
-    loadAreas() {
-        let res = conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, areasmonsterslevels.maxLevel ASC, idArea");
+    async loadAreas() {
+        let res = await conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, areasmonsterslevels.maxLevel ASC, idArea");
+        let area;
         for (let i in res) {
             switch (res[i].NomAreaType) {
                 case "wild":
-                    this.areas.set(res[i].idArea, new WildArea(res[i].idArea));
+                    area = new WildArea(res[i].idArea);
                     break;
                 case "city":
-                    this.areas.set(res[i].idArea, new CityArea(res[i].idArea));
+                    area = new CityArea(res[i].idArea);
                     break;
                 case "dungeon":
-                    this.areas.set(res[i].idArea, new DungeonArea(res[i].idArea));
+                    area = new DungeonArea(res[i].idArea);
                     break;
             }
+            await area.loadArea();
+            this.areas.set(res[i].idArea, area);
             this.regions[res[i].idRegion].addArea(this.areas.get(res[i].idArea));
         }
-
     }
 
-    loadPaths() {
-        let res = conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
+    async loadPaths() {
+        let res = await conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
         for (let area of res) {
-            let paths = conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
+            let paths = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
             let node = {};
             let nodeGold = {};
             for (let path of paths) {
@@ -149,34 +154,13 @@ class AreasManager {
         return this.areas.get(idArea).getMonsterId(idEnemy);
     }
 
-    /**
-     * 
-     * @param {number} idArea 
-     * @param {string} lang 
-     */
-    seeThisArea(idArea, lang) {
-        return this.areas.get(idArea).toStr(lang);
+    async thisAreaToApi(idArea, lang) {
+        let area = this.areas.get(idArea)
+        return await area.toApi(lang);
     }
 
-    thisAreaToApi(idArea, lang) {
-        return this.areas.get(idArea).toApi(lang);
-    }
-
-    /**
-     * 
-     * @param {number} idArea 
-     * @param {string} lang 
-     */
-    seeConquestOfThisArea(idArea, lang) {
-        return this.areas.get(idArea).conquestToStr(lang);
-    }
-
-    seeAllAreasInThisRegion(area, lang) {
-        return this.regions[area.idRegion].seeAreas(lang);
-    }
-
-    thisRegionToApi(currentArea, lang) {
-        return this.regions[currentArea.idRegion].toApi(lang);
+    async thisRegionToApi(currentArea, lang) {
+        return await this.regions[currentArea.idRegion].toApi(lang);
     }
 
     canISellToThisArea(idArea) {
@@ -217,8 +201,9 @@ class AreasManager {
         return this.areas.get(idArea).getName(lang);
     }
 
-    getPlayersOf(idArea, page, lang) {
-        return this.areas.get(idArea).getPlayers(page, lang);
+    async getPlayersOf(idArea, page, lang) {
+        let area = this.areas.get(idArea);
+        return await area.getPlayers(page, lang);
     }
 
     getResources(idArea) {
@@ -240,20 +225,23 @@ class AreasManager {
     /*
      *   CONQUEST
      */
-    claim(idArea, idGuild) {
-        return this.areas.get(idArea).claim(idGuild);
+    async claim(idArea, idGuild) {
+        let area = this.areas.get(idArea);
+        return await area.claim(idGuild);
     }
 
-    unclaimAll(idGuild) {
+    async unclaimAll(idGuild) {
         for (let [key, value] of this.areas) {
             if (this.areas.get(key).owner == idGuild) {
-                this.areas.get(key).unclaim();
+                let area = this.areas.get(key);
+                await area.unclaim();
             }
         }
     }
 
-    haveOwner(idArea) {
-        return this.areas.get(idArea).haveOwner();
+    async haveOwner(idArea) {
+        let area = this.areas.get(idArea);
+        return await area.haveOwner();
     }
 
     getArea(idArea) {
@@ -263,14 +251,15 @@ class AreasManager {
     /*
      * API
      */
-    toApi(actualArea) {
+    async toApi(actualArea) {
         let areas = {};
         for (let i in Globals.areasTypes) {
             areas[Globals.areasTypes[i]] = [];
         }
 
         for (let [key, value] of this.areas) {
-            areas[this.areas.get(key).areaType].push(this.areas.get(key).toApiLight());
+            let area = this.areas.get(key);
+            areas[this.areas.get(key).areaType].push(await area.toApiLight());
             if (key == actualArea) {
                 areas[this.areas.get(key).areaType][areas[this.areas.get(key).areaType].length - 1].actual = true;
             } else {
@@ -280,9 +269,10 @@ class AreasManager {
         return areas;
     }
 
-    toApiThisAreaFull(idArea) {
+    async toApiThisAreaFull(idArea) {
         if (this.areas.get(idArea)) {
-            return this.areas.get(idArea).toApiFull();
+            let area = this.areas.get(idArea);
+            return await area.toApiFull();
         }
         return null;
     }

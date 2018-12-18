@@ -6,7 +6,7 @@ class ResetTimePotion extends Potion {
         super(id);
     }
 
-    use(character) {
+    async use(character) {
         this.numberOfUse++;
         character.resetWaitTime();
     }

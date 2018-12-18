@@ -43,7 +43,7 @@ class GroupModule extends GModule {
         this.router.post("/notifications/mute", async (req, res) => {
             let data = {}
 
-            Globals.connectedUsers[res.locals.id].muteGroup(true);
+            await Globals.connectedUsers[res.locals.id].muteGroup(true);
             data.success = Translator.getString(res.locals.lang, "group", "now_muted");
 
             data.lang = res.locals.lang;
@@ -53,7 +53,7 @@ class GroupModule extends GModule {
         this.router.post("/notifications/unmute", async (req, res) => {
             let data = {}
 
-            Globals.connectedUsers[res.locals.id].muteGroup(false);
+            await Globals.connectedUsers[res.locals.id].muteGroup(false);
             data.success = Translator.getString(res.locals.lang, "group", "now_unmuted");
 
             data.lang = res.locals.lang;
@@ -264,7 +264,7 @@ class GroupModule extends GModule {
             let pending = res.locals.pending;
 
             if (group != null) {
-                data = group.toApi();
+                data = await group.toApi();
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
             }
@@ -292,7 +292,7 @@ class GroupModule extends GModule {
                                         if (grpEnemies == null) {
                                             grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
                                         }
-                                        let response = Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
+                                        let response = await Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
                                         if (response.error != null) {
                                             data.error = response.error;
                                         } else {

@@ -332,7 +332,8 @@
     "level": "Level",
     "craft_level": "Craft Level",
     "money": "Money",
-    "honor": "Honor"
+    "honor": "Honor",
+    "health_points": "Health Points"
   },
   "economic": {
     "sell_for_x": "You sold your item for %dG",

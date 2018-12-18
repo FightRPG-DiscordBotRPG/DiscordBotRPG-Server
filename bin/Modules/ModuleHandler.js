@@ -114,7 +114,7 @@ class ModuleHandler extends GModule {
             });
         } else {
             let authToken = req.headers.authorization.slice(7);
-            let id = User.getUserId(authToken + "");
+            let id = await User.getUserId(authToken + "");
             if (id) {
                 res.locals.id = id;
                 next();
@@ -282,16 +282,16 @@ class ModuleHandler extends GModule {
         if (!Globals.connectedUsers[authorIdentifier]) {
             // Load User
             Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, username, avatar);
-            Globals.connectedUsers[authorIdentifier].loadUser();
+            await Globals.connectedUsers[authorIdentifier].loadUser();
 
             Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
 
             // Load Guild
-            if (Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
-                let idGuild = Globals.connectedUsers[authorIdentifier].character.getIDGuild();
+            if (await Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
+                let idGuild = await Globals.connectedUsers[authorIdentifier].character.getIDGuild();
                 if (!Globals.connectedGuilds[idGuild]) {
                     Globals.connectedGuilds[idGuild] = new Guild();
-                    Globals.connectedGuilds[idGuild].loadGuild(idGuild);
+                    await Globals.connectedGuilds[idGuild].loadGuild(idGuild);
                 }
             }
             Globals.connectedUsers[authorIdentifier].character.isLoaded = true;

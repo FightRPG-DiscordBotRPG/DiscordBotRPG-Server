@@ -31,57 +31,48 @@ class Character extends CharacterEntity {
         this.group = null;
     }
 
-    init() {
+    async init() {
 
-        var res = conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1);");
+        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1);");
         this.id = res["insertId"];
 
         //Init level system
-        this.levelSystem.init(this.id);
-        this.craftSystem.init(this.id);
+        await Promise.all([
+            this.levelSystem.init(this.id),
+            this.craftSystem.init(this.id),
+            this.stats.init(this.id),
+            this.getInv().loadInventory(this.id),
+            this.equipement.loadEquipements(this.id),
+            conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);")
+        ]);
 
-        // Init Honor
-        conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);");
-
-
-        // Stat Part
-        this.stats.init(this.id);
         this.statPoints = 5;
         this.money = 100;
         this.idArea = 1;
 
-        //Load inv
-        this.getInv().loadInventory(this.id);
-
-        // Load Equipement
-        this.equipement.loadEquipements(this.id);
-
-
         this.updateStats();
     }
 
-    loadCharacter(id) {
+    async loadCharacter(id) {
         // load from database
-        let res = conn.query("SELECT statPoints, money, idArea " +
+        let res = (await conn.query("SELECT statPoints, money, idArea " +
             "FROM characters " +
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
-            "WHERE characters.idCharacter = ?", [id])[0];
+            "WHERE characters.idCharacter = ?", [id]))[0];
         this.id = id;
-        this.stats.loadStat(id);
-        this.levelSystem.loadLevelSystem(id);
-        this.craftSystem.load(id);
+        await Promise.all([
+            this.stats.loadStat(id),
+            this.levelSystem.loadLevelSystem(id),
+            this.craftSystem.load(id),
+            this.getInv().loadInventory(id),
+            this.equipement.loadEquipements(id)
+        ]);
+
         this.statPoints = res["statPoints"];
         this.money = res["money"];
         this.idArea = res["idArea"];
-        //this.honorPoints = res["honor"];
 
-        //Load inv
-        this.getInv().loadInventory(id);
-
-        // Load Equipement
-        this.equipement.loadEquipements(id);
-
-        res = conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = " + id + ";");
+        res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [id]);
         if (res.length > 0) {
             this.idGuild = res[0]["idGuild"];
         }
@@ -90,22 +81,16 @@ class Character extends CharacterEntity {
 
     }
 
-    saveCharacter() {
-        this.stats.saveStat();
-        this.levelSystem.saveLevelSystem();
-        conn.query("UPDATE characters SET statPoints = " + this.statPoints + " WHERE idCharacter = " + this.id);
+    async saveArea() {
+        await conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
-    saveArea() {
-        conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
-    }
-
-    changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
-        let baseTimeToWait = this.getWaitTimeTravel(waitTime);
+    async changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
+        let baseTimeToWait = await this.getWaitTimeTravel(waitTime);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + baseTimeToWait);
         this.area = area;
-        this.saveArea();
+        await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
     }
 
@@ -139,6 +124,9 @@ class Character extends CharacterEntity {
         return this.area.id;
     }
 
+    /**
+     * @returns {Area}
+     */
     getArea() {
         return this.area;
     }
@@ -171,11 +159,6 @@ class Character extends CharacterEntity {
         this.group = null;
     }
 
-    // Str Stats
-    getStatsStr(lang) {
-        return this.stats.toStr(this.equipement.stats, lang);
-    }
-
     damageCalcul() {
         let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
         return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
@@ -203,7 +186,7 @@ class Character extends CharacterEntity {
      * @param {number} nbr 
      * @returns {boolean} True if no errors False if not
      */
-    upStat(stat, nbr) {
+    async upStat(stat, nbr) {
         nbr = parseInt(nbr, 10);
         if (nbr > 0 && nbr <= this.statPoints) {
             switch (stat) {
@@ -248,11 +231,11 @@ class Character extends CharacterEntity {
                     stat = "luck";
                     break;
             }
-            this.stats.saveThisStat(stat);
+            await this.stats.saveThisStat(stat);
             // Remove attributes points
 
             this.statPoints -= nbr;
-            this.saveStatsPoints();
+            await this.saveStatsPoints();
             this.updateStats();
             return true;
         }
@@ -261,13 +244,13 @@ class Character extends CharacterEntity {
     }
 
     // Call for reseting stats
-    resetStats() {
+    async resetStats() {
         let resetValue = this.getResetStatsValue()
-        if (this.doIHaveEnoughMoney(resetValue)) {
-            this.removeMoney(resetValue);
-            this.stats.reset();
+        if (await this.doIHaveEnoughMoney(resetValue)) {
+            await this.removeMoney(resetValue);
+            await this.stats.reset();
             this.statPoints = this.levelSystem.actualLevel * 5;
-            this.saveStatsPoints();
+            await this.saveStatsPoints();
             return true;
         }
         return false;
@@ -278,85 +261,88 @@ class Character extends CharacterEntity {
         return Math.round(((levelMult) * Globals.resetStatsPricePerLevel));
     }
 
-    addExp(exp) {
+    async addExp(exp) {
         let startingLevel = this.levelSystem.actualLevel;
-        this.levelSystem.addThisExp(exp);
+        await this.levelSystem.addThisExp(exp);
         if (startingLevel < this.levelSystem.actualLevel) {
             this.statPoints += 5 * (this.levelSystem.actualLevel - startingLevel);
-            this.saveStatsPoints();
-            this.levelSystem.saveMyLevel();
+            await this.saveStatsPoints();
+            await this.levelSystem.saveMyLevel();
         } else {
-            this.levelSystem.saveMyExp();
+            await this.levelSystem.saveMyExp();
         }
     }
 
-    addMoney(money) {
+    async addMoney(money) {
         money = money >= 0 ? money : 0;
-        conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [money, this.id]);
+        await conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [money, this.id]);
     }
 
-    removeMoney(money) {
+    async removeMoney(money) {
         money = money >= 0 ? money : 0;
-        conn.query("UPDATE characters SET money = money - ? WHERE idCharacter = ?;", [money, this.id]);
+        await conn.query("UPDATE characters SET money = money - ? WHERE idCharacter = ?;", [money, this.id]);
     }
 
-    doIHaveEnoughMoney(money) {
-        return (this.getMoney() >= money);
+    async doIHaveEnoughMoney(money) {
+        return (await this.getMoney() >= money);
     }
 
     /**
      * 
      * @param {number} honorPoints 
      */
-    addHonorPoints(honorPoints) {
-        /*this.honorPoints += honorPoints;
-        //console.log("Add " + this.honorPoints);
-        this.saveHonor();*/
+    async addHonorPoints(honorPoints) {
         if (honorPoints != null) {
             if (honorPoints >= 0) {
-                conn.query("UPDATE charactershonor SET Honor = Honor + ? WHERE idCharacter = ?;", [honorPoints, this.id]);
+                await conn.query("UPDATE charactershonor SET Honor = Honor + ? WHERE idCharacter = ?;", [honorPoints, this.id]);
             } else {
-                this.removeHonorPoints(honorPoints);
+                await this.removeHonorPoints(honorPoints);
             }
             return true;
         }
         return false;
     }
 
-    removeHonorPoints(honorPoints) {
-        let honor = this.getHonor() - honorPoints;
+    async removeHonorPoints(honorPoints) {
+        let honor = await this.getHonor() - honorPoints;
         honor = honor < 0 ? 0 : honor;
-        conn.query("UPDATE charactershonor SET Honor = ? WHERE idCharacter = ?;", [honor, this.id]);
+        await conn.query("UPDATE charactershonor SET Honor = ? WHERE idCharacter = ?;", [honor, this.id]);
     }
 
     // number : Nbr of items to sell
-    sellThisItem(idEmplacement, number) {
+    async sellThisItem(idEmplacement, number) {
         number = number ? number : 1;
-        let value = this.getInv().getItem(idEmplacement).getCost(number);
+        let value = await (await (this.getInv()).getItem(idEmplacement)).getCost(number);
+
+
         // Si cost > 0 alors item existe et peut se vendre
         // On fait passer true pour deleteo bject puisque si on delete tout item on doit delete de la bdd
         if (value > 0) {
-            this.getInv().removeSomeFromInventory(idEmplacement, number, true);
-            this.addMoney(value);
+            await Promise.all([
+                this.getInv().removeSomeFromInventory(idEmplacement, number, true),
+                this.addMoney(value)
+            ]);
             PStatistics.incrStat(this.id, "gold_sell", value);
         }
         return value;
     }
 
-    sellAllInventory(params) {
-        let value = this.getInv().getAllInventoryValue(params);
-        this.getInv().deleteAllFromInventory(params);
-        this.addMoney(value);
+    async sellAllInventory(params) {
+        let value = await this.getInv().getAllInventoryValue(params);
+        await Promise.all([
+            this.getInv().deleteAllFromInventory(params),
+            this.addMoney(value)
+        ]);
         PStatistics.incrStat(this.id, "gold_sell", value);
         return value;
     }
 
-    setItemFavoriteInv(idEmplacement, fav) {
-        this.getInv().getItem(idEmplacement).setFavorite(fav ? fav : false);
+    async setItemFavoriteInv(idEmplacement, fav) {
+        await (await (this.getInv()).getItem(idEmplacement)).setFavorite(fav ? fav : false);
     }
 
-    setItemFavoriteEquip(idEquip, fav) {
-        this.equipement.getItem(idEquip).setFavorite(fav ? fav : false);
+    async setItemFavoriteEquip(idEquip, fav) {
+        await (await (this.equipement).getItem(idEquip)).setFavorite(fav ? fav : false);
     }
 
     // Craft
@@ -370,17 +356,20 @@ class Character extends CharacterEntity {
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
-    craft(craft) {
+    async craft(craft) {
         let gotAllItems = true;
         if (craft.id > 0) {
-            gotAllItems = conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id])[0][0].doesPlayerHaveEnoughMats;
+            gotAllItems = (await conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id]))[0][0].doesPlayerHaveEnoughMats;
             if (gotAllItems == "true") {
+                let promises = [];
+                // Since it's idItem i can promise all without worrying if the right item is deleted
                 for (let i in craft.requiredItems) {
-                    this.getInv().removeSomeFromInventoryIdBase(craft.requiredItems[i].idBase, craft.requiredItems[i].number, true);
+                    promises.push(this.getInv().removeSomeFromInventoryIdBase(craft.requiredItems[i].idBase, craft.requiredItems[i].number, true));
                 }
+                await Promise.all(promises);
 
                 let ls = new LootSystem();
-                ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
+                await ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
                 return true;
             }
         }
@@ -390,70 +379,72 @@ class Character extends CharacterEntity {
 
     // Marketplace
 
-    sellToMarketplace(marketplace, idEmplacement, nbr, price) {
+    async sellToMarketplace(marketplace, idEmplacement, nbr, price) {
         let order;
         let idItem;
-        if (this.getAmountOfThisItem(idEmplacement) > nbr) {
+        if (await this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
-            let item = this.getInv().getItem(idEmplacement);
-            idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
+            let item = await this.getInv().getItem(idEmplacement);
+            idItem = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
-            idItem = this.getInv().getIdItemOfThisEmplacement(idEmplacement);
+            idItem = await this.getInv().getIdItemOfThisEmplacement(idEmplacement);
         }
-        this.getInv().removeSomeFromInventory(idEmplacement, nbr, false);
+        await this.getInv().removeSomeFromInventory(idEmplacement, nbr, false);
         order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
-        order.place();
+        await order.place();
     }
 
     // TODO :
     // Must change when is not stackable (add an item for each number => insert)
-    marketplaceCollectThisItem(order) {
+    async marketplaceCollectThisItem(order) {
         let item = new Item(order.idItem);
-        order.remove();
+        await item.loadItem();
+        await order.remove();
         if (item.isStackable() == false) {
-            this.getInv().addToInventory(order.idItem, order.number);
+            await this.getInv().addToInventory(order.idItem, order.number);
         } else {
-            let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
+            let inventoryItemID = await this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
             if (inventoryItemID != null) {
-                this.getInv().addToInventory(inventoryItemID, order.number);
-                item.deleteItem();
+                await this.getInv().addToInventory(inventoryItemID, order.number);
+                await item.deleteItem();
             } else {
-                this.getInv().addToInventory(order.idItem, order.number);
+                await this.getInv().addToInventory(order.idItem, order.number);
             }
         }
 
     }
 
 
-    marketplaceBuyThisItem(order, number) {
+    async marketplaceBuyThisItem(order, number) {
         if (order.number == number) {
-            this.marketplaceCollectThisItem(order);
+            await this.marketplaceCollectThisItem(order);
         } else {
             order.number -= number;
-            order.update();
+            await order.update();
             let item = new Item(order.idItem);
+            await item.loadItem();
             if (item.isStackable() == false) {
-                this.getInv().addToInventory(order.idItem, order.number);
+                await this.getInv().addToInventory(order.idItem, order.number);
             } else {
-                let inventoryItemID = this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
+                let inventoryItemID = await this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
                 if (inventoryItemID != null) {
-                    this.getInv().addToInventory(inventoryItemID, number);
+                    await this.getInv().addToInventory(inventoryItemID, number);
                 } else {
-                    let idItem = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level])["insertId"];
-                    this.getInv().addToInventory(idItem, number);
+                    let idItem = await (conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
+                    await this.getInv().addToInventory(idItem, number);
                 }
             }
 
         }
-        this.removeMoney(order.price * number);
+        await this.removeMoney(order.price * number);
     }
 
     /**
      * 
      * @param {Consumable} itemToUse 
      */
-    use(itemToUse, idEmplacement, amount) {
+    async use(itemToUse, idEmplacement, amount) {
         if (this.canUse(itemToUse)) {
             amount = amount > 0 ? amount : 1;
             amount = amount > itemToUse.number ? itemToUse.number : (amount < 1 ? 1 : amount);
@@ -461,11 +452,13 @@ class Character extends CharacterEntity {
                 amount = 1;
             }
             amount = amount > 100 ? 100 : amount;
-            this.getInv().removeSomeFromInventory(idEmplacement, amount, true);
-            itemToUse.prepareToUse();
+            await this.getInv().removeSomeFromInventory(idEmplacement, amount, true);
+            await itemToUse.prepareToUse();
+            let promises = [];
             for (let i = 0; i < amount; i++) {
-                itemToUse.use(this);
+                promises.push(itemToUse.use(this));
             }
+            await Promise.all(promises);
         }
     }
 
@@ -530,37 +523,37 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
 
-    getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
-        let mount = this.getEquipement().getItemByTypeName("mount");
+    async getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
+        let mount = await this.getEquipement().getItemByTypeName("mount");
         let multiplier = mount != null ? mount.getTravelReductionModifier() : 1;
         let baseTimeToWait = Math.floor((waitTime * multiplier)) * 1000;
         return baseTimeToWait;
     }
 
-    isInGuild() {
-        return this.getIDGuild() > 0;
+    async isInGuild() {
+        return await this.getIDGuild() > 0;
     }
 
-    addCraftXP(xp) {
+    async addCraftXP(xp) {
         let actualLevel = this.getCraftLevel();
         let nextLevel = 0;
-        this.craftSystem.addThisExp(xp);
+        await this.craftSystem.addThisExp(xp);
         nextLevel = this.getCraftLevel();
         return nextLevel - actualLevel;
     }
 
     // GetSpecial
-    getStatPoints() {
+    async getStatPoints() {
         return this.statPoints;
         //return conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]);
     }
 
-    getHonor() {
-        return conn.query("SELECT honor FROM charactershonor WHERE idCharacter = ?;", [this.id])[0].honor;
+    async getHonor() {
+        return (await conn.query("SELECT honor FROM charactershonor WHERE idCharacter = ?;", [this.id]))[0].honor;
     }
 
-    getMoney() {
-        return conn.query("SELECT money FROM characters WHERE idCharacter = ?;", [this.id])[0].money;
+    async getMoney() {
+        return (await conn.query("SELECT money FROM characters WHERE idCharacter = ?;", [this.id]))[0].money;
     }
 
     getInv() {
@@ -583,65 +576,57 @@ class Character extends CharacterEntity {
         return this.craftSystem.expToNextLevel;
     }
 
-    haveThisObject(itemId) {
-        return this.getInv().doIHaveThisItem(itemId);
+    async haveThisObject(itemId) {
+        return await this.getInv().doIHaveThisItem(itemId);
     }
 
-    haveThisObjectEquipped(idEmplacement) {
-        return this.equipement.getItem(idEmplacement);
+    async haveThisObjectEquipped(idEmplacement) {
+        return await this.equipement.getItem(idEmplacement);
     }
 
-    getAmountOfThisItem(idEmplacement) {
-        let item = this.getInv().getItem(idEmplacement);
+    async getAmountOfThisItem(idEmplacement) {
+        let item = await this.getInv().getItem(idEmplacement);
         return item != null ? item.number : 0;
     }
 
-    getIdOfThisIdBase(idBaseItem, level = 1) {
-        return this.getInv().getIdOfThisIdBase(idBaseItem, level);
+    async getIdOfThisIdBase(idBaseItem, level = 1) {
+        return await this.getInv().getIdOfThisIdBase(idBaseItem, level);
     }
 
-    isItemFavorite(idEmplacement) {
-        let item = this.getInv().getItem(idEmplacement);
+    async isItemFavorite(idEmplacement) {
+        let item = await this.getInv().getItem(idEmplacement);
         return item != null ? item.isFavorite : false;
     }
 
-    getIDGuild() {
-        let res = conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [this.id]);
+    async getIDGuild() {
+        let res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [this.id]);
         return res[0] != null ? res[0].idGuild : 0;
     }
 
-    /**
-     * conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName FROM charactershonor INNER JOIN users ON users.idCharacter = charactershonor.idCharacter WHERE charactershonor.idCharacter = " + id + " OR charactershonor.idCharacter > " + id +" OR charactershonor.idCharacter < " + id +" ORDER BY Honor DESC LIMIT 0,25");
-     */
-
     // Partie Base De Donn�e
-    saveStatsPoints() {
-        conn.query("UPDATE characters SET statPoints = " + this.getStatPoints() + " WHERE idCharacter = " + this.id);
+    async saveStatsPoints() {
+        await conn.query("UPDATE characters SET statPoints = ? WHERE idCharacter = ?;", [await this.getStatPoints(), this.id]);
     }
 
-    saveMoney() {
-        conn.query("UPDATE characters SET money = " + this.getMoney() + " WHERE idCharacter = " + this.id);
+    async saveMoney() {
+        await conn.query("UPDATE characters SET money = ? WHERE idCharacter = ?;", [await this.getMoney(), this.id]);
     }
 
-    saveHonor() {
-        conn.query("UPDATE charactershonor SET honor = " + this.getHonor() + " WHERE idCharacter = " + this.id);
+    async saveHonor() {
+        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?" [await this.getHonor(), this.id]);
     }
 
-    toStrSimple() {
-        return this.getName() + " | " + this.getLevel() + " | " + this.getPower() + "";
-    }
-
-    toApiSimple() {
+    async toApiSimple() {
         return {
             name: this.getName(),
             level: this.getLevel(),
-            power: this.getPower(),
+            power: await this.getPower(),
         }
     }
 
-    static exist(id) {
+    static async exist(id) {
         if (id > 0) {
-            let res = conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
+            let res = await conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
             if (res != null && res[0] != null) {
                 return true;
             } else {
@@ -651,9 +636,9 @@ class Character extends CharacterEntity {
         return false;
     }
 
-    static staticGetIdByUID(uid) {
+    static async staticGetIdByUID(uid) {
         if (uid != null) {
-            let res = conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [uid]);
+            let res = await conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [uid]);
             if (res[0]) {
                 return res[0].idCharacter;
             }
@@ -665,3 +650,5 @@ class Character extends CharacterEntity {
 }
 
 module.exports = Character;
+
+const Area = require("./Areas/Area");

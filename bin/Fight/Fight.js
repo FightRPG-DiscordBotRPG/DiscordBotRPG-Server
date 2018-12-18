@@ -35,8 +35,6 @@ class Fight {
             xpGained: {},
             goldGained: {}
         };
-
-        this.init();
     }
 
     initiativeUpdate() {
@@ -64,7 +62,7 @@ class Fight {
         return false;
     }
 
-    init() {
+    async init() {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
         for (let i in this.initiatives) {
             this.initiatives.sort((a, b) => {
@@ -74,7 +72,7 @@ class Fight {
         }
 
         this.initiativeUpdate();
-        this.update();
+        await this.update();
     }
 
 
@@ -104,7 +102,7 @@ class Fight {
 
 
 
-    update() {
+    async update() {
         let damage = 0;
         let done = 0;
         let critical = false;
@@ -152,7 +150,7 @@ class Fight {
 
         if (isFirstTeamAlive == true && isSecondTeamAlive == true) {
             this.initiativeUpdate();
-            this.update();
+            await this.update();
         } else if (isFirstTeamAlive == false) {
             this.winnerGroup = 1;
             done = true;
@@ -163,15 +161,14 @@ class Fight {
 
         if (done) {
             this.summary.winner = this.winnerGroup;
-            this.endFight();
-            //console.log(this.summary);
+            await this.endFight();
         }
 
 
 
     }
 
-    endFight() {};
+    async endFight() {};
 
     getThisTeamLife(teamIndex) {
         let hp = 0;

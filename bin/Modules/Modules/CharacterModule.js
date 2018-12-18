@@ -47,7 +47,7 @@ class CharacterModule extends GModule {
     loadRoutes() {
         this.router.get("/leaderboard", async (req, res) => {
             let ld = new LeaderboardPvP(Globals.connectedUsers[res.locals.id].character.id);
-            let data = ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard();
             data.lang = res.locals.lang;
             return res.json(
                 data
@@ -55,7 +55,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/reset", async (req, res) => {
-            if (Globals.connectedUsers[res.locals.id].character.resetStats()) {
+            if (await Globals.connectedUsers[res.locals.id].character.resetStats()) {
                 return res.json({
                     success: Translator.getString(res.locals.lang, "character", "reset_done"),
                     lang: res.locals.lang,
@@ -70,7 +70,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/info", async (req, res) => {
-            let data = Globals.connectedUsers[res.locals.id].apiInfoPanel(res.locals.lang);
+            let data = await Globals.connectedUsers[res.locals.id].apiInfoPanel(res.locals.lang);
             return res.json(
                 data
             );
@@ -79,7 +79,7 @@ class CharacterModule extends GModule {
         this.router.post("/up", async (req, res) => {
             let err;
             if (this.authorizedAttributes.indexOf(req.body.attr) !== -1) {
-                let done = Globals.connectedUsers[res.locals.id].character.upStat(req.body.attr, parseInt(req.body.number));
+                let done = await Globals.connectedUsers[res.locals.id].character.upStat(req.body.attr, parseInt(req.body.number));
                 if (done) {
                     return res.json({
                         value: Globals.connectedUsers[res.locals.id].character.stats[this.getToStrShort(req.body.attr)],

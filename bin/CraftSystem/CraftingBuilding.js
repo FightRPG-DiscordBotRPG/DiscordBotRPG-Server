@@ -13,8 +13,8 @@ class CraftingBuilding {
         this.isActive = false;
     }
 
-    load(idArea) {
-        let res = conn.query("SELECT idCraftBuilding, rarityMin, rarityMax, active, minLevel, maxLevel FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
+    async load(idArea) {
+        let res = await conn.query("SELECT idCraftBuilding, rarityMin, rarityMax, active, minLevel, maxLevel FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
         if (res[0]) {
             this.id = res[0]["idCraftBuilding"];
             this.minRarity = res[0]["rarityMin"];
@@ -25,19 +25,18 @@ class CraftingBuilding {
         }
     }
 
-    getCraftingList(page) {
+    async getCraftingList(page) {
         page = Number.parseInt(page ? page : 1);
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
-        let maxPage = Math.ceil(conn.query(`SELECT COUNT(*) FROM craftitem
+        let res = await conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
                                 WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ?;`,
-            [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel])[0]["COUNT(*)"] / perPage);
+            [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel]);
+        let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let res = conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage]);
-
-
+        res = await conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage]);
 
         return {
             res: res,
@@ -46,30 +45,8 @@ class CraftingBuilding {
         };
     }
 
-    craftingListToEmbed(page = 1, lang) {
-        let res = this.getCraftingList(page);
-        let str = "```\n";
-        str += Translator.getString(lang, "craft", "header_craft_list") + "\n\n";
-        let crafts = res.res;
-        let index = 1;
-        let indexOffset = (res.page - 1) * 10;
-        if (crafts.length > 0) {
-            for (let craft of crafts) {
-                let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
-                str += (index + indexOffset) + " - " + itemName + " - " + Translator.getString(lang, "item_types", craft.nomType) + " - " + (craft.minLevel < this.getMinLevel() ? this.getMinLevel() : craft.minLevel) + " - " + (craft.maxLevel > this.getMaxLevel() ? this.getMaxLevel() : craft.maxLevel) + " - " + Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]) + "\n";
-                index++;
-            }
-            str += "\n";
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n\n";
-        }
-        str += Translator.getString(lang, "general", "page_out_of_x", [res.page, res.maxPage > 0 ? res.maxPage : 1])
-        str += "```";
-        return str;
-    }
-
-    craftingListToApi(page = 1, lang) {
-        let res = this.getCraftingList(page);
+    async craftingListToApi(page = 1, lang) {
+        let res = await this.getCraftingList(page);
         let toApi = {
             page: res.page,
             maxPage: res.maxPage > 0 ? res.maxPage : 1,
@@ -93,20 +70,12 @@ class CraftingBuilding {
         return toApi;
     }
 
-    craftToEmbed(idCraft, lang) {
-        let craft = this.getCraft(idCraft);
-        if (craft != null) {
-            return craft.toEmbed(lang);
-        }
-        return Translator.getString(lang, "errors", "craft_dont_exist");
-    }
-
-
-    getCraft(idCraft) {
-        idCraft = this.getRealIdCraft(idCraft);
+    async getCraft(idCraft) {
+        idCraft = await this.getRealIdCraft(idCraft);
 
         if (idCraft > 0) {
             let craft = new Craft(idCraft);
+            await craft.load();
             if (craft.exist && craft.canBeCraft(this.maxRarity)) {
                 if (craft.itemInfo.maxLevel > this.maxLevel) {
                     craft.itemInfo.maxLevel = this.maxLevel;
@@ -120,11 +89,11 @@ class CraftingBuilding {
         return null;
     }
 
-    getRealIdCraft(idCraft) {
+    async getRealIdCraft(idCraft) {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
         let res;
         if (idCraft > 0) {
-            res = conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, idCraft - 1]);
+            res = await conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, idCraft - 1]);
         }
 
         return res != null && res[0] != null ? res[0].idCraftItem : 0;

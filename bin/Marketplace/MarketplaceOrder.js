@@ -13,32 +13,28 @@ class MarketplaceOrder {
         this.price = price;
     }
 
-    update() {
-        conn.query("UPDATE marketplacesorders SET number = ? AND idItem = ?;", [this.number, this.idItem]);
+    async update() {
+        await conn.query("UPDATE marketplacesorders SET number = ? AND idItem = ?;", [this.number, this.idItem]);
     }
 
-    place() {
-        conn.query("INSERT INTO marketplacesorders VALUES (?,?,?,?,?)", [this.idMarketplace, this.idItem, this.idCharacter, this.number, this.price]);
+    async place() {
+        await conn.query("INSERT INTO marketplacesorders VALUES (?,?,?,?,?)", [this.idMarketplace, this.idItem, this.idCharacter, this.number, this.price]);
     }
 
-    remove() {
-        conn.query("DELETE FROM marketplacesorders WHERE idItem = ?", [this.idItem]);
+    async remove() {
+        await conn.query("DELETE FROM marketplacesorders WHERE idItem = ?", [this.idItem]);
     }
 
-    toStr(lang) {
+    async toApi(lang) {
         let item = new Item(this.idItem);
-        let username = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter])[0]["userName"];
-        return username + " - " + this.idItem + " - " + item.toStr(lang) + " - " + "x" + this.number + " - " + this.price + "G";
-    }
-
-    toApi(lang) {
-        let item = new Item(this.idItem);
+        await item.loadItem();
         item.number = this.number;
-        let username = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter])[0]["userName"];
+        let username = await conn.query("SELECT userName FROM users WHERE idCharacter = ?", [this.idCharacter]);
+        username = username[0]["userName"];
         return {
             seller_name: username,
             idItem: this.idItem,
-            item: item.toApiLight(lang),
+            item: await item.toApiLight(lang),
             price: this.price,
         }
     }

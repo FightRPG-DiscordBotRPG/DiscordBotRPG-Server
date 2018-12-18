@@ -1,8 +1,6 @@
 'use strict';
-const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
-const Discord = require("discord.js");
 const User = require("./User");
 
 var nextID = 0;
@@ -87,8 +85,7 @@ class Group {
     getAverageLevel() {
         let avgLevel = this.leader.character.getLevel();
         for (let user in this.players) {
-            user = this.players[user].character;
-            avgLevel += user.getLevel();
+            avgLevel += this.players[user].character.getLevel();
         }
         return Math.round(avgLevel / this.nbOfPlayers());
     }
@@ -103,11 +100,10 @@ class Group {
         return highestLevel;
     }
 
-    getAveragePower() {
-        let avgPower = this.leader.character.getPower();
+    async getAveragePower() {
+        let avgPower = await this.leader.character.getPower();
         for (let user in this.players) {
-            user = this.players[user].character;
-            avgPower += user.getPower();
+            avgPower = await this.players[user].character.getPower();
         }
         return Math.round(avgPower / this.nbOfPlayers());
     }
@@ -245,54 +241,22 @@ class Group {
         }
     }
 
-    toStr(lang) {
-        let membersOfGroup = "```diff\n";
-        membersOfGroup += "+ " + this.leader.character.toStrSimple() + "\n";
-        for (let user in this.players) {
-            user = this.players[user];
-            membersOfGroup += "+ " + user.character.toStrSimple() + "\n";
-        }
-        membersOfGroup += "```";
-
-        let invitedPlayers = "```diff\n";
-        if (this.nbOfInvitedPlayers() > 0) {
-            for (let user in this.pendingPlayers) {
-                user = this.pendingPlayers[user];
-                invitedPlayers += "+ " + user.character.toStrSimple() + "\n";
-            }
-        } else {
-            invitedPlayers += "- " + Translator.getString(lang, "group", "nobody_was_invited");
-        }
-
-        invitedPlayers += "```";
-
-
-
-        let embed = new Discord.RichEmbed()
-            .setColor([0, 127, 255])
-            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [this.getAverageLevel()]) + " | " + Translator.getString(lang, "group", "avg_power", [this.getAveragePower()]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
-            .addField(Translator.getString(lang, "group", "members_of_the_group") + " (" + this.nbOfPlayers() + " / 5)", membersOfGroup)
-            .addField(Translator.getString(lang, "group", "invited_users") + " (" + this.nbOfInvitedPlayers() + " / 5)", invitedPlayers);
-
-        return embed;
-    }
-
-    toApi() {
+    async toApi() {
         let members = [];
         for (let user in this.players) {
-            members.push(this.players[user].character.toApiSimple());
+            members.push(await this.players[user].character.toApiSimple());
         }
 
         let invitedPlayers = [];
         for (let user in this.pendingPlayers) {
-            invitedPlayers.push(this.pendingPlayers[user].character.toApiSimple())
+            invitedPlayers.push(await this.pendingPlayers[user].character.toApiSimple())
         }
 
         return {
-            leader: this.leader.character.toApiSimple(),
+            leader: await this.leader.character.toApiSimple(),
             members: members,
             invitedPlayers: invitedPlayers,
-            avgPower: this.getAveragePower(),
+            avgPower: await this.getAveragePower(),
             numberOfPlayers: this.nbOfPlayers(),
             numberOfInvitedPlayers: this.nbOfInvitedPlayers(),
         }

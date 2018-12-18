@@ -12,50 +12,50 @@ class LevelSystem {
         this.maxLevel = 0;
     }
 
-    loadLevelSystem(id) {
+    async loadLevelSystem(id) {
         this.id = id;
-        let res = conn.query("SELECT actualLevel, actualExp FROM levels WHERE idCharacter = " + id)[0];
+        let res = await conn.query("SELECT actualLevel, actualExp FROM levels WHERE idCharacter = " + id);
+        res = res[0];
         this.actualLevel = res["actualLevel"];
         this.actualXP = res["actualExp"];
         this.maxLevel = Globals.maxLevel;
 
-        res = conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = " + this.actualLevel)[0];
+        res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = " + this.actualLevel);
+        res = res[0];
         this.expToNextLevel = res["expNextLevel"];
     }
 
-    saveLevelSystem() {
-        //conn.query("UPDATE levels SET actualLevel = " + this.actualLevel + ", actualExp = " + this.actualXP);
-    }
-
-    init(id) {
+    async init(id) {
         this.id = id;
-        conn.query("INSERT INTO levels VALUES (" + this.id + ", 0, 1)");
+        await conn.query("INSERT INTO levels VALUES (" + this.id + ", 0, 1)");
         this.actualLevel = 1;
         this.actualXP = 0;
-        this.expToNextLevel = conn.query("SELECT * FROM levelsrequire WHERE level = 1")[0]["expNextLevel"];
+        let res = await conn.query("SELECT * FROM levelsrequire WHERE level = 1");
+        this.expToNextLevel = res[0]["expNextLevel"];
         this.maxLevel = Globals.maxLevel;
     }
 
-    addThisExp(exp) {
+    async addThisExp(exp) {
         this.actualXP += exp;
         while (this.actualXP >= this.expToNextLevel && this.actualLevel < this.maxLevel) {
-            this.levelUp();
+            await this.levelUp();
         }
     }
 
-    levelUp() {
+    async levelUp() {
         this.actualLevel += 1;
         this.actualXP -= this.expToNextLevel;
-        this.actualXP = this.actualLevel >= Globals.maxLevel ? 0 : this.actualXP;   
-        this.expToNextLevel = conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = " + this.actualLevel)[0]["expNextLevel"];
+        this.actualXP = this.actualLevel >= Globals.maxLevel ? 0 : this.actualXP;
+        res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = ?;", [this.actualLevel]);
+        this.expToNextLevel = res[0]["expNextLevel"];
     }
 
-    saveMyExp() {
-        conn.query("UPDATE levels SET actualExp = " + this.actualXP + " WHERE idCharacter = " + this.id);
+    async saveMyExp() {
+        await conn.query("UPDATE levels SET actualExp = ? WHERE idCharacter = ?;" + [this.actualXP, this.id]);
     }
 
-    saveMyLevel() {
-        conn.query("UPDATE levels SET actualExp = " + this.actualXP + ", actualLevel = " + this.actualLevel + " WHERE idCharacter = " + this.id);
+    async saveMyLevel() {
+        await conn.query("UPDATE levels SET actualExp = ?, actualLevel = ? WHERE idCharacter = ?", [this.actualXP, this.actualLevel, this.id]);
     }
 
 }

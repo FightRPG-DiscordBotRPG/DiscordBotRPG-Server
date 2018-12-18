@@ -12,12 +12,12 @@ var connection = MySql.createConnection({
 });
 
 var query = util.promisify(connection.query).bind(connection);
-query = deasync(query);
+//query = deasync(query);
 let connMaker = {
     connection: connection,
-    query: (sql, arr = []) => {
+    query: async (sql, arr = []) => {
         try {
-            const result = query(sql, arr);
+            const result = await query(sql, arr);
             return JSON.parse(JSON.stringify(result));
         } catch (err) {
             throw err;

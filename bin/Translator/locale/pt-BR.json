@@ -332,7 +332,8 @@
     "level": "Nível",
     "craft_level": "Nível de Criação",
     "money": "Dinheiro",
-    "honor": "Honra"
+    "honor": "Honra",
+    "health_points": "Health Points"
   },
   "economic": {
     "sell_for_x": "Você vendeu seu item por %dG",

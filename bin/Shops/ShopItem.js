@@ -17,7 +17,7 @@ class ShopItem {
     }
 
     async load() {
-        let res = conn.query("SELECT level, number, price, itemstypes.nomType, itemssoustypes.nomSousType, itemsrarities.nomRarity, sellableitems.idBaseItem FROM sellableitems INNER JOIN itemsbase ON itemsbase.idBaseItem = sellableitems.idBaseItem INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idSellableItems = ?;", [this.id]);
+        let res = await conn.query("SELECT level, number, price, itemstypes.nomType, itemssoustypes.nomSousType, itemsrarities.nomRarity, sellableitems.idBaseItem FROM sellableitems INNER JOIN itemsbase ON itemsbase.idBaseItem = sellableitems.idBaseItem INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idSellableItems = ?;", [this.id]);
         if (res[0] != null) {
             this.level = res[0].level;
             this.number = res[0].number;

@@ -7,7 +7,7 @@ class Consumable extends Item {
         this.canBeMultUsed = false;
     }
 
-    use(character) {
+    async use(character) {
         throw "Must Be Implemented";
     }
 
@@ -17,7 +17,7 @@ class Consumable extends Item {
 
     // Should be call only one time
     // Even if the item is used more than one time
-    prepareToUse() {}
+    async prepareToUse() {}
 }
 
 module.exports = Consumable;

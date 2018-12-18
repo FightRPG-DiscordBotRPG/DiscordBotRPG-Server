@@ -19,7 +19,7 @@ class Guild {
 
     // Create guild
     // Return err = array of errors
-    createGuild(guildName, idCharacter, lang) {
+    async createGuild(guildName, idCharacter, lang) {
         // Need to verify if guild name already taken
         let res = [];
         let err = [];
@@ -31,21 +31,21 @@ class Guild {
         }
 
         // Verification si nom déjà pris
-        res = conn.query("SELECT idGuild FROM guilds WHERE nom = ?;", [guildName]);
+        res = await conn.query("SELECT idGuild FROM guilds WHERE nom = ?;", [guildName]);
         if (res.length > 0) {
             err.push(Translator.getString(lang, "errors", "guild_name_taken"));
             return err;
         }
 
         // Create guild
-        res = conn.query("INSERT INTO guilds VALUES(NULL, ?, '', 1, 0);", [guildName])["insertId"];
+        res = (await conn.query("INSERT INTO guilds VALUES(NULL, ?, '', 1, 0);", [guildName]))["insertId"];
         this.id = res;
 
         // Insert guild master
-        conn.query("INSERT INTO guildsmembers VALUES(?, ?, 3)", [idCharacter, res])
+        await conn.query("INSERT INTO guildsmembers VALUES(?, ?, 3)", [idCharacter, res]);
 
         // Add To MemberList
-        res = conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter])[0];
+        res = (await conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter]))[0];
         this.members[idCharacter] = {
             name: res["userName"],
             rank: 3,
@@ -66,25 +66,25 @@ class Guild {
      * 
      * @param {number} idArea 
      */
-    enroll(idArea) {
-        AreaTournament.enrollGuild(this.id, idArea);
+    async enroll(idArea) {
+        await AreaTournament.enrollGuild(this.id, idArea);
     }
 
-    unenroll() {
-        AreaTournament.unenrollGuild(this.id);
+    async unenroll() {
+        await AreaTournament.unenrollGuild(this.id);
     }
 
-    isRegisterToAnTournament() {
-        return conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id])[0] != null;
+    async isRegisterToAnTournament() {
+        return (await conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id]))[0] != null;
     }
 
-    isTournamentStarted() {
-        let res = conn.query("SELECT DISTINCT started FROM conquesttournamentinfo INNER JOIN conquesttournamentinscriptions ON conquesttournamentinscriptions.idGuild = ?", [this.id])[0];
+    async isTournamentStarted() {
+        let res = (await conn.query("SELECT DISTINCT started FROM conquesttournamentinfo INNER JOIN conquesttournamentinscriptions ON conquesttournamentinscriptions.idGuild = ?", [this.id]))[0];
         return res ? res.started : false;
     }
 
-    getTournamentAreaEnrolled() {
-        return conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id])[0].idArea;
+    async getTournamentAreaEnrolled() {
+        return (await conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id]))[0].idArea;
     }
 
 
@@ -93,12 +93,12 @@ class Guild {
      * @param {Number} idOther ID Of Character to Add
      * @param {Number} rank (optional) rank
      */
-    addMember(idAsk, idOther, rank, lang) {
+    async addMember(idAsk, idOther, rank, lang) {
         rank = rank ? rank : 1;
         let err = [];
-        if (this.getRankCharacter(idAsk) > 1) {
-            if (!this.isMaxMembersLimitReached()) {
-                conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
+        if (await this.getRankCharacter(idAsk) > 1) {
+            if (!await this.isMaxMembersLimitReached()) {
+                await conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
@@ -108,14 +108,14 @@ class Guild {
         return err;
     }
 
-    removeMember(idAsk, idOther, lang) {
+    async removeMember(idAsk, idOther, lang) {
         let err = [];
-        if (this.isMember(idOther)) {
-            let meRank = this.getRankCharacter(idAsk);
-            let otherRank = this.getRankCharacter(idOther);
+        if (await this.isMember(idOther)) {
+            let meRank = await this.getRankCharacter(idAsk);
+            let otherRank = await this.getRankCharacter(idOther);
             if (meRank > otherRank || idAsk == idOther) {
                 if (otherRank < 3) {
-                    conn.query("DELETE FROM guildsmembers WHERE idCharacter = ?;", [idOther]);
+                    await conn.query("DELETE FROM guildsmembers WHERE idCharacter = ?;", [idOther]);
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_cant_leave_guild_as_gm"));
                 }
@@ -129,13 +129,13 @@ class Guild {
         return err;
     }
 
-    updateMember(idAsk, idOther, rank, lang) {
+    async updateMember(idAsk, idOther, rank, lang) {
         let err = [];
-        if (this.isMember(idOther)) {
-            let meRank = this.getRankCharacter(idAsk);
-            let otherRank = this.getRankCharacter(idOther);
+        if (await this.isMember(idOther)) {
+            let meRank = await this.getRankCharacter(idAsk);
+            let otherRank = await this.getRankCharacter(idOther);
             if (meRank > otherRank && rank < meRank) {
-                conn.query("UPDATE guildsmembers SET idGuildRank = ? WHERE idCharacter = ?;", [rank, idOther]);
+                await conn.query("UPDATE guildsmembers SET idGuildRank = ? WHERE idCharacter = ?;", [rank, idOther]);
             } else {
                 err.push(Translator.getString(lang, "errors", "generic"));
             }
@@ -146,23 +146,22 @@ class Guild {
     }
 
 
-    disband(connectedUsers) {
-        conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
-        conn.query("DELETE FROM guildsmembers WHERE idGuild = ?;", [this.id]);
-        conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
-        conn.query("DELETE FROM guilds WHERE idGuild = ?;", [this.id]);
+    async disband() {
+        await conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
+        await conn.query("DELETE FROM guildsmembers WHERE idGuild = ?;", [this.id]);
+        await conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
+        await conn.query("DELETE FROM guilds WHERE idGuild = ?;", [this.id]);
     }
 
-    canCancelApplies(idCharacter) {
-        return this.getRankCharacter(idCharacter) > 1 ? true : false;
+    async canCancelApplies(idCharacter) {
+        return (await this.getRankCharacter(idCharacter)) > 1 ? true : false;
     }
-
 
 
     // Guild Load
-    loadGuild(id) {
+    async loadGuild(id) {
         // Info guild
-        let res = conn.query("SELECT * FROM guilds WHERE idGuild = ?;", [id])[0];
+        let res = (await conn.query("SELECT * FROM guilds WHERE idGuild = ?;", [id]))[0];
         this.message = res["message"];
         this.name = res["nom"];
         this.id = id;
@@ -170,7 +169,7 @@ class Guild {
         this.money = res["argent"];
 
         // Members
-        res = conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);
+        res = await conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);
 
         for (let i in res) {
             this.members[res[i]["idCharacter"]] = {
@@ -184,8 +183,8 @@ class Guild {
 
     }
 
-    toApi() {
-        this.loadGuild(this.id);
+    async toApi() {
+        await this.loadGuild(this.id);
         let toApi = {
             members: this.members,
             name: this.name,
@@ -194,38 +193,41 @@ class Guild {
             maxMembers: Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level),
             level: this.level,
             maxLevel: Globals.guilds.maxLevel,
-            nextLevelPrice: this.getNextLevelPrice(this.level),
+            nextLevelPrice: await this.getNextLevelPrice(this.level),
             money: this.money,
 
         }
         return toApi;
     }
 
-    getIdUserByIdCharacter(idCharacter) {
-        let res = conn.query("SELECT idUser FROM users INNER JOIN guildsmembers ON guildsmembers.idCharacter = users.idCharacter WHERE idGuild = ?;", [this.id]);
-        return res[0] != null ? res[0].idUser : null;
-    }
-
-    isMaxMembersLimitReached() {
+    async isMaxMembersLimitReached() {
         let maxMembers = Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * this.level);
-        let actualMembers = conn.query("SELECT COUNT(*) as nbrMembers FROM guildsmembers WHERE idGuild = ?;", [this.id])[0].nbrMembers;
+        let actualMembers = (await conn.query("SELECT COUNT(*) as nbrMembers FROM guildsmembers WHERE idGuild = ?;", [this.id]))[0].nbrMembers;
         return actualMembers >= maxMembers;
     }
 
-    isMember(idCharacter) {
-        return conn.query("SELECT idCharacter FROM guildsmembers WHERE idGuild = ? AND idCharacter = ?;", [this.id, idCharacter])[0] != null;
+    async isMember(idCharacter) {
+        idCharacter = parseInt(idCharacter);
+        if (idCharacter == null || Number.isNaN(idCharacter)) {
+            return false;
+        }
+        return (await conn.query("SELECT idCharacter FROM guildsmembers WHERE idGuild = ? AND idCharacter = ?;", [this.id, idCharacter]))[0] != null;
     }
 
-    getRankCharacter(idCharacter) {
-        let crank = conn.query("SELECT idGuildRank FROM guildsmembers WHERE idCharacter = ?;", [idCharacter]);
+    async getRankCharacter(idCharacter) {
+        idCharacter = parseInt(idCharacter);
+        if (idCharacter == null || Number.isNaN(idCharacter)) {
+            return 1;
+        }
+        let crank = await conn.query("SELECT idGuildRank FROM guildsmembers WHERE idCharacter = ?;", [idCharacter]);
         return crank[0] != null ? crank[0].idGuildRank : 1;
     }
 
-    setMessage(idCharacter, message, lang) {
+    async setMessage(idCharacter, message, lang) {
         let err = [];
         if (message.length < 255) {
-            if (this.getRankCharacter(idCharacter) >= 2) {
-                this.saveMessage(message);
+            if (await this.getRankCharacter(idCharacter) >= 2) {
+                await this.saveMessage(message);
             } else {
                 err.push(Translator.getString(lang, "errors", "you_dont_have_right_to_change_announcement"));
             }
@@ -236,8 +238,8 @@ class Guild {
         return err;
     }
 
-    saveMessage(message) {
-        conn.query("UPDATE guilds SET message = ? WHERE idGuild = ?;", [message, this.id]);
+    async saveMessage(message) {
+        await conn.query("UPDATE guilds SET message = ? WHERE idGuild = ?;", [message, this.id]);
     }
 
     /**
@@ -245,9 +247,9 @@ class Guild {
      * @param {number} idGuild 
      * @param {number} number 
      */
-    static addMoney(idGuild, number) {
+    static async addMoney(idGuild, number) {
         number = number > 0 ? number : -number;
-        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, idGuild]);
+        await conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, idGuild]);
     }
 
     /**
@@ -255,61 +257,61 @@ class Guild {
      * @param {number} idGuild 
      * @param {number} number 
      */
-    static removeMoney(idGuild, number) {
+    static async removeMoney(idGuild, number) {
         number = number > 0 ? number : -number;
-        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, idGuild]);
+        await conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, idGuild]);
     }
 
     /**
      * 
      * @param {number} number 
      */
-    addMoneyDirect(number) {
-        conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, this.id]);
+    async addMoneyDirect(number) {
+        await conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, this.id]);
     }
 
     /**
      * 
      * @param {number} number 
      */
-    removeMoneyDirect(number) {
-        conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, this.id]);
+    async removeMoneyDirect(number) {
+        await conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, this.id]);
     }
 
     /**
      * 
      * @param {Number} number > 0
      */
-    addMoney(number) {
+    async addMoney(number) {
         if (number > 0) {
-            this.addMoneyDirect(number);
+            await this.addMoneyDirect(number);
             return true;
         }
         return false;
 
     }
 
-    getMoney() {
-        return conn.query("SELECT argent FROM guilds WHERE idGuild = ?;", [this.id])[0].argent;
+    async getMoney() {
+        return (await conn.query("SELECT argent FROM guilds WHERE idGuild = ?;", [this.id]))[0].argent;
     }
 
     /**
      * 
      * @param {number} number 
      */
-    haveThisMoney(number) {
-        return this.getMoney() >= number;
+    async haveThisMoney(number) {
+        return await this.getMoney() >= number;
     }
 
     /**
      * Return true if done else false
      * @param {Number} number
      */
-    removeMoney(number, idCharacter, lang) {
+    async removeMoney(number, idCharacter, lang) {
         let err = [];
-        if (this.getMoney() >= number && number > 0) {
-            if (this.getRankCharacter(idCharacter) == 3) {
-                this.removeMoneyDirect(number);
+        if (await this.getMoney() >= number && number > 0) {
+            if (await this.getRankCharacter(idCharacter) == 3) {
+                await this.removeMoneyDirect(number);
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_remove_money"));
             }
@@ -326,16 +328,18 @@ class Guild {
      * @param {string} lang 
      * @returns array empty if no errors
      */
-    levelUp(idCharacter, lang) {
+    async levelUp(idCharacter, lang) {
         let err = [];
-        if (this.getRankCharacter(idCharacter) >= 2) {
-            let lvl = this.getLevel();
+        if (await this.getRankCharacter(idCharacter) >= 2) {
+            let lvl = await this.getLevel();
             if (lvl < Globals.guilds.maxLevel) {
-                let priceNextLevel = this.getNextLevelPrice(lvl);
-                let money = this.getMoney();
+                let priceNextLevel = await this.getNextLevelPrice(lvl);
+                let money = await this.getMoney();
                 if (money >= priceNextLevel) {
-                    this.removeMoneyDirect(priceNextLevel);
-                    this.addLevel(1);
+                    await Promise.all([
+                        this.removeMoneyDirect(priceNextLevel),
+                        this.addLevel(1)
+                    ]);
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_no_enough_money_to_level_up", [priceNextLevel - money]));
                 }
@@ -343,85 +347,35 @@ class Guild {
                 err.push(Translator.getString(lang, "errors", "guild_already_max_level"));
             }
         } else {
-            err.psuh(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
+            err.push(Translator.getString(lang, "errors", "guild_dont_have_right_to_level_up"));
         }
         return err;
     }
 
-    getNextLevelPrice(level) {
+    async getNextLevelPrice(level) {
         if (level != null) {
             return Globals.guilds.basePriceLevel * level * Globals.guilds.multBasePricePerLevel;
         }
-        return Globals.guilds.basePriceLevel * this.getLevel() * Globals.guilds.multBasePricePerLevel;
+        return Globals.guilds.basePriceLevel * (await this.getLevel()) * Globals.guilds.multBasePricePerLevel;
     }
 
     /**
      * @returns {number}
      */
-    getLevel() {
-        return conn.query("SELECT level FROM guilds WHERE idGuild = ?;", [this.id])[0].level;
+    async getLevel() {
+        return (await conn.query("SELECT level FROM guilds WHERE idGuild = ?;", [this.id]))[0].level;
     }
 
-    addLevel(number = 1) {
-        conn.query("UPDATE guilds SET level = level + ? WHERE idGuild = ?;", [number, this.id]);
+    async addLevel(number = 1) {
+        await conn.query("UPDATE guilds SET level = level + ? WHERE idGuild = ?;", [number, this.id]);
     }
 
-
-
-    /**
-     * 
-     * @param {number} page 
-     * @param {string} lang 
-     */
-    getGuildAppliances(page, lang) {
-        page = page <= 0 ? 1 : page;
-        let idCharacterMaxLength = 10;
-        let userNameMaxLength = 35;
-        let actualLevelMaxLength = 11;
-
-        let idCharacterLength;
-        let userNameLength;
-        let actualLevelLength;
-
-        let maxPage = conn.query("SELECT COUNT(*) as nbr FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC;", [this.id])[0].nbr;
+    async apiGetGuildAppliances(page, lang) {
+        let maxPage = (await conn.query("SELECT COUNT(*) as nbr FROM guildsappliances WHERE guildsappliances.idGuild = ?;", [this.id]))[0].nbr;
         maxPage = Math.ceil(maxPage / 10);
         maxPage = maxPage <= 0 ? 1 : maxPage;
         page = page <= maxPage ? page : maxPage;
-        let res = conn.query("SELECT guildsappliances.idCharacter, users.userName, levels.actualLevel FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
-
-        let str = "```";
-
-        if (res.length > 0) {
-            str += "|" + "    id    " + "|" + "                nom                " + "|" + "   level   " + "|" + "\n";
-            for (let i of res) {
-                idCharacterLength = i.idCharacter.toString().length;
-                idCharacterLength = (idCharacterMaxLength - idCharacterLength) / 2;
-
-                userNameLength = i.userName.length;
-                userNameLength = (userNameMaxLength - userNameLength) / 2;
-
-                actualLevelLength = i.actualLevel.toString().length;
-                actualLevelLength = (actualLevelMaxLength - actualLevelLength) / 2;
-
-
-                str += "|" + " ".repeat(Math.floor(idCharacterLength)) + i.idCharacter + " ".repeat(Math.ceil(idCharacterLength)) + "|" +
-                    " ".repeat(Math.floor(userNameLength)) + i.userName + " ".repeat(Math.ceil(userNameLength)) + "|" +
-                    " ".repeat(Math.floor(actualLevelLength)) + i.actualLevel + " ".repeat(Math.ceil(actualLevelLength)) + "|\n"
-            }
-        } else {
-            str += Translator.getString(lang, "guild", "nobody_ask_to_join_your_guild");
-        }
-
-        str += "```";
-        return str;
-    }
-
-    apiGetGuildAppliances(page, lang) {
-        let maxPage = conn.query("SELECT COUNT(*) as nbr FROM guildsappliances WHERE guildsappliances.idGuild = ?;", [this.id])[0].nbr;
-        maxPage = Math.ceil(maxPage / 10);
-        maxPage = maxPage <= 0 ? 1 : maxPage;
-        page = page <= maxPage ? page : maxPage;
-        let res = conn.query("SELECT guildsappliances.idCharacter as id, users.userName as name, levels.actualLevel as level FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
+        let res = await conn.query("SELECT guildsappliances.idCharacter as id, users.userName as name, levels.actualLevel as level FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
         return {
             appliances: res,
             page: page,
@@ -432,8 +386,8 @@ class Guild {
     /**
      * 
      */
-    deleteGuildAppliances() {
-        conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
+    async deleteGuildAppliances() {
+        await conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
     }
 
     /*
@@ -447,12 +401,12 @@ class Guild {
      * @param {Number} idCharacter
      * @returns {Array}
      */
-    static applyTo(idGuild, idCharacter, lang) {
+    static async applyTo(idGuild, idCharacter, lang) {
         let err = [];
-        if (this.isGuildExist(idGuild)) {
-            if (!this.haveAlreadyApplied(idGuild, idCharacter)) {
-                if (!this.haveReachAppliesLimit(idCharacter)) {
-                    conn.query("INSERT INTO guildsappliances VALUES(" + idGuild + ", " + idCharacter + ")");
+        if (await this.isGuildExist(idGuild)) {
+            if (!await this.haveAlreadyApplied(idGuild, idCharacter)) {
+                if (!await this.haveReachAppliesLimit(idCharacter)) {
+                    await conn.query("INSERT INTO guildsappliances VALUES(" + idGuild + ", " + idCharacter + ")");
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_player_reach_max_applies", [Globals.guilds.maxApplies]));
                 }
@@ -471,8 +425,8 @@ class Guild {
      * Return if guild exist or not
      * @param {Number} idGuild 
      */
-    static isGuildExist(idGuild) {
-        let res = conn.query("SELECT idGuild FROM guilds WHERE idGuild = " + idGuild);
+    static async isGuildExist(idGuild) {
+        let res = await conn.query("SELECT idGuild FROM guilds WHERE idGuild = ?;", [idGuild]);
         if (res.length > 0) {
             return true;
         }
@@ -484,8 +438,8 @@ class Guild {
      * @param {Number} idGuild
      * @param {Number} idCharacter
      */
-    static haveAlreadyApplied(idGuild, idCharacter) {
-        let res = conn.query("SELECT idGuild FROM guildsappliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild + ";");
+    static async haveAlreadyApplied(idGuild, idCharacter) {
+        let res = await conn.query("SELECT idGuild FROM guildsappliances WHERE idCharacter = ? AND idGuild = ?;", [idCharacter, idGuild]);
         if (res.length > 0) {
             return true;
         }
@@ -496,8 +450,8 @@ class Guild {
      * Static
      * @param {Number} idCharacter
      */
-    static haveReachAppliesLimit(idCharacter) {
-        return conn.query("SELECT COUNT(*) FROM guildsappliances WHERE idCharacter = " + idCharacter)[0]["COUNT(*)"] >= Globals.guilds.maxApplies ? true : false;
+    static async haveReachAppliesLimit(idCharacter) {
+        return (await conn.query("SELECT COUNT(*) FROM guildsappliances WHERE idCharacter = ?;", [idCharacter]))[0]["COUNT(*)"] >= Globals.guilds.maxApplies ? true : false;
     }
 
     /**
@@ -514,8 +468,8 @@ class Guild {
      * Remove all appliances for a given character
      * @param {Number} idCharacter ID Character
      */
-    static deleteUsersAppliances(idCharacter) {
-        conn.query("DELETE FROM guildsappliances WHERE idCharacter = " + idCharacter);
+    static async deleteUsersAppliances(idCharacter) {
+        await conn.query("DELETE FROM guildsappliances WHERE idCharacter = ?;", [idCharacter]);
     }
 
     /**
@@ -523,16 +477,16 @@ class Guild {
      * @param {any} idCharacter
      * @param {any} idGuild
      */
-    static deleteUserForThisGuildAppliance(idCharacter, idGuild) {
-        conn.query("DELETE FROM guildsappliances WHERE idCharacter = " + idCharacter + " AND idGuild = " + idGuild);
+    static async deleteUserForThisGuildAppliance(idCharacter, idGuild) {
+        await conn.query("DELETE FROM guildsappliances WHERE idCharacter = ? AND idGuild = ?;", [idCharacter, idGuild]);
     }
 
     /**
      * 
      * @param {any} idCharacter
      */
-    static getAppliances(idCharacter, lang) {
-        let res = conn.query("SELECT guilds.idGuild as id, nom as name, level FROM guildsappliances INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild WHERE idCharacter = ?;", [idCharacter]);
+    static async getAppliances(idCharacter, lang) {
+        let res = await conn.query("SELECT guilds.idGuild as id, nom as name, level FROM guildsappliances INNER JOIN guilds ON guilds.idGuild = guildsappliances.idGuild WHERE idCharacter = ?;", [idCharacter]);
 
         return {
             appliances: res,
@@ -541,13 +495,13 @@ class Guild {
         };
     }
 
-    static getGuilds(page, lang) {
-        let count = conn.query("SELECT COUNT(*) FROM guilds")[0]["COUNT(*)"];
+    static async getGuilds(page, lang) {
+        let count = (await conn.query("SELECT COUNT(*) FROM guilds"))[0]["COUNT(*)"];
         let maxPage = Math.ceil(count / 10);
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level DESC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
+        let res = await conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level DESC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
 
         for (let i in res) {
             res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));
@@ -558,10 +512,6 @@ class Guild {
             maxPage: maxPage,
         }
     }
-
-
-
-
 
 
 }

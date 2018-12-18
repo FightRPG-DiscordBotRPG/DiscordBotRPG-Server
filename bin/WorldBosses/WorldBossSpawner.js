@@ -6,10 +6,10 @@ const axios = require("axios").default;
 
 class WorldBossSpawner {
     async startUp() {
-        let res = conn.query("SELECT * FROM bossspawninfo");
+        let res = await conn.query("SELECT * FROM bossspawninfo");
         if (res[0]) {
             if (res[0].idSpawnedBoss != null) {
-                let res2 = conn.query("SELECT actualHp FROM spawnedbosses WHERE idSpawnedBoss = ?;", [res[0].idSpawnedBoss]);
+                let res2 = await conn.query("SELECT actualHp FROM spawnedbosses WHERE idSpawnedBoss = ?;", [res[0].idSpawnedBoss]);
                 if (res2[0].actualHp <= 0) {
                     await this.reset();
                     await this.init();
@@ -28,18 +28,18 @@ class WorldBossSpawner {
     }
 
     async init() {
-        let randomBossInfo = conn.query("SELECT * FROM bosses INNER JOIN regionsbosses ON regionsbosses.idBoss = bosses.idBoss ORDER BY RAND() LIMIT 1")[0];
-        let randomArea = conn.query("SELECT idArea FROM areasregions WHERE areasregions.idRegion = ? ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion])[0].idArea;
+        let randomBossInfo = (await conn.query("SELECT * FROM bosses INNER JOIN regionsbosses ON regionsbosses.idBoss = bosses.idBoss ORDER BY RAND() LIMIT 1"))[0];
+        let randomArea = (await conn.query("SELECT idArea FROM areasregions WHERE areasregions.idRegion = ? ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
 
         // Date calcul
         let actualDate = new Date();
         let date = await WorldBossSpawner.getNextBossDate();
         console.log("Next boss schedule for : " + date.toUTCString());
-        conn.query("INSERT INTO bossspawninfo (idBoss, idArea, spawnDate) VALUES (?, ?, ?);", [randomBossInfo.idBoss, randomArea, date.getTime()])
+        await conn.query("INSERT INTO bossspawninfo (idBoss, idArea, spawnDate) VALUES (?, ?, ?);", [randomBossInfo.idBoss, randomArea, date.getTime()])
     }
 
     async reset() {
-        conn.query("DELETE FROM bossspawninfo");
+        await conn.query("DELETE FROM bossspawninfo");
     }
 
     /**
@@ -51,7 +51,7 @@ class WorldBossSpawner {
         date.setUTCSeconds(0);
         date.setUTCHours(0);
         date.setUTCDate(date.getUTCDate() + 1);
-        let res = conn.query("SELECT spawnDate FROM bossspawninfo;")[0];
+        let res = (await conn.query("SELECT spawnDate FROM bossspawninfo;"))[0];
         if (res && res.spawnDate != null) {
             date.setTime(res.spawnDate);
         }
@@ -59,7 +59,7 @@ class WorldBossSpawner {
     }
 
     static async getBossesInfos(lang = "en") {
-        let res = conn.query("SELECT * FROM bossspawninfo INNER JOIN regionsbosses ON regionsbosses.idBoss = bossspawninfo.idBoss", [this.id]);
+        let res = await conn.query("SELECT * FROM bossspawninfo INNER JOIN regionsbosses ON regionsbosses.idBoss = bossspawninfo.idBoss", [this.id]);
         let toApi = {
             bosses: [],
         }
@@ -81,15 +81,15 @@ class WorldBossSpawner {
     }
 
     static async getStatsFromFight(spawnedBossId) {
-        return conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages, SUM(damage) as totalDamage FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId])[0];
+        return (await conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages, SUM(damage) as totalDamage FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId]))[0];
     }
 
     async spawnBoss() {
-        let res = conn.query("SELECT idArea, bosses.idBoss, hpBase FROM bossspawninfo INNER JOIN bosses ON bosses.idBoss = bossspawninfo.idBoss;")[0];
-        let idInsert = conn.query("INSERT INTO spawnedbosses VALUES (NULL, ?, ?, ?)", [res.hpBase, res.hpBase, res.idBoss])["insertId"];
-        conn.query("INSERT INTO spawnedbossesareas VALUES (?, ?);", [idInsert, res.idArea]);
-        conn.query("INSERT INTO wbrewardstates VALUES (?, 0)", [idInsert]);
-        conn.query("UPDATE bossspawninfo SET idSpawnedBoss = ? WHERE bossspawninfo.idBoss = ?;", [idInsert, res.idBoss]);
+        let res = (await conn.query("SELECT idArea, bosses.idBoss, hpBase FROM bossspawninfo INNER JOIN bosses ON bosses.idBoss = bossspawninfo.idBoss;"))[0];
+        let idInsert = (await conn.query("INSERT INTO spawnedbosses VALUES (NULL, ?, ?, ?)", [res.hpBase, res.hpBase, res.idBoss]))["insertId"];
+        await conn.query("INSERT INTO spawnedbossesareas VALUES (?, ?);", [idInsert, res.idArea]);
+        await conn.query("INSERT INTO wbrewardstates VALUES (?, 0)", [idInsert]);
+        await conn.query("UPDATE bossspawninfo SET idSpawnedBoss = ? WHERE bossspawninfo.idBoss = ?;", [idInsert, res.idBoss]);
         WorldBossSpawner.announceWorldBossSpawn();
     }
 
@@ -142,10 +142,10 @@ class WorldBossSpawner {
     }
 
     static async giveRewards(worldBossId) {
-        conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
+        await conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
         // Must be redone to know if players got the rewards
         await Promise.all([WorldBossSpawner.giveRewardsToTopDamage(worldBossId), WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId)]);
-        conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
+        await conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
     }
 
     static async giveRewardsToTopDamage(worldBossId) {
@@ -156,14 +156,14 @@ class WorldBossSpawner {
         WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
     }
 
-    static giveToRewardsToPlayers(worldBossId) {
-        let res = conn.query("SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC", [worldBossId]);
+    static async giveToRewardsToPlayers(worldBossId) {
+        let res = await conn.query("SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC", [worldBossId]);
         let rank = 1
         let lt = new LootSystem();
         for (let info of res) {
             let items = WorldBossSpawner.getRewardsByRank(rank, info.actualLevel);
             for (let item of items) {
-                lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number);
+                await lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number);
             }
             rank++;
         }
@@ -349,12 +349,12 @@ class WorldBossSpawner {
     }
 
     static async getRankDamage(idCharacter, idSpawnedBoss) {
-        let res = conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
+        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
         return res != null && res[0] ? res[0].rank : 1;
     }
 
     static async getRankAttackCount(idCharacter, idSpawnedBoss) {
-        let res = conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
+        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
         return res != null && res[0] ? res[0].rank : 1;
     }
 
@@ -369,7 +369,7 @@ class WorldBossSpawner {
         if (isCriticalHit) {
             damage = damage * 2;
         }
-        wb.wound(damage);
+        await wb.wound(damage);
         WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
         let wbs = new WorldBossSpawner();
         await wb.load();
@@ -389,16 +389,16 @@ class WorldBossSpawner {
     }
 
     static async logDamageUser(idCharacter, idBoss, damage, nb = 1) {
-        let res = conn.query("SELECT idCharacter FROM charactersattacks WHERE idCharacter = ? AND idSpawnedBoss = ?;", [idCharacter, idBoss]);
+        let res = await conn.query("SELECT idCharacter FROM charactersattacks WHERE idCharacter = ? AND idSpawnedBoss = ?;", [idCharacter, idBoss]);
         if (res[0] != null) {
-            conn.query("UPDATE charactersattacks SET damage = damage + ?, attackCount = attackCount + ? WHERE idCharacter = ? AND idSpawnedBoss = ?;", [damage, nb, idCharacter, idBoss]);
+            await conn.query("UPDATE charactersattacks SET damage = damage + ?, attackCount = attackCount + ? WHERE idCharacter = ? AND idSpawnedBoss = ?;", [damage, nb, idCharacter, idBoss]);
         } else {
-            conn.query("INSERT INTO charactersattacks VALUES (?, ?, ?, ?)", [idCharacter, idBoss, damage, nb]);
+            await conn.query("INSERT INTO charactersattacks VALUES (?, ?, ?, ?)", [idCharacter, idBoss, damage, nb]);
         }
     }
 
     static async getLastBossCharacterStats(idCharacter, lang = "en") {
-        let res = conn.query("SELECT * FROM charactersattacks WHERE charactersattacks.idCharacter = ? AND charactersattacks.idSpawnedBoss NOT IN (SELECT bossspawninfo.idSpawnedBoss FROM bossspawninfo WHERE bossspawninfo.idSpawnedBoss != NULL) ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;", [idCharacter]);
+        let res = await conn.query("SELECT * FROM charactersattacks WHERE charactersattacks.idCharacter = ? AND charactersattacks.idSpawnedBoss NOT IN (SELECT bossspawninfo.idSpawnedBoss FROM bossspawninfo WHERE bossspawninfo.idSpawnedBoss != NULL) ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;", [idCharacter]);
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();

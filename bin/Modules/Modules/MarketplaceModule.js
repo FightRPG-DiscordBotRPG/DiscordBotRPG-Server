@@ -44,7 +44,7 @@ class MarketplaceModule extends GModule {
         this.router.get("/mylist/:page?", async (req, res) => {
             let data = {};
             if (res.locals.marketplace != null) {
-                data = res.locals.marketplace.apiCharacterOrders(Globals.connectedUsers[res.locals.id].character.id, req.params.page ? req.params.page : 1, res.locals.lang);
+                data = await res.locals.marketplace.apiCharacterOrders(Globals.connectedUsers[res.locals.id].character.id, req.params.page ? req.params.page : 1, res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
@@ -64,7 +64,7 @@ class MarketplaceModule extends GModule {
                 // si param ok
                 if (toPlaceIdItem != null && Number.isInteger(toPlaceIdItem)) {
                     // si il a l'objet
-                    if (Globals.connectedUsers[res.locals.id].character.haveThisObject(toPlaceIdItem)) {
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(toPlaceIdItem)) {
                         // si param ok
                         if (priceToPlace != null && Number.isInteger(priceToPlace) && priceToPlace < 18446744073709551615) {
                             priceToPlace = priceToPlace < 0 ? -priceToPlace : priceToPlace;
@@ -72,23 +72,26 @@ class MarketplaceModule extends GModule {
                             if (nbOfItemsToPlace != null && Number.isInteger(nbOfItemsToPlace) && nbOfItemsToPlace >= 1) {
                                 // si il a le nb of item 
                                 // nb = amount of player items
-                                let nb = Globals.connectedUsers[res.locals.id].character.getAmountOfThisItem(toPlaceIdItem);
+                                let nb = await Globals.connectedUsers[res.locals.id].character.getAmountOfThisItem(toPlaceIdItem);
                                 if (nb >= nbOfItemsToPlace) {
-                                    if (!Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem)) {
-                                        if (res.locals.currentArea.haveOwner()) {
-                                            let marketplaceTax = Math.round(priceToPlace * res.locals.marketplace.getTax());
-                                            if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(marketplaceTax)) {
+                                    if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem)) {
+                                        if (await res.locals.currentArea.haveOwner()) {
+                                            let marketplaceTax = Math.round(priceToPlace * await res.locals.marketplace.getTax());
+                                            if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(marketplaceTax)) {
                                                 // enlever la taxe
-                                                Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
-                                                Globals.connectedUsers[res.locals.id].character.removeMoney(marketplaceTax);
-                                                Guild.addMoney(res.locals.currentArea.getOwnerID(), marketplaceTax);
+                                                await Promise.all([
+                                                    Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace),
+                                                    Globals.connectedUsers[res.locals.id].character.removeMoney(marketplaceTax),
+                                                    Guild.addMoney(res.locals.currentArea.getOwnerID(), marketplaceTax)
+                                                ])
+
                                                 data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed")) + "\n";
                                                 data.success += Translator.getString(res.locals.lang, "marketplace", "you_paid_tax", [marketplaceTax]);
                                             } else {
                                                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_enough_to_pay_tax");
                                             }
                                         } else {
-                                            Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
+                                            await Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace);
                                             data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"));
                                         }
                                     } else {
@@ -121,10 +124,10 @@ class MarketplaceModule extends GModule {
             let idOrderToCancel = parseInt(req.body.idItem, 10);
             if (res.locals.marketplace != null) {
                 if (idOrderToCancel != null && Number.isInteger(idOrderToCancel)) {
-                    let orderToCancel = res.locals.marketplace.getThisOrder(idOrderToCancel);
+                    let orderToCancel = await res.locals.marketplace.getThisOrder(idOrderToCancel);
                     if (orderToCancel != null) {
                         if (orderToCancel.idCharacter === Globals.connectedUsers[res.locals.id].character.id) {
-                            Globals.connectedUsers[res.locals.id].character.marketplaceCollectThisItem(orderToCancel);
+                            await Globals.connectedUsers[res.locals.id].character.marketplaceCollectThisItem(orderToCancel);
                             data.success = Translator.getString(res.locals.lang, "marketplace", orderToCancel.number > 1 ? "retrieve_plur" : "retrieve");
                         } else {
                             data.error = Translator.getString(res.locals.lang, "errors", "marketplace_order_not_yours");
@@ -150,20 +153,20 @@ class MarketplaceModule extends GModule {
             if (res.locals.marketplace != null) {
                 if (idOrderToBuy != null && Number.isInteger(idOrderToBuy)) {
                     numberOrderToBuy = numberOrderToBuy != null && Number.isInteger(numberOrderToBuy) ? numberOrderToBuy : 1;
-                    let orderToBuy = res.locals.marketplace.getThisOrder(idOrderToBuy);
+                    let orderToBuy = await res.locals.marketplace.getThisOrder(idOrderToBuy);
                     if (orderToBuy != null) {
                         numberOrderToBuy = numberOrderToBuy <= 0 ? 1 : (numberOrderToBuy <= orderToBuy.number ? numberOrderToBuy : orderToBuy.number);
                         if (orderToBuy.idCharacter !== Globals.connectedUsers[res.locals.id].character.id) {
-                            if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
-                                let temp = conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter])[0]["idUser"];
+                            if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
+                                let temp = (await conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter]))[0]["idUser"];
                                 // Recupération de l'objet
-                                Globals.connectedUsers[res.locals.id].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
+                                await Globals.connectedUsers[res.locals.id].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
                                 // Puis donne l'argent au vendeur
                                 if (Globals.connectedUsers[temp]) {
-                                    Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
+                                    await Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
                                     Globals.connectedUsers[temp].marketTell(Translator.getString(res.locals.lang, "marketplace", numberOrderToBuy > 1 ? "you_sold_plur" : "you_sold", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]));
                                 } else {
-                                    conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
+                                    await conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
                                 }
 
                                 PStatistics.incrStat(orderToBuy.idCharacter, "gold_marketplace", orderToBuy.price * numberOrderToBuy);
@@ -193,7 +196,7 @@ class MarketplaceModule extends GModule {
             let data = {};
             //itemName, level, page, lang
             if (res.locals.marketplace != null) {
-                data = res.locals.marketplace.apiSearchOrder(req.query.itemName ? req.query.itemName : "", req.query.level ? req.query.level : 1, req.query.page ? req.query.page : 1, res.locals.lang);
+                data = await res.locals.marketplace.apiSearchOrder(req.query.itemName ? req.query.itemName : "", req.query.level ? req.query.level : 1, req.query.page ? req.query.page : 1, res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
@@ -206,7 +209,7 @@ class MarketplaceModule extends GModule {
         this.router.get("/show/:page?", async (req, res) => {
             let data = {};
             if (res.locals.marketplace != null) {
-                data = res.locals.marketplace.apiShowAll(req.params.page, res.locals.lang);
+                data = await res.locals.marketplace.apiShowAll(req.params.page, res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
@@ -219,9 +222,9 @@ class MarketplaceModule extends GModule {
         this.router.get("/show/item/:idItem?", async (req, res) => {
             let data = {};
             if (res.locals.marketplace != null) {
-                let mkToSeeOrder = res.locals.marketplace.getThisOrder(req.params.idItem);
+                let mkToSeeOrder = await res.locals.marketplace.getThisOrder(req.params.idItem);
                 if (mkToSeeOrder != null) {
-                    data = res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, res.locals.lang);
+                    data = await res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, res.locals.lang);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "marketplace_order_dont_exist");
                 }

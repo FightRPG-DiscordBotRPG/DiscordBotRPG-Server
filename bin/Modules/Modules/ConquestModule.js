@@ -44,15 +44,17 @@ class ConquestModule extends GModule {
     loadRoutes() {
         this.router.post("/area/levelup", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
-            if (res.locals.currentArea.getOwnerID() === tGuildId) {
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            if (await res.locals.currentArea.getOwnerID() === tGuildId) {
                 if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
-                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                        if (!res.locals.currentArea.isMaxLevel()) {
-                            let toLevelUpArea = res.locals.currentArea.getPriceNextLevel();
-                            if (Globals.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
-                                res.locals.currentArea.levelUp();
-                                Globals.connectedGuilds[tGuildId].removeMoneyDirect(toLevelUpArea);
+                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                        if (!await res.locals.currentArea.isMaxLevel()) {
+                            let toLevelUpArea = await res.locals.currentArea.getPriceNextLevel();
+                            if (await Globals.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
+                                await Promise.all([
+                                    res.locals.currentArea.levelUp(),
+                                    Globals.connectedGuilds[tGuildId].removeMoneyDirect(toLevelUpArea)
+                                ])
                                 data.success = Translator.getString(res.locals.lang, "area", "level_up") + "\n";
                                 data.success += Translator.getString(res.locals.lang, "guild", "you_paid_x", [toLevelUpArea]);
                             } else {
@@ -76,15 +78,15 @@ class ConquestModule extends GModule {
 
         this.router.post("/area/bonus/up", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
-            if (res.locals.currentArea.getOwnerID() === tGuildId) {
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            if (await res.locals.currentArea.getOwnerID() === tGuildId) {
                 if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
-                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                         if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
                             req.body.number = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
                             req.body.number = req.body.number > 0 ? req.body.number : 1000;
-                            if (res.locals.currentArea.haveThisAmountOfStatPoints(req.body.number)) {
-                                res.locals.currentArea.upStat(req.body.bonus_identifier, req.body.number);
+                            if (await res.locals.currentArea.haveThisAmountOfStatPoints(req.body.number)) {
+                                await res.locals.currentArea.upStat(req.body.bonus_identifier, req.body.number);
                                 data.success = Translator.getString(res.locals.lang, "area", "up_stat", [Translator.getString(res.locals.lang, "bonuses", req.body.bonus_identifier), req.body.number]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "area_dont_have_enough_stat_points");
@@ -115,7 +117,7 @@ class ConquestModule extends GModule {
 
         this.router.get("/area", async (req, res) => {
             let data = {};
-            data = res.locals.currentArea.getConquest(res.locals.lang);
+            data = await res.locals.currentArea.getConquest(res.locals.lang);
             data.lang = res.locals.lang;
             return res.json(data);
         });

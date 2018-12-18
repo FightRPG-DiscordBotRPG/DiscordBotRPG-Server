@@ -46,7 +46,7 @@ class CraftingModule extends GModule {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
-                data = res.locals.craftingbuilding.craftingListToApi(req.params.page, res.locals.lang);
+                data = await res.locals.craftingbuilding.craftingListToApi(req.params.page, res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
             }
@@ -58,9 +58,9 @@ class CraftingModule extends GModule {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
-                let craft = res.locals.craftingbuilding.getCraft(req.params.idCraft);
+                let craft = await res.locals.craftingbuilding.getCraft(req.params.idCraft);
                 if (craft != null) {
-                    data.craft = craft.toApi(res.locals.lang);
+                    data.craft = await craft.toApi(res.locals.lang);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_exist");
                 }
@@ -81,10 +81,10 @@ class CraftingModule extends GModule {
                     /**
                      * @type {Craft}
                      */
-                    let toCraft = res.locals.craftingbuilding.getCraft(req.body.idCraft);
+                    let toCraft = await res.locals.craftingbuilding.getCraft(req.body.idCraft);
                     if (toCraft) {
                         if (Globals.connectedUsers[res.locals.id].character.isCraftable(toCraft)) {
-                            if (Globals.connectedUsers[res.locals.id].character.craft(toCraft)) {
+                            if (await Globals.connectedUsers[res.locals.id].character.craft(toCraft)) {
                                 data.success = Translator.getString(res.locals.lang, "craft", "craft_done", [Translator.getString(res.locals.lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n";
 
                                 Globals.connectedUsers[res.locals.id].character.waitForNextCraft(toCraft.itemInfo.idRarity);
@@ -92,12 +92,12 @@ class CraftingModule extends GModule {
                                 PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
                                 // Seulement s'il n'est pas niveau max
                                 if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
-                                    let craftBonus = res.locals.currentArea.getAllBonuses().xp_craft;
+                                    let craftBonus = (await res.locals.currentArea.getAllBonuses()).xp_craft;
                                     let craftXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
                                     let craftXPBonus = craftBonus.getPercentageValue() * craftXP;
                                     let totalCraftXP = craftXP + craftXPBonus;
 
-                                    let craftCraftUP = Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCraftXP);
+                                    let craftCraftUP = await Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCraftXP);
 
                                     data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCraftXP, craftXPBonus]) + "\n";
 
@@ -135,17 +135,17 @@ class CraftingModule extends GModule {
                     let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
                     //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
                     if (resourceToCollect) {
-                        let collectBonuses = res.locals.currentArea.getAllBonuses();
+                        let collectBonuses = await res.locals.currentArea.getAllBonuses();
                         Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity);
-                        idToCollect = Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+                        idToCollect = await Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
                         let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity);
                         data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
                         if (numberItemsCollected > 0) {
                             if (idToCollect) {
-                                Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idToCollect, numberItemsCollected);
+                                await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idToCollect, numberItemsCollected);
                             } else {
-                                let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem])["insertId"];
-                                Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idInsert, numberItemsCollected);
+                                let idInsert = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem]))["insertId"];
+                                await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idInsert, numberItemsCollected);
                             }
 
                             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
@@ -159,7 +159,7 @@ class CraftingModule extends GModule {
                             let collectXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.getCraftLevel(), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), resourceToCollect.idRarity, true) * Globals.collectTriesOnce;
                             let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
                             let totalCollectXP = collectXP + collectXPBonus;
-                            let collectCraftUP = Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCollectXP);
+                            let collectCraftUP = await Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCollectXP);
                             data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
                             if (collectCraftUP > 0) {
                                 data.success += Translator.getString(res.locals.lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);

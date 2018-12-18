@@ -13,11 +13,11 @@ class StatsMonstres extends Stats {
 
     // Load from DB
 
-    loadStat(id, difficulty, level = 1) {
+    async loadStat(id, difficulty, level = 1) {
         // load from database
         //let res = conn.query("SELECT * FROM stats WHERE idStat = " + id);
         this.id = id;
-        let res = conn.query("SELECT * FROM statsmonstres INNER JOIN statsprofil ON statsprofil.idStatsProfil = statsmonstres.idStatsProfil INNER JOIN statsrepartition ON statsrepartition.idStatsProfil = statsprofil.idStatsProfil INNER JOIN stats ON statsrepartition.idStat = stats.idStat WHERE statsmonstres.idMonstre = ?;", [this.id]);
+        let res = await conn.query("SELECT * FROM statsmonstres INNER JOIN statsprofil ON statsprofil.idStatsProfil = statsmonstres.idStatsProfil INNER JOIN statsrepartition ON statsrepartition.idStatsProfil = statsprofil.idStatsProfil INNER JOIN stats ON statsrepartition.idStat = stats.idStat WHERE statsmonstres.idMonstre = ?;", [this.id]);
 
         let totalStats = Math.round(2 * level + ((level * .90) * 3 * Math.pow(2, (difficulty * 1))));
         let optimalArmor = Math.round((8 * Math.pow(level, 2)) / 7 + 5);

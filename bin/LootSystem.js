@@ -14,8 +14,8 @@ class LootSystem {
      * @param {number} totalLuck 
      * @param {number} level 
      */
-    loot(character, totalLuck = 0, level = 1) {
-        let possibleLoots = conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [character.getIdArea()]);
+    async loot(character, totalLuck = 0, level = 1) {
+        let possibleLoots = await conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [character.getIdArea()]);
         let luckModifier = totalLuck / 1000 + 1;
         let jsonLoot = {};
 
@@ -43,7 +43,7 @@ class LootSystem {
                     jsonLoot[itemPossible.idRarity].other += number;
                 }
 
-                this.giveToPlayer(character, itemPossible.idBaseItem, level, number);
+                await this.giveToPlayer(character, itemPossible.idBaseItem, level, number);
                 PStatistics.incrStat(character.id, "items_" + Globals.getRarityName(itemPossible.idRarity) + "_loot", number);
 
             }
@@ -52,23 +52,14 @@ class LootSystem {
 
     }
 
-    isTheLootExistForThisArea(idArea, rarity) {
-        let res = conn.query("SELECT itemsbase.idBaseItem FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = " + idArea + " AND itemsbase.idRarity = " + rarity + ";");
-        if (res.length > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    adminGetItem(character, idBase, number) {
-        return this.giveToPlayer(character, idBase, character.getLevel(), number);
+    async adminGetItem(character, idBase, number) {
+        return await this.giveToPlayer(character, idBase, character.getLevel(), number);
     }
 
     async giveToPlayerDatabase(idCharacter, idBase = 0, level = 1, number = 1) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
-        let res = conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
+        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
         let idToAdd;
 
         if (res[0]) {
@@ -76,16 +67,16 @@ class LootSystem {
             level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
             if (res.stackable == true) {
                 // C'est un objet stackable
-                idToAdd = CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
+                idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
                 if (idToAdd == null) {
-                    idToAdd = this.newItem(idBase, level);
+                    idToAdd = await this.newItem(idBase, level);
                 }
-                CharacterInventory.addToInventory(idCharacter, idToAdd, number);
+                await CharacterInventory.addToInventory(idCharacter, idToAdd, number);
             } else {
                 // C'est autre chose
                 for (let i = 0; i < number; i++) {
-                    idToAdd = this.newItem(idBase, level);
-                    CharacterInventory.addToInventory(idCharacter, idToAdd, 1);
+                    idToAdd = await this.newItem(idBase, level);
+                    await CharacterInventory.addToInventory(idCharacter, idToAdd, 1);
                 }
 
             }
@@ -94,10 +85,10 @@ class LootSystem {
         return false;
     }
 
-    giveToPlayer(character, idBase = 0, level = 1, number = 1) {
+    async giveToPlayer(character, idBase = 0, level = 1, number = 1) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
-        let res = conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
+        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
         let idToAdd;
 
         if (res[0]) {
@@ -105,40 +96,27 @@ class LootSystem {
             level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
             if (res.stackable == true) {
                 // C'est un objet stackable
-                idToAdd = character.getIdOfThisIdBase(idBase, level);
+                idToAdd = await character.getIdOfThisIdBase(idBase, level);
                 if (idToAdd == null) {
-                    idToAdd = this.newItem(idBase, level);
+                    idToAdd = await this.newItem(idBase, level);
                 }
-                character.inv.addToInventory(idToAdd, number);
+                await character.inv.addToInventory(idToAdd, number);
             } else {
                 // C'est autre chose
                 for (let i = 0; i < number; i++) {
-                    idToAdd = this.newItem(idBase, level);
-                    character.inv.addToInventory(idToAdd, 1);
+                    idToAdd = await this.newItem(idBase, level);
+                    await character.inv.addToInventory(idToAdd, 1);
                 }
 
             }
             return true;
         }
         return false;
-    }
-
-    getLoot(character, rarity, level) {
-        let res = conn.query("SELECT itemsbase.idBaseItem FROM itemsbase INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem WHERE areasitems.idArea = ? AND itemsbase.idRarity = ?;", [character.getIdArea(), rarity]);
-        let r = Math.floor(Math.random() * res.length);
-        let idBase = res[r]["idBaseItem"];
-
-        this.giveToPlayer(character, idBase, level);
-
-        /*let idItem = this.newItem(idBase, level);
-        if (idItem > -1) {
-            character.inv.addToInventory(idItem);
-        }*/
     }
 
     // Return id of new item if created
-    newItem(idBase, level, maxStatsPercentage = 100) {
-        let res = conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
+    async newItem(idBase, level, maxStatsPercentage = 100) {
+        let res = await conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
         if (res[0]) {
             let rarity = res[0].idRarity;
             let stats = {};
@@ -176,10 +154,13 @@ class LootSystem {
             }
 
 
-            let idInsert = conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idBase + ", " + level + ")")["insertId"];
+            let idInsert = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idBase + ", " + level + ")"))["insertId"];
+            let promises = [];
             for (let i in stats) {
-                conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")");
+                promises.push(conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")"));
             }
+
+            await Promise.all(promises);
 
             return idInsert;
 

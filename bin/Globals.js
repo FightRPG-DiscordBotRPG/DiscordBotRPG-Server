@@ -1,49 +1,5 @@
 const conn = require("../conf/mysql.js");
 
-let maxLevel = conn.query("SELECT COUNT(*) FROM levelsrequire")[0]["COUNT(*)"];
-let maxStatsId = conn.query("SELECT COUNT(*) FROM stats")[0]["COUNT(*)"];
-let statsIds = {};
-let equipsPossible = [];
-let areasTypes = [];
-let monstersTypes = {};
-let itemsrarities = [];
-let equipableCorresponds = {};
-let res;
-
-// All Stats
-res = conn.query("SELECT * FROM stats");
-for (let i = 0; i < res.length; ++i) {
-    statsIds[res[i].nom] = res[i].idStat;
-}
-
-res = conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
-for (let i = 0; i < res.length; i++) {
-    equipsPossible.push(res[i]["idType"]);
-}
-
-res = conn.query("SELECT NomAreaType FROM areastypes");
-for (let i = 0; i < res.length; i++) {
-    areasTypes.push(res[i]["NomAreaType"]);
-}
-
-res = conn.query("SELECT * FROM monstrestypes");
-for (let i in res) {
-    monstersTypes[res[i]["nom"]] = res[i]['idType'];
-}
-
-res = conn.query("SELECT * FROM itemsrarities");
-for (let i in res) {
-    itemsrarities[res[i].idRarity] = res[i].nomRarity;
-}
-
-res = conn.query("SELECT * FROM itemstypes WHERE equipable = 1");
-for (let r of res) {
-    equipableCorresponds[r.nomType] = r.idType;
-}
-
-
-
-
 let rarityChances = {
     commun: 40 / 100,
     rare: 7 / 100,
@@ -63,12 +19,12 @@ let collectChances = {
 }
 
 var Globals = {
-    "maxLevel": maxLevel,
-    "maxStatsId": maxStatsId,
-    "statsIds": statsIds,
-    "monstersIds": monstersTypes,
-    "itemsrarities": itemsrarities,
-    "equipableCorresponds": equipableCorresponds,
+    "maxLevel": null,
+    "maxStatsId": null,
+    "statsIds": null,
+    "monstersIds": null,
+    "itemsrarities": null,
+    "equipableCorresponds": null,
     "basicWaitTimeBeforeFight": 60,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
@@ -94,10 +50,10 @@ var Globals = {
             value: 1.2,
         }
     ],
-    "equipsPossible": equipsPossible,
+    "equipsPossible": null,
     "rarityChances": rarityChances,
     "collectChances": collectChances,
-    "areasTypes": areasTypes,
+    "areasTypes": null,
     "chanceToFightTheMonsterYouWant": 0.63,
     "resetStatsPricePerLevel": 60,
     "guilds": {
@@ -168,6 +124,54 @@ var Globals = {
                 break;
         }
         return drop;
+    },
+    loadGlobals: async () => {
+        let statsIds = {};
+        let equipsPossible = [];
+        let areasTypes = [];
+        let monstersTypes = {};
+        let itemsrarities = [];
+        let equipableCorresponds = {};
+
+        Globals.maxLevel = (await conn.query("SELECT COUNT(*) FROM levelsrequire"))[0]["COUNT(*)"];
+        Globals.maxStatsId = (await conn.query("SELECT COUNT(*) FROM stats"))[0]["COUNT(*)"];
+        let res;
+        res = await conn.query("SELECT * FROM stats");
+        for (let i = 0; i < res.length; ++i) {
+            statsIds[res[i].nom] = res[i].idStat;
+        }
+        Globals.statsIds = statsIds;
+
+        res = await conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
+        for (let i = 0; i < res.length; i++) {
+            equipsPossible.push(res[i]["idType"]);
+        }
+        Globals.equipsPossible = equipsPossible;
+
+        res = await conn.query("SELECT NomAreaType FROM areastypes");
+        for (let i = 0; i < res.length; i++) {
+            areasTypes.push(res[i]["NomAreaType"]);
+        }
+        Globals.areasTypes = areasTypes;
+
+        res = await conn.query("SELECT * FROM monstrestypes");
+        for (let i in res) {
+            monstersTypes[res[i]["nom"]] = res[i]['idType'];
+        }
+        Globals.monstersIds = monstersTypes;
+
+        res = await conn.query("SELECT * FROM itemsrarities");
+        console.log(res);
+        for (let i in res) {
+            itemsrarities[res[i].idRarity] = res[i].nomRarity;
+        }
+        Globals.itemsrarities = itemsrarities;
+
+        res = await conn.query("SELECT * FROM itemstypes WHERE equipable = 1");
+        for (let r of res) {
+            equipableCorresponds[r.nomType] = r.idType;
+        }
+        Globals.equipableCorresponds = equipableCorresponds;
     }
 }
 

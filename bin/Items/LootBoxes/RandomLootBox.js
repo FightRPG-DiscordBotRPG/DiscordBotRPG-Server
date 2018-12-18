@@ -20,7 +20,7 @@ class RandomLootBox extends LootBox {
 
     }
 
-    use(character) {
+    async use(character) {
         this.numberOfUse++;
         const LootSystem = require("../../LootSystem");
         let ls = new LootSystem();
@@ -38,7 +38,7 @@ class RandomLootBox extends LootBox {
             let luck = Math.random();
             if (luck <= dropRate) {
                 //Drop
-                if (ls.giveToPlayer(character, item.id, this.getLevel(), item.amount)) {
+                if (await ls.giveToPlayer(character, item.id, this.getLevel(), item.amount)) {
                     this.addItem(item.id, item.amount);
                 }
                 totalDrop++;
@@ -51,7 +51,7 @@ class RandomLootBox extends LootBox {
         if (totalDrop == 0) {
             // TODO: Calcul right amount of money
             let money = Math.ceil(Math.random() * this.getLevel());;
-            character.addMoney(money);
+            await character.addMoney(money);
             this.addGold(money);
         }
 

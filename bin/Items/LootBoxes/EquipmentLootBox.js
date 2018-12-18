@@ -8,15 +8,15 @@ class EquipmentLootBox extends LootBox {
         super(id);
     }
 
-    use(character) {
+    async use(character) {
         this.numberOfUse++;
         if (Globals.equipsPossible.length > 0) {
-            let possibleItems = conn.query("SELECT * FROM itemsbase WHERE idRarity = ? AND idType IN (" + Globals.equipsPossible.toString() + ");", [this.getIdRarity()]);
+            let possibleItems = await conn.query("SELECT * FROM itemsbase WHERE idRarity = ? AND idType IN (" + Globals.equipsPossible.toString() + ");", [this.getIdRarity()]);
             if (possibleItems.length > 0) {
                 let randomIndex = Math.floor(Math.random() * Math.floor(possibleItems.length));
                 const LootSystem = require("../../LootSystem");
                 let ls = new LootSystem();
-                if (ls.giveToPlayer(character, possibleItems[randomIndex].idBaseItem, this.getLevel(), 1)) {
+                if (await ls.giveToPlayer(character, possibleItems[randomIndex].idBaseItem, this.getLevel(), 1)) {
                     this.addItem(possibleItems[randomIndex].idBaseItem, 1);
                 }
 

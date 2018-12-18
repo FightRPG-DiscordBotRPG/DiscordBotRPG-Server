@@ -5,7 +5,7 @@ class FounderGift extends LootBox {
         super(id);
     }
 
-    use(character) {
+    async use(character) {
         this.numberOfUse++;
         const LootSystem = require("../../LootSystem");
         let ls = new LootSystem();
@@ -15,11 +15,11 @@ class FounderGift extends LootBox {
         let itemsLevel = character.getLevel();
         itemsLevel = itemsLevel > 20 ? 20 : itemsLevel;
         for (let i in items) {
-            if (ls.giveToPlayer(character, items[i], itemsLevel, numbers[i])) {
+            if (await ls.giveToPlayer(character, items[i], itemsLevel, numbers[i])) {
                 this.addItem(items[i], numbers[i]);
             }
         }
-        character.addMoney(1000);
+        await character.addMoney(1000);
         this.addGold(1000);
         return this.openResult;
     }

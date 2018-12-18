@@ -61,7 +61,7 @@ class WorldBosses extends GModule {
 
             let wb = await res.locals.currentArea.getWorldBoss(res.locals.lang);
             if (wb) {
-                data.worldBoss = wb.toApi(res.locals.lang);
+                data.worldBoss = await wb.toApi(res.locals.lang);
             }
 
             data.lang = res.locals.lang;
@@ -99,14 +99,14 @@ class WorldBosses extends GModule {
 
         this.router.get("/leaderboard/damage", async (req, res) => {
             let ld = new LeaderboardWBDamage(Globals.connectedUsers[res.locals.id].character.id);
-            let data = ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard();
             data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.get("/leaderboard/attacks", async (req, res) => {
             let ld = new LeaderboardWBAttacks(Globals.connectedUsers[res.locals.id].character.id);
-            let data = ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard();
             data.lang = res.locals.lang;
             return res.json(data);
         });

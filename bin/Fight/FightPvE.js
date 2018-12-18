@@ -49,7 +49,7 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[1].length);
     }
 
-    endFight(lang) {
+    async endFight(lang) {
         lang = lang || "fr"
         if (this.winnerGroup == 0) {
             // Need this to know if level up
@@ -58,7 +58,7 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
-            let areaBonuses = this.entities[0][0].getArea().getAllBonuses();
+            let areaBonuses = await this.entities[0][0].getArea().getAllBonuses();
 
             for (let i in this.entities[0]) {
                 let entity = this.entities[0][i];
@@ -82,7 +82,7 @@ class FightPvE extends Fight {
                 totalMoney += money;
 
 
-                this.entities[0][i].addMoney(money);
+                await this.entities[0][i].addMoney(money);
                 PStatistics.incrStat(entity.id, "gold_dropped", money);
 
 
@@ -92,7 +92,7 @@ class FightPvE extends Fight {
                     xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[this.entities[0][i].name] = xp;
-                    this.entities[0][i].addExp(xp);
+                    await this.entities[0][i].addExp(xp);
                 } else {
                     this.summary.xpGained[this.entities[0][i].name] = 0;
                 }
@@ -116,7 +116,7 @@ class FightPvE extends Fight {
                 let lootSystem = new LootSystem();
                 let totalLuck = this.entities[0][i].getStat("luck") + this.getAvgLuckBonus();
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
-                let loot = lootSystem.loot(entity, totalLuck, avgLevelEnemies);
+                let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
                 if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                     this.summary.drops.push({
                         name: this.entities[0][i].name,
@@ -129,9 +129,9 @@ class FightPvE extends Fight {
             }
             this.summary.xp = totalXp;
             this.summary.money = Math.round(totalMoney * 0.95);
-            let ownerid = this.entities[0][0].getArea().getOwnerID();
+            let ownerid = await this.entities[0][0].getArea().getOwnerID();
             if (ownerid != null) {
-                Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
+                await Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
             }
 
 

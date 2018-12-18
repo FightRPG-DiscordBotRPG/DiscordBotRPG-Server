@@ -68,14 +68,6 @@ class MonstreGroup {
     }
 
 
-
-
-
-
-
-
-
-
 }
 
 module.exports = MonstreGroup;

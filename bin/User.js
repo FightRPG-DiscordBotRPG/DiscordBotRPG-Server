@@ -26,51 +26,51 @@ class User {
     }
 
     // Init for new user
-    init() {
+    async init() {
         this.isNew = true;
-        this.character.init();
+        await this.character.init();
         this.character.name = this.username;
 
         // Token for mobile / website use
         let nToken = Crypto.randomBytes(16).toString('hex');
-        let res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
+        let res = await conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         while (res[0]) {
             nToken = Crypto.randomBytes(16).toString('hex');
-            res = conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
+            res = await conn.query("SELECT * FROM users WHERE token = ?;", [nToken]);
         }
-        conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`, `avatar`) VALUES (?, ?, ?, ?, true, ?);", [this.id, this.character.id, this.username, nToken, this.avatar]);
-        conn.query("INSERT IGNORE INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
-        DatabaseInitializer.PStats();
+        await conn.query("INSERT IGNORE INTO `users` (`idUser`, `idCharacter`, `userName`, `token`, `isConnected`, `avatar`) VALUES (?, ?, ?, ?, true, ?);", [this.id, this.character.id, this.username, nToken, this.avatar]);
+        await conn.query("INSERT IGNORE INTO `userspreferences` (`idUser`) VALUES (?);", [this.id]);
+        await DatabaseInitializer.PStats();
     }
 
     // Load user from DB
     // If not exist create new one
-    loadUser() {
-        let res = conn.query("SELECT * FROM users WHERE idUser = " + this.id);
+    async loadUser() {
+        let res = await conn.query("SELECT * FROM users WHERE idUser = ?;", [this.id]);
         if (res.length === 0) {
             // S'il n'existe pas on le crée
-            this.init();
+            await this.init();
         } else {
             // Sinon on le load
-            this.character.loadCharacter(res[0]["idCharacter"]);
+            await this.character.loadCharacter(res[0]["idCharacter"]);
             if (this.username != null && this.username != res[0]["userName"]) {
-                conn.query("UPDATE users SET userName = ? WHERE idUser = ?", [this.username, this.id]);
+                await conn.query("UPDATE users SET userName = ? WHERE idUser = ?", [this.username, this.id]);
             } else {
                 this.username = res[0]["userName"];
             }
 
             if (this.avatar != "" && this.avatar != res[0]["avatar"]) {
-                conn.query("UPDATE users SET avatar = ? WHERE idUser = ?", [this.avatar, this.id]);
+                await conn.query("UPDATE users SET avatar = ? WHERE idUser = ?", [this.avatar, this.id]);
             } else {
                 this.avatar = res[0]["avatar"];
             }
 
-            conn.query("UPDATE users SET isConnected = true WHERE idUser = ?", [this.id]);
+            await conn.query("UPDATE users SET isConnected = true WHERE idUser = ?", [this.id]);
 
             //this.username = res[0]["userName"];
             this.character.name = this.username;
 
-            res = conn.query("SELECT * FROM userspreferences WHERE idUser = ?", [this.id]);
+            res = await conn.query("SELECT * FROM userspreferences WHERE idUser = ?", [this.id]);
 
             this.preferences.lang = res[0]["lang"];
             this.preferences.groupmute = res[0]["groupmute"];
@@ -79,36 +79,36 @@ class User {
 
     }
 
-    static getUserId(token) {
-        let res = conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
+    static async getUserId(token) {
+        let res = await conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
         if (res[0]) {
             return res[0]["idUser"];
         }
         return undefined;
     }
 
-    static getUserNameByIdCharacter(idCharacter) {
-        let res = conn.query("SELECT userName FROM users WHERE idCharacter = ?", [idCharacter]);
+    static async getUserNameByIdCharacter(idCharacter) {
+        let res = await conn.query("SELECT userName FROM users WHERE idCharacter = ?", [idCharacter]);
         return res[0] ? res[0]["userName"] : null;
     }
 
-    static exist(idUser) {
-        let res = conn.query("SELECT * FROM users WHERE idUser = ?;", [idUser]);
+    static async exist(idUser) {
+        let res = await conn.query("SELECT * FROM users WHERE idUser = ?;", [idUser]);
         return res[0] != null;
     }
 
-    static getCharacterId(idUser) {
-        let res = conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [idUser]);
+    static async getCharacterId(idUser) {
+        let res = await conn.query("SELECT idCharacter FROM users WHERE idUser = ?;", [idUser]);
         return res[0] != null ? res[0].idCharacter : null;
     }
 
-    static getIdAndLang(idUser) {
-        let res = conn.query("SELECT idCharacter, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE users.idUser = ?;", [idUser]);
+    static async getIdAndLang(idUser) {
+        let res = await conn.query("SELECT idCharacter, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE users.idUser = ?;", [idUser]);
         return res[0] != null ? res[0] : null;
     }
 
-    static getIDByIDCharacter(idCharacter) {
-        let res = conn.query("SELECT idUser FROM users WHERE idCharacter = ?;", [idCharacter]);
+    static async getIDByIDCharacter(idCharacter) {
+        let res = await conn.query("SELECT idUser FROM users WHERE idCharacter = ?;", [idCharacter]);
         return res[0] != null ? res[0].idUser : null;
     }
 
@@ -120,17 +120,13 @@ class User {
         return this.id;
     }
 
-    getToken() {
-        return conn.query("SELECT token FROM users WHERE idUser = " + this.id + ";")[0]["token"];
+    async getToken() {
+        return (await conn.query("SELECT token FROM users WHERE idUser = " + this.id + ";"))[0]["token"];
     }
 
-    saveUser() {
-        this.character.saveCharacter();
-    }
-
-    changeLang(lang) {
+    async changeLang(lang) {
         this.preferences.lang = lang;
-        conn.query("UPDATE userspreferences SET lang = ? WHERE idUser = ?", [lang, this.id]);
+        await conn.query("UPDATE userspreferences SET lang = ? WHERE idUser = ?", [lang, this.id]);
     }
 
     getLang() {
@@ -148,14 +144,14 @@ class User {
         //return conn.query("SELECT marketplacemute FROM userspreferences WHERE idUser = ?", [this.id])[0]["marketplacemute"];
     }
 
-    muteGroup(bool) {
+    async muteGroup(bool) {
         this.preferences.groupmute = bool;
-        conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?", [bool, this.id]);
+        await conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?;", [bool, this.id]);
     }
 
-    muteMarketplace(bool) {
+    async muteMarketplace(bool) {
         this.preferences.marketplacemute = bool;
-        conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?", [bool, this.id]);
+        await conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?;", [bool, this.id]);
     }
 
     async marketTell(str) {
@@ -192,55 +188,8 @@ class User {
         }
     }
 
-    //Affichage
-    infoPanel(lang) {
-        let statPointsPlur = this.character.getStatPoints() > 1 ? "_plur" : "";
-        let xpProgressBar = new ProgressBar();
-        let xpBar = "";
-        let xpOn = "";
-
-        let xpBarCraft = "";
-        let xpOnCraft = "";
-
-        if (this.character.getLevel() === Globals.maxLevel) {
-            xpOn = Translator.getString(lang, "character", "maximum_level");
-            xpBar = xpProgressBar.draw(1, 1);
-        } else {
-            xpOn = this.character.levelSystem.actualXP + " / " + this.character.levelSystem.expToNextLevel;
-            xpBar = xpProgressBar.draw(this.character.levelSystem.actualXP, this.character.levelSystem.expToNextLevel);
-        }
-
-        if (this.character.getCraftLevel() === Globals.maxLevel) {
-            xpOnCraft = Translator.getString(lang, "character", "maximum_level");
-            xpBarCraft = xpProgressBar.draw(1, 1);
-        } else {
-            xpOnCraft = this.character.getCratfXP() + " / " + this.character.getCraftNextLevelXP();
-            xpBarCraft = xpProgressBar.draw(this.character.getCratfXP(), this.character.getCraftNextLevelXP());
-        }
-
-
-        let authorTitle = this.getUsername() + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + this.character.getPower() + "%";
-        let statsTitle = Translator.getString(lang, "character", "info_attributes_title" + statPointsPlur, [this.character.getStatPoints(), this.character.getResetStatsValue()]);
-        let titleXPFight = Translator.getString(lang, "character", "level") + " : " + this.character.getLevel() + " | " + xpOn + " ";
-        let titleXPCraft = Translator.getString(lang, "character", "craft_level") + " : " + this.character.getCraftLevel() + " | " + xpOnCraft + " "
-
-
-        let embed = new Discord.RichEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(authorTitle, this.avatar)
-            .addField(statsTitle, this.character.getStatsStr(lang))
-            .addField(titleXPFight, xpBar, true)
-            .addField(titleXPCraft, xpBarCraft, true)
-            .addBlankField(true)
-            .addField(Translator.getString(lang, "character", "money"), this.character.getMoney() + " G", true)
-            .addField(Translator.getString(lang, "character", "honor"), this.character.getHonor(), true)
-            .addBlankField(true);
-
-        return embed;
-    }
-
     // Info pannel API
-    apiInfoPanel() {
+    async apiInfoPanel() {
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
             xpNextLevel: this.character.levelSystem.expToNextLevel,
@@ -250,9 +199,9 @@ class User {
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             level: this.character.getLevel(),
-            money: this.character.getMoney(),
-            honor: this.character.getHonor(),
-            power: this.character.getPower(),
+            money: await this.character.getMoney(),
+            honor: await this.character.getHonor(),
+            power: await this.character.getPower(),
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
             craft: {

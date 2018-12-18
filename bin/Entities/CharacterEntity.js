@@ -22,11 +22,13 @@ class CharacterEntity extends WorldEntity {
      * 
      * @param {number} id Character id
      */
-    loadCharacter(id) {
+    async loadCharacter(id) {
         this.id = id;
-        this.stats.loadStat(id);
-        this.levelSystem.loadLevelSystem(id);
-        this.equipement.loadEquipements(id);
+        await Promise.all([
+            this.stats.loadStat(id),
+            this.levelSystem.loadLevelSystem(id),
+            this.equipement.loadEquipements(id)
+        ]);
     }
 
     /**
@@ -46,10 +48,10 @@ class CharacterEntity extends WorldEntity {
     }
 
     /**
-     * @returns {number} Power in percentage
+     * @returns {Promise<Number>} Power in percentage
      */
-    getPower() {
-        return this.equipement.getPower();
+    async getPower() {
+        return await this.equipement.getPower();
     }
 
 }

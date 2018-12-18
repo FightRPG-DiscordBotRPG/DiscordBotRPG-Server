@@ -332,7 +332,8 @@
     "level": "Niveau",
     "craft_level": "Niv. de Métier",
     "money": "Argent",
-    "honor": "Honneur"
+    "honor": "Honneur",
+    "health_points": "Points de Vie"
   },
   "economic": {
     "sell_for_x": "Vous avez vendu votre objet pour %dG",

@@ -7,7 +7,7 @@ const Translator = require("./Translator/Translator");
 
 class Monstre extends WorldEntity {
 
-    constructor(id, level = 1) {
+    constructor(id) {
         super();
         this._type = "Monster";
 
@@ -23,16 +23,13 @@ class Monstre extends WorldEntity {
         this.stats = new StatsMonstres();
         this.difficulty = {};
         this.type = "";
-
-        // Functions
-        this.loadMonster(level);
-
     }
 
 
-    loadMonster(level = 1) {
+    async loadMonster(level = 1) {
         this.difficulty = Globals.mDifficulties[2];
-        let res = conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id])[0];
+        let res = await conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id]);
+        res = res[0];
         let bonus = 1;
         this.type = res["nom"];
         this.level = res["avglevel"] > 0 ? res["avglevel"] : level;
@@ -51,7 +48,7 @@ class Monstre extends WorldEntity {
             this.luckBonus = 120;
         }
 
-        this.stats.loadStat(this.id, multiplier, this.getLevel());
+        await this.stats.loadStat(this.id, multiplier, this.getLevel());
 
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 6 * bonus);

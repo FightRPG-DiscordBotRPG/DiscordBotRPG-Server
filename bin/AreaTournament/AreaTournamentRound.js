@@ -27,10 +27,10 @@ class AreaTournamentRound {
         //console.log(this.initialGuilds);
         this.shuffle(this.initialGuilds);
         //console.log(this.initialGuilds);        
-        for(let i = 0; i < this.initialGuilds.length; i=i+2) {
+        for (let i = 0; i < this.initialGuilds.length; i = i + 2) {
             let pair = [this.initialGuilds[i]];
-            if(this.initialGuilds[i+1]) {
-                pair.push(this.initialGuilds[i+1]);
+            if (this.initialGuilds[i + 1]) {
+                pair.push(this.initialGuilds[i + 1]);
             } else {
                 pair.push(0);
             }
@@ -44,13 +44,16 @@ class AreaTournamentRound {
      */
     async doFights() {
         //console.log("Round : " + this.round)
-        for(let guilds of this.guildsPlacements) {
-            if(guilds[1] != 0) {
+        for (let guilds of this.guildsPlacements) {
+            if (guilds[1] != 0) {
                 let g1 = new GuildEntity(guilds[0]);
                 let g2 = new GuildEntity(guilds[1]);
-                
+
+                await Promise.all([g1.loadGuild(), g2.loadGuild()]);
+
                 let fight = new Fight([g1], [g2]);
-                if(fight.summary.winner == 0) {
+                await fight.init();
+                if (fight.summary.winner == 0) {
                     this.winners.push(guilds[0]);
                     conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
                     //console.log(g1.name);
@@ -59,7 +62,7 @@ class AreaTournamentRound {
                     conn.query("UPDATE conquesttournamentrounds SET winner = 2 WHERE idRound = ? AND idGuild_2 = ?", [this.round, guilds[1]]);
                     //console.log(g2.name);
                 }
-                
+
             } else {
                 //let g0 = new GuildEntity(guilds[0]);
                 //console.log(g0.name);
@@ -89,4 +92,3 @@ class AreaTournamentRound {
 
 
 module.exports = AreaTournamentRound;
-

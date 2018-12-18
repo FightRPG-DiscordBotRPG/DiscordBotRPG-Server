@@ -25,7 +25,7 @@ dbl.webhook.on('ready', hook => {
 if (conf.env === "prod") {
 
     dbl.webhook.on('vote', async (vote) => {
-        let idAndLang = User.getIdAndLang(vote.user);
+        let idAndLang = await User.getIdAndLang(vote.user);
         if (idAndLang != null) {
             let ls = new LootSystem();
             await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1);
@@ -43,16 +43,9 @@ if (conf.env === "prod") {
 }
 
 
-let syncStartWith = Date.now();
-let totalGameStartTime = Date.now();
-
 process.on('unhandledRejection', up => {
     throw up
 });
-
-console.log("Initializing Database ...");
-DatabaseInitializer.initialize();
-console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
 
 
@@ -60,30 +53,45 @@ console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 10
 
 //let moduleHandler = new ModuleHandler();
 
-syncStartWith = Date.now();
-console.log("Loading Areas...");
-Globals.areasManager = new AreasManager();
-console.log("Areas loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+let startUp = async () => {
+    await Globals.loadGlobals();
+
+    let syncStartWith = Date.now();
+    let totalGameStartTime = Date.now();
+
+    console.log("Initializing Database ...");
+    await DatabaseInitializer.initialize();
+    console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+    syncStartWith = Date.now();
+    console.log("Loading Areas...");
+    Globals.areasManager = new AreasManager();
+    await Globals.areasManager.loadAreasManager();
+    console.log("Areas loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
 
-syncStartWith = Date.now();
-console.log("Loading Fight Manager...");
-Globals.fightManager = new FightManager();
-console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+    syncStartWith = Date.now();
+    console.log("Loading Fight Manager...");
+    Globals.fightManager = new FightManager();
+    console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
-let wbs = new WorldBossSpawner();
-wbs.startUp();
+    let wbs = new WorldBossSpawner();
+    await wbs.startUp();
 
-
-var connectedUsers = {};
-var connectedGuilds = {};
-
-Globals.connectedUsers = connectedUsers;
-Globals.connectedGuilds = connectedGuilds;
+    await Translator.load();
 
 
-console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
+    var connectedUsers = {};
+    var connectedGuilds = {};
+
+    Globals.connectedUsers = connectedUsers;
+    Globals.connectedGuilds = connectedGuilds;
 
 
-// Load api after all 
-const mHandler = new ModuleHandler();
+    console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
+
+    // Load api after all 
+    const mHandler = new ModuleHandler();
+}
+
+startUp();

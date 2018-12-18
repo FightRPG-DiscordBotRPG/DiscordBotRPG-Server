@@ -47,7 +47,7 @@ class ShopModule extends GModule {
 
             if (res.locals.shop != null) {
                 let toApi = await res.locals.shop.itemsToApi(req.params.page, res.locals.lang);
-                if (res.locals.currentArea.haveOwner()) {
+                if (await res.locals.currentArea.haveOwner()) {
                     toApi.tax = true;
                 } else {
                     toApi.tax = false;
@@ -74,16 +74,16 @@ class ShopModule extends GModule {
                     if (item != null) {
                         let totalPrice = item.price * amount;
                         let tax = 0;
-                        if (res.locals.currentArea.haveOwner()) {
-                            tax = Math.round(res.locals.shop.getTax() * totalPrice);
+                        if (await res.locals.currentArea.haveOwner()) {
+                            tax = Math.round(await res.locals.shop.getTax() * totalPrice);
                             totalPrice = totalPrice + tax;
                         }
-                        if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(totalPrice)) {
-                            if (res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount)) {
+                        if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(totalPrice)) {
+                            if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount)) {
                                 if (tax > 0) {
-                                    Guild.addMoney(res.locals.currentArea.getOwnerID(), tax);
+                                    await Guild.addMoney(await res.locals.currentArea.getOwnerID(), tax);
                                 }
-                                Globals.connectedUsers[res.locals.id].character.removeMoney(totalPrice);
+                                await Globals.connectedUsers[res.locals.id].character.removeMoney(totalPrice);
                                 data.success = Translator.getString(res.locals.lang, "shop", "you_buy", [item.getName(res.locals.lang), amount, totalPrice]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "shop_item_dont_exist");

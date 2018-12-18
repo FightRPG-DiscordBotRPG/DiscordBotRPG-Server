@@ -10,11 +10,11 @@ class AreaBonus {
         this.id = id;
         this.name = "";
         this.value = 0;
-        this.load();
     }
 
-    load() {
-        let res = conn.query("SELECT * FROM bonustypes WHERE idBonusTypes = ?", [this.id])[0];
+    async load() {
+        let res = await conn.query("SELECT * FROM bonustypes WHERE idBonusTypes = ?", [this.id]);
+        res = res[0];
         if (res) {
             this.name = res.nom;
         }

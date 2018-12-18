@@ -15,13 +15,13 @@ class CharacterInventory {
 
     // Load user from DB
     // If not exist create new one
-    loadInventory(id) {
+    async loadInventory(id) {
         this.id = id;
     }
 
-    isEquipable(idEmplacement) {
+    async isEquipable(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let isEquipable = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let isEquipable = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
 
         if (isEquipable[0]) {
             return isEquipable[0].equipable == 1;
@@ -29,41 +29,34 @@ class CharacterInventory {
         return false;
     }
 
-    addToInventory(idItem, number) {
+    async addToInventory(idItem, number) {
         number = number > 0 ? number : 1;
-        if (this.isThisItemInInventory(idItem)) {
-            conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, this.id, idItem]);
+        if (await this.isThisItemInInventory(idItem)) {
+            await conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, this.id, idItem]);
         } else {
-            conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [this.id, idItem, number]);
+            await conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [this.id, idItem, number]);
         }
     }
 
-    static addToInventory(idCharacter, idItem, number) {
+    static async addToInventory(idCharacter, idItem, number) {
         number = number > 0 ? number : 1;
-        if (CharacterInventory.isThisItemInInventory(idCharacter, idItem)) {
-            conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, idCharacter, idItem]);
+        if (await CharacterInventory.isThisItemInInventory(idCharacter, idItem)) {
+            await conn.query("UPDATE charactersinventory SET number = number + ? WHERE idCharacter = ? AND idItem = ?;", [number, idCharacter, idItem]);
         } else {
-            conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [idCharacter, idItem, number]);
+            await conn.query("INSERT INTO charactersinventory VALUES (?, ?, ?);", [idCharacter, idItem, number]);
         }
     }
-
-    /*
-    modInventory(idItem, number) {
-        number = number ? number : 1;
-        this.objects[idItem].number = number;
-        conn.query("UPDATE charactersinventory SET number = " + number + " WHERE idCharacter = " + this.id + " AND idItem = " + idItem);
-    }*/
 
     // Used by craft
-    removeSomeFromInventoryIdBase(idBase, number, deleteObject) {
+    async removeSomeFromInventoryIdBase(idBase, number, deleteObject) {
         number = number ? number : 1;
-        let item = this.getItemByBase(idBase);
+        let item = await this.getItemByBase(idBase);
         if (item != null) {
             item.number -= number;
             if (item.number <= 0) {
-                this.deleteFromInventory(item, deleteObject);
+                await this.deleteFromInventory(item, deleteObject);
             } else {
-                conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
+                await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
             }
         }
     }
@@ -74,14 +67,14 @@ class CharacterInventory {
      * @param {any} number
      * @param {any} deleteObject
      */
-    removeSomeFromInventory(idEmplacement, number, deleteObject) {
+    async removeSomeFromInventory(idEmplacement, number, deleteObject) {
         number = number ? number : 1;
-        let item = this.getItem(idEmplacement);
+        let item = await this.getItem(idEmplacement);
         item.number -= number;
         if (item.number <= 0) {
-            this.deleteFromInventory(item, deleteObject);
+            await this.deleteFromInventory(item, deleteObject);
         } else {
-            conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
+            await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
         }
     }
 
@@ -90,17 +83,17 @@ class CharacterInventory {
      * @param {Item} item
      * @param {boolean} deleteObject
      */
-    deleteFromInventory(item, deleteObject) {
-        conn.query("DELETE FROM charactersinventory WHERE idCharacter = ? AND idItem = ?", [this.id, item.id]);
+    async deleteFromInventory(item, deleteObject) {
+        await conn.query("DELETE FROM charactersinventory WHERE idCharacter = ? AND idItem = ?", [this.id, item.id]);
         if (deleteObject) {
-            Item.deleteItem(item.id);
+            await Item.deleteItem(item.id);
         }
     }
 
     /**
      * Delete all objects from inventory
      */
-    deleteAllFromInventory(params) {
+    async deleteAllFromInventory(params) {
 
         let more = "";
         let sqlParams = [this.id];
@@ -126,20 +119,20 @@ class CharacterInventory {
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
         let ids = [];
         for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
         // Delete from inventory
-        conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
 
         // Delete items
-        Item.deleteItems(ids);
+        await Item.deleteItems(ids);
     }
 
-    getAllInventoryValue(params) {
+    async getAllInventoryValue(params) {
         let more = "";
         let sqlParams = [this.id];
         if (params != null) {
@@ -161,7 +154,8 @@ class CharacterInventory {
             }
 
         }
-        let value = conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams)[0]["value"];
+        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
+        value = value[0]["value"];
         return value;
     }
 
@@ -172,10 +166,10 @@ class CharacterInventory {
      * @param {*} page 
      * @param {{rarity: Number, type: Number, level: Number}} params 
      */
-    getAllItemsAtThisPage(page, params) {
+    async getAllItemsAtThisPage(page, params) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
-        let maxPage = Math.ceil(this.getNumberOfItem(params) / perPage);
+        let maxPage = Math.ceil(await this.getNumberOfItem(params) / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let items = {};
         let more = "";
@@ -201,10 +195,10 @@ class CharacterInventory {
 
         }
 
-        let res = conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
+        let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
 
         for (let i in res) {
-            let item = Item.newItem(res[i].idItem, res[i].nomSousType);
+            let item = await Item.newItem(res[i].idItem, res[i].nomSousType);
             item.number = res[i].number;
             items[res[i].idEmplacement] = item;
         }
@@ -218,74 +212,26 @@ class CharacterInventory {
 
     /**
      * 
-     * @param {number} page 
-     * @param {string} lang 
-     */
-    toStr(page, lang) {
-        let str = "```";
-        //str += "|   nb   |" + "                             Nom                               |" + "         Type         |" + " Niveau |" + "    Rareté    |\n";
-        str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
-
-        let res = this.getAllItemsAtThisPage(page);
-        let index = (res.page - 1) * 10 + 1;
-        if (res.items.length > 0) {
-            for (let item of res.items) {
-                str += index + " - " + item.toStr(lang) + "\n";
-                index++;
-            }
-        } else {
-            str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
-        }
-
-        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [res.page, res.maxPage == 0 ? 1 : res.maxPage])
-        str += "```"
-        return str;
-    }
-
-    /**
-     * 
      * @param {*} page 
      * @param {*} lang 
      * @param {{rarity: Number,type: Number,level: Number}} params
      */
-    toApi(page, lang, params) {
-        let res = this.getAllItemsAtThisPage(page, params);
+    async toApi(page, lang, params) {
+        let res = await this.getAllItemsAtThisPage(page, params);
         for (let item in res.items) {
-            res.items[item] = res.items[item].toApiLight(lang);
+            res.items[item] = await res.items[item].toApiLight(lang);
         }
         return res;
     }
 
     /**
-     * 
-     * @param {number} idEmplacement 
-     * @param {Stats} compareStats 
-     * @param {string} lang 
-     */
-    seeThisItem(idEmplacement, compareStats, lang) {
-        let item = this.getItem(idEmplacement);
-        let embed = new Discord.RichEmbed()
-            .setAuthor(item.getName(lang) + (item.isFavorite == true ? " ★" : ""), Globals.addr + "images/items/" + item.image + ".png")
-            .setColor(item.rarityColor)
-            .addField(Translator.getString(lang, "item_types", item.typeName) + " (" + Translator.getString(lang, "item_sous_types", item.sousTypeName) + ")" + " | " + Translator.getString(lang, "rarities", item.rarity) + " | " + Translator.getString(lang, "general", "lvl") + " : " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + " : " + item.getPower() + "%", item.getDesc(lang))
-            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", item.stats.toStr(compareStats, lang));
-
-        return embed;
-    }
-
-    /**
      * Returns if inventory is empty
      */
-    isEmpty() {
-        return this.getNumberOfItem() == 0;
+    async isEmpty() {
+        return await this.getNumberOfItem() == 0;
     }
 
-    getNumberOfItem(params) {
+    async getNumberOfItem(params) {
         let sqlParams = [this.id];
         let more = "";
         if (params != null) {
@@ -307,7 +253,7 @@ class CharacterInventory {
             }
 
         }
-        let res = conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? " + more + ";", sqlParams);
+        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? " + more + ";", sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
 
@@ -315,10 +261,10 @@ class CharacterInventory {
      * To Know if this emplacement is used
      * Should be "is this Emplacement used"
      * @param {number} idEmplacement
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
-    doIHaveThisItem(idEmplacement) {
-        if (idEmplacement <= this.getNumberOfItem() && idEmplacement > 0) {
+    async doIHaveThisItem(idEmplacement) {
+        if (idEmplacement <= await this.getNumberOfItem() && idEmplacement > 0) {
             return true;
         }
         return false;
@@ -329,72 +275,40 @@ class CharacterInventory {
      * Base ID of item
      * @param {number} idItem 
      */
-    getItemOfThisID(idBaseItem) {
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+    async getItemOfThisID(idBaseItem) {
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
         if (res[0] != null) {
-            let item = Item.newItem(res[0].idItem, res[0].nomSousType);
+            let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
         }
         return null;
     }
 
-    // craft system
-    /**
-     * @deprecated
-     * @param {Array<number>} ArrItemsIDs 
-     */
-    getItemsOfThosesIds(ArrItemsIDs) {
-        let arr = [];
-        for (let i in this.objects) {
-            if (ArrItemsIDs.indexOf(this.objects[i].idBaseItem) > -1) {
-                arr.push({
-                    item: this.objects[i],
-                    index: i
-                });
-            }
-        }
-        return arr;
-    }
-
-    isThisItemInInventory(idItem) {
+    async isThisItemInInventory(idItem) {
         idItem = idItem >= 0 ? idItem : 0;
-        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [this.id, idItem]);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [this.id, idItem]);
         return res[0] != null;
     }
 
-    static isThisItemInInventory(idCharacter, idItem) {
+    static async isThisItemInInventory(idCharacter, idItem) {
         idItem = idItem >= 0 ? idItem : 0;
-        let res = conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [idCharacter, idItem]);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [idCharacter, idItem]);
         return res[0] != null;
     }
 
-
-    /**
-     * @deprecated
-     * @param {number} idBase 
-     */
-    getEmplacementOfThisItemIdBase(idBase) {
-        for (let i in this.objects) {
-            if (this.objects[i].idBaseItem == idBase) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    getIdOfThisIdBase(idBaseItem, level = 1) {
+    async getIdOfThisIdBase(idBaseItem, level = 1) {
         level = level >= 1 ? level : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
         if (res[0]) {
             return res[0].idItem;
         }
         return null;
     }
 
-    static getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
+    static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
         level = level >= 1 ? level : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, idCharacter]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, idCharacter]);
         if (res[0]) {
             return res[0].idItem;
         }
@@ -406,20 +320,25 @@ class CharacterInventory {
     // If idEmplacement not valid 
     // Intantiate first item in inventory
     // If inventory is empty => throw err 
-    getItem(idEmplacement) {
+    /**
+     * 
+     * @param {*} idEmplacement 
+     * @returns {Promise<Item>}
+     */
+    async getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
-        let item = Item.newItem(res[0].idItem, res[0].nomSousType);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
         item.number = res[0].number;
         return item;
     }
 
     // Only used by craft -> don't care about level of item take first one
-    getItemByBase(idBase) {
+    async getItemByBase(idBase) {
         idBase = idBase > 0 ? idBase : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
         if (res[0] != null) {
-            let item = Item.newItem(res[0].idItem, res[0].nomSousType);
+            let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
         }
@@ -431,9 +350,9 @@ class CharacterInventory {
      * @param {number} idEmplacement 
      * @returns Returns idItem if exist else return 0
      */
-    getIdItemOfThisEmplacement(idEmplacement) {
+    async getIdItemOfThisEmplacement(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
         if (res[0]) {
             return res[0].idItem;
         }

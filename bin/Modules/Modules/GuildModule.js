@@ -43,8 +43,8 @@ class GuildModule extends GModule {
 
         this.router.get("/show", async (req, res) => {
             let data = {};
-            if (Globals.connectedUsers[res.locals.id].character.isInGuild()) {
-                data = Globals.connectedGuilds[Globals.connectedUsers[res.locals.id].character.getIDGuild()].toApi(res.locals.lang);
+            if (await Globals.connectedUsers[res.locals.id].character.isInGuild()) {
+                data = await Globals.connectedGuilds[await Globals.connectedUsers[res.locals.id].character.getIDGuild()].toApi(res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "guild", "you_dont_have_a_guild");
             }
@@ -58,16 +58,16 @@ class GuildModule extends GModule {
             let data = {};
             if (req.body.guildName) {
                 // Si le joueur n'a pas de guilde
-                if (Globals.connectedUsers[res.locals.id].character.getIDGuild() == 0) {
-                    if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(Globals.guilds.basePriceLevel)) {
+                if (await Globals.connectedUsers[res.locals.id].character.getIDGuild() == 0) {
+                    if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(Globals.guilds.basePriceLevel)) {
                         let tGuild = new Guild();
-                        let err = tGuild.createGuild(req.body.guildName, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
+                        let err = await tGuild.createGuild(req.body.guildName, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
                         if (err.length == 0) {
                             Globals.connectedGuilds[tGuild.id] = tGuild;
                             // Static delete
-                            Guild.deleteUsersAppliances(Globals.connectedUsers[res.locals.id].character.id);
+                            await Guild.deleteUsersAppliances(Globals.connectedUsers[res.locals.id].character.id);
 
-                            Globals.connectedUsers[res.locals.id].character.removeMoney(Globals.guilds.basePriceLevel);
+                            await Globals.connectedUsers[res.locals.id].character.removeMoney(Globals.guilds.basePriceLevel);
 
                             data.success = Translator.getString(res.locals.lang, "guild", "guild_x_created", [tGuild.name]);
                         } else {
@@ -91,22 +91,22 @@ class GuildModule extends GModule {
 
         this.router.post("/disband", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
-            if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) === 3) {
-                if (Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                    if (Globals.connectedGuilds[tGuildId].isTournamentStarted() == 1) {
+            if (tGuildId > 0 && await Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) === 3) {
+                if (await Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                    if (await Globals.connectedGuilds[tGuildId].isTournamentStarted() == 1) {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started");
                     } else {
-                        Globals.areasManager.unclaimAll(tGuildId);
-                        Globals.connectedGuilds[tGuildId].disband(Globals.connectedUsers);
+                        await Globals.areasManager.unclaimAll(tGuildId);
+                        await Globals.connectedGuilds[tGuildId].disband(Globals.connectedUsers);
                         delete Globals.connectedGuilds[tGuildId];
                         data.success = Translator.getString(res.locals.lang, "guild", "guild_disband");
                     }
 
                 } else {
-                    Globals.areasManager.unclaimAll(tGuildId);
-                    Globals.connectedGuilds[tGuildId].disband(Globals.connectedUsers);
+                    await Globals.areasManager.unclaimAll(tGuildId);
+                    await Globals.connectedGuilds[tGuildId].disband(Globals.connectedUsers);
                     delete Globals.connectedGuilds[tGuildId];
                     data.success = Translator.getString(res.locals.lang, "guild", "guild_disband");
                 }
@@ -122,10 +122,10 @@ class GuildModule extends GModule {
         this.router.post("/apply", async (req, res) => {
             let data = {};
             req.body.idGuild = parseInt(req.body.idGuild, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (Number.isInteger(req.body.idGuild)) {
                 if (tGuildId == 0) {
-                    let err = Guild.applyTo(req.body.idGuild, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
+                    let err = await Guild.applyTo(req.body.idGuild, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
                     if (err.length > 0) {
                         data.error = err[0];
                     } else {
@@ -144,17 +144,17 @@ class GuildModule extends GModule {
         this.router.post("/accept", async (req, res) => {
             let data = {};
             req.body.idCharacter = parseInt(req.body.idCharacter, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
 
             if (Number.isInteger(req.body.idCharacter)) {
                 if (tGuildId > 0) {
-                    if (Guild.haveAlreadyApplied(tGuildId, req.body.idCharacter)) {
-                        let err = Globals.connectedGuilds[tGuildId].addMember(Globals.connectedUsers[res.locals.id].character.id, req.body.idCharacter, 1, res.locals.lang);
+                    if (await Guild.haveAlreadyApplied(tGuildId, req.body.idCharacter)) {
+                        let err = await Globals.connectedGuilds[tGuildId].addMember(Globals.connectedUsers[res.locals.id].character.id, req.body.idCharacter, 1, res.locals.lang);
                         if (err.length > 0) {
                             data.error = err[0];
                         } else {
                             data.success = Translator.getString(res.locals.lang, "guild", "character_have_been_accepted");
-                            Guild.deleteUsersAppliances(req.body.idCharacter);
+                            await Guild.deleteUsersAppliances(req.body.idCharacter);
                         }
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_character_not_ask_to_join");
@@ -175,11 +175,11 @@ class GuildModule extends GModule {
             if (!apPage || !Number.isInteger(apPage)) {
                 apPage = 1;
             }
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
-                data = Globals.connectedGuilds[tGuildId].apiGetGuildAppliances(apPage, res.locals.lang);
+                data = await Globals.connectedGuilds[tGuildId].apiGetGuildAppliances(apPage, res.locals.lang);
             } else {
-                data = Guild.getAppliances(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
+                data = await Guild.getAppliances(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
             }
             data.lang = res.locals.lang;
             return res.json(data);
@@ -188,12 +188,12 @@ class GuildModule extends GModule {
         this.router.post("/apply/cancel", async (req, res) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
 
             if (tGuildId > 0) {
                 if (Number.isInteger(req.body.id)) {
-                    if (Globals.connectedGuilds[tGuildId].canCancelApplies(Globals.connectedUsers[res.locals.id].character.id)) {
-                        Guild.deleteUserForThisGuildAppliance(req.body.id, tGuildId);
+                    if (await Globals.connectedGuilds[tGuildId].canCancelApplies(Globals.connectedUsers[res.locals.id].character.id)) {
+                        await Guild.deleteUserForThisGuildAppliance(req.body.id, tGuildId);
                         data.success = Translator.getString(res.locals.lang, "guild", "you_have_denied_this_apply");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_cant_remove_appliances");
@@ -205,7 +205,7 @@ class GuildModule extends GModule {
 
             } else {
                 if (Number.isInteger(req.body.id)) {
-                    Guild.deleteUserForThisGuildAppliance(Globals.connectedUsers[res.locals.id].character.id, req.body.id);
+                    await Guild.deleteUserForThisGuildAppliance(Globals.connectedUsers[res.locals.id].character.id, req.body.id);
                     data.success = Translator.getString(res.locals.lang, "guild", "you_have_cancel_your_apply");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "guild_have_to_enter_id_to_remove_apply_playerside");
@@ -217,16 +217,16 @@ class GuildModule extends GModule {
 
         this.router.post("/applies/cancel", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
-                if (Globals.connectedGuilds[tGuildId].canCancelApplies(Globals.connectedUsers[res.locals.id].character.id)) {
-                    Globals.connectedGuilds[tGuildId].deleteGuildAppliances();
+                if (await Globals.connectedGuilds[tGuildId].canCancelApplies(Globals.connectedUsers[res.locals.id].character.id)) {
+                    await Globals.connectedGuilds[tGuildId].deleteGuildAppliances();
                     data.success = Translator.getString(res.locals.lang, "guild", "you_have_denied_all_applies");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "guild_cant_remove_appliances");
                 }
             } else {
-                Guild.deleteUsersAppliances(Globals.connectedUsers[res.locals.id].character.id);
+                await Guild.deleteUsersAppliances(Globals.connectedUsers[res.locals.id].character.id);
                 data.success = Translator.getString(res.locals.lang, "guild", "you_have_cancel_all_your_applies");
             }
             data.lang = res.locals.lang;
@@ -239,7 +239,7 @@ class GuildModule extends GModule {
             if (!apPage || !Number.isInteger(apPage)) {
                 apPage = 1;
             }
-            data = Guild.getGuilds(apPage);
+            data = await Guild.getGuilds(apPage);
             data.lang = res.locals.lang;
             return res.json(data);
         });
@@ -247,9 +247,9 @@ class GuildModule extends GModule {
         this.router.post("/kick", async (req, res) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
-                let err = Globals.connectedGuilds[tGuildId].removeMember(Globals.connectedUsers[res.locals.id].character.id, req.body.id, res.locals.lang);
+                let err = await Globals.connectedGuilds[tGuildId].removeMember(Globals.connectedUsers[res.locals.id].character.id, req.body.id, res.locals.lang);
                 if (err.length > 0) {
                     data.error = err[0];
                 } else {
@@ -268,10 +268,10 @@ class GuildModule extends GModule {
 
         this.router.post("/leave", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
                 let mychaid = Globals.connectedUsers[res.locals.id].character.id;
-                let err = Globals.connectedGuilds[tGuildId].removeMember(mychaid, mychaid, res.locals.lang);
+                let err = await Globals.connectedGuilds[tGuildId].removeMember(mychaid, mychaid, res.locals.lang);
                 if (err.length > 0) {
                     data.error = err[0];
                 } else {
@@ -288,10 +288,10 @@ class GuildModule extends GModule {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
             req.body.rank = parseInt(req.body.rank, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
             if (tGuildId > 0) {
-                err = Globals.connectedGuilds[tGuildId].updateMember(Globals.connectedUsers[res.locals.id].character.id, req.body.id, req.body.rank, res.locals.lang);
+                err = await Globals.connectedGuilds[tGuildId].updateMember(Globals.connectedUsers[res.locals.id].character.id, req.body.id, req.body.rank, res.locals.lang);
             } else {
                 err.push(Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild"));
             }
@@ -307,10 +307,10 @@ class GuildModule extends GModule {
 
         this.router.post("/announce", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
             if (tGuildId > 0) {
-                err = Globals.connectedGuilds[tGuildId].setMessage(Globals.connectedUsers[res.locals.id].character.id, req.body.message, res.locals.lang);
+                err = await Globals.connectedGuilds[tGuildId].setMessage(Globals.connectedUsers[res.locals.id].character.id, req.body.message, res.locals.lang);
             } else {
                 err.push(Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild"));
             }
@@ -327,16 +327,16 @@ class GuildModule extends GModule {
         this.router.post("/money/add", async (req, res) => {
             let data = {};
             req.body.money = parseInt(req.body.money, 10);
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
             if (req.body.money || Number.isInteger(req.body.money)) {
                 if (tGuildId > 0) {
-                    if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(req.body.money)) {
-                        if (!Globals.connectedGuilds[tGuildId].addMoney(req.body.money)) {
+                    if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(req.body.money)) {
+                        if (!await Globals.connectedGuilds[tGuildId].addMoney(req.body.money)) {
                             err.push(Translator.getString(res.locals.lang, "errors", "guild_cant_give_this_money"));
                         } else {
                             //Si tout est ok
-                            Globals.connectedUsers[res.locals.id].character.removeMoney(req.body.money);
+                            await Globals.connectedUsers[res.locals.id].character.removeMoney(req.body.money);
                         }
                     } else {
                         err.push(Translator.getString(res.locals.lang, "errors", "guild_you_dont_have_enough_money"));
@@ -361,10 +361,10 @@ class GuildModule extends GModule {
             let data = {};
             req.body.money = parseInt(req.body.money, 10);
             let err = [];
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (req.body.money || Number.isInteger(req.body.money)) {
                 if (tGuildId > 0) {
-                    err = Globals.connectedGuilds[tGuildId].removeMoney(req.body.money, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
+                    err = await Globals.connectedGuilds[tGuildId].removeMoney(req.body.money, Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
                 } else {
                     err.push(Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild"));
                 }
@@ -376,7 +376,7 @@ class GuildModule extends GModule {
                 data.error = err[0];
             } else {
                 data.success = Translator.getString(res.locals.lang, "guild", "you_retrive_x_g_from_guild", [req.body.money]);
-                Globals.connectedUsers[res.locals.id].character.addMoney(req.body.money);
+                await Globals.connectedUsers[res.locals.id].character.addMoney(req.body.money);
             }
             data.lang = res.locals.lang;
             return res.json(data);
@@ -384,10 +384,10 @@ class GuildModule extends GModule {
 
         this.router.post("/levelup", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
             if (tGuildId > 0) {
-                err = Globals.connectedGuilds[tGuildId].levelUp(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
+                err = await Globals.connectedGuilds[tGuildId].levelUp(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
             } else {
                 err.push(Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild"));
             }
@@ -395,7 +395,7 @@ class GuildModule extends GModule {
             if (err.length > 0) {
                 data.error = err[0];
             } else {
-                data.success = Translator.getString(res.locals.lang, "guild", "guild_level_up", [Globals.connectedGuilds[tGuildId].getLevel()]);
+                data.success = Translator.getString(res.locals.lang, "guild", "guild_level_up", [await Globals.connectedGuilds[tGuildId].getLevel()]);
             }
             data.lang = res.locals.lang;
             return res.json(data);
@@ -403,12 +403,12 @@ class GuildModule extends GModule {
 
         this.router.post("/enroll", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
-            if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) == 3) {
-                if (!Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                        Globals.connectedGuilds[tGuildId].enroll(Globals.connectedUsers[res.locals.id].character.getIdArea());
+            if (tGuildId > 0 && await Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) == 3) {
+                if (!await Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                        await Globals.connectedGuilds[tGuildId].enroll(Globals.connectedUsers[res.locals.id].character.getIdArea());
                         data.success = Translator.getString(res.locals.lang, "guild", "enroll");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
@@ -426,12 +426,12 @@ class GuildModule extends GModule {
 
         this.router.post("/unenroll", async (req, res) => {
             let data = {};
-            let tGuildId = Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
-            if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) == 3) {
-                if (Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
-                    if (!AreaTournament.haveStartedByIdArea(Globals.connectedGuilds[tGuildId].getTournamentAreaEnrolled())) {
-                        Globals.connectedGuilds[tGuildId].unenroll();
+            if (tGuildId > 0 && await Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) == 3) {
+                if (await Globals.connectedGuilds[tGuildId].isRegisterToAnTournament()) {
+                    if (!await AreaTournament.haveStartedByIdArea(await Globals.connectedGuilds[tGuildId].getTournamentAreaEnrolled())) {
+                        await Globals.connectedGuilds[tGuildId].unenroll();
                         data.success = Translator.getString(res.locals.lang, "guild", "unenroll");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");

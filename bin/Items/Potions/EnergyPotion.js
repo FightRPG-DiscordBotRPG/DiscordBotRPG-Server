@@ -6,7 +6,7 @@ class EnergyPotion extends Potion {
         super(id);
     }
 
-    use(character) {
+    async use(character) {
         this.numberOfUse++;
         character.reduceWaitTime(this.getReductionPercentage());
     }

@@ -43,14 +43,14 @@ class TravelModule extends GModule {
     loadRoutes() {
         this.router.get("/area", async (req, res) => {
             let data = {}
-            data.area = Globals.areasManager.thisAreaToApi(res.locals.currentArea.id, res.locals.lang);
+            data.area = await res.locals.currentArea.toApi(res.locals.lang);
             data.lang = res.locals.lang;
             return res.json(data);
         });
 
         this.router.get("/region", async (req, res) => {
             let data = {}
-            data.region = Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);
+            data.region = await Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);
             data.lang = res.locals.lang;
             return res.json(data);
         });
@@ -65,7 +65,7 @@ class TravelModule extends GModule {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
                         let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
-                        let realWaitTime = Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                        let realWaitTime = (await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait)) / 1000;
                         data = {
                             from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
                             to_name: areaObjectTravel.getName(res.locals.lang),
@@ -97,7 +97,7 @@ class TravelModule extends GModule {
                         // Get area to switch
                         wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
                         // change de zone
-                        Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
+                        await Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
 
                         // Messages
                         data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
@@ -123,7 +123,7 @@ class TravelModule extends GModule {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
                         let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
-                        let realWaitTime = Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait) / 1000;
+                        let realWaitTime = (await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait)) / 1000;
                         data = {
                             from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
                             to_name: areaObjectTravel.getName(res.locals.lang),
@@ -152,12 +152,14 @@ class TravelModule extends GModule {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
                         let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
-                        if (Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(costs.goldPrice)) {
+                        if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(costs.goldPrice)) {
                             wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
                             // change de region
-                            Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait);
-                            Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice);
+                            await Promise.all([
+                                Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait),
+                                Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice)
+                            ]);
 
                             data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
                         } else {
@@ -177,7 +179,7 @@ class TravelModule extends GModule {
         this.router.get("/players/:page?", async (req, res) => {
             let data = {}
             req.params.page = parseInt(req.params.page, 10);
-            data = Globals.areasManager.getPlayersOf(Globals.connectedUsers[res.locals.id].character.getIdArea(), req.params.page, res.locals.lang);
+            data = await Globals.areasManager.getPlayersOf(Globals.connectedUsers[res.locals.id].character.getIdArea(), req.params.page, res.locals.lang);
             data.lang = res.locals.lang;
             return res.json(data);
         });

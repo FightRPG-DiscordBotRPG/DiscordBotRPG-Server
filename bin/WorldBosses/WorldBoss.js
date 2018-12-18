@@ -10,7 +10,7 @@ class WorldBoss {
     }
 
     async load() {
-        let res = conn.query("SELECT * FROM spawnedbosses WHERE idSpawnedBoss = ?;", [this.id]);
+        let res = await conn.query("SELECT * FROM spawnedbosses WHERE idSpawnedBoss = ?;", [this.id]);
         if (res[0]) {
             this.idBaseBoss = res[0].idBoss;
             this.actualHp = res[0].actualHp;
@@ -32,9 +32,9 @@ class WorldBoss {
         }
     }
 
-    wound(nb = 0) {
+    async wound(nb = 0) {
         if (nb > 0) {
-            conn.query("UPDATE spawnedbosses SET actualHp = (CASE WHEN actualHp >= ? THEN actualHp - ? ELSE actualHp = 0 END);", [nb, nb]);
+            await conn.query("UPDATE spawnedbosses SET actualHp = (CASE WHEN actualHp >= ? THEN actualHp - ? ELSE actualHp = 0 END);", [nb, nb]);
         }
     }
 

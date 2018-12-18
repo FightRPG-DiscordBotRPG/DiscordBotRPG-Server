@@ -36,7 +36,7 @@ class FightManager {
      * @param {Array<Monstre>} monsters 
      * @param {Array<Character>} characters 
      */
-    loadMonsters(monsters, characters) {
+    async loadMonsters(monsters, characters) {
         let level = 0;
         let area = characters[0].getArea();
         if (characters[0].group != null) {
@@ -60,7 +60,9 @@ class FightManager {
                 if (monsters[i].needToBeMaxLevel == true) {
                     realLevel = area.maxLevel;
                 }
-                arr.push(new Monstre(monsters[i].id, realLevel));
+                let ms = new Monstre(monsters[i].id);
+                await ms.loadMonster(realLevel);
+                arr.push(ms);
             }
         }
         return arr;
@@ -81,7 +83,7 @@ class FightManager {
         }
     }
 
-    fightPvE(users, monsters, userid, canIFightTheMonster, lang) {
+    async fightPvE(users, monsters, userid, canIFightTheMonster, lang) {
         let toApi = {
             beingAttacked: false,
             team1_number: users.length,
@@ -90,10 +92,11 @@ class FightManager {
         let alreadyInBattle = users.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
         let timeToFight = this.timeToFight(users);
         if (timeToFight < 0 && !alreadyInBattle) {
-            let enemies = this.loadMonsters(monsters, users);
+            let enemies = await this.loadMonsters(monsters, users);
             let thisPvEFight = {
                 fight: new FightPvE(users, enemies, lang),
             };
+            await thisPvEFight.fight.init();
 
             this.fights[userid] = thisPvEFight;
 
@@ -140,7 +143,7 @@ class FightManager {
         delete this.fights[userid];
     }
 
-    fightPvP(attackers, defenders, userid, lang) {
+    async fightPvP(attackers, defenders, userid, lang) {
         let toApi = {
             beingAttacked: false,
             team1_number: attackers.length,
@@ -156,6 +159,7 @@ class FightManager {
             let pvpFight = {
                 fight: new FightPvP(attackers, defenders),
             };
+            await pvpFight.fight.init();
             toApi.summary = pvpFight.fight.summary;
             this.fights[userid] = pvpFight;
             if (attackers.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {

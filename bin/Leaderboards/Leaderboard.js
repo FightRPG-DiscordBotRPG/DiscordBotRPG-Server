@@ -6,9 +6,9 @@ class Leaderboard {
         this.id = id;
     }
 
-    getPlayerLeaderboard() {
-        let actualRank = this.getPlayerRank(this.id);
-        let maximumRank = this.getMaximumRank();
+    async getPlayerLeaderboard() {
+        let actualRank = await this.getPlayerRank(this.id);
+        let maximumRank = await this.getMaximumRank();
         let offset = actualRank - 6;
 
         if (actualRank <= 5) {
@@ -20,7 +20,7 @@ class Leaderboard {
 
         offset = offset >= 0 ? offset : 0;
 
-        let res = this.dbGetLeaderboard(offset);
+        let res = await this.dbGetLeaderboard(offset);
         let data = {
             rankings: res,
             offset: offset,
@@ -29,15 +29,15 @@ class Leaderboard {
         return data;
     }
 
-    getPlayerRank() {
+    async getPlayerRank() {
         return 1;
     }
 
-    getMaximumRank() {
+    async getMaximumRank() {
         return 1;
     }
 
-    dbGetLeaderboard() {
+    async dbGetLeaderboard() {
         return {};
     }
 

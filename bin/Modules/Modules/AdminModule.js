@@ -41,7 +41,7 @@ class AdminModule extends GModule {
             let data = {};
             req.body.idItem = parseInt(req.body.idItem);
             if (req.body.idItem && Number.isInteger(req.body.idItem)) {
-                if (res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number)) {
+                if (await res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";
@@ -57,7 +57,7 @@ class AdminModule extends GModule {
             req.body.level = parseInt(req.body.level); // level
             req.body.number = parseInt(req.body.number); // nbr
             if (req.body.idUser && Globals.connectedUsers[req.body.idUser] != null) {
-                if (res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number)) {
+                if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";
@@ -84,7 +84,7 @@ class AdminModule extends GModule {
             beforeTime.setMinutes(0);
             beforeTimeTimeStamp = beforeTime.getTime();
 
-            let mres = conn.query('SELECT HOUR(FROM_UNIXTIME(commandslogs.timestamp/1000)) as "hr", COUNT(DISTINCT commandslogs.idUser) as "activePlayers" FROM `commandslogs` WHERE commandslogs.timestamp BETWEEN ? AND ? GROUP BY HOUR(FROM_UNIXTIME(commandslogs.timestamp/1000))', [beforeTimeTimeStamp, nowTimeStamp]);
+            let mres = await conn.query('SELECT HOUR(FROM_UNIXTIME(commandslogs.timestamp/1000)) as "hr", COUNT(DISTINCT commandslogs.idUser) as "activePlayers" FROM `commandslogs` WHERE commandslogs.timestamp BETWEEN ? AND ? GROUP BY HOUR(FROM_UNIXTIME(commandslogs.timestamp/1000))', [beforeTimeTimeStamp, nowTimeStamp]);
             let firstHour = beforeTime.getHours();
             let nToSee = h;
             let n = 0;
@@ -100,7 +100,7 @@ class AdminModule extends GModule {
                 hourlyActivePlayers[result.hr + "h"] = result.activePlayers;
             }
 
-            mres = conn.query("SELECT COUNT(DISTINCT idUser) as uniqueUsers FROM `commandslogs` WHERE commandslogs.timestamp > ?;", [beforeTimeTimeStamp]);
+            mres = await conn.query("SELECT COUNT(DISTINCT idUser) as uniqueUsers FROM `commandslogs` WHERE commandslogs.timestamp > ?;", [beforeTimeTimeStamp]);
 
 
             data.hourlyActivePlayers = hourlyActivePlayers;
@@ -155,7 +155,7 @@ class AdminModule extends GModule {
 
                 let str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " XP tombent du ciel rien que pour vous !\n";
                 let actualLevel = Globals.connectedUsers[res.locals.id].character.getLevel();
-                Globals.connectedUsers[res.locals.id].character.addExp(value);
+                await Globals.connectedUsers[res.locals.id].character.addExp(value);
                 let diffLevel = Globals.connectedUsers[res.locals.id].character.getLevel() - actualLevel;
                 if (diffLevel > 0) {
                     let plur = diffLevel > 1 ? "x" : "";
@@ -179,7 +179,7 @@ class AdminModule extends GModule {
                     value = 1;
                 }
                 if (Globals.connectedUsers[req.body.idUser] != null) {
-                    Globals.connectedUsers[req.body.idUser].character.addMoney(value);
+                    await Globals.connectedUsers[req.body.idUser].character.addMoney(value);
                     data.success = "C'est bon il a recu l'argent";
                 } else {
                     data.error = "Non il existe pas ce mec";
@@ -191,8 +191,8 @@ class AdminModule extends GModule {
                 }
 
                 data.success = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " Argent tombent du ciel rien que pour vous !\n";
-                Globals.connectedUsers[res.locals.id].character.addMoney(value);
-                data.success += "<:treasure:403457812535181313> Vous avez désormais : " + Globals.connectedUsers[res.locals.id].character.getMoney() + " Argent !";
+                await Globals.connectedUsers[res.locals.id].character.addMoney(value);
+                data.success += "<:treasure:403457812535181313> Vous avez désormais : " + (await Globals.connectedUsers[res.locals.id].character.getMoney()) + " Argent !";
             }
 
             data.lang = res.locals.lang;
@@ -212,12 +212,7 @@ class AdminModule extends GModule {
         this.router.post("/translations/reload", async (req, res) => {
             let data = {};
 
-            Translator.nbOfTranslations = 0;
-            Translator.loadSync();
-            Translator.loadItemsBases();
-            Translator.loadAreasBases();
-            Translator.loadRegionsBases();
-            Translator.loadMonstersBases();
+            await Translator.load();
             data.success = "Translations reloaded";
 
             data.lang = res.locals.lang;
@@ -238,7 +233,7 @@ class AdminModule extends GModule {
         this.router.get("/last_command", async (req, res) => {
             let data = {};
 
-            let lcommand = conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [res.locals.id]);
+            let lcommand = await conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [res.locals.id]);
             data.success = "The last command used is: " + lcommand[0].command;
             data.success += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
 
@@ -247,7 +242,7 @@ class AdminModule extends GModule {
         });
 
         this.router.post("/debug", async (req, res) => {
-            console.log(User.getIdAndLang(res.locals.id));
+            console.log(await User.getIdAndLang(res.locals.id));
         });
 
 

@@ -74,9 +74,9 @@ class Translator {
         }
     }
 
-    static loadItemsBases() {
-        let res = conn.query("SELECT * FROM localizationitems");
-        let languages = conn.query("SELECT * FROM languages");
+    static async loadItemsBases() {
+        let res = await conn.query("SELECT * FROM localizationitems");
+        let languages = await conn.query("SELECT * FROM languages");
         for (let language of languages) {
             this.translations[language.lang]["itemsNames"] = {};
             this.translations[language.lang]["itemsDesc"] = {};
@@ -88,9 +88,9 @@ class Translator {
         }
     }
 
-    static loadBosses() {
-        let res = conn.query("SELECT * FROM localizationbosses");
-        let languages = conn.query("SELECT * FROM languages");
+    static async loadBosses() {
+        let res = await conn.query("SELECT * FROM localizationbosses");
+        let languages = await conn.query("SELECT * FROM languages");
         for (let language of languages) {
             this.translations[language.lang]["bossesNames"] = {};
         }
@@ -100,9 +100,9 @@ class Translator {
         }
     }
 
-    static loadAreasBases() {
-        let res = conn.query("SELECT * FROM localizationareas");
-        let languages = conn.query("SELECT * FROM languages");
+    static async loadAreasBases() {
+        let res = await conn.query("SELECT * FROM localizationareas");
+        let languages = await conn.query("SELECT * FROM languages");
         for (let language of languages) {
             this.translations[language.lang]["areasNames"] = {};
             this.translations[language.lang]["areasDesc"] = {};
@@ -113,9 +113,9 @@ class Translator {
         }
     }
 
-    static loadRegionsBases() {
-        let res = conn.query("SELECT * FROM localizationregions");
-        let languages = conn.query("SELECT * FROM languages");
+    static async loadRegionsBases() {
+        let res = await conn.query("SELECT * FROM localizationregions");
+        let languages = await conn.query("SELECT * FROM languages");
         for (let language of languages) {
             this.translations[language.lang]["regionsNames"] = {};
             this.translations[language.lang]["regionsImages"] = {};
@@ -126,9 +126,9 @@ class Translator {
         }
     }
 
-    static loadMonstersBases() {
-        let res = conn.query("SELECT * FROM localizationmonsters");
-        let languages = conn.query("SELECT * FROM languages");
+    static async loadMonstersBases() {
+        let res = await conn.query("SELECT * FROM localizationmonsters");
+        let languages = await conn.query("SELECT * FROM languages");
         for (let language of languages) {
             this.translations[language.lang]["monstersNames"] = {};
         }
@@ -136,16 +136,20 @@ class Translator {
             this.translations[trad.lang]["monstersNames"][trad.idMonstre] = trad.nameMonster;
         }
     }
+
+    static async load() {
+        this.translations = {};
+        this.nbOfTranslations = 0;
+        this.loadSync();
+        await this.loadItemsBases();
+        await this.loadAreasBases();
+        await this.loadRegionsBases();
+        await this.loadMonstersBases();
+        await this.loadBosses();
+    }
 }
 
-Translator.translations = {};
-Translator.nbOfTranslations = 0;
-Translator.loadSync();
-Translator.loadItemsBases();
-Translator.loadAreasBases();
-Translator.loadRegionsBases();
-Translator.loadMonstersBases();
-Translator.loadBosses();
+
 
 /*
 var sizeof = require('object-sizeof');
