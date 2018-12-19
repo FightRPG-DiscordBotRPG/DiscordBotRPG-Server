@@ -132,7 +132,7 @@ class ModuleHandler extends GModule {
             if (req.body.key != null && req.body.key === conf.registerkey) {
                 if (req.body.username != null) {
                     await this.connectUser(req.body.id, req.body.username, req.body.avatar);
-                    let result = conn.query("SELECT token FROM users WHERE idUser = ?;", [req.body.id]);
+                    let result = await conn.query("SELECT token FROM users WHERE idUser = ?;", [req.body.id]);
                     let token;
                     if (result[0]) {
                         token = result[0].token;

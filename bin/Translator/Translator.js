@@ -1,6 +1,6 @@
 const fs = require("fs");
-const util = require("util");
 const conn = require("../../conf/mysql");
+const Intl = require("intl");
 
 class Translator {
 
@@ -16,18 +16,63 @@ class Translator {
         if (!this.translations[lang]) {
             lang = "en";
         }
-
         if (this.translations[lang][type] && this.translations[lang][type][name]) {
-
-            args = Array.isArray(args) ? args : [];
-            args.unshift(this.translations[lang][type][name]);
-            return util.format.apply(util, args);
+            return this.formatString(this.translations[lang][type][name], args, lang);
         }
         if (lang != "en") {
             return this.getString("en", type, name, args, returnNull);
         }
 
         return returnNull ? null : lang + " | " + type + " | " + name;
+    }
+
+    static formatString(s, args, lang = "en") {
+        let str = "",
+            tempStr;
+        let argsAlreadyPassed = 0;
+        let lastPos = 0;
+        for (let i = 0; i < s.length - 1; i++) {
+            if (s.charCodeAt(i) === 37) {
+                let nc = s.charCodeAt(++i);
+                switch (nc) {
+                    case 115:
+                        tempStr = String(args[argsAlreadyPassed]);
+                        break;
+                    case 100:
+                        let num = args[argsAlreadyPassed];
+                        if (!isNaN(num)) {
+                            tempStr = this.getFormater(lang).format(num);
+                        } else {
+                            tempStr = "NaN";
+                        }
+                        break;
+                    default:
+                        continue;
+                }
+                if (lastPos !== i - 1) {
+                    str += s.slice(lastPos, i - 1);
+                }
+                str += tempStr;
+                lastPos = i + 1;
+                argsAlreadyPassed++;
+            }
+        }
+        if (lastPos === 0) {
+            str = s;
+        } else if (lastPos < s.length) {
+            str += s.slice(lastPos);
+        }
+        return str;
+    }
+
+    static loadFormaters() {
+        for (let i in this.translations) {
+            this.formaters[i] = new Intl.NumberFormat(i);
+        }
+    }
+
+    static getFormater(lang = "en") {
+        return this.formaters[lang];
     }
 
     /**
@@ -139,8 +184,10 @@ class Translator {
 
     static async load() {
         this.translations = {};
+        this.formaters = {};
         this.nbOfTranslations = 0;
         this.loadSync();
+        this.loadFormaters();
         await this.loadItemsBases();
         await this.loadAreasBases();
         await this.loadRegionsBases();

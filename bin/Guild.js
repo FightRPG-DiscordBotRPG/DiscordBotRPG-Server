@@ -248,8 +248,10 @@ class Guild {
      * @param {number} number 
      */
     static async addMoney(idGuild, number) {
-        number = number > 0 ? number : -number;
-        await conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, idGuild]);
+        if (idGuild != null) {
+            number = number > 0 ? number : -number;
+            await conn.query("UPDATE guilds SET argent = argent + ? WHERE idGuild = ?;", [number, idGuild]);
+        }
     }
 
     /**
@@ -258,8 +260,10 @@ class Guild {
      * @param {number} number 
      */
     static async removeMoney(idGuild, number) {
-        number = number > 0 ? number : -number;
-        await conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, idGuild]);
+        if (idGuild != null) {
+            number = number > 0 ? number : -number;
+            await conn.query("UPDATE guilds SET argent = argent - ? WHERE idGuild = ?;", [number, idGuild]);
+        }
     }
 
     /**

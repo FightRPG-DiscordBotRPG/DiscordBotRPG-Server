@@ -12,6 +12,7 @@ class DatabaseInitializer {
     }
 
     static async RemoveBuggedCharacters() {
+        await conn.query("DELETE FROM charactersattacks WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users)");
         await conn.query("DELETE FROM charactersachievements WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");
         await conn.query("DELETE FROM guildsmembers WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);")
         await conn.query("DELETE FROM guildsappliances WHERE idCharacter NOT IN (SELECT users.idCharacter FROM users);");

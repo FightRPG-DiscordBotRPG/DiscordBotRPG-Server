@@ -26,7 +26,6 @@ class CharacterEquipement {
         let avgPower = 0;
         let items = await this.getAllItems();
         for (let i in items) {
-            console.log(items[i].constructor);
             avgPower += await items[i].getPower();
         }
         return Math.floor(avgPower / Globals.equipsPossible.length);

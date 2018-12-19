@@ -195,7 +195,7 @@ class User {
             xpNextLevel: this.character.levelSystem.expToNextLevel,
             username: this.character.name,
             avatar: this.avatar,
-            statPoints: this.character.getStatPoints(),
+            statPoints: await this.character.getStatPoints(),
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             level: this.character.getLevel(),

@@ -46,12 +46,12 @@ class LevelSystem {
         this.actualLevel += 1;
         this.actualXP -= this.expToNextLevel;
         this.actualXP = this.actualLevel >= Globals.maxLevel ? 0 : this.actualXP;
-        res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = ?;", [this.actualLevel]);
+        let res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = ?;", [this.actualLevel]);
         this.expToNextLevel = res[0]["expNextLevel"];
     }
 
     async saveMyExp() {
-        await conn.query("UPDATE levels SET actualExp = ? WHERE idCharacter = ?;" + [this.actualXP, this.id]);
+        await conn.query("UPDATE levels SET actualExp = ? WHERE idCharacter = ?;", [this.actualXP, this.id]);
     }
 
     async saveMyLevel() {

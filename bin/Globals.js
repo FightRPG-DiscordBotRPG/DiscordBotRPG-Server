@@ -161,7 +161,6 @@ var Globals = {
         Globals.monstersIds = monstersTypes;
 
         res = await conn.query("SELECT * FROM itemsrarities");
-        console.log(res);
         for (let i in res) {
             itemsrarities[res[i].idRarity] = res[i].nomRarity;
         }
