@@ -212,7 +212,7 @@
     "service_marketplace": "Marketplace (Tax: %d%)",
     "service_forge": "Blacksmith (Craft: Lvl. %d - %d)",
     "service_shop": "Shop (Tax: %d%)",
-    "conquest_actual_level": "Actual level: %d",
+    "conquest_actual_level": "Current level: %d",
     "conquest_points_to_distribute": "Points to distribute: %d",
     "conquest_price_to_next_level": "Price to next level: %dG"
   },
@@ -599,7 +599,7 @@
     "wbfight": "Attack the World Boss if there is one in the area where you are",
     "wbshowall": "Displays infos about World Bosses",
     "wblastinfo": "Show your stats for the last boss you killed",
-    "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack counts (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
+    "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack count (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
 
     "settings": "Shows the settings menu"
   },
