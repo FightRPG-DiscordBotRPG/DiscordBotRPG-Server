@@ -93,12 +93,23 @@ class InventoryModule extends GModule {
             data.lang = res.locals.lang;
 
             let idItemToFav = parseInt(req.body.idItem, 10);
+            let isRealID = req.body.isRealID;
             if (idItemToFav != null && Number.isInteger(idItemToFav)) {
-                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
-                    await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
-                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
+                if (isRealID == null || isRealID == false) {
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
+                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
                 } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    let itemToFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemToFav);
+                    if (itemToFav != null) {
+                        await itemToFav.setFavorite(true);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
                 }
             } else {
                 idItemToFav = this.getEquipableIDType(req.body.idItem);
@@ -121,13 +132,25 @@ class InventoryModule extends GModule {
             data.lang = res.locals.lang;
 
             let idItemToUnFav = parseInt(req.body.idItem, 10);
+            let isRealID = req.body.isRealID;
             if (idItemToUnFav != null && Number.isInteger(idItemToUnFav)) {
-                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
-                    await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
-                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
+                if (isRealID == null || isRealID == false) {
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
+                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
                 } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    let itemToUnFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemToUnFav);
+                    if (itemToUnFav != null) {
+                        await itemToUnFav.setFavorite(false);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
                 }
+
             } else {
                 idItemToUnFav = this.getEquipableIDType(req.body.idItem);
                 if (idItemToUnFav > 0) {
@@ -176,28 +199,46 @@ class InventoryModule extends GModule {
             data.lang = res.locals.lang;
 
             let sellIdItem = parseInt(req.body.idItem, 10);
+            let isRealID = req.body.isRealID;
             let numberOfItemsToSell = parseInt(req.body.number, 10);
             numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
 
             if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                 if (sellIdItem != null && Number.isInteger(sellIdItem)) {
-                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
-                        if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(sellIdItem)) {
-                            let itemValue = await Globals.connectedUsers[res.locals.id].character.sellThisItem(sellIdItem, numberOfItemsToSell);
-                            if (itemValue > 0) {
-                                data.success = numberOfItemsToSell == 1 ? Translator.getString(res.locals.lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(res.locals.lang, "economic", "sell_for_x_plural", [itemValue]);
+                    if (isRealID == null || isRealID == false) {
+                        if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
+                            if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(sellIdItem)) {
+                                let itemValue = await Globals.connectedUsers[res.locals.id].character.sellThisItem(sellIdItem, numberOfItemsToSell);
+                                if (itemValue > 0) {
+                                    data.success = numberOfItemsToSell == 1 ? Translator.getString(res.locals.lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(res.locals.lang, "economic", "sell_for_x_plural", [itemValue]);
+                                } else {
+                                    // N'arrivera jamais normalement mais bon
+                                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
+                                }
                             } else {
-                                // N'arrivera jamais normalement mais bon
-                                data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
+                                data.error = Translator.getString(res.locals.lang, "errors", "item_cant_sell_favorite");
                             }
                         } else {
-                            data.error = Translator.getString(res.locals.lang, "errors", "item_cant_sell_favorite");
+                            data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                         }
                     } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
+                        let itemToSell = await Globals.connectedUsers[res.locals.id].character.getInv().getItemOfThisIDItem(sellIdItem);
+                        if (itemToSell != null) {
+                            if (itemToSell.isFavorite == false) {
+                                let itemValue = await Globals.connectedUsers[res.locals.id].character.sellThisItemWithItem(itemToSell, numberOfItemsToSell);
+                                if (itemValue > 0) {
+                                    data.success = numberOfItemsToSell == 1 ? Translator.getString(res.locals.lang, "economic", "sell_for_x", [itemValue]) : Translator.getString(res.locals.lang, "economic", "sell_for_x_plural", [itemValue]);
+                                } else {
+                                    // N'arrivera jamais normalement mais bon
+                                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
+                                }
+                            } else {
+                                data.error = Translator.getString(res.locals.lang, "errors", "item_cant_sell_favorite");
+                            }
+                        } else {
+                            data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
+                        }
                     }
-
-
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "economic_enter_id_item_to_sell");
                 }

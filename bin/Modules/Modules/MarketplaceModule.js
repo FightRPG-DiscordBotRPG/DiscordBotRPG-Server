@@ -82,7 +82,7 @@ class MarketplaceModule extends GModule {
                                                 await Promise.all([
                                                     Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace),
                                                     Globals.connectedUsers[res.locals.id].character.removeMoney(marketplaceTax),
-                                                    Guild.addMoney(res.locals.currentArea.getOwnerID(), marketplaceTax)
+                                                    Guild.addMoney(await res.locals.currentArea.getOwnerID(), marketplaceTax)
                                                 ])
 
                                                 data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed")) + "\n";

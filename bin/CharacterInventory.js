@@ -79,6 +79,22 @@ class CharacterInventory {
     }
 
     /**
+     * 
+     * @param {Item} item 
+     * @param {Number} number 
+     * @param {Boolean} deleteObject 
+     */
+    async removeSomeFromInventoryItem(item, number, deleteObject) {
+        number = number ? number : 1;
+        item.number -= number;
+        if (item.number <= 0) {
+            await this.deleteFromInventory(item, deleteObject);
+        } else {
+            await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
+        }
+    }
+
+    /**
      * Remove item from database character inventory and if demand remove it from the game
      * @param {Item} item
      * @param {boolean} deleteObject
@@ -270,6 +286,13 @@ class CharacterInventory {
         return false;
     }
 
+    async doIHaveThisItemRealID(idItem) {
+        if (await this.getItemOfThisIDItem(idItem) != null) {
+            return true;
+        }
+        return false;
+    }
+
     // craft system
     /**
      * Base ID of item
@@ -357,6 +380,18 @@ class CharacterInventory {
             return res[0].idItem;
         }
         return 0;
+    }
+
+    async getItemOfThisIDItem(idItem) {
+        idItem = idItem > 0 ? idItem : 1;
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND charactersinventory.idItem = ?;", [this.id, idItem]);
+        if (res[0] != null) {
+            let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
+            item.number = res[0].number;
+            return item;
+        }
+        return null;
+
     }
 
 }

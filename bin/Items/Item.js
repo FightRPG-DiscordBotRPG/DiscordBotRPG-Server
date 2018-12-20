@@ -119,6 +119,9 @@ class Item {
         await conn.query("UPDATE items SET favorite = ? WHERE idItem = ?", [this.isFavorite, this.id]);
     }
 
+    /**
+     * @returns {Number}
+     */
     getEquipTypeID() {
         return this.type;
     }
@@ -173,6 +176,7 @@ class Item {
 
     async toApi(lang) {
         let toApiObject = {
+            id: this.id,
             name: this.getName(lang),
             desc: this.getDesc(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
@@ -194,6 +198,7 @@ class Item {
 
     async toApiLight(lang) {
         let toApiObject = {
+            id: this.id,
             name: this.getName(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
             rarityColor: this.rarityColor,

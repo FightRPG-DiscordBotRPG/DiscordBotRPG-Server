@@ -242,7 +242,7 @@ class AdminModule extends GModule {
         });
 
         this.router.post("/debug", async (req, res) => {
-            console.log(await User.getIdAndLang(res.locals.id));
+            //console.log(await Globals.connectedUsers[res.locals.id].character.getInv().getItemOfThisIDItem(240));
         });
 
 

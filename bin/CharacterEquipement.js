@@ -42,7 +42,6 @@ class CharacterEquipement {
                 let toReturn = equipedItem.id;
                 await conn.query("UPDATE charactersequipements SET idItem = ? WHERE idCharacter = ? AND idType = ?;", [idItem, this.id, item.getEquipTypeID()]);
                 await this.stats.update();
-
                 return toReturn;
             }
         } else {
@@ -97,6 +96,14 @@ class CharacterEquipement {
      */
     async getItem(idEmplacement) {
         let res = await conn.query("SELECT itemstypes.nomType, charactersequipements.idItem, itemssoustypes.nomSousType FROM charactersequipements INNER JOIN items ON items.idItem = charactersequipements.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE charactersequipements.idCharacter = ? AND itemstypes.idType = ?;", [this.id, idEmplacement]);
+        if (res[0]) {
+            return await Item.newItem(res[0].idItem, res[0].nomSousType);
+        }
+        return null;
+    }
+
+    async getItemByIDItem(idItem) {
+        let res = await conn.query("SELECT itemstypes.nomType, charactersequipements.idItem, itemssoustypes.nomSousType FROM charactersequipements INNER JOIN items ON items.idItem = charactersequipements.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE charactersequipements.idCharacter = ? AND charactersequipements.idItem = ?;", [this.id, idItem]);
         if (res[0]) {
             return await Item.newItem(res[0].idItem, res[0].nomSousType);
         }

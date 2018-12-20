@@ -327,6 +327,24 @@ class Character extends CharacterEntity {
         return value;
     }
 
+    /**
+     * 
+     * @param {Item} item 
+     * @param {*} number 
+     */
+    async sellThisItemWithItem(item, number) {
+        number = number ? number : 1;
+        let value = item.getCost(number);
+        if (value > 0) {
+            await Promise.all([
+                this.getInv().removeSomeFromInventoryItem(item, number, true),
+                this.addMoney(value)
+            ]);
+            PStatistics.incrStat(this.id, "gold_sell", value);
+        }
+        return value;
+    }
+
     async sellAllInventory(params) {
         let value = await this.getInv().getAllInventoryValue(params);
         await Promise.all([
@@ -343,6 +361,13 @@ class Character extends CharacterEntity {
 
     async setItemFavoriteEquip(idEquip, fav) {
         await (await (this.equipement).getItem(idEquip)).setFavorite(fav ? fav : false);
+    }
+
+    async getItemFromAllInventories(idItem) {
+        let item = await this.getInv().getItemOfThisIDItem(idItem);
+        if (item == null)
+            item = await this.getEquipement().getItemByIDItem(idItem);
+        return item;
     }
 
     // Craft
@@ -556,6 +581,9 @@ class Character extends CharacterEntity {
         return (await conn.query("SELECT money FROM characters WHERE idCharacter = ?;", [this.id]))[0].money;
     }
 
+    /**
+     * @returns {CharacterInventory}
+     */
     getInv() {
         return this.inv;
     }

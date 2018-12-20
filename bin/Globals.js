@@ -18,6 +18,11 @@ let collectChances = {
     mythic: 0.025 / 100
 }
 
+/**
+ * A song
+ * @typedef {Object} Globals
+ * @property {Array<User>} connectedUsers - Users
+ */
 var Globals = {
     "maxLevel": null,
     "maxStatsId": null,
@@ -68,7 +73,10 @@ var Globals = {
     "help": {
         "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
     },
-    "connectedUsers": {},
+    /**
+     * @type {Array<User>}
+     */
+    "connectedUsers": [],
     "connectedGuilds": {},
     "areasManager": {},
     "fightManager": {},
@@ -176,3 +184,5 @@ var Globals = {
 
 
 module.exports = Globals;
+
+//const User = require("./User");
