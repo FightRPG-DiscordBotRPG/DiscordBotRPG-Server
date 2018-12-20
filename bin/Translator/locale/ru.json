@@ -481,7 +481,8 @@
     "spawn_date": "Дата порождения: %s",
     "last_boss_never_fight": "Ты еще не сражался в бою мирового босса.",
     "boss_fight_recap_damage_dealt": "Ущерб Считается: %d (ранг: %d)",
-    "boss_fight_recap_attack_count": "Атака графа: %d (ранг: %d)"
+    "boss_fight_recap_attack_count": "Атака графа: %d (ранг: %d)",
+    "boss_fight_damage_inflicted": "Вы нанесли %d очков урона."
   },
   "potions": {
     "drink": "Вы выпили: \"%s\"\n",

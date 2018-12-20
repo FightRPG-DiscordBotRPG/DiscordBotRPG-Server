@@ -481,7 +481,8 @@
     "spawn_date": "Spawn Date: %s",
     "last_boss_never_fight": "You have not fought in a world boss fight yet",
     "boss_fight_recap_damage_dealt": "Damage Dealt: %d (Rank: %d)",
-    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)"
+    "boss_fight_recap_attack_count": "Attack Count: %d (Rank: %d)",
+    "boss_fight_damage_inflicted": "You've inflicted %d damage points"
   },
   "potions": {
     "drink": "You drank: \"%s\"\n",

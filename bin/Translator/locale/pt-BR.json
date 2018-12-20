@@ -481,7 +481,8 @@
     "spawn_date": "Data de Spawn: %s",
     "last_boss_never_fight": "Você não lutou em uma batalha de chefe global ainda",
     "boss_fight_recap_damage_dealt": "Dano Causado: %d (Classificação: %d)",
-    "boss_fight_recap_attack_count": "Número de Ataques: %d (Classificação: %d)"
+    "boss_fight_recap_attack_count": "Número de Ataques: %d (Classificação: %d)",
+    "boss_fight_damage_inflicted": "You've inflicted %d damage points"
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
