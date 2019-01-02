@@ -460,7 +460,7 @@ class Character extends CharacterEntity {
                 if (inventoryItemID != null) {
                     await this.getInv().addToInventory(inventoryItemID, number);
                 } else {
-                    let idItem = await (conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
+                    let idItem = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
                     await this.getInv().addToInventory(idItem, number);
                 }
             }

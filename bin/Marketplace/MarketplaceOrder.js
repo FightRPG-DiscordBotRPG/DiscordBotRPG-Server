@@ -14,7 +14,7 @@ class MarketplaceOrder {
     }
 
     async update() {
-        await conn.query("UPDATE marketplacesorders SET number = ? AND idItem = ?;", [this.number, this.idItem]);
+        await conn.query("UPDATE marketplacesorders SET number = ? WHERE idItem = ?;", [this.number, this.idItem]);
     }
 
     async place() {
