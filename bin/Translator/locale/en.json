@@ -183,11 +183,11 @@
     "settings_menu_mute": "%s Group notifications"
   },
   "area": {
-    "monster": "ID: %d | %s | Lv: %s | Type: %s",
+    "monster": "ID: %s | %s | Lv: %s | Type: %s",
     "resources": "Resources of the area:",
-    "resource": "- ID: %d | %s | %s",
+    "resource": "- ID: %s | %s | %s",
     "list_of_players_in_area": "List of players of the %s area:",
-    "player": "ID: %d | Name: %s | Level: %d",
+    "player": "ID: %s | Name: %s | Level: %d",
     "wild_area": "%d | %s | Levels: %s",
     "city_area": "%d | %s (Town) | Level: %s",
     "dungeon_area": "%d | %s (Dungeon) | Level: %s",
@@ -195,8 +195,8 @@
     "maximum_quality": "Maximum quality for an item:",
     "minimum_quality": "Minimum quality for an item:",
     "you_claimed": "You've claimed this area",
-    "owned_by": "Owned by",
-    "monster_group": "ID: %d | %s (+%d more) | Avg Lv: %s | Type: %s",
+    "owned_by": "Owned by: %s",
+    "monster_group": "ID: %s | %s (+%d more) | Avg Lv: %s | Type: %s",
     "conquest": "Conquest",
     "conquest_next": "Next conquest :\n- %s\n- Number of guilds enrolled: %d",
     "conquest_ongoing": "Conquest ongoing",
@@ -214,7 +214,8 @@
     "service_shop": "Shop (Tax: %d%)",
     "conquest_actual_level": "Current level: %d",
     "conquest_points_to_distribute": "Points to distribute: %d",
-    "conquest_price_to_next_level": "Price to next level: %dG"
+    "conquest_price_to_next_level": "Price to next level: %dG",
+    "region": "Region: %s"
   },
   "bonuses": {
     "bonuses": "Bonuses",

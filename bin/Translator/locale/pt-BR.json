@@ -183,11 +183,11 @@
     "settings_menu_mute": "%s Notificações de grupo"
   },
   "area": {
-    "monster": "ID: %d | %s | Nvl.: %s | Tipo: %s",
+    "monster": "ID: %s | %s | Nvl.: %s | Tipo: %s",
     "resources": "Recursos da área:",
-    "resource": "- ID: %d | %s | %s",
+    "resource": "- ID: %s | %s | %s",
     "list_of_players_in_area": "Lista de jogadores da área %s:",
-    "player": "ID: %d | Nome: %s | Nível: %d",
+    "player": "ID: %s | Nome: %s | Nível: %d",
     "wild_area": "%d | %s | Níveis: %s",
     "city_area": "%d | %s (Cidade) | Nível: %s",
     "dungeon_area": "%d | %s (Masmorra) | Nível: %s",
@@ -195,8 +195,8 @@
     "maximum_quality": "Qualidade máxima para um item:",
     "minimum_quality": "Qualidade mínima para um item:",
     "you_claimed": "Você reivindicou esta área",
-    "owned_by": "Propriedade de",
-    "monster_group": "ID: %d | %s (+%d mais) | Nvl. Méd: %s | Tipo: %s",
+    "owned_by": "Propriedade de: %s",
+    "monster_group": "ID: %s | %s (+%d mais) | Nvl. Méd: %s | Tipo: %s",
     "conquest": "Incursão",
     "conquest_next": "Próxima incursão:\n- %s\n- Número de guildas inscritas: %d",
     "conquest_ongoing": "Incursão em progresso",
@@ -214,7 +214,8 @@
     "service_shop": "Loja (Taxa: %d%)",
     "conquest_actual_level": "Actual level: %d",
     "conquest_points_to_distribute": "Points to distribute: %d",
-    "conquest_price_to_next_level": "Price to next level: %dG"
+    "conquest_price_to_next_level": "Price to next level: %dG",
+    "region": "Região: %s"
   },
   "bonuses": {
     "bonuses": "Bônus",

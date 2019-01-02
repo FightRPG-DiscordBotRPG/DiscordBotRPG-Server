@@ -183,11 +183,11 @@
     "settings_menu_mute": "%s Групповых уведомлений"
   },
   "area": {
-    "monster": "ID: %d | %s | Уровень: %s | Тип: %s",
+    "monster": "ID: %s | %s | Уровень: %s | Тип: %s",
     "resources": "Ресурсы территории:",
-    "resource": "- ID: %d | %s | %s",
+    "resource": "- ID: %s | %s | %s",
     "list_of_players_in_area": "Список игроков территории %s:",
-    "player": "ID: %d | Имя: %s | Уровень: %d",
+    "player": "ID: %s | Имя: %s | Уровень: %d",
     "wild_area": "%d | %s | Уровни: %s",
     "city_area": "%d | %s (Город) | Уровень: %s",
     "dungeon_area": "%d | %s (Подземелье) | Уровень: %s",
@@ -195,8 +195,8 @@
     "maximum_quality": "Максимальное качество предмета:",
     "minimum_quality": "Минимальное качество предмета:",
     "you_claimed": "Вы претендуете на эту территорию",
-    "owned_by": "Принадлежит",
-    "monster_group": "ID: %d | %s (+%d более) | Сред Ур: %s | Тип: %s",
+    "owned_by": "Принадлежит: %s",
+    "monster_group": "ID: %s | %s (+%d более) | Сред Ур: %s | Тип: %s",
     "conquest": "Завоевание",
     "conquest_next": "Следующее Завоевание :\n- %s\n- Количество зарегистрированных гильдий: %d",
     "conquest_ongoing": "Завоевание продолжается",
@@ -214,7 +214,8 @@
     "service_shop": "Магазин (Налог: %d%)",
     "conquest_actual_level": "Фактический уровень: %d",
     "conquest_points_to_distribute": "Очки для распространения: %d",
-    "conquest_price_to_next_level": "Цена до следующего уровня: %dG"
+    "conquest_price_to_next_level": "Цена до следующего уровня: %dG",
+    "region": "Регион: %s"
   },
   "bonuses": {
     "bonuses": "Бонусы",

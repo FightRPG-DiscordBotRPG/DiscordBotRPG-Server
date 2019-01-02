@@ -144,7 +144,7 @@ INSERT INTO localizationmonsters VALUES
 INSERT INTO localizationareas VALUES
 (22, "en", "Northern Expedition Outpost", "The northern expedition was organized shortly after the beginning of colonization, however, it began its journey to the north only very recently. Nevertheless, the progress made is impressive. An outpost is built and it has all the amenities. Now, the real problem is the demons."),
 (23, "en", "The Lava Cracks", "These lava cracks are the result of the intense volcanic activity in the region. Elementary beings are born there, go through this region will not be a pleasure."),
-(24, "en", "Explosive Volcanos", "These volcanoes are a concentrate of heat, ash and smoke. In addition to being filled with elementary beings, there are demons. You came here, you must regret it."),
+(24, "en", "Explosive Volcanoes", "These volcanoes are a concentrate of heat, ash and smoke. In addition to being filled with elementary beings, there are demons. You came here, you must regret it."),
 (25, "en", "The Lava Burnt Forest", "Probably an old forest, now it is burned by the lava that gushes out of the ground. But this forest has something alive, you should be on your guard."),
 (26, "en", "Old Dwarf City", "Remains of an ancient dwarf city. Everything seems quiet, not a sound. As you get closer, you will notice that the city is no longer so deserted..."),
 (27, "en", "The Daemonic Citadel", "The demonic citadel, the heart of the region. Filled with filth, demons and suffering. If you are here, it is surely to free the region from the yoke of the demon who is staying there.");
