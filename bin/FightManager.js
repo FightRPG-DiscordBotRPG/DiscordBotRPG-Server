@@ -39,7 +39,7 @@ class FightManager {
     async loadMonsters(monsters, characters) {
         let level = 0;
         let area = characters[0].getArea();
-        if (characters[0].group != null) {
+        if (characters.length > 1 && characters[0].group != null) {
             level = characters[0].group.getHighestLevel();
         } else {
             level = characters[0].getLevel();
