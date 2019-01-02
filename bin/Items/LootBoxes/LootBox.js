@@ -30,7 +30,7 @@ class LootBox extends Consumable {
         let drop = false;
         if (this.openResult.items.length > 0) {
             for (let i = 0; i < this.openResult.items.length; i++) {
-                msg += Item.getName(lang, this.openResult.items[i].id) + " [x" + this.openResult.items[i].number + "]";
+                msg += Item.getName(lang, this.openResult.items[i].id) + " [x" + Translator.getFormater(lang).format(this.openResult.items[i].number) + "]";
                 if (i < (this.openResult.items.length - 1)) {
                     msg += ", ";
                 }
@@ -38,7 +38,7 @@ class LootBox extends Consumable {
             drop = true;
         }
         if (this.openResult.gold > 0) {
-            msg += "\n" + this.openResult.gold + "G";
+            msg += "\n" + Translator.getFormater(lang).format(this.openResult.gold) + "G";
             drop = true;
         }
 

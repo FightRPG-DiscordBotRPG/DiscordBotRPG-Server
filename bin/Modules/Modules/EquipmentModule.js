@@ -58,16 +58,16 @@ class EquipmentModule extends GModule {
                                 if (swapItem > 0) {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
-                                data.success = Translator.getString(res.locals.id, "inventory_equipment", "item_equiped");
+                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped");
                             } else {
-                                data.error = Translator.getString(res.locals.id, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
+                                data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
                             }
 
                         } else {
-                            data.error = Translator.getString(res.locals.id, "errors", "item_you_cant_equip");
+                            data.error = Translator.getString(res.locals.lang, "errors", "item_you_cant_equip");
                         }
                     } else {
-                        data.error = Translator.getString(res.locals.id, "errors", "item_you_dont_have");
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                     }
                 } else {
                     let itemToEquip = await Globals.connectedUsers[res.locals.id].character.getInv().getItemOfThisIDItem(toEquip);
@@ -79,20 +79,20 @@ class EquipmentModule extends GModule {
                                 if (swapItem > 0) {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
-                                data.success = Translator.getString(res.locals.id, "inventory_equipment", "item_equiped");
+                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped");
                             } else {
-                                data.error = Translator.getString(res.locals.id, "errors", "item_cant_equip_higher_level", [itemToEquip.getLevel()]);
+                                data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [itemToEquip.getLevel()]);
                             }
                         } else {
-                            data.error = Translator.getString(res.locals.id, "errors", "item_you_cant_equip");
+                            data.error = Translator.getString(res.locals.lang, "errors", "item_you_cant_equip");
                         }
                     } else {
-                        data.error = Translator.getString(res.locals.id, "errors", "item_you_dont_have");
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have");
                     }
                 }
 
             } else {
-                data.error = Translator.getString(res.locals.id, "errors", "item_enter_id_to_equip");
+                data.error = Translator.getString(res.locals.lang, "errors", "item_enter_id_to_equip");
             }
 
             return res.json(data);
