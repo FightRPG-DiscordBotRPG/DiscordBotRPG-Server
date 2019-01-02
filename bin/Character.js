@@ -10,6 +10,7 @@ const PlayerCraft = require("./CraftSystem/PlayerCraft.js");
 const LootSystem = require("./LootSystem.js");
 const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
+const CharacterAchievement = require("./Achievement/CharacterAchievements");
 
 class Character extends CharacterEntity {
 
@@ -19,6 +20,7 @@ class Character extends CharacterEntity {
         this.id = id;
         this.inv = new CharacterInventory();
         this.craftSystem = new PlayerCraft();
+        this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
         this.canFightAt = 0;
@@ -43,7 +45,8 @@ class Character extends CharacterEntity {
             this.stats.init(this.id),
             this.getInv().loadInventory(this.id),
             this.equipement.loadEquipements(this.id),
-            conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);")
+            conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);"),
+            this.achievements.load(this.id)
         ]);
 
         this.statPoints = 5;
@@ -65,7 +68,8 @@ class Character extends CharacterEntity {
             this.levelSystem.loadLevelSystem(id),
             this.craftSystem.load(id),
             this.getInv().loadInventory(id),
-            this.equipement.loadEquipements(id)
+            this.equipement.loadEquipements(id),
+            this.achievements.load(id)
         ]);
 
         this.statPoints = res["statPoints"];
@@ -602,6 +606,10 @@ class Character extends CharacterEntity {
 
     getCraftNextLevelXP() {
         return this.craftSystem.expToNextLevel;
+    }
+
+    getAchievements() {
+        return this.achievements;
     }
 
     async haveThisObject(itemId) {

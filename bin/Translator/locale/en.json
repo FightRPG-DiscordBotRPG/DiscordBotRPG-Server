@@ -319,7 +319,16 @@
     "item_tag_as_favorite": "This item is now tagged as favorite",
     "item_untag_as_favorite": "This item is not longer tagged as favorite",
     "item_no_stats": "This item doesn't have any attributes",
-    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)"
+    "wait_time_reduction": "(Reduces remaining fatigue time by %d%)",
+    "sellall_title": "Planning the sale of your items",
+    "sellall_going_to_sell": "You're going to sell",
+    "sellall_going_to_sell_all": "All items that are not marked as favorites",
+    "sellall_going_to_sell_rarity": "All items of \"%s\" quality that are not marked as favorites",
+    "sellall_going_to_sell_type": "All items of \"%s\" type that are not marked as favorites",
+    "sellall_going_to_sell_level": "All %d level items that are not marked as favorites",
+    "sellall_total_value": "Total value of items",
+    "sellall_are_you_sure": "Are you sure you want to sell these items?",
+    "sellall_cancel": "You cancelled the sale"
   },
   "character": {
     "reset_done": "Reset done!",
@@ -560,6 +569,7 @@
     "gunenroll": "Unenroll the guild from the next conquest of this area",
     "gleave": "Leave your guild",
     "gmod": "Change the member rank (1: Member, 2: Officer)",
+    "gleaderswitch": "Exchange your guild master position with another guild member",
 
     "other_title": "Other",
     "lang": "Shows the list of available languages",

@@ -230,6 +230,7 @@ class OtherModule extends GModule {
                     "gunenroll": Translator.getString(lang, "help_panel", "gunenroll"),
                     "gleave": Translator.getString(lang, "help_panel", "gleave"),
                     "gmod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
+                    "gleaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
                 }
                 break;
             case 5:

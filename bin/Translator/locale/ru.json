@@ -319,7 +319,16 @@
     "item_tag_as_favorite": "Теперь этот предмет помечен как избранный",
     "item_untag_as_favorite": "Этот предмет больше не помечен как избранное",
     "item_no_stats": "Этот предмет не имеет характеристик",
-    "wait_time_reduction": "(Снижает время остаточной усталости на %d%)"
+    "wait_time_reduction": "(Снижает время остаточной усталости на %d%)",
+    "sellall_title": "Planning the sale of your items",
+    "sellall_going_to_sell": "You're going to sell",
+    "sellall_going_to_sell_all": "All items that are not marked as favorites",
+    "sellall_going_to_sell_rarity": "All items of \"%s\" quality that are not marked as favorites",
+    "sellall_going_to_sell_type": "All items of \"%s\" type that are not marked as favorites",
+    "sellall_going_to_sell_level": "All %d level items that are not marked as favorites",
+    "sellall_total_value": "Total value of items",
+    "sellall_are_you_sure": "Are you sure you want to sell these items?",
+    "sellall_cancel": "You cancelled the sale"
   },
   "character": {
     "reset_done": "Сброс завершен!",
@@ -560,6 +569,7 @@
     "gunenroll": "Отменяет регистрацию гильдии от следующего Завоевания этой территории",
     "gleave": "Позволяет покинуть гильдию",
     "gmod": "Измененяет ранга участника (1: Участник, 2: Офицер)",
+    "gleaderswitch": "Exchange your guild master position with another guild member",
 
     "other_title": "Другие",
     "lang": "Показывает список доступных языков",

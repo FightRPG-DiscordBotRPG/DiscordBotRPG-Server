@@ -280,6 +280,32 @@ class InventoryModule extends GModule {
             return res.json(data);
         });
 
+        this.router.post("/sellall/value", async (req, res) => {
+            let data = {};
+            data.lang = res.locals.lang;
+            let params = {
+                rarity: 0,
+                type: 0,
+                level: 0
+            }
+
+            if (req.body.idRarity != null) {
+                params.rarity = parseInt(req.body.idRarity);
+            } else if (req.body.idType != null) {
+                params.type = parseInt(req.body.idType);
+            } else if (req.body.level != null) {
+                params.level = parseInt(req.body.level);
+            }
+
+            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                data.value = await Globals.connectedUsers[res.locals.id].character.getInv().getAllInventoryValue(params);
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
+            }
+
+            return res.json(data);
+        });
+
         this.router.post("/sendmoney", async (req, res) => {
             let data = {};
             data.lang = res.locals.lang;

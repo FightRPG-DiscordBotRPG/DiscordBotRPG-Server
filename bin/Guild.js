@@ -145,6 +145,22 @@ class Guild {
         return err;
     }
 
+    async switchGuildLeader(idAsk, idOther, lang) {
+        let err = [];
+        if (await this.isMember(idOther)) {
+            let meRank = await this.getRankCharacter(idAsk);
+            if (meRank == 3) {
+                await conn.query("UPDATE guildsmembers SET idGuildRank = 3 WHERE idCharacter = ?;", [idOther]);
+                await conn.query("UPDATE guildsmembers SET idGuildRank = 1 WHERE idCharacter = ?;", [idAsk]);
+            } else {
+                err.push(Translator.getString(lang, "errors", "generic"));
+            }
+        } else {
+            err.push(Translator.getString(lang, "errors", "guild_member_dont_exist"));
+        }
+        return err;
+    }
+
 
     async disband() {
         await conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
@@ -466,7 +482,7 @@ class Guild {
      */
     /*
     static getStatsOfAllMembers(id) {
-        let s = conn.query("SELECT idStat, SUM(value) as total FROM statscharacters WHERE statscharacters.idCharacter IN (SELECT guildsmembers.idCharacter FROM guildsmembers WHERE guildsmembers.idGuild = ?) GROUP BY idStat;", id); 
+        let s = await conn.query("SELECT idStat, SUM(value) as total FROM statscharacters WHERE statscharacters.idCharacter IN (SELECT guildsmembers.idCharacter FROM guildsmembers WHERE guildsmembers.idGuild = ?) GROUP BY idStat;", id); 
     }*/
 
 

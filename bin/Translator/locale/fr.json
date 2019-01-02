@@ -319,7 +319,16 @@
     "item_tag_as_favorite": "Cet objet est maintenant marqué comme favori",
     "item_untag_as_favorite": "Cet objet n'est désormais plus marqué comme favori",
     "item_no_stats": "Cet objet n'a pas de stats !",
-    "wait_time_reduction": "(Réduit le temps de fatigue restant de %d%)"
+    "wait_time_reduction": "(Réduit le temps de fatigue restant de %d%)",
+    "sellall_title": "Planification de la vente de vos objets",
+    "sellall_going_to_sell": "Vous allez vendre",
+    "sellall_going_to_sell_all": "Tous les objets qui ne sont pas en favori",
+    "sellall_going_to_sell_rarity": "Tous les objets de qualité \"%s\" qui ne sont pas marqué comme favori",
+    "sellall_going_to_sell_type": "Tous les objets de type \"%s\" qui ne sont pas marqué comme favori",
+    "sellall_going_to_sell_level": "Tous les objets de niveau %d qui ne sont pas marqué comme favori",
+    "sellall_total_value": "Valeur total des objets",
+    "sellall_are_you_sure": "Êtes-vous sûr de vouloir vendre ces objets ?",
+    "sellall_cancel": "Vous avez annulé la vente"
   },
   "character": {
     "reset_done": "Réinitialisation terminée !",
@@ -560,6 +569,7 @@
     "gunenroll": "Désinscrit votre guilde au tournoi auquel elle est inscrite",
     "gleave": "Abandonner votre guilde",
     "gmod": "Change le rang du membre de la guilde (1 : Membre, 2 : Officier)",
+    "gleaderswitch": "Echange votre place de maître de guilde avec un autre membre de la guilde",
 
     "other_title": "Autres",
     "lang": "Permet d'afficher la liste des langues disponibles",

@@ -109,7 +109,6 @@ class AreasManager {
      * @returns {boolean}
      */
     canIFightThisMonster(idArea, idEnemy, perception) {
-        //let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND idMonstre = " + idEnemy);
         let monsterID = this.areas.get(idArea).getMonsterId(idEnemy);
         if (monsterID) {
             let bonus = 1 + (perception / 100);
@@ -137,11 +136,6 @@ class AreasManager {
      * @param {number} idEnemy 
      */
     selectRandomMonsterIn(idArea, idEnemy) {
-        /*let res = conn.query("SELECT idMonstre FROM AreasMonsters WHERE idArea = " + idArea + " AND NOT idMonstre = " + idEnemy + " ORDER BY RAND() LIMIT 1;");
-        if (res.length > 0) {
-            return res[0]["idMonstre"];
-        }
-        return 1;*/
         return this.areas.get(idArea).getRandomMonster(idEnemy);
     }
 

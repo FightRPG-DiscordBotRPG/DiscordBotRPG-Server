@@ -144,16 +144,17 @@ class WorldBossSpawner {
     static async giveRewards(worldBossId) {
         await conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
         // Must be redone to know if players got the rewards
-        await Promise.all([WorldBossSpawner.giveRewardsToTopDamage(worldBossId), WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId)]);
+        await WorldBossSpawner.giveRewardsToTopDamage(worldBossId);
+        await WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId);
         await conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
     }
 
     static async giveRewardsToTopDamage(worldBossId) {
-        WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
+        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
     }
 
     static async giveRewardsToTopAttackCount(worldBossId) {
-        WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
+        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
     }
 
     static async giveToRewardsToPlayers(worldBossId) {

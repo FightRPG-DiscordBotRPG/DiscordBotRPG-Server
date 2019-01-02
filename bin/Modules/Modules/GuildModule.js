@@ -305,6 +305,26 @@ class GuildModule extends GModule {
             return res.json(data);
         });
 
+        this.router.post("/mod/leaderswitch", async (req, res) => {
+            let data = {};
+            req.body.id = parseInt(req.body.id, 10);
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            let err = [];
+            if (tGuildId > 0) {
+                err = await Globals.connectedGuilds[tGuildId].switchGuildLeader(Globals.connectedUsers[res.locals.id].character.id, req.body.id, res.locals.lang);
+            } else {
+                err.push(Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild"));
+            }
+
+            if (err.length > 0) {
+                data.error = err[0];
+            } else {
+                data.success = Translator.getString(res.locals.lang, "guild", "rank_modified");
+            }
+            data.lang = res.locals.lang;
+            return res.json(data);
+        });
+
         this.router.post("/announce", async (req, res) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
