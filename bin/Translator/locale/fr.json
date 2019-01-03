@@ -343,7 +343,9 @@
     "craft_level": "Niv. de Métier",
     "money": "Argent",
     "honor": "Honneur",
-    "health_points": "Points de Vie"
+    "health_points": "Points de Vie",
+    "damage_reduction": "Réduction de dégâts",
+    "critical_chance": "Chance de coup critique"
   },
   "economic": {
     "sell_for_x": "Vous avez vendu votre objet pour %dG",

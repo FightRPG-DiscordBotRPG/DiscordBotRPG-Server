@@ -343,7 +343,9 @@
     "craft_level": "Craft Level",
     "money": "Money",
     "honor": "Honor",
-    "health_points": "Health Points"
+    "health_points": "Health Points",
+    "damage_reduction": "Damage Reduction",
+    "critical_chance": "Critical Chance"
   },
   "economic": {
     "sell_for_x": "You sold your item for %dG",

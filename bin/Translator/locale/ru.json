@@ -343,7 +343,9 @@
     "craft_level": "Уровень Ремесла",
     "money": "Деньги",
     "honor": "Слава",
-    "health_points": "Health Points"
+    "health_points": "Health Points",
+    "damage_reduction": "Damage Reduction",
+    "critical_chance": "Critical Chance"
   },
   "economic": {
     "sell_for_x": "Вы продали свой предмет за %dG",
