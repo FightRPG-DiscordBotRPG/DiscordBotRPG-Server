@@ -385,7 +385,7 @@
     "xp_gain": "Você ganhou: %d XP",
     "nothing_gain": "Você não ganhou nada!",
     "both_gain": "Você ganhou: %d XP e %d G",
-    "group_drop_item": "Seu grupo ganhou alguns itens! Parabéns!",
+    "group_drop_item": "Seu grupo ganhou alguns itens! Parabéns! (Rarest item found: %s)",
     "group_level_up": "Alguém do seu grupo passou de nível! Parabéns!",
     "group_money_gain": "Seu grupo ganhou: %d G",
     "group_xp_gain": "Seu grupo ganhou: %d XP",
@@ -435,7 +435,8 @@
     "character_loaded": "Personagem carregado com sucesso",
     "prefix_changed": "Prefixo alterado",
     "old_prefix": "Prefixo antigo",
-    "new_prefix": "Prefixo novo"
+    "new_prefix": "Prefixo novo",
+    "prefix_title": "Current Prefix"
   },
   "item_types": {
     "weapon": "Arma",

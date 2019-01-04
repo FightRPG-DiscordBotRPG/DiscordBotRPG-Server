@@ -298,7 +298,7 @@
     "nobody_ask_to_join_your_guild": "No one applied to join your guild",
     "nothing_to_print": "Nothing to see",
     "enroll": "Your guild is now enrolled for the next conquest in this area",
-    "unenroll": "Your guild is now unenrolled from the conquest in this area",
+    "unenroll": "Your guild is now no longer enrolled to any conquest",
     "you_paid_x": "Your guild paid %dG"
   },
   "inventory_equipment": {
@@ -385,7 +385,7 @@
     "xp_gain": "You won: %d XP",
     "nothing_gain": "You won nothing!",
     "both_gain": "You won: %d XP and %d G",
-    "group_drop_item": "Your group won some items! Congrats!",
+    "group_drop_item": "Your group won some items! Congrats! (Rarest item found: %s)",
     "group_level_up": "Someone leveled up in your group! Congrats!",
     "group_money_gain": "Your group won: %d G",
     "group_xp_gain": "Your group won: %d XP",
@@ -435,7 +435,8 @@
     "character_loaded": "Character successfully loaded",
     "prefix_changed": "Prefix changed",
     "old_prefix": "Old prefix",
-    "new_prefix": "New prefix"
+    "new_prefix": "New prefix",
+    "prefix_title": "Current Prefix"
   },
   "item_types": {
     "weapon": "Weapon",

@@ -300,7 +300,7 @@ class Character extends CharacterEntity {
             if (honorPoints >= 0) {
                 await conn.query("UPDATE charactershonor SET Honor = Honor + ? WHERE idCharacter = ?;", [honorPoints, this.id]);
             } else {
-                await this.removeHonorPoints(honorPoints);
+                await this.removeHonorPoints(-honorPoints);
             }
             return true;
         }

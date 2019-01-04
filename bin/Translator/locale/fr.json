@@ -127,9 +127,9 @@
     "craft_dont_have_required_items": "Vous n'avez pas toutes les ressources requises pour fabriquer cet objet",
     "craft_tired_wait_x_seconds": "Vous êtes trop fatigué pour fabriquer des objets vous devez encore attendre : %s secondes",
 
-    "prefix_max_length": "Le prefix ne doit pas dépasser %d caractères",
-    "prefix_undefined": "Le prefix doit au moins contenir 1 caractère",
-    "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le prefix",
+    "prefix_max_length": "Le préfixe ne doit pas dépasser %d caractères",
+    "prefix_undefined": "Le préfixe doit au moins contenir 1 caractère",
+    "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le préfixe",
 
     "shop_item_dont_exist": "Vous devez choisir un objet qui existe",
     "shop_no_building": "Il n'y a pas de magasin dans cette zone"
@@ -298,7 +298,7 @@
     "nobody_ask_to_join_your_guild": "Personne n'a demandé à rejoindre votre guilde",
     "nothing_to_print": "Rien à afficher ici",
     "enroll": "Votre guilde s'est bien inscrite pour le prochain tournoi de cette zone",
-    "unenroll": "Votre guilde s'est bien désinscrite du prochain tournoi de la zone",
+    "unenroll": "Votre guilde n'est plus enrôlée dans une conquête",
     "you_paid_x": "Votre guilde a payé %dG"
   },
   "inventory_equipment": {
@@ -385,7 +385,7 @@
     "xp_gain": "Vous gagnez : %d XP",
     "nothing_gain": "Vous ne gagnez rien !",
     "both_gain": "Vous gagnez : %d XP et %d G",
-    "group_drop_item": "Votre groupe a gagné des objets ! Bravo !",
+    "group_drop_item": "Votre groupe a gagné des objets ! Bravo ! (Objet le plus rare : %s)",
     "group_level_up": "Quelqu'un dans votre groupe à gagné un niveau !",
     "group_money_gain": "Votre groupe a gagné : %d G",
     "group_xp_gain": "Votre groupe a gagné  : %d XP",
@@ -434,8 +434,9 @@
     "loading_character": "Chargement de votre personnage",
     "character_loaded": "Votre personnage a bien été chargé !",
     "prefix_changed": "Prefix changé",
-    "old_prefix": "Ancien prefix",
-    "new_prefix": "Nouveau prefix"
+    "old_prefix": "Ancien préfixe",
+    "new_prefix": "Nouveau préfixe",
+    "prefix_title": "Préfixe actuel"
   },
   "item_types": {
     "weapon": "Arme",
