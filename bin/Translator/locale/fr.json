@@ -515,7 +515,7 @@
     "inventory_title": "Inventaire",
     "inv": "Affiche l'inventaire",
     "inv_filter": "Affiche l'inventaire et filtre les résultats. Filtres possibles : rarity, level, type",
-    "item": "Affiche les informations sur l'objet choisi. Pour les objets équipés utiliser : head, chest, legs, weapon ou horse au lieu de l'id.",
+    "item": "Affiche les informations sur l'objet choisi. Pour les objets équipés utiliser : head, chest, legs, weapon ou mount au lieu de l'id.",
     "itemfav": "Marque un objet comme favori pour empêcher sa vente",
     "itemunfav": "Enlève la marque favori d'un objet pour qu'il puisse être vendu",
     "sell": "Vend l'objet choisi",

@@ -55,7 +55,7 @@
     "collect_tired_wait_x_seconds": "Você está cansado demais para coletar esses recursos, você ainda tem que esperar: %s segundos",
     "collect_dont_have_required_level": "Você não tem o nível de criação necessário para coletar este recurso, você precisa ser pelo menos nível %d",
     "item_you_dont_have_this_item": "Você não tem este item",
-    "item_choose_id_or_equipement": "Você precisa digitar o ID do seu lugar de inventário ou escolher entre  \"head,chest,legs,weapon\"",
+    "item_choose_id_or_equipement": "Você precisa digitar o ID do seu espaço de inventário ou escolher entre  \"head, chest, legs, weapon\"",
     "item_you_cant_equip": "Você não pode equipar este item",
     "item_you_dont_have": "Você não tem este item",
     "item_enter_id_to_equip": "Você precisa digitar o ID do item para equipá-lo",
@@ -75,7 +75,7 @@
     "economic_dont_have_enough_money": "Você não tem essa quantidade de dinheiro",
     "fight_enter_id_monster": "Você precisa digitar o ID do monstro com quem deseja lutar",
     "fight_impossible_in_town": "Você não pode lutar na cidade",
-    "fight_already_in": "Você já está lutando, quando você terminar você pode começar outra luta",
+    "fight_already_in": "Você já está em uma luta, você pode começar outra após terminar",
     "fight_monter_dont_exist": "O monstro que você tentou atacar não existe",
     "travel_already_here": "Você já está nesta área",
     "travel_area_dont_exist": "Esta área não existe",
@@ -212,9 +212,9 @@
     "service_marketplace": "Mercado (Taxa: %d%)",
     "service_forge": "Ferreiro (Criação: Nvl. %d - %d)",
     "service_shop": "Loja (Taxa: %d%)",
-    "conquest_actual_level": "Actual level: %d",
-    "conquest_points_to_distribute": "Points to distribute: %d",
-    "conquest_price_to_next_level": "Price to next level: %dG",
+    "conquest_actual_level": "Nível atual: %d",
+    "conquest_points_to_distribute": "Pontos para distribuir: %d",
+    "conquest_price_to_next_level": "Preço para o próximo nível: %dG",
     "region": "Região: %s"
   },
   "bonuses": {
@@ -222,9 +222,9 @@
     "xp_fight": "XP de Luta",
     "xp_collect": "XP de Coleta",
     "xp_craft": "XP de Criação",
-    "gold_drop": "Queda de Ouro",
-    "item_drop": "Queda de Itens",
-    "collect_drop": "Queda em Coletas",
+    "gold_drop": "Pilhagem de Ouro",
+    "item_drop": "Pilhagem de Itens",
+    "collect_drop": "Pilhagem em Coletas",
     "no_bonuses": "Nenhum bônus disponível"
   },
   "resources": {
@@ -321,15 +321,15 @@
     "item_untag_as_favorite": "Este item não está mais marcado como favorito",
     "item_no_stats": "Este item não possui nenhum atributo",
     "wait_time_reduction": "(Reduz o tempo de fatiga restante em %d%)",
-    "sellall_title": "Planning the sale of your items",
-    "sellall_going_to_sell": "You're going to sell",
-    "sellall_going_to_sell_all": "All items that are not marked as favorites",
-    "sellall_going_to_sell_rarity": "All items of \"%s\" quality that are not marked as favorites",
-    "sellall_going_to_sell_type": "All items of \"%s\" type that are not marked as favorites",
-    "sellall_going_to_sell_level": "All %d level items that are not marked as favorites",
-    "sellall_total_value": "Total value of items",
-    "sellall_are_you_sure": "Are you sure you want to sell these items?",
-    "sellall_cancel": "You cancelled the sale"
+    "sellall_title": "Planejando a venda dos seus itens",
+    "sellall_going_to_sell": "Você vai vender",
+    "sellall_going_to_sell_all": "Todos itens que não estão marcados como favoritos",
+    "sellall_going_to_sell_rarity": "Todos itens de qualidade \"%s\" que não estão marcados como favoritos",
+    "sellall_going_to_sell_type": "Todos itens tipo \"%s\" que não estão marcados como favoritos",
+    "sellall_going_to_sell_level": "Todos itens nível %d que não estão marcados como favoritos",
+    "sellall_total_value": "Valor total dos itens",
+    "sellall_are_you_sure": "Você tem certeza que quer vender esses itens?",
+    "sellall_cancel": "Você cancelou as vendas"
   },
   "character": {
     "reset_done": "Redefinição completa!",
@@ -343,9 +343,9 @@
     "craft_level": "Nível de Criação",
     "money": "Dinheiro",
     "honor": "Honra",
-    "health_points": "Health Points",
-    "damage_reduction": "Damage Reduction",
-    "critical_chance": "Critical Chance"
+    "health_points": "Pontos de Vida",
+    "damage_reduction": "Redução de Dano",
+    "critical_chance": "Chance de Crítico"
   },
   "economic": {
     "sell_for_x": "Você vendeu seu item por %dG",
@@ -385,7 +385,7 @@
     "xp_gain": "Você ganhou: %d XP",
     "nothing_gain": "Você não ganhou nada!",
     "both_gain": "Você ganhou: %d XP e %d G",
-    "group_drop_item": "Seu grupo ganhou alguns itens! Parabéns! (Rarest item found: %s)",
+    "group_drop_item": "Seu grupo ganhou alguns itens! Parabéns! (Item mais raro encontrado: %s)",
     "group_level_up": "Alguém do seu grupo passou de nível! Parabéns!",
     "group_money_gain": "Seu grupo ganhou: %d G",
     "group_xp_gain": "Seu grupo ganhou: %d XP",
@@ -426,7 +426,7 @@
     "fr": "Francês",
     "en": "Inglês",
     "pt-BR": "Português Brasileiro",
-    "ru": "Russian",
+    "ru": "Russo",
     "list_of_languages": "Lista de línguas disponíveis (use o atalho para mudar de língua)",
     "lang_changed": "Língua alterada com sucesso, o bot agora responderá em %s"
   },
@@ -436,7 +436,7 @@
     "prefix_changed": "Prefixo alterado",
     "old_prefix": "Prefixo antigo",
     "new_prefix": "Prefixo novo",
-    "prefix_title": "Current Prefix"
+    "prefix_title": "Prefixo atual"
   },
   "item_types": {
     "weapon": "Arma",
@@ -485,9 +485,9 @@
     "no_drop_mult": "Você abriu %d caixas de espólios, mas você não ganhou nada!"
   },
   "leaderboards": {
-    "arena": "PvP Leaderboard",
-    "wb_damage": "World Boss: Damage",
-    "wb_attacks": "World Boss: Attack Count"
+    "arena": "Classificação PvP",
+    "wb_damage": "Chefe Global: Dano",
+    "wb_attacks": "Chefe Global: Número de Ataques"
   },
   "world_bosses": {
     "no_world_boss": "Não há chefe global aqui",
@@ -495,7 +495,7 @@
     "last_boss_never_fight": "Você não lutou em uma batalha de chefe global ainda",
     "boss_fight_recap_damage_dealt": "Dano Causado: %d (Classificação: %d)",
     "boss_fight_recap_attack_count": "Número de Ataques: %d (Classificação: %d)",
-    "boss_fight_damage_inflicted": "You've inflicted %d damage points"
+    "boss_fight_damage_inflicted": "Você infligiu %d pontos de dano"
   },
   "potions": {
     "drink": "Você bebeu: \"%s\"\n",
@@ -515,7 +515,7 @@
     "inventory_title": "Inventário",
     "inv": "Mostra o inventário",
     "inv_filter": "Mostra o inventário e filtra os resultados. Os filtros são: rarity, level, type",
-    "item": "Mostra a informação do item selecionado. For equipped items use: head, chest, legs, weapon or horse instead of id.",
+    "item": "Mostra a informação do item selecionado. Para itens equipados, use: head, chest, legs, weapon ou mount em vez do id.",
     "itemfav": "Marca um item como favorito para impedir que ele seja vendido",
     "itemunfav": "Desmarca um item como favorito",
     "sell": "Vende o item selecionado",
@@ -524,7 +524,7 @@
 
     "filters_title": "Filtros",
     "rarities": "Mostra os IDs de todas as raridades",
-    "types": "Motra os IDs de todos tipos de itens",
+    "types": "Mostra os IDs de todos tipos de itens",
 
     "equipment_title": "Equipamento",
     "equipment": "Mostra itens equipados",
@@ -573,7 +573,7 @@
     "gunenroll": "Cancela a inscrição para a próxima incursão desta área",
     "gleave": "Sai da sua guilda",
     "gmod": "Muda o ranking do membro (1: Membro, 2: Oficial)",
-    "gleaderswitch": "Exchange your guild master position with another guild member",
+    "gleaderswitch": "Troca sua posição de líder da guilda com outro membro da guilda",
 
     "other_title": "Outros",
     "lang": "Mostra a lista de línguas disponíveis",
@@ -614,7 +614,7 @@
     "wbfight": "Ataca o Chefe Global caso haja um na área onde você está",
     "wbshowall": "Mostra informações sobre Chefes Globais",
     "wbastinfo": "Mostra seus status do último chefe que você matou",
-    "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack counts (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
+    "wbleaderboard": "Mostra a classificação dos melhores jogadores em termos de ou dano (damage) ou número de ataques (attacks) para o último Chefe Global em que você participou. Os tipos são: damage, attacks",
 
     "settings": "Mostra o menu de configurações"
   },
