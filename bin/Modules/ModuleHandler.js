@@ -284,7 +284,12 @@ class ModuleHandler extends GModule {
             Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, username, avatar);
             await Globals.connectedUsers[authorIdentifier].loadUser();
 
-            Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
+            if(Globals.connectedUsers[authorIdentifier].isNew) {
+                Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
+            } else {
+                Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
+            }
+            
 
             // Load Guild
             if (await Globals.connectedUsers[authorIdentifier].character.isInGuild()) {

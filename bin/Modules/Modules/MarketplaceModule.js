@@ -164,7 +164,7 @@ class MarketplaceModule extends GModule {
                                 // Puis donne l'argent au vendeur
                                 if (Globals.connectedUsers[temp]) {
                                     await Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
-                                    Globals.connectedUsers[temp].marketTell(Translator.getString(res.locals.lang, "marketplace", numberOrderToBuy > 1 ? "you_sold_plur" : "you_sold", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]));
+                                    Globals.connectedUsers[temp].marketTell(Translator.getString(Globals.connectedUsers[temp].getLang(), "marketplace", numberOrderToBuy > 1 ? "you_sold_plur" : "you_sold", [numberOrderToBuy, orderToBuy.price * numberOrderToBuy]));
                                 } else {
                                     await conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
                                 }

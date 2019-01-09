@@ -56,11 +56,7 @@
       "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
       "version": "1.6.0"
     },
-    "core-js": {
-      "integrity": "sha1-isw4NFgk8W2DZbfJtCWRaOjtYD4=",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.3.tgz",
-      "version": "2.5.3"
-    },
+    "core-js": "^2.6.1",
     "core-util-is": {
       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=",
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",

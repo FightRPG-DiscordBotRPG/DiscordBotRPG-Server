@@ -43,6 +43,11 @@ class User {
         await DatabaseInitializer.PStats();
     }
 
+    updateInMemmoryUsername(username) {
+        this.username = username;
+        this.character.name = username;
+    }
+
     // Load user from DB
     // If not exist create new one
     async loadUser() {

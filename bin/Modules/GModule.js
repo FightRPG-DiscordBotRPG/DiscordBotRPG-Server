@@ -49,6 +49,11 @@ class GModule {
                         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
                         let adminTell = "A module has crashed.\n" + this.commands.toString() + "\n" + "User that have crashed the command : " + (Globals.connectedUsers[res.locals.id] ? Globals.connectedUsers[res.locals.id].character.getName() : "Unknown");
+                        adminTell += "\nRoute: " + req.url;
+                        adminTell += "\nParameters:" + JSON.stringify(req.params);
+                        adminTell += "\nBody:" + JSON.stringify(req.body);
+
+                        console.log(adminTell);
 
                         try {
                             await axios.post("http://127.0.0.1:48921/usr", {
