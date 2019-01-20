@@ -15,7 +15,7 @@ class GModule {
         this.commands = [];
     }
 
-    async run() {}
+    async run() { }
 
     init() {
 
@@ -79,13 +79,29 @@ class GModule {
     reactHandler() {
         this.router.use((req, res, next) => {
             if (this.isActive == true || this.devMode == true) {
-                next();
+                if (Globals.lockedMembers[res.locals.id] === true) {
+                    return res.json({
+                        error: Translator.getString(res.locals.lang, "errors", "already_doing_something_command")
+                    })
+                } else {
+                    Globals.lockedMembers[res.locals.id] = true;
+                    next();
+                }
+
             } else {
                 return res.json({
                     error: "Due to an error, this module is deactivated. The following commands will be disabled : " + this.commands.toString(),
                 });
             }
         });
+    }
+
+    freeLockedMembers() {
+        this.router.use(async (req, res) => {
+            if(Globals.lockedMembers[res.locals.id] == true) {
+                Globals.lockedMembers[res.locals.id] = false;
+            }
+        })
     }
 
     loadNeededVariables() {
@@ -136,7 +152,7 @@ class GModule {
                 stat = "dexterity";
                 break;
 
-                // Secondaires
+            // Secondaires
 
             case "cha":
                 stat = "charisma";

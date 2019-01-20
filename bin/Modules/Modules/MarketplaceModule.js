@@ -37,11 +37,12 @@ class MarketplaceModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/mylist/:page?", async (req, res) => {
+        this.router.get("/mylist/:page?", async (req, res, next) => {
             let data = {};
             if (res.locals.marketplace != null) {
                 data = await res.locals.marketplace.apiCharacterOrders(Globals.connectedUsers[res.locals.id].character.id, req.params.page ? req.params.page : 1, res.locals.lang);
@@ -49,11 +50,12 @@ class MarketplaceModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/place", async (req, res) => {
+        this.router.post("/place", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             let toPlaceIdItem = parseInt(req.body.idItem, 10);
@@ -115,11 +117,12 @@ class MarketplaceModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/cancel", async (req, res) => {
+        this.router.post("/cancel", async (req, res, next) => {
             let data = {};
             let idOrderToCancel = parseInt(req.body.idItem, 10);
             if (res.locals.marketplace != null) {
@@ -142,11 +145,12 @@ class MarketplaceModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/buy", async (req, res) => {
+        this.router.post("/buy", async (req, res, next) => {
             let data = {};
             let idOrderToBuy = parseInt(req.body.idItem, 10);
             let numberOrderToBuy = parseInt(req.body.number, 10);
@@ -188,11 +192,12 @@ class MarketplaceModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.get("/search", async (req, res) => {
+        this.router.get("/search", async (req, res, next) => {
             let data = {};
             //itemName, level, page, lang
             if (res.locals.marketplace != null) {
@@ -202,11 +207,12 @@ class MarketplaceModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.get("/show/:page?", async (req, res) => {
+        this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
             if (res.locals.marketplace != null) {
                 data = await res.locals.marketplace.apiShowAll(req.params.page, res.locals.lang);
@@ -215,11 +221,12 @@ class MarketplaceModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.get("/show/item/:idItem?", async (req, res) => {
+        this.router.get("/show/item/:idItem?", async (req, res, next) => {
             let data = {};
             if (res.locals.marketplace != null) {
                 let mkToSeeOrder = await res.locals.marketplace.getThisOrder(req.params.idItem);
@@ -233,6 +240,7 @@ class MarketplaceModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });

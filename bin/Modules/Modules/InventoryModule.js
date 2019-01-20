@@ -39,11 +39,12 @@ class InventoryModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/item/:idItem?", async (req, res) => {
+        this.router.get("/item/:idItem?", async (req, res, next) => {
             let idItemToSee = parseInt(req.params.idItem, 10);
             let doIHaveThisItem = false;
             let itemToSee;
@@ -84,11 +85,12 @@ class InventoryModule extends GModule {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_choose_id_or_equipement");
                 }
             }
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/itemfav", async (req, res) => {
+        this.router.post("/itemfav", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
 
@@ -124,10 +126,11 @@ class InventoryModule extends GModule {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
                 }
             }
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/itemunfav", async (req, res) => {
+        this.router.post("/itemunfav", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
 
@@ -166,10 +169,11 @@ class InventoryModule extends GModule {
                 }
             }
 
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/show/:page?", async (req, res) => {
+        this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
             let params = {
                 rarity: 0,
@@ -191,10 +195,11 @@ class InventoryModule extends GModule {
             data = await Globals.connectedUsers[res.locals.id].character.inv.toApi(invPage, res.locals.lang, params);
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/sell", async (req, res) => {
+        this.router.post("/sell", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
 
@@ -246,10 +251,11 @@ class InventoryModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
             }
 
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/sellall", async (req, res) => {
+        this.router.post("/sellall", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             let params = {
@@ -277,10 +283,11 @@ class InventoryModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
             }
 
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/sellall/value", async (req, res) => {
+        this.router.post("/sellall/value", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             let params = {
@@ -303,10 +310,11 @@ class InventoryModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
             }
 
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/sendmoney", async (req, res) => {
+        this.router.post("/sendmoney", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
 
@@ -365,6 +373,7 @@ class InventoryModule extends GModule {
                 }
             }
 
+            await next();
             return res.json(data);
         });
 

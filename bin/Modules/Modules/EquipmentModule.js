@@ -37,11 +37,12 @@ class EquipmentModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.post("/equip", async (req, res) => {
+        this.router.post("/equip", async (req, res, next) => {
             let data = {}
             data.lang = res.locals.lang;
 
@@ -95,10 +96,11 @@ class EquipmentModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "item_enter_id_to_equip");
             }
 
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/unequip", async (req, res) => {
+        this.router.post("/unequip", async (req, res, next) => {
             let data = {}
             data.lang = res.locals.lang;
             let itemToInventory;
@@ -135,17 +137,19 @@ class EquipmentModule extends GModule {
             }
 
 
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/show", async (req, res) => {
+        this.router.get("/show", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             data.items = await Globals.connectedUsers[res.locals.id].character.equipement.toApi(res.locals.lang);
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/use", async (req, res) => {
+        this.router.post("/use", async (req, res, next) => {
             let data = {}
             data.lang = res.locals.lang;
 
@@ -169,6 +173,7 @@ class EquipmentModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "item_enter_id_to_use");
             }
 
+            await next();
             return res.json(data);
         });
 

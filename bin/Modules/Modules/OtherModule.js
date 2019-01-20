@@ -38,18 +38,20 @@ class OtherModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/lang", async (req, res) => {
+        this.router.get("/lang", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             data.languages = Translator.getAvailableLanguages(res.locals.lang);
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/lang", async (req, res) => {
+        this.router.post("/lang", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
             if (req.body.lang) {
@@ -63,26 +65,29 @@ class OtherModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "languages_lang_dont_exist");
             }
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/help/:page?", async (req, res) => {
+        this.router.get("/help/:page?", async (req, res, next) => {
             let data;
             data = this.helpPanel(res.locals.lang, parseInt(req.params.page, 10));
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/settings", async (req, res) => {
+        this.router.get("/settings", async (req, res, next) => {
             let data = {
                 isGroupMuted: Globals.connectedUsers[res.locals.id].isGroupMuted(),
                 isMarketplaceMuted: Globals.connectedUsers[res.locals.id].isMarketplaceMuted()
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
         // TODO mute not working properly
-        this.router.post("/settings", async (req, res) => {
+        this.router.post("/settings", async (req, res, next) => {
             let data = {};
             let success = "";
             data.lang = res.locals.lang;
@@ -109,10 +114,11 @@ class OtherModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
             }
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/rarities", async (req, res) => {
+        this.router.get("/rarities", async (req, res, next) => {
             let data = {};
 
             let dbRes = await conn.query("SELECT * FROM itemsrarities");
@@ -127,10 +133,11 @@ class OtherModule extends GModule {
 
             data.lang = res.locals.lang;
 
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/types", async (req, res) => {
+        this.router.get("/types", async (req, res, next) => {
             let data = {};
 
             let dbRes = await conn.query("SELECT * FROM itemstypes");
@@ -147,6 +154,7 @@ class OtherModule extends GModule {
 
             data.lang = res.locals.lang;
 
+            await next();
             return res.json(data);
         });
     }

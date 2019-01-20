@@ -38,11 +38,12 @@ class FightModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.post("/monster", async (req, res) => {
+        this.router.post("/monster", async (req, res, next) => {
             let data = {}
             let idEnemy = parseInt(req.body.idMonster, 10);
             if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
@@ -73,10 +74,11 @@ class FightModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/arena", async (req, res) => {
+        this.router.post("/arena", async (req, res, next) => {
             let data = {}
             let idOtherPlayerCharacter = 0;
             let mId = -1;
@@ -136,6 +138,7 @@ class FightModule extends GModule {
 
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 

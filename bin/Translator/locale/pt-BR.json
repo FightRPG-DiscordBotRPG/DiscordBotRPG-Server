@@ -132,7 +132,9 @@
     "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
 
     "shop_item_dont_exist": "Você precisa escolher um item existente",
-    "shop_no_building": "Não há loja nesta área"
+    "shop_no_building": "Não há loja nesta área",
+    
+    "already_doing_something_command": "You must wait until your last action is completed"
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",

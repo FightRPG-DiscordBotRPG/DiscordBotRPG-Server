@@ -38,11 +38,12 @@ class ShopModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/items/:page?", async (req, res) => {
+        this.router.get("/items/:page?", async (req, res, next) => {
             let data = {};
 
             if (res.locals.shop != null) {
@@ -57,10 +58,11 @@ class ShopModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "shop_no_building");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/buy", async (req, res) => {
+        this.router.post("/buy", async (req, res, next) => {
             let data = {};
             data.lang = res.locals.lang;
 
@@ -101,6 +103,7 @@ class ShopModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "shop_no_building");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 

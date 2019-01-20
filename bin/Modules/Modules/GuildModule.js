@@ -36,12 +36,13 @@ class GuildModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
 
-        this.router.get("/show", async (req, res) => {
+        this.router.get("/show", async (req, res, next) => {
             let data = {};
             if (await Globals.connectedUsers[res.locals.id].character.isInGuild()) {
                 data = await Globals.connectedGuilds[await Globals.connectedUsers[res.locals.id].character.getIDGuild()].toApi(res.locals.lang);
@@ -50,11 +51,12 @@ class GuildModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/create", async (req, res) => {
+        this.router.post("/create", async (req, res, next) => {
             let data = {};
             if (req.body.guildName) {
                 // Si le joueur n'a pas de guilde
@@ -85,11 +87,12 @@ class GuildModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/disband", async (req, res) => {
+        this.router.post("/disband", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
@@ -115,11 +118,12 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_have_to_be_gm_to_disband");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
 
         });
 
-        this.router.post("/apply", async (req, res) => {
+        this.router.post("/apply", async (req, res, next) => {
             let data = {};
             req.body.idGuild = parseInt(req.body.idGuild, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -138,10 +142,11 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_enter_id_to_join");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/accept", async (req, res) => {
+        this.router.post("/accept", async (req, res, next) => {
             let data = {};
             req.body.idCharacter = parseInt(req.body.idCharacter, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -166,10 +171,11 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_enter_id_to_add");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/applies/:page?", async (req, res) => {
+        this.router.get("/applies/:page?", async (req, res, next) => {
             let data = {};
             let apPage = parseInt(req.params.page, 10);
             if (!apPage || !Number.isInteger(apPage)) {
@@ -182,10 +188,11 @@ class GuildModule extends GModule {
                 data = await Guild.getAppliances(Globals.connectedUsers[res.locals.id].character.id, res.locals.lang);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/apply/cancel", async (req, res) => {
+        this.router.post("/apply/cancel", async (req, res, next) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -212,10 +219,11 @@ class GuildModule extends GModule {
                 }
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/applies/cancel", async (req, res) => {
+        this.router.post("/applies/cancel", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
@@ -230,10 +238,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "you_have_cancel_all_your_applies");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/list/:page?", async (req, res) => {
+        this.router.get("/list/:page?", async (req, res, next) => {
             let data = {};
             let apPage = parseInt(req.params.page, 10);
             if (!apPage || !Number.isInteger(apPage)) {
@@ -241,10 +250,11 @@ class GuildModule extends GModule {
             }
             data = await Guild.getGuilds(apPage);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/kick", async (req, res) => {
+        this.router.post("/kick", async (req, res, next) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -263,10 +273,11 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_not_in_guild");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/leave", async (req, res) => {
+        this.router.post("/leave", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (tGuildId > 0) {
@@ -281,10 +292,11 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_not_in_guild");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/mod", async (req, res) => {
+        this.router.post("/mod", async (req, res, next) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
             req.body.rank = parseInt(req.body.rank, 10);
@@ -302,10 +314,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "rank_modified");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/mod/leaderswitch", async (req, res) => {
+        this.router.post("/mod/leaderswitch", async (req, res, next) => {
             let data = {};
             req.body.id = parseInt(req.body.id, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -322,10 +335,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "rank_modified");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/announce", async (req, res) => {
+        this.router.post("/announce", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
@@ -341,10 +355,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "you_have_updated_guild_announcement");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/money/add", async (req, res) => {
+        this.router.post("/money/add", async (req, res, next) => {
             let data = {};
             req.body.money = parseInt(req.body.money, 10);
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
@@ -374,10 +389,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "you_gift_x_g_to_guild", [req.body.money]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/money/remove", async (req, res) => {
+        this.router.post("/money/remove", async (req, res, next) => {
             let data = {};
             req.body.money = parseInt(req.body.money, 10);
             let err = [];
@@ -399,10 +415,11 @@ class GuildModule extends GModule {
                 await Globals.connectedUsers[res.locals.id].character.addMoney(req.body.money);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/levelup", async (req, res) => {
+        this.router.post("/levelup", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let err = [];
@@ -418,10 +435,11 @@ class GuildModule extends GModule {
                 data.success = Translator.getString(res.locals.lang, "guild", "guild_level_up", [await Globals.connectedGuilds[tGuildId].getLevel()]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/enroll", async (req, res) => {
+        this.router.post("/enroll", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
@@ -441,10 +459,11 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_have_to_be_gm_to_enroll");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/unenroll", async (req, res) => {
+        this.router.post("/unenroll", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
@@ -464,6 +483,7 @@ class GuildModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_have_to_be_gm_to_enroll");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 

@@ -38,11 +38,12 @@ class ConquestModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.post("/area/levelup", async (req, res) => {
+        this.router.post("/area/levelup", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (await res.locals.currentArea.getOwnerID() === tGuildId) {
@@ -73,10 +74,11 @@ class ConquestModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/area/bonus/up", async (req, res) => {
+        this.router.post("/area/bonus/up", async (req, res, next) => {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (await res.locals.currentArea.getOwnerID() === tGuildId) {
@@ -104,21 +106,24 @@ class ConquestModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
 
-        this.router.get("/area/bonuses", async (req, res) => {
+        this.router.get("/area/bonuses", async (req, res, next) => {
             let data = {};
             data = res.locals.currentArea.getListOfBonuses(res.locals.lang);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/area", async (req, res) => {
+        this.router.get("/area", async (req, res, next) => {
             let data = {};
             data = await res.locals.currentArea.getConquest(res.locals.lang);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 

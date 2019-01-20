@@ -36,31 +36,34 @@ class GroupModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.post("/notifications/mute", async (req, res) => {
+        this.router.post("/notifications/mute", async (req, res, next) => {
             let data = {}
 
             await Globals.connectedUsers[res.locals.id].muteGroup(true);
             data.success = Translator.getString(res.locals.lang, "group", "now_muted");
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/notifications/unmute", async (req, res) => {
+        this.router.post("/notifications/unmute", async (req, res, next) => {
             let data = {}
 
             await Globals.connectedUsers[res.locals.id].muteGroup(false);
             data.success = Translator.getString(res.locals.lang, "group", "now_unmuted");
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/kick", async (req, res) => {
+        this.router.post("/kick", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             if (req.body.username) {
@@ -95,10 +98,11 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/swap", async (req, res) => {
+        this.router.post("/swap", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             if (req.body.username) {
@@ -129,10 +133,11 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/leave", async (req, res) => {
+        this.router.post("/leave", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             if (group != null) {
@@ -147,10 +152,11 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/invite", async (req, res) => {
+        this.router.post("/invite", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
 
@@ -202,10 +208,11 @@ class GroupModule extends GModule {
 
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/accept", async (req, res) => {
+        this.router.post("/accept", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             let pending = res.locals.pending;
@@ -232,11 +239,12 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
 
-        this.router.post("/decline", async (req, res) => {
+        this.router.post("/decline", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             let pending = res.locals.pending;
@@ -255,10 +263,11 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/show", async (req, res) => {
+        this.router.get("/show", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             let pending = res.locals.pending;
@@ -270,10 +279,11 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/fight/monster", async (req, res) => {
+        this.router.post("/fight/monster", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
             let pending = res.locals.pending;
@@ -324,6 +334,7 @@ class GroupModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
     }

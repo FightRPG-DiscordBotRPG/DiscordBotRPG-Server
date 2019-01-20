@@ -39,21 +39,21 @@ var Globals = {
     "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834"],
     "activated": true,
     "mDifficulties": [{
-            name: "Weak",
-            value: 0.8,
-        },
-        {
-            name: "Young",
-            value: 0.9,
-        },
-        {
-            name: "Adult",
-            value: 1,
-        },
-        {
-            name: "Alpha",
-            value: 1.2,
-        }
+        name: "Weak",
+        value: 0.8,
+    },
+    {
+        name: "Young",
+        value: 0.9,
+    },
+    {
+        name: "Adult",
+        value: 1,
+    },
+    {
+        name: "Alpha",
+        value: 1.2,
+    }
     ],
     "equipsPossible": null,
     "rarityChances": rarityChances,
@@ -80,6 +80,7 @@ var Globals = {
     "connectedGuilds": {},
     "areasManager": {},
     "fightManager": {},
+    "lockedMembers": {},
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },

@@ -38,11 +38,12 @@ class CraftingModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/craftlist/:page?", async (req, res) => {
+        this.router.get("/craftlist/:page?", async (req, res, next) => {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
@@ -51,10 +52,11 @@ class CraftingModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/craftshow/:idCraft?", async (req, res) => {
+        this.router.get("/craftshow/:idCraft?", async (req, res, next) => {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
@@ -69,10 +71,11 @@ class CraftingModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/craft", async (req, res) => {
+        this.router.post("/craft", async (req, res, next) => {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
@@ -123,10 +126,11 @@ class CraftingModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/collect", async (req, res) => {
+        this.router.post("/collect", async (req, res, next) => {
             let data = {};
 
             let idToCollect = parseInt(req.body.idResource, 10);
@@ -178,16 +182,18 @@ class CraftingModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/resources", async (req, res) => {
+        this.router.get("/resources", async (req, res, next) => {
             let data = {};
 
             data.success = Translator.getString(res.locals.lang, "area", "follow_the_link") + "\n";
             data.success += "http://api.fight-rpg.com/helpers/areas/resources?lang=" + res.locals.lang;
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 

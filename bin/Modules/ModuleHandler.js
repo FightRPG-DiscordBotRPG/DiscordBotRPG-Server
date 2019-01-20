@@ -43,6 +43,17 @@ class ModuleHandler extends GModule {
         }));
         app.use(express.json());
         //app.use(compression());
+        app.use("/game", async (req, res, next) => {
+            let urlParam1 = req.url.split("/");
+            urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;
+            if(Globals.activated || urlParam1) {
+                next();
+            } else {
+                return res.json({
+                    error: "The game is under maintenance."
+                });
+            }
+        });
         app.use("/game", this.checkAuth);
         app.use("/game", async (req, res, next) => {
             if (res.locals.id != null) {

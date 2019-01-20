@@ -33,11 +33,12 @@ class AdminModule extends GModule {
         this.router.use(this.isAdmin);
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.post("/give/item/me", async (req, res) => {
+        this.router.post("/give/item/me", async (req, res, next) => {
             let data = {};
             req.body.idItem = parseInt(req.body.idItem);
             if (req.body.idItem && Number.isInteger(req.body.idItem)) {
@@ -48,10 +49,11 @@ class AdminModule extends GModule {
                 }
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/give/item/to", async (req, res) => {
+        this.router.post("/give/item/to", async (req, res, next) => {
             let data = {};
             req.body.idItem = parseInt(req.body.idItem); // idItem
             req.body.level = parseInt(req.body.level); // level
@@ -66,10 +68,11 @@ class AdminModule extends GModule {
                 data.error = "User must be connected !";
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/active_players/:hours?", async (req, res) => {
+        this.router.get("/active_players/:hours?", async (req, res, next) => {
             let data = {};
             let hourlyActivePlayers = {};
             let h = req.params.hours != null ? parseInt(req.params.hours) : 6;
@@ -106,11 +109,12 @@ class AdminModule extends GModule {
             data.hourlyActivePlayers = hourlyActivePlayers;
             data.uniqueUsers = mres[0].uniqueUsers;
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
         // active - req.body
-        this.router.post("/bot/activate", async (req, res) => {
+        this.router.post("/bot/activate", async (req, res, next) => {
             let data = {};
             if (req.body.active === "true") {
                 Globals.activated = true;
@@ -121,10 +125,11 @@ class AdminModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/user/mute", async (req, res) => {
+        this.router.post("/user/mute", async (req, res, next) => {
             let data = {};
             if (req.body.idUser != null) {
                 let muteTime = 100;
@@ -141,10 +146,11 @@ class AdminModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/give/xp", async (req, res) => {
+        this.router.post("/give/xp", async (req, res, next) => {
             let data = {};
 
             if (Globals.connectedUsers[res.locals.id].character.getLevel() < Globals.maxLevel) {
@@ -167,10 +173,11 @@ class AdminModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/give/gold", async (req, res) => {
+        this.router.post("/give/gold", async (req, res, next) => {
             let data = {};
 
             if (req.body.idUser != null) {
@@ -196,30 +203,33 @@ class AdminModule extends GModule {
             }
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/resetfight", async (req, res) => {
+        this.router.post("/resetfight", async (req, res, next) => {
             let data = {};
 
             Globals.connectedUsers[res.locals.id].character.canFightAt = 0;
             data.success = "Reset Done";
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/translations/reload", async (req, res) => {
+        this.router.post("/translations/reload", async (req, res, next) => {
             let data = {};
 
             await Translator.load();
             data.success = "Translations reloaded";
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/emojis/reload", async (req, res) => {
+        this.router.post("/emojis/reload", async (req, res, next) => {
             let data = {};
 
             delete require.cache[require.resolve("../../Emojis.js")];
@@ -227,10 +237,11 @@ class AdminModule extends GModule {
             data.success = "Emojis reloaded";
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/last_command", async (req, res) => {
+        this.router.get("/last_command", async (req, res, next) => {
             let data = {};
 
             let lcommand = await conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [res.locals.id]);
@@ -238,10 +249,11 @@ class AdminModule extends GModule {
             data.success += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
 
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/debug", async (req, res) => {
+        this.router.post("/debug", async (req, res, next) => {
             //console.log(await Globals.connectedUsers[res.locals.id].character.getInv().getItemOfThisIDItem(240));
         });
 

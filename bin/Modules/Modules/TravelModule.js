@@ -37,25 +37,28 @@ class TravelModule extends GModule {
         });
         this.reactHandler();
         this.loadRoutes();
+        this.freeLockedMembers();
         this.crashHandler();
     }
 
     loadRoutes() {
-        this.router.get("/area", async (req, res) => {
+        this.router.get("/area", async (req, res, next) => {
             let data = {}
             data.area = await res.locals.currentArea.toApi(res.locals.lang);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/region", async (req, res) => {
+        this.router.get("/region", async (req, res, next) => {
             let data = {}
             data.region = await Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/info/:idArea?", async (req, res) => {
+        this.router.get("/info/:idArea?", async (req, res, next) => {
             let data = {}
             let wantedAreaToTravel = parseInt(req.params.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
@@ -81,10 +84,11 @@ class TravelModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/toarea", async (req, res) => {
+        this.router.post("/toarea", async (req, res, next) => {
             let data = {}
             let wantedAreaToTravel = parseInt(req.body.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
@@ -110,10 +114,11 @@ class TravelModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/inforegion/:idArea?", async (req, res) => {
+        this.router.get("/inforegion/:idArea?", async (req, res, next) => {
             let data = {}
             let wantedAreaToTravel = parseInt(req.params.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
@@ -139,10 +144,11 @@ class TravelModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.post("/toRegion", async (req, res) => {
+        this.router.post("/toRegion", async (req, res, next) => {
             let data = {}
             let wantedAreaToTravel = parseInt(req.body.idArea, 10);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
@@ -173,14 +179,16 @@ class TravelModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
-        this.router.get("/players/:page?", async (req, res) => {
+        this.router.get("/players/:page?", async (req, res, next) => {
             let data = {}
             req.params.page = parseInt(req.params.page, 10);
             data = await Globals.areasManager.getPlayersOf(Globals.connectedUsers[res.locals.id].character.getIdArea(), req.params.page, res.locals.lang);
             data.lang = res.locals.lang;
+            await next();
             return res.json(data);
         });
 
