@@ -98,7 +98,7 @@ class GModule {
 
     freeLockedMembers() {
         this.router.use(async (req, res) => {
-            if(Globals.lockedMembers[res.locals.id] == true) {
+            if (Globals.lockedMembers[res.locals.id] == true) {
                 Globals.lockedMembers[res.locals.id] = false;
             }
         })
@@ -249,9 +249,8 @@ class GModule {
             case 4:
                 commands[Translator.getString(lang, "help_panel", "guilds_title")] = {
                     "guild": Translator.getString(lang, "help_panel", "guild"),
-                    "guild": Translator.getString(lang, "help_panel", "guild"),
                     "guilds <page>": Translator.getString(lang, "help_panel", "guilds"),
-                    "gcreate <name>": Translator.getString(lang, "help_panel", "gcreate"),
+                    "gcreate \"<name>\"": Translator.getString(lang, "help_panel", "gcreate"),
                     "gdisband": Translator.getString(lang, "help_panel", "gdisband"),
                     "gapply <guildID>": Translator.getString(lang, "help_panel", "gapply"),
                     "gaccept <playerID>": Translator.getString(lang, "help_panel", "gaccept"),
@@ -267,6 +266,7 @@ class GModule {
                     "gleave": Translator.getString(lang, "help_panel", "gleave"),
                     "gmod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
                     "gleaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
+                    "grename": Translator.getString(lang, "help_panel", "grename \"<name>\"", [Globals.guilds.basePriceLevel]),
                 }
                 break;
             case 5:

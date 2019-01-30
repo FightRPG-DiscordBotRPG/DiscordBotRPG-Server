@@ -9,6 +9,7 @@ const Guild = require("../Guild");
 const PStatistics = require("../Achievement/PStatistics");
 const path = require('path');
 const conf = require("../../conf/conf");
+const versions = require("../../conf/versions");
 const express = require("express"),
     app = express(),
     port = 8880,
@@ -46,7 +47,7 @@ class ModuleHandler extends GModule {
         app.use("/game", async (req, res, next) => {
             let urlParam1 = req.url.split("/");
             urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;
-            if(Globals.activated || urlParam1) {
+            if (Globals.activated || urlParam1) {
                 next();
             } else {
                 return res.json({
@@ -106,6 +107,9 @@ class ModuleHandler extends GModule {
             }
             html += "</p>";
             res.send(html);
+        });
+        helpersRouter.get("/versions", async (req, res) => {
+            res.send(versions);
         });
         app.use("/helpers", helpersRouter);
     }
@@ -295,12 +299,12 @@ class ModuleHandler extends GModule {
             Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, username, avatar);
             await Globals.connectedUsers[authorIdentifier].loadUser();
 
-            if(Globals.connectedUsers[authorIdentifier].isNew) {
+            if (Globals.connectedUsers[authorIdentifier].isNew) {
                 Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
             } else {
                 Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
             }
-            
+
 
             // Load Guild
             if (await Globals.connectedUsers[authorIdentifier].character.isInGuild()) {

@@ -9,7 +9,6 @@
     "you_dont_have_right_to_change_announcement": "Vous n'avez pas la permission de modifier l'annonce de guilde",
     "you_cant_exceed_x_characters": "Vous ne pouvez pas dépasser %d caractères",
     "already_in_guild": "Impossible, vous êtes déjà dans une guilde !",
-
     "guild_name_empty": "Vous devez choisir le nom de votre guilde",
     "guild_have_to_be_gm_to_disband": "Vous devez être le chef de la guilde pour pouvoir la dissoudre",
     "guild_dont_be_in_guild_to_join_a_guild": "Vous ne devez pas être dans une guilde pour demander à en rejoindre une",
@@ -46,11 +45,9 @@
     "guild_not_enrolled_in_tournament": "Votre guilde n'est pas inscrire à un tournoi",
     "guild_dont_own_this_area": "Votre guilde ne contrôle pas cette zone",
     "guild_dont_have_permission_to_levelup_area": "Vous n'avez pas la permission de monter le niveau de cette zone",
-
     "area_at_max_level": "Cette zone est au niveau maximum",
     "area_bonus_not_available": "Ce bonus n'est pas disponible pour cette zone",
     "area_dont_have_enough_stat_points": "Vous ne pouvez pas distribuer autant de points à cette zone",
-
     "collect_enter_id_to_collect": "Veuillez entrer l'identifiant de la ressource à récolter",
     "collect_tired_wait_x_seconds": "Vous êtes trop fatigué pour récolter des ressources vous devez encore attendre : %s secondes",
     "collect_dont_have_required_level": "Vous n'avez pas le niveau de métier nécessaire pour récolter cette ressource. Vous devez au moins être niveau : %d",
@@ -65,7 +62,6 @@
     "item_cant_sell_favorite": "Vous ne pouvez pas vendre un objet marqué comme favori",
     "item_you_cant_use": "Vous ne pouvez pas utiliser cet objet",
     "item_enter_id_to_use": "Vous devez entrer l'id de l'objet à utiliser.",
-
     "character_you_dont_have_enough_to_reset": "Vous n'avez pas assez d'argent pour réinitialiser vos stats !",
     "economic_enter_id_item_to_sell": "Vous devez entrer l'ID de l'objet à vendre",
     "economic_have_to_be_in_town": "Vous devez être dans une ville pour pouvoir vendre vos objets",
@@ -87,7 +83,6 @@
     "character_you_cant_distribute_this_amount_of_points": "Vous ne pouvez pas distribuer autant de points",
     "character_attribute_dont_exist": "Cet attribut n'existe pas",
     "languages_lang_dont_exist": "Cette langue n'existe pas, veuillez consulter la liste des langues disponibles en utilisant la commande ::lang",
-
     "group_already_in_group": "Vous ne devez pas être dans un groupe pour pouvoir faire cela",
     "group_not_in_group": "Vous devez être dans un groupe pour pouvoir faire cela",
     "group_occupied": "Votre groupe est occupé finissez ce que vous faites puis recommencez",
@@ -105,7 +100,6 @@
     "group_not_same_area": "Tous les membres du groupe doivent se trouver dans la même zone",
     "group_cant_swap_yourself": "Vous ne pouvez pas vous nommer chef du groupe vu que vous êtes déjà chef du groupe",
     "group_user_swap_empty_name": "Vous devez sélectionner l’utilisateur qui sera le futur chef de groupe",
-
     "marketplace_not_exist": "Il n'y a pas d'hotel de vente ici",
     "marketplace_id_item_forgotten": "Vous devez choisir l'objet à vendre",
     "marketplace_dont_have_object": "Vous n'avez pas cet objet",
@@ -120,20 +114,16 @@
     "marketplace_order_yours": "Vous ne pouvez pas acheter votre propre marchandise",
     "marketplace_not_enough_money": "Vous n'avez pas assez d'argent pour faire cela",
     "marketplace_favorite_sell_impossible": "Vous ne pouvez pas mettre en vente un objet marqué comme favori",
-
     "craft_no_building": "Il n'y a pas de batîment de craft d'actif dans cette zone",
     "craft_dont_exist": "Cette recette n'est pas disponible",
     "craft_dont_have_required_level": "Vous n'avez pas le niveau minimum de fabrication requis pour fabriquer cet objet, vous devez être au moins niveau : %d",
     "craft_dont_have_required_items": "Vous n'avez pas toutes les ressources requises pour fabriquer cet objet",
     "craft_tired_wait_x_seconds": "Vous êtes trop fatigué pour fabriquer des objets vous devez encore attendre : %s secondes",
-
     "prefix_max_length": "Le préfixe ne doit pas dépasser %d caractères",
     "prefix_undefined": "Le préfixe doit au moins contenir 1 caractère",
     "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le préfixe",
-
     "shop_item_dont_exist": "Vous devez choisir un objet qui existe",
     "shop_no_building": "Il n'y a pas de magasin dans cette zone",
-
     "already_doing_something_command": "Vous devez attendre que votre dernière action soit terminée"
   },
   "craft": {
@@ -234,15 +224,12 @@
     "ore": "Minerai",
     "tree": "Arbre",
     "plant": "Plante",
-
     "woods": "Bois",
     "ores": "Minerais",
     "trees": "Arbres",
     "plants": "Plantes",
-
     "noresources": "Pas de ressources ici",
     "not_collected": "Vous n'avez pas réussi a récolter la ressource",
-
     "collected_x_resource": "Vous avez récolté %d %s",
     "resource_dont_exist": "Vous ne voyez cette ressource nulle part",
     "collect_gain_xp": "Vous avez gagné un total de %d XP (Dont %d XP bonus dûe à la zone) à votre métier de craft",
@@ -301,7 +288,8 @@
     "nothing_to_print": "Rien à afficher ici",
     "enroll": "Votre guilde s'est bien inscrite pour le prochain tournoi de cette zone",
     "unenroll": "Votre guilde n'est plus enrôlée dans une conquête",
-    "you_paid_x": "Votre guilde a payé %dG"
+    "you_paid_x": "Votre guilde a payé %dG",
+    "renamed": "Vous avez renommé votre guilde en : \"%s\""
   },
   "inventory_equipment": {
     "item_equiped": "Votre objet a été équipé",
@@ -511,9 +499,7 @@
   },
   "help_panel": {
     "help": "Aide",
-
     "tutorial": "Hey ! Je vois que c'est le première fois que tu utilise FightRPG, un tutoriel est disponible a cette adresse : %s\nSuit le avant de faire quoi que ce soit, ça va vraiment t'aider !",
-
     "inventory_title": "Inventaire",
     "inv": "Affiche l'inventaire",
     "inv_filter": "Affiche l'inventaire et filtre les résultats. Filtres possibles : rarity, level, type",
@@ -523,29 +509,24 @@
     "sell": "Vend l'objet choisi",
     "sellall": "Vend tous les objets de l'inventaire",
     "sendmoney": "Envoi de l'argent à un joueur",
-
     "filters_title": "Filtres",
     "rarities": "Affiche les identifiants correspondants à chaque rareté",
     "types": "Affiche les identifiants correspondants à chaque types d'objets",
-
     "equipment_title": "Equipement",
     "equipment": "Affiche les objets équipés",
     "equip": "Equipé l'objet choisi",
     "unequip": "Déséquipe l'objet de l'emplacement choisi",
     "use": "Utilise l'objet choisi",
-
     "character_title": "Personnage",
     "info": "Affiche les informations sur votre personnage",
     "up": "Ajoute à la caractéristique statName number Points",
     "leaderboard": "Affiche ton rang PvP",
     "reset": "Te permet de réinitialiser tes caractéristiques",
-
     "fight_title": "Combats",
     "fight": "Permet de tenter d'attaquer le/les monstres choisis",
     "grpfight": "Permet d'attaquer avec son groupe le/les montres choisis",
     "arenaMention": "Permet d'attaquer le joueur mentionné",
     "arena": "Permet d'attaquer le joueur choisi",
-
     "areas_title": "Zones",
     "area": "Affiche les informations de la zone dans laquelle vous vous trouvez",
     "areas": "Affiche toutes les zones",
@@ -556,7 +537,6 @@
     "areaplayers": "Affiche les joueurs de la zone",
     "travel": "Permet de voyager à la zone areaID",
     "travelregion": "Permet de voyager à la région regionID",
-
     "guilds_title": "Guildes",
     "guild": "Affiche les informations de la guilde dans laquelle vous êtes",
     "guilds": "Affiche les guildes",
@@ -576,11 +556,10 @@
     "gleave": "Abandonner votre guilde",
     "gmod": "Change le rang du membre de la guilde (1 : Membre, 2 : Officier)",
     "gleaderswitch": "Echange votre place de maître de guilde avec un autre membre de la guilde",
-
+    "grename": "Change le nom de votre guilde. Quand vous écrivez le nom de la guilde, utilisez \"votre nouveau nom de guilde\" pour prendre en compte les espaces. Coûte : %dG",
     "other_title": "Autres",
     "lang": "Permet d'afficher la liste des langues disponibles",
     "lang_param": "Permet de changer de langue",
-
     "groups_title": "Groupes",
     "grp": "Affiche le groupe dans lequel vous êtes",
     "grpinvite_mention": "Invite le joueur @mention à rejoindre votre groupe",
@@ -591,7 +570,6 @@
     "grpswap": "Permet au chef du groupe de nommer un nouveau chef de groupe",
     "grpmute": "Vous permet de désactiver les notifications de groupe",
     "grpunmute": "Vous permet d'activer les notifications de groupe",
-
     "market_title": "Hotel des ventes",
     "mkmylist": "Affiche vos ordres de vente",
     "mkplace": "Place l'objet <idItemInInventory> en nombre <nb> pour <price>G",
@@ -600,24 +578,20 @@
     "mksearch": "Recherche l'objet par son nom et son niveau",
     "mkshow": "Affiche touche les objets du marhcé à la page choisie",
     "mksee": "Affiche l'objet <idItem>",
-
     "craft_title": "Métiers",
     "craftlist": "Affiche la liste des recettes disponibles dans la ville, à la page souhaité",
     "craftshow": "Affiche la recette d'identifiant idCraft",
     "craft": "Fabrique l'objet dont l'id est passé en paramètre",
     "collect": "Collecte la ressource dont l'id est passé en paramètre",
     "resources": "Affiche toutes les ressources par zone",
-
     "shop_title": "Magasin",
     "sitems": "Affiche la liste des objets disponibles, à la page souhaité",
     "sbuy": "Achète l'objet dont l'id est passé en paramètre",
-
     "world_boss_title": "Boss Mondiaux",
     "wbfight": "Attaque le Boss Mondial qui se trouve quand la zone où vous êtes",
     "wbshowall": "Affiche des informations sur les Boss Mondiaux",
     "wblastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
     "wbleaderboard": "Affiche le classement des meilleurs joueurs en terme soit de dégâts (damage) soit de nombre d'attaques (attacks) pour le dernier Boss Mondial auquel vous avez participé. Les types sont: damage,attacks",
-
     "settings": "Affiche le menu des paramètres"
   },
   "settings_menu": {

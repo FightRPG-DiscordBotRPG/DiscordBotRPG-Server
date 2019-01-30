@@ -9,7 +9,6 @@
     "you_dont_have_right_to_change_announcement": "You don't have the rights to change the announcement of the guild",
     "you_cant_exceed_x_characters": "You can't exceed %d characters",
     "already_in_guild": "Impossible, you're already in a guild!",
-
     "guild_name_empty": "You must choose a name for your guild",
     "guild_have_to_be_gm_to_disband": "You must be the guild master to disband",
     "guild_dont_be_in_guild_to_join_a_guild": "You can't ask to join a guild if you're already in one",
@@ -46,11 +45,9 @@
     "guild_not_enrolled_in_tournament": "Your guild is not enrolled in an conquest",
     "guild_dont_own_this_area": "Your guild is not the owner of this area",
     "guild_dont_have_permission_to_levelup_area": "You don't have the rights to level up an area owned by your guild",
-
     "area_at_max_level": "The area is at the maximum level",
     "area_bonus_not_available": "This bonus is not available in this area",
     "area_dont_have_enough_stat_points": "You can't allocate this amount of points to this area",
-
     "collect_enter_id_to_collect": "Please enter the ID of the resource to collect",
     "collect_tired_wait_x_seconds": "You are too tired to collect these resources, you still have to wait: %s seconds",
     "collect_dont_have_required_level": "You don't have the required crafting level to collect this resource, you must be at least level %d",
@@ -65,7 +62,6 @@
     "item_cant_sell_favorite": "You can't sell an item tagged as favorite",
     "item_you_cant_use": "You can't use this item",
     "item_enter_id_to_use": "You must enter the ID of the item to use.",
-
     "character_you_dont_have_enough_to_reset": "You don't have enough money to reset your stats!",
     "economic_enter_id_item_to_sell": "You must enter the item's ID to sell it",
     "economic_have_to_be_in_town": "You must be in a town to sell your items",
@@ -87,7 +83,6 @@
     "character_you_cant_distribute_this_amount_of_points": "You can't allocate this amount of points",
     "character_attribute_dont_exist": "This attribute doesn't exist",
     "languages_lang_dont_exist": "This language doesn't exist, please refer to the list of available languages using the following comamnd ::lang",
-
     "group_already_in_group": "You can't be in a group to do this",
     "group_not_in_group": "You must be in a group to do this",
     "group_occupied": "Your group is busy, finish what you're doing and try again",
@@ -105,7 +100,6 @@
     "group_not_same_area": "Every member of the group has to be in the same area",
     "group_cant_swap_yourself": "You can't make yourself group leader since you are already group leader",
     "group_user_swap_empty_name": "You must select the user who will be group leader",
-
     "marketplace_not_exist": "There is no marketplace here",
     "marketplace_id_item_forgotten": "You have to choose the item to sell",
     "marketplace_dont_have_object": "You don't have this item",
@@ -120,20 +114,16 @@
     "marketplace_order_yours": "You can't buy your own items",
     "marketplace_not_enough_money": "You don't have enough money to do that",
     "marketplace_favorite_sell_impossible": "You can't sell an item tagged as favorite",
-
     "craft_no_building": "There is no crafting building active here",
     "craft_dont_exist": "This blueprint is unavailable",
     "craft_dont_have_required_level": "You don't have the minimum required level to craft this item. You must be at least level: %d",
     "craft_dont_have_required_items": "You don't have all the required resources to craft this item",
     "craft_tired_wait_x_seconds": "You are too tired to craft an item, you still have to wait: %s seconds",
-
     "prefix_max_length": "The prefix must not exceed a length of %d characters",
     "prefix_undefined": "The prefix must at least be 1 character long",
     "prefix_not_owner_server": "You must own this server to change the prefix",
-
     "shop_item_dont_exist": "You must choose an existing item",
     "shop_no_building": "There is no shop in this area",
-
     "already_doing_something_command": "You must wait until your last action is completed"
   },
   "craft": {
@@ -234,15 +224,12 @@
     "ore": "Ore",
     "tree": "Tree",
     "plant": "Plant",
-
     "woods": "Woods",
     "ores": "Ores",
     "trees": "Trees",
     "plants": "Plants",
-
     "noresources": "No resources here",
     "not_collected": "You weren't successful in collecting the resource",
-
     "collected_x_resource": "You've collected %d %s",
     "resource_dont_exist": "You don't see this resource anywhere",
     "collect_gain_xp": "You've gained a total of %d XP (with %d XP bonus thanks to the area) to your crafting job",
@@ -301,7 +288,8 @@
     "nothing_to_print": "Nothing to see",
     "enroll": "Your guild is now enrolled for the next conquest in this area",
     "unenroll": "Your guild is now no longer enrolled to any conquest",
-    "you_paid_x": "Your guild paid %dG"
+    "you_paid_x": "Your guild paid %dG",
+    "renamed": "You have renamed your guild \"%s\""
   },
   "inventory_equipment": {
     "item_equiped": "Your item is now equipped",
@@ -511,9 +499,7 @@
   },
   "help_panel": {
     "help": "Help",
-
     "tutorial": "Hi! I see that is your first time using FightRPG. There is a tutorial at this link: %s\nFollow it before doing anything, it will help you!",
-
     "inventory_title": "Inventory",
     "inv": "Shows the inventory",
     "inv_filter": "Shows the inventory and filter the results. Filters are: rarity, level, type",
@@ -523,29 +509,24 @@
     "sell": "Sells the selected item",
     "sellall": "Sells all the inventory items",
     "sendmoney": "Send money to a player",
-
     "filters_title": "Filters",
     "rarities": "Displays the ids of every rarity",
     "types": "Displays the ids of every item type",
-
     "equipment_title": "Equipment",
     "equipment": "Shows equipped items",
     "equip": "Equips the selected item",
     "unequip": "Unequips the object from the selected slot",
     "use": "Use the specified item",
-
     "character_title": "Character",
     "info": "Shows your character's information",
     "up": "Adds to attribute statName number Points",
     "leaderboard": "Shows your PvP ranking",
     "reset": "Allows you to reset your attributes",
-
     "fight_title": "Fights",
     "fight": "Allows you to try to attack the selected monster/monsters",
     "grpfight": "Allow you to try to attack the selected monster/monsters with your group",
     "arenaMention": "Allows you to attack the mentioned player",
     "arena": "Allows you to attack the selected player",
-
     "areas_title": "Areas",
     "area": "Shows the information of the area in which you are",
     "areas": "Shows every area",
@@ -556,7 +537,6 @@
     "areaupbonus": "Upgrade one of the available bonuses",
     "travel": "Allows you to travel to the area areaID",
     "travelregion": "Allows you to travel to the region regionID",
-
     "guilds_title": "Guilds",
     "guild": "Shows the information of the guild you're in",
     "guilds": "Shows the guilds",
@@ -576,11 +556,10 @@
     "gleave": "Leave your guild",
     "gmod": "Change the member rank (1: Member, 2: Officer)",
     "gleaderswitch": "Exchange your guild master position with another guild member",
-
+    "grename": "Change the name of your guild. When writing the guild name use \"you new guild name\" to take into account white spaces. Cost: %dG",
     "other_title": "Other",
     "lang": "Shows the list of available languages",
     "lang_param": "Allows you to switch languages",
-
     "groups_title": "Groups",
     "grp": "Shows the group you're in",
     "grpinvite_mention": "Invites player @mention to join your group",
@@ -591,7 +570,6 @@
     "grpswap": "Allows the group leader to choose a new group leader",
     "grpmute": "Deactivates group notifications",
     "grpunmute": "Activates group notifications",
-
     "market_title": "Auction house",
     "mkmylist": "Displays your sell orders",
     "mkplace": "Sell <nb> item <idItemInInventory> for <price>G",
@@ -600,24 +578,20 @@
     "mksearch": "Search for the item by his name and his level",
     "mkshow": "Show all items in the market at given page",
     "mksee": "Shows the item <idItem>",
-
     "craft_title": "Job System",
     "craftlist": "Show all the available recipes in this city at given page",
     "craftshow": "Show the recipe of given ID",
     "craft": "Craft the recipe of given ID",
     "collect": "Collect the resource of given ID",
     "resources": "Show all the resources per area",
-
     "shop_title": "Shop",
     "sitems": "Show all the available items to buy in this city at given page",
     "sbuy": "Buy the item of given ID",
-
     "world_boss_title": "World Bosses",
     "wbfight": "Attack the World Boss if there is one in the area where you are",
     "wbshowall": "Displays infos about World Bosses",
     "wblastinfo": "Show your stats for the last boss you killed",
     "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack count (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
-
     "settings": "Shows the settings menu"
   },
   "settings_menu": {

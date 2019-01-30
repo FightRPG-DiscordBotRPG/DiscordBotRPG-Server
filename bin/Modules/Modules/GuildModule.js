@@ -487,9 +487,24 @@ class GuildModule extends GModule {
             return res.json(data);
         });
 
-
-
-
+        this.router.post("/rename", async (req, res, next) => {
+            let data = {};
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            if (tGuildId > 0) {
+                let guild = Globals.connectedGuilds[tGuildId];
+                let err = await guild.rename(Globals.connectedUsers[res.locals.id].character.id, req.body.name, res.locals.lang);
+                if (err[0] != null) {
+                    data.error = err[0];
+                } else {
+                    data.success = Translator.getString(res.locals.lang, "guild", "renamed", [req.body.name]);
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "you_have_to_be_in_a_guild");
+            }
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
     }
 
 }

@@ -170,7 +170,53 @@ class Guild {
     }
 
     async canCancelApplies(idCharacter) {
-        return (await this.getRankCharacter(idCharacter)) > 1 ? true : false;
+        return (await this.getRankCharacter(idCharacter)) > 1;
+    }
+
+    async canRenameGuild(idCharacter) {
+        return (await this.getRankCharacter(idCharacter)) === 3;
+    }
+
+    async haveEnoughGoldToRename() {
+        return (await this.getMoney()) >= Globals.guilds.basePriceLevel;
+    }
+
+    async rename(idCharacter, guildName, lang = "en") {
+        let err = [];
+        if (await this.canRenameGuild(idCharacter)) {
+            if (await this.haveEnoughGoldToRename()) {
+                err = await this.guildNameValidity(guildName, lang);
+                if (err[0] == null) {
+                    //rename
+                    await Promise.all([
+                        conn.query("UPDATE guilds SET nom = ? WHERE idGuild = ?", [guildName, this.id]), this.removeMoneyDirect(Globals.guilds.basePriceLevel)
+                    ]);
+                }
+            } else {
+                err.push(Translator.getString(lang, "errors", "guild_you_dont_have_enough_money"));
+            }
+        } else {
+            err.push(Translator.getString(lang, "errors", "generic_cant_do_that"));
+        }
+        return err;
+    }
+
+    async guildNameValidity(guildName, lang = "en") {
+        // Verifcation nom guilde
+        let err = [];
+        if (guildName.length > 60 || guildName.length < 4) {
+            err.push(Translator.getString(lang, "errors", "guild_name_cant_exceed_x_characters", [60, 4]));
+            return err;
+        }
+
+        // Verification si nom déjà pris
+        let res = await conn.query("SELECT idGuild FROM guilds WHERE nom = ?;", [guildName]);
+        if (res.length > 0) {
+            err.push(Translator.getString(lang, "errors", "guild_name_taken"));
+            return err;
+        }
+
+        return err;
     }
 
 
