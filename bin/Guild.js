@@ -163,6 +163,7 @@ class Guild {
 
 
     async disband() {
+        await conn.query("DELETE FROM areasowners WHERE idGuild = ?;", [this.id]);
         await conn.query("DELETE FROM conquesttournamentinscriptions WHERE idGuild = ?;", [this.id]);
         await conn.query("DELETE FROM guildsmembers WHERE idGuild = ?;", [this.id]);
         await conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
