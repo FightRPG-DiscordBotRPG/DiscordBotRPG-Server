@@ -289,7 +289,8 @@
     "enroll": "Your guild is now enrolled for the next conquest in this area",
     "unenroll": "Your guild is now no longer enrolled to any conquest",
     "you_paid_x": "Your guild paid %dG",
-    "renamed": "You have renamed your guild \"%s\""
+    "renamed": "You have renamed your guild \"%s\"",
+    "guild_territories": "Territories owned by your guild (%d)"
   },
   "inventory_equipment": {
     "item_equiped": "Your item is now equipped",
@@ -557,6 +558,7 @@
     "gmod": "Change the member rank (1: Member, 2: Officer)",
     "gleaderswitch": "Exchange your guild master position with another guild member",
     "grename": "Change the name of your guild. When writing the guild name use \"you new guild name\" to take into account white spaces. Cost: %dG",
+    "gterritories": "Shows the territories held by your guild",
     "other_title": "Other",
     "lang": "Shows the list of available languages",
     "lang_param": "Allows you to switch languages",

@@ -289,7 +289,8 @@
     "enroll": "Ваша гильдия теперь зарегистрирована для следующего Завоевания в этой территории",
     "unenroll": "Теперь ваша гильдия освобождена от Завоеваний этой территории",
     "you_paid_x": "Ваша гильдия заплатила %dG",
-    "renamed": "You have renamed your guild \"%s\""
+    "renamed": "You have renamed your guild \"%s\"",
+    "guild_territories": "Territories owned by your guild (%d)"
   },
   "inventory_equipment": {
     "item_equiped": "Теперь ваш предмет экипирован",
@@ -557,6 +558,7 @@
     "gmod": "Измененяет ранга участника (1: Участник, 2: Офицер)",
     "gleaderswitch": "Exchange your guild master position with another guild member",
     "grename": "Change the name of your guild. When writing the guild name use \"you new guild name\" to take into account white spaces. Cost: %dG",
+    "gterritories": "Shows the territories held by your guild",
     "other_title": "Другие",
     "lang": "Показывает список доступных языков",
     "lang_param": "Позволяет переключать языки",

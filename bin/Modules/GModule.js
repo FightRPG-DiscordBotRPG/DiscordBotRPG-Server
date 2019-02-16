@@ -266,7 +266,8 @@ class GModule {
                     "gleave": Translator.getString(lang, "help_panel", "gleave"),
                     "gmod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
                     "gleaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
-                    "grename": Translator.getString(lang, "help_panel", "grename \"<name>\"", [Globals.guilds.basePriceLevel]),
+                    "grename \"<name>\"": Translator.getString(lang, "help_panel", "grename", [Globals.guilds.basePriceLevel]),
+                    "gterritories": Translator.getString(lang, "help_panel", "gterritories"),
                 }
                 break;
             case 5:

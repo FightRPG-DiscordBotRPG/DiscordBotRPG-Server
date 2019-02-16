@@ -180,10 +180,10 @@ class WorldBossSpawner {
                 number: 50,
                 level: level
             }, {
-                id: 41,
-                number: 5,
-                level: 1
-            });
+                    id: 41,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank == 2) {
             crystals = 85;
             items.push({
@@ -191,10 +191,10 @@ class WorldBossSpawner {
                 number: 40,
                 level: level
             }, {
-                id: 55,
-                number: 5,
-                level: 1
-            });
+                    id: 55,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 3 && rank <= 5) {
             crystals = 70;
             items.push({
@@ -202,10 +202,10 @@ class WorldBossSpawner {
                 number: 30,
                 level: level
             }, {
-                id: 54,
-                number: 5,
-                level: 1
-            });
+                    id: 54,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 6 && rank <= 25) {
             crystals = 50;
             items.push({
@@ -213,10 +213,10 @@ class WorldBossSpawner {
                 number: 20,
                 level: level
             }, {
-                id: 53,
-                number: 5,
-                level: 1
-            });
+                    id: 53,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 26 && rank <= 50) {
             crystals = 30;
             items.push({
@@ -224,10 +224,10 @@ class WorldBossSpawner {
                 number: 15,
                 level: level
             }, {
-                id: 52,
-                number: 5,
-                level: 1
-            });
+                    id: 52,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 51 && rank <= 250) {
             crystals = 20;
             items.push({
@@ -235,10 +235,10 @@ class WorldBossSpawner {
                 number: 12,
                 level: level
             }, {
-                id: 51,
-                number: 5,
-                level: 1
-            });
+                    id: 51,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 251 && rank <= 500) {
             crystals = 10;
             items.push({
@@ -246,10 +246,10 @@ class WorldBossSpawner {
                 number: 16,
                 level: level
             }, {
-                id: 50,
-                number: 10,
-                level: 1
-            });
+                    id: 50,
+                    number: 10,
+                    level: 1
+                });
         } else if (rank >= 501 && rank <= 1000) {
             crystals = 8;
             items.push({
@@ -257,10 +257,10 @@ class WorldBossSpawner {
                 number: 14,
                 level: level
             }, {
-                id: 50,
-                number: 8,
-                level: 1
-            });
+                    id: 50,
+                    number: 8,
+                    level: 1
+                });
         } else if (rank >= 1001 && rank <= 2000) {
             crystals = 7;
             items.push({
@@ -268,10 +268,10 @@ class WorldBossSpawner {
                 number: 12,
                 level: level
             }, {
-                id: 50,
-                number: 7,
-                level: 1
-            });
+                    id: 50,
+                    number: 7,
+                    level: 1
+                });
         } else if (rank >= 2001 && rank <= 3000) {
             crystals = 6;
             items.push({
@@ -279,10 +279,10 @@ class WorldBossSpawner {
                 number: 10,
                 level: level
             }, {
-                id: 50,
-                number: 6,
-                level: 1
-            });
+                    id: 50,
+                    number: 6,
+                    level: 1
+                });
         } else if (rank >= 3001 && rank <= 4000) {
             crystals = 5;
             items.push({
@@ -290,10 +290,10 @@ class WorldBossSpawner {
                 number: 8,
                 level: level
             }, {
-                id: 50,
-                number: 5,
-                level: 1
-            });
+                    id: 50,
+                    number: 5,
+                    level: 1
+                });
         } else if (rank >= 4001 && rank <= 5000) {
             crystals = 4;
             items.push({
@@ -301,10 +301,10 @@ class WorldBossSpawner {
                 number: 6,
                 level: level
             }, {
-                id: 50,
-                number: 4,
-                level: 1
-            });
+                    id: 50,
+                    number: 4,
+                    level: 1
+                });
         } else if (rank >= 5001 && rank <= 7500) {
             crystals = 3;
             items.push({
@@ -312,10 +312,10 @@ class WorldBossSpawner {
                 number: 4,
                 level: level
             }, {
-                id: 50,
-                number: 3,
-                level: 1
-            });
+                    id: 50,
+                    number: 3,
+                    level: 1
+                });
         } else if (rank >= 7501 && rank <= 10000) {
             crystals = 2;
             items.push({
@@ -323,10 +323,10 @@ class WorldBossSpawner {
                 number: 2,
                 level: level
             }, {
-                id: 50,
-                number: 2,
-                level: 1
-            });
+                    id: 50,
+                    number: 2,
+                    level: 1
+                });
         } else {
             crystals = 1;
             items.push({
@@ -334,10 +334,10 @@ class WorldBossSpawner {
                 number: 1,
                 level: level
             }, {
-                id: 50,
-                number: 1,
-                level: 1
-            });
+                    id: 50,
+                    number: 1,
+                    level: 1
+                });
 
         }
 

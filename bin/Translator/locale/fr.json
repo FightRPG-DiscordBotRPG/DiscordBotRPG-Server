@@ -289,7 +289,8 @@
     "enroll": "Votre guilde s'est bien inscrite pour le prochain tournoi de cette zone",
     "unenroll": "Votre guilde n'est plus enrôlée dans une conquête",
     "you_paid_x": "Votre guilde a payé %dG",
-    "renamed": "Vous avez renommé votre guilde en : \"%s\""
+    "renamed": "Vous avez renommé votre guilde en : \"%s\"",
+    "guild_territories": "Territoires détenus par votre guilde (%d)"
   },
   "inventory_equipment": {
     "item_equiped": "Votre objet a été équipé",
@@ -557,6 +558,7 @@
     "gmod": "Change le rang du membre de la guilde (1 : Membre, 2 : Officier)",
     "gleaderswitch": "Echange votre place de maître de guilde avec un autre membre de la guilde",
     "grename": "Change le nom de votre guilde. Quand vous écrivez le nom de la guilde, utilisez \"votre nouveau nom de guilde\" pour prendre en compte les espaces. Coûte : %dG",
+    "gterritories": "Affiche la liste des territoires détenus par votre guilde",
     "other_title": "Autres",
     "lang": "Permet d'afficher la liste des langues disponibles",
     "lang_param": "Permet de changer de langue",

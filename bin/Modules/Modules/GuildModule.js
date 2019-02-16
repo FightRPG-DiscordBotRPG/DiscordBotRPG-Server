@@ -56,6 +56,20 @@ class GuildModule extends GModule {
 
         });
 
+        this.router.get("/territories", async (req, res, next) => {
+            let data = {};
+            if (await Globals.connectedUsers[res.locals.id].character.isInGuild()) {
+                data = await Globals.connectedGuilds[await Globals.connectedUsers[res.locals.id].character.getIDGuild()].getTerritories(res.locals.lang);
+            } else {
+                data.error = Translator.getString(res.locals.lang, "guild", "you_dont_have_a_guild");
+            }
+
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+
+        });
+
         this.router.post("/create", async (req, res, next) => {
             let data = {};
             if (req.body.guildName) {

@@ -124,7 +124,7 @@
     "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
     "shop_item_dont_exist": "Você precisa escolher um item existente",
     "shop_no_building": "Não há loja nesta área",
-    "already_doing_something_command": "You must wait until your last action is completed"
+    "already_doing_something_command": "Você precisa esperar até sua última ação terminar"
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",
@@ -289,7 +289,8 @@
     "enroll": "Sua guilda agora está inscrita para a próxima incursão nesta área",
     "unenroll": "Sua guilda não está mais inscrita para a incursão nesta área",
     "you_paid_x": "Sua guilda pagou %dG",
-    "renamed": "You have renamed your guild \"%s\""
+    "renamed": "Você renomeou sua guilda \"%s\"",
+    "guild_territories": "Territories owned by your guild (%d)"
   },
   "inventory_equipment": {
     "item_equiped": "Seu item agora está equipado",
@@ -556,7 +557,8 @@
     "gleave": "Sai da sua guilda",
     "gmod": "Muda o ranking do membro (1: Membro, 2: Oficial)",
     "gleaderswitch": "Troca sua posição de líder da guilda com outro membro da guilda",
-    "grename": "Change the name of your guild. When writing the guild name use \"you new guild name\" to take into account white spaces. Cost: %dG",
+    "grename": "Muda o nome da sua guilda. Quando escrever o nome da guilda use \"seu novo nome de guilda\" para levar espaços em branco em consideração. Custo: %dG",
+    "gterritories": "Shows the territories held by your guild",
     "other_title": "Outros",
     "lang": "Mostra a lista de línguas disponíveis",
     "lang_param": "Lhe permite mudar de língua",

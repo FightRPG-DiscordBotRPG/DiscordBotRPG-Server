@@ -246,10 +246,24 @@ class Guild {
 
     }
 
+    async getTerritories(lang = "en") {
+        let res = await conn.query("SELECT nameArea, nameRegion FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY nameRegion;", [this.id, lang, lang]);
+
+        let territories = {};
+        for (let territory of res) {
+            if (territories[territory.nameRegion] == null) {
+                territories[territory.nameRegion] = [];
+            }
+            territories[territory.nameRegion].push(territory.nameArea);
+        }
+        return { totalNumberOfTerritories: res.length, territories: territories };
+    }
+
     async toApi() {
         await this.loadGuild(this.id);
         let toApi = {
             members: this.members,
+            id: this.id,
             name: this.name,
             image: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Guild-logo-01_.png",
             message: this.message,
