@@ -185,7 +185,8 @@ INSERT INTO itemslocalizations VALUES
 (52, "ru", "Exotic Energy Drink", "A drink with an extraordinary taste, surely the best on the market."),
 (53, "ru", "Golden Energy Drink", "A golden drink is something you've never seen before! It also seems to have a very special taste!"),
 (54, "ru", "Multicoloured Energy Drink", "You are facing a magnificent spectacle, this drink is illuminated with colors. Its taste is, like its colour, just as varied."),
-(55, "ru", "Divine Energy Drink", "This drink seems to be a gift from the gods, it shines on all sides and seems to want to be drunk at all costs.");
+(55, "ru", "Divine Energy Drink", "This drink seems to be a gift from the gods, it shines on all sides and seems to want to be drunk at all costs.")
+(56, "ru", "Frost Horse", "This horse has lived so long in this cold and lifeless paradise that it is now one with the local climate.");
 
 INSERT INTO localizationbosses VALUES (1, "ru", "Clusters of Spirits of Ancient Adventurers"),
 (2, "ru", "Angry Nature Spirit"),

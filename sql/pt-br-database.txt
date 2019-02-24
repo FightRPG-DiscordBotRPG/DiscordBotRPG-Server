@@ -185,7 +185,8 @@ INSERT INTO localizationitems VALUES
 (52, "pt-BR", "Bebida Energética Exótica", "Um drinque com um gosto extraordinário, com certeza o melhor do mercado."),
 (53, "pt-BR", "Bebida Energética Dourada", "Um energético dourado é uma coisa que você nunca viu antes! E ele tem um gosto especialzão!"),
 (54, "pt-BR", "Bebida Energética Multicolorida", "Você está encarando um espetáculo magnífico, este drinque é iluminado com cores. Seu gosto é, bem como suas cores, tão variado quanto."),
-(55, "pt-BR", "Bebida Energética Divina", "Este drinque parece ser um presente dos deuses, ele brilha em todos lados e parece querer ser bebido a todo custo.");
+(55, "pt-BR", "Bebida Energética Divina", "Este drinque parece ser um presente dos deuses, ele brilha em todos lados e parece querer ser bebido a todo custo."),
+(56, "pt-BR", "Frost Horse", "This horse has lived so long in this cold and lifeless paradise that it is now one with the local climate.");
 
 INSERT INTO localizationbosses VALUES (1, "pt-BR", "Aglomerados de Espíritos de Aventureiros Antigos"),
 (2, "pt-BR", "Espírito da Natureza Zangado"),
