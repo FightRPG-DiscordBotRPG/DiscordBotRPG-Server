@@ -64,11 +64,13 @@ class GModule {
                             console.log(e);
                         }
 
+                        await next();
                         return res.json({
                             error: msgError,
                         });
                     }
                 }
+                await next();
                 return res.json({
                     error: "There is something wrong with this module :/",
                 });

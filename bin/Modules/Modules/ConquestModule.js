@@ -47,7 +47,7 @@ class ConquestModule extends GModule {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (await res.locals.currentArea.getOwnerID() === tGuildId) {
-                if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
+                if (await Globals.connectedUsers[res.locals.id].character.isInGuild() && Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id) === 3) {
                     if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                         if (!await res.locals.currentArea.isMaxLevel()) {
                             let toLevelUpArea = await res.locals.currentArea.getPriceNextLevel();
@@ -82,7 +82,7 @@ class ConquestModule extends GModule {
             let data = {};
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (await res.locals.currentArea.getOwnerID() === tGuildId) {
-                if (tGuildId > 0 && Globals.connectedGuilds[tGuildId].members[Globals.connectedUsers[res.locals.id].character.id].rank === 3) {
+                if (await Globals.connectedUsers[res.locals.id].character.isInGuild() && Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id) === 3) {
                     if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
                         if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
                             req.body.number = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
