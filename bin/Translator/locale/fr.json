@@ -124,7 +124,8 @@
     "prefix_not_owner_server": "Vous devez posséder ce serveur pour changer le préfixe",
     "shop_item_dont_exist": "Vous devez choisir un objet qui existe",
     "shop_no_building": "Il n'y a pas de magasin dans cette zone",
-    "already_doing_something_command": "Vous devez attendre que votre dernière action soit terminée"
+    "already_doing_something_command": "Vous devez attendre que votre dernière action soit terminée",
+    "travel_missing_achievements": "Vous ne pouvez pas accéder à cette zone, il vous manque les hauts faits suivants : \"%s\""
   },
   "craft": {
     "header_required": "Nom - Type - Sous-Type - Rareté - Nombre",
@@ -336,7 +337,12 @@
     "honor": "Honneur",
     "health_points": "Points de Vie",
     "damage_reduction": "Réduction de dégâts",
-    "critical_chance": "Chance de coup critique"
+    "critical_chance": "Chance de coup critique",
+    "achievement_earned": "Bravo ! Grâce à vos exploits, vous avez obtenu le haut fait suivant : \"%s\"",
+    "achievement_title": "Liste des Hauts Faits (%d / %d) - %d Points",
+    "achievement_earned_word": "Obtenu",
+    "achievement_name": "%s (%d Points)",
+    "no_desc": "Pas de description pour ce haut fait"
   },
   "economic": {
     "sell_for_x": "Vous avez vendu votre objet pour %dG",
@@ -594,7 +600,8 @@
     "wbshowall": "Affiche des informations sur les Boss Mondiaux",
     "wblastinfo": "Affiche vos statistiques à propos du précédent Boss Mondial que vous avez tué",
     "wbleaderboard": "Affiche le classement des meilleurs joueurs en terme soit de dégâts (damage) soit de nombre d'attaques (attacks) pour le dernier Boss Mondial auquel vous avez participé. Les types sont: damage,attacks",
-    "settings": "Affiche le menu des paramètres"
+    "settings": "Affiche le menu des paramètres",
+    "achievements": "Affiche les hauts faits"
   },
   "settings_menu": {
     "title": "Paramètres"

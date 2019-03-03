@@ -124,7 +124,8 @@
     "prefix_not_owner_server": "You must own this server to change the prefix",
     "shop_item_dont_exist": "You must choose an existing item",
     "shop_no_building": "There is no shop in this area",
-    "already_doing_something_command": "You must wait until your last action is completed"
+    "already_doing_something_command": "You must wait until your last action is completed",
+    "travel_missing_achievements": "You cannot access this area, you are missing the following achievements: \"%s\""
   },
   "craft": {
     "header_required": "Name - Type - Subtype - Rarity - Number",
@@ -336,7 +337,12 @@
     "honor": "Honor",
     "health_points": "Health Points",
     "damage_reduction": "Damage Reduction",
-    "critical_chance": "Critical Chance"
+    "critical_chance": "Critical Chance",
+    "achievement_earned": "Congratulations! Thanks to your accomplishments, you have unlocked the following achievement: \"%s\"",
+    "achievement_title": "Achievements List (%d / %d) - %d Points",
+    "achievement_earned_word": "Earned",
+    "achievement_name": "%s (%d Points)",
+    "no_desc": "No desciption for this achievement"
   },
   "economic": {
     "sell_for_x": "You sold your item for %dG",
@@ -594,7 +600,8 @@
     "wbshowall": "Displays infos about World Bosses",
     "wblastinfo": "Show your stats for the last boss you killed",
     "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack count (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
-    "settings": "Shows the settings menu"
+    "settings": "Shows the settings menu",
+    "achievements": "Displays Achievements"
   },
   "settings_menu": {
     "title": "Settings"

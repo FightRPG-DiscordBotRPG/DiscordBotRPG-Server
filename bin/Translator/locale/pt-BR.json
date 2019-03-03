@@ -124,7 +124,8 @@
     "prefix_not_owner_server": "Você precisa ser o dono deste servidor para mudar o prefixo",
     "shop_item_dont_exist": "Você precisa escolher um item existente",
     "shop_no_building": "Não há loja nesta área",
-    "already_doing_something_command": "Você precisa esperar até sua última ação terminar"
+    "already_doing_something_command": "Você precisa esperar até sua última ação terminar",
+    "travel_missing_achievements": "You cannot access this area, you are missing the following achievements: \"%s\""
   },
   "craft": {
     "header_required": "Nome - Tipo - Subtipo - Raridade - Número",
@@ -336,7 +337,12 @@
     "honor": "Honra",
     "health_points": "Pontos de Vida",
     "damage_reduction": "Redução de Dano",
-    "critical_chance": "Chance de Crítico"
+    "critical_chance": "Chance de Crítico",
+    "achievement_earned": "Congratulations! Thanks to your accomplishments, you have unlocked the following achievement: \"%s\"",
+    "achievement_title": "Achievements List (%d / %d) - %d Points",
+    "achievement_earned_word": "Earned",
+    "achievement_name": "%s (%d Points)",
+    "no_desc": "No desciption for this achievement"
   },
   "economic": {
     "sell_for_x": "Você vendeu seu item por %dG",
@@ -594,7 +600,8 @@
     "wbshowall": "Mostra informações sobre Chefes Globais",
     "wbastinfo": "Mostra seus status do último chefe que você matou",
     "wbleaderboard": "Mostra a classificação dos melhores jogadores em termos de ou dano (damage) ou número de ataques (attacks) para o último Chefe Global em que você participou. Os tipos são: damage, attacks",
-    "settings": "Mostra o menu de configurações"
+    "settings": "Mostra o menu de configurações",
+    "achievements": "Displays Achievements"
   },
   "settings_menu": {
     "title": "Configurações"

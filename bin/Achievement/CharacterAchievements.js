@@ -1,4 +1,5 @@
 const conn = require("../../conf/mysql");
+const Translator = require("../Translator/Translator");
 
 class CharacterAchievements {
     constructor(id) {
@@ -28,7 +29,7 @@ class CharacterAchievements {
         let maxPage = Math.ceil(counts.totalAchievements / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let res = await conn.query("SELECT *, (CASE WHEN EXISTS(SELECT 1 FROM charactersachievements WHERE charactersachievements.idCharacter = ? AND charactersachievements.idAchievement = achievement.idAchievement) THEN true ELSE false END) as earned FROM achievement INNER JOIN localizationachievements ON localizationachievements.idAchievement = achievement.idAchievement WHERE lang = ? ORDER BY earned DESC, points DESC LIMIT ? OFFSET ?;", [this.id, lang, perPage, (page - 1) * perPage]);
+        let res = await conn.query("SELECT achievement.idAchievement, achievement.name_identifier, achievement.points, COALESCE(baseLocalization.lang, defaultLocalization.lang) as lang, COALESCE(baseLocalization.nameAchievement, defaultLocalization.nameAchievement) as nameAchievement, COALESCE(baseLocalization.descAchievement, defaultLocalization.descAchievement) as descAchievement, (CASE WHEN EXISTS(SELECT 1 FROM charactersachievements WHERE charactersachievements.idCharacter = ? AND charactersachievements.idAchievement = achievement.idAchievement) THEN true ELSE false END) as earned FROM achievement LEFT JOIN localizationachievements as baseLocalization ON baseLocalization.idAchievement = achievement.idAchievement AND baseLocalization.lang = ? LEFT JOIN localizationachievements as defaultLocalization ON defaultLocalization.idAchievement = achievement.idAchievement AND defaultLocalization.lang = 'en' ORDER BY earned DESC, points DESC LIMIT ? OFFSET ?;", [this.id, lang, perPage, (page - 1) * perPage]);
 
         return {
             totalAchievements: counts.totalAchievements,
@@ -37,6 +38,23 @@ class CharacterAchievements {
             achievements: res,
             maxPage: maxPage,
             page: page
+        }
+
+    }
+
+    async getSpecificAchievement(idAchievement, lang = "en") {
+        let res = await conn.query("SELECT achievement.idAchievement, achievement.name_identifier, achievement.points, COALESCE(baseLocalization.lang, defaultLocalization.lang) as lang, COALESCE(baseLocalization.nameAchievement, defaultLocalization.nameAchievement) as nameAchievement, COALESCE(baseLocalization.descAchievement, defaultLocalization.descAchievement) as descAchievement, (CASE WHEN EXISTS(SELECT 1 FROM charactersachievements WHERE charactersachievements.idCharacter = ? AND charactersachievements.idAchievement = achievement.idAchievement) THEN true ELSE false END) as earned FROM achievement LEFT JOIN localizationachievements as baseLocalization ON baseLocalization.idAchievement = achievement.idAchievement AND baseLocalization.lang = ? LEFT JOIN localizationachievements as defaultLocalization ON defaultLocalization.idAchievement = achievement.idAchievement AND defaultLocalization.lang = 'en' WHERE achievement.idAchievement = ?;", [this.id, lang, idAchievement]);
+
+        return res.length > 0 ? res[0] : null;
+    }
+
+    async unlock(idAchievement, user) {
+        if (!(await this.hasAchievement(idAchievement))) {
+            await conn.query("INSERT IGNORE INTO charactersachievements VALUES (?, ?);", [this.id, idAchievement]);
+            if (user != null) {
+                let achievement = await this.getSpecificAchievement(idAchievement, user.getLang());
+                user.achievementTell(Translator.getString(user.getLang(), "character", "achievement_earned", [achievement.nameAchievement]));
+            }
         }
 
     }

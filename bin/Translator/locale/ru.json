@@ -124,7 +124,8 @@
     "prefix_not_owner_server": "Вы должны владеть этим сервером, чтобы изменить префикс",
     "shop_item_dont_exist": "Вы должны выбрать существующий элемент",
     "shop_no_building": "В этом районе нет магазина.",
-    "already_doing_something_command": "Вы должны подождать, пока не завершится ваше последнее действие."
+    "already_doing_something_command": "Вы должны подождать, пока не завершится ваше последнее действие.",
+    "travel_missing_achievements": "You cannot access this area, you are missing the following achievements: \"%s\""
   },
   "craft": {
     "header_required": "Имя - Тип - Подтип - Редкость - Число",
@@ -336,7 +337,12 @@
     "honor": "Слава",
     "health_points": "Health Points",
     "damage_reduction": "Damage Reduction",
-    "critical_chance": "Critical Chance"
+    "critical_chance": "Critical Chance",
+    "achievement_earned": "Congratulations! Thanks to your accomplishments, you have unlocked the following achievement: \"%s\"",
+    "achievement_title": "Achievements List (%d / %d) - %d Points",
+    "achievement_earned_word": "Earned",
+    "achievement_name": "%s (%d Points)",
+    "no_desc": "No desciption for this achievement"
   },
   "economic": {
     "sell_for_x": "Вы продали свой предмет за %dG",
@@ -594,7 +600,8 @@
     "wbshowall": "Отображает информацию о мировых боссах",
     "wblastinfo": "Покажите вашу статистику по последнему боссу, которого вы убили.",
     "wbleaderboard": "Displays the ranking of the best players in terms of either damage (damage) or attack counts (attacks) for the last World Boss in which you participated. The types are: damage,attacks",
-    "settings": "Показывает меню настроек"
+    "settings": "Показывает меню настроек",
+    "achievements": "Displays Achievements"
   },
   "settings_menu": {
     "title": "Настроики"

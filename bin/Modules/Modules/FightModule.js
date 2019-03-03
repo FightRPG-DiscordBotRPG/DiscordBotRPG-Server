@@ -61,6 +61,14 @@ class FightModule extends GModule {
                             data.error = response.error;
                         } else {
                             data = response;
+
+                            // Achiev linked to monsters fights
+                            switch (Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                                case 33:
+                                    if (response.summary.winner === 0) {
+                                        await Globals.connectedUsers[res.locals.id].character.getAchievements().unlock(2, Globals.connectedUsers[res.locals.id]);
+                                    }
+                            }
                         }
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
@@ -72,6 +80,8 @@ class FightModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
             }
+
+
 
             data.lang = res.locals.lang;
             await next();

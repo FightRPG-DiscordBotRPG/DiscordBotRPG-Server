@@ -253,8 +253,8 @@ class AdminModule extends GModule {
             return res.json(data);
         });
 
-        this.router.post("/debug", async (req, res, next) => {
-            //console.log(await Globals.connectedUsers[res.locals.id].character.getInv().getItemOfThisIDItem(240));
+        this.router.get("/debug/:idAchiev?", async (req, res, next) => {
+            return res.send("null");
         });
 
 

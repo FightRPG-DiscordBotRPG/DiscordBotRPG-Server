@@ -184,13 +184,13 @@ VALUES
 
 INSERT INTO areasregions
 VALUES
-    (28, 3),
-    (29, 3),
-    (30, 3),
-    (31, 3),
-    (32, 3),
-    (33, 3),
-    (34, 3);
+    (28, 5),
+    (29, 5),
+    (30, 5),
+    (31, 5),
+    (32, 5),
+    (33, 5),
+    (34, 5);
 
 -- Paths
 INSERT INTO areaspaths
@@ -222,4 +222,155 @@ VALUES
     (9, 34, 1, 6, 6, 100, 100);
 
 
+INSERT INTO monstres
+VALUES
+    (71, 0, 1),
+    (72, 0, 1),
+    (73, 0, 1),
+    (74, 0, 2),
+    
+    (75, 0, 1),
+    (76, 0, 1),
+    (77, 0, 1),
+    (78, 0, 2),
+
+    (79, 0, 2),
+
+
+    (80, 0, 1),
+    (81, 0, 3),
+
+
+    (82, 0, 1);
+
+INSERT INTO localizationmonsters
+VALUES
+    (71, "en", "Warrior Ghost"),
+    (71, "fr", "Fantôme de Guerrier"),
+
+    (72, "en", "Archer Ghost"),
+    (72, "fr", "Fantôme d'archer"),
+
+    (73, "en", "Mage Ghost"),
+    (73, "fr", "Fantôme de Mage"),
+
+    (74, "en", "Ghost Clusters"),
+    (74, "fr", "Amas de Fantômes"),
+
+
+    (75, "en", "Skeleton Warrior"),
+    (75, "fr", "Guerrier Squelette"),
+
+    (76, "en", "Skeleton Archer"),
+    (76, "fr", "Archer Squelette"),
+
+    (77, "en", "Skeleton Mage"),
+    (77, "fr", "Mage Squelette"),
+
+    (78, "en", "Abomination of Putrient Fleshes"),
+    (78, "fr", "Abomination de Chairs Putrides"),
+
+    (79, "en", "Ghost of Baron Galssor"),
+    (79, "fr", "Fantôme du Baron Galssor"),
+
+    (80, "en", "Ice Golem"),
+    (80, "fr", "Golem de Glace"),
+
+    (81, "en", "Powerful Ice Elemental"),
+    (81, "fr", "Puissant Elémentaire de Glace");
+
+
+-- 2 smorc, 3 tank_stun, 4 crit, 5 tank_armor_stun, 6 tank_will, 7 damage, 8 damage_crit, 9 tanky
+
+INSERT INTO statsmonstres
+VALUES
+    (71, 3),
+    (72, 7),
+    (73, 8),
+    (74, 2),
+
+    (75, 9),
+    (76, 7),
+    (77, 8),
+    (78, 5),
+
+    (79, 4),
+
+    (80, 2),
+    (81, 7);
+
+
+INSERT INTO monstresgroupes
+VALUES
+    (68, 71, 1),
+    (69, 72, 1),
+    (70, 73, 1),
+    (71, 74, 1),
+
+    (72, 75, 1),
+    (73, 76, 1),
+    (74, 77, 1),
+    (75, 78, 1),
+
+    (76, 79, 1),
+
+    (77, 80, 4),
+    (77, 81, 1);
+
+
+INSERT INTO areasmonsters
+VALUES
+    (28, 68, 71),
+    (28, 69, 72),
+    (28, 70, 73),
+    (28, 71, 74),
+
+    (30, 72, 75),
+    (30, 73, 76),
+    (30, 74, 77),
+    (30, 75, 78),
+
+    (31, 72, 75),
+    (31, 69, 72),
+    (31, 74, 77),
+    (31, 76, 79),
+
+    (32, 68, 71),
+    (32, 73, 76),
+    (32, 70, 73),
+    (32, 71, 74),
+
+    (33, 77, 80),
+    (33, 77, 81);
+
+INSERT INTO achievement
+VALUES
+    (2, "last_challenge", 100);
+
+INSERT INTO localizationachievements
+VALUES
+    (2, "fr", "Un Dernier Défi", "Combattez le Boss du Donjon niveau 100 et gagnez le combat pour débloquer l'accès à la forge antique naine !"),
+    (2, "en", "One last challenge", "Fight the Boss inside the dungeon level 100 and win the battle to unlock access to the ancient dwarf forge!");
+
+INSERT INTO areasrequirements 
+VALUES
+    (34, 2);
+
+INSERT INTO shop VALUES (NULL, 0.05, 1), (NULL, 0.05, 1);
+
+INSERT INTO areasshops VALUES (29,8), (33,9);
+
+
+-- Epic
+INSERT INTO sellableitems VALUES (NULL, 43, 90, 1, 580); -- 17
+INSERT INTO sellableitems VALUES (NULL, 43, 100, 1, 650); -- 18
+
+-- legs
+INSERT INTO sellableitems VALUES (NULL, 44, 90, 1, 800); -- 19
+INSERT INTO sellableitems VALUES (NULL, 44, 100, 1, 1000); -- 20
+
+
+INSERT INTO shopitems VALUES 
+(8, 17), (8, 19),
+(9, 18), (9, 20);
 

@@ -103,7 +103,7 @@ class Group {
     async getAveragePower() {
         let avgPower = await this.leader.character.getPower();
         for (let user in this.players) {
-            avgPower = await this.players[user].character.getPower();
+            avgPower += await this.players[user].character.getPower();
         }
         return Math.round(avgPower / this.nbOfPlayers());
     }

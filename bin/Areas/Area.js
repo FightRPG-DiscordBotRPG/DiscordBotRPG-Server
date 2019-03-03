@@ -33,6 +33,7 @@ class Area {
         this.players = [];
         this.services = {};
         this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
+        this.requiredAchievements = [];
     }
 
     async loadArea() {
@@ -100,6 +101,12 @@ class Area {
             this.maxItemRarity = res[0]["nomRarity"];
         }
 
+        // load required achievments
+        res = await conn.query("SELECT * FROM areasrequirements WHERE idArea = ?;", [this.id]);
+        for (let i in res) {
+            this.requiredAchievements.push(res[i].idAchievement);
+        }
+
     }
 
     getMonstersToApiLight(lang) {
@@ -115,6 +122,10 @@ class Area {
             });
         }
         return monsters;
+    }
+
+    getRequiredAchievements() {
+        return this.requiredAchievements;
     }
 
     getResourcesApiLight(lang) {

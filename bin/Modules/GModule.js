@@ -209,6 +209,7 @@ class GModule {
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
+                    "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 };
 
                 commands[Translator.getString(lang, "help_panel", "fight_title")] = {

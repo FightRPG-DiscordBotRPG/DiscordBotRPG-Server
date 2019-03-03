@@ -149,6 +149,10 @@ class User {
         //return conn.query("SELECT marketplacemute FROM userspreferences WHERE idUser = ?", [this.id])[0]["marketplacemute"];
     }
 
+    isAchievementsMuted() {
+        return false;
+    }
+
     async muteGroup(bool) {
         this.preferences.groupmute = bool;
         await conn.query("UPDATE userspreferences SET groupmute = ? WHERE idUser = ?;", [bool, this.id]);
@@ -167,6 +171,12 @@ class User {
 
     async groupTell(str) {
         if (!this.isGroupMuted()) {
+            this.tell(str);
+        }
+    }
+
+    async achievementTell(str) {
+        if (!this.isAchievementsMuted()) {
             this.tell(str);
         }
     }

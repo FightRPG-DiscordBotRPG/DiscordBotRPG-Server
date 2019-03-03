@@ -307,6 +307,17 @@ class GroupModule extends GModule {
                                             data.error = response.error;
                                         } else {
                                             data = response;
+
+                                            // Achiev linked to monsters fights
+                                            switch (Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                                                case 33:
+                                                    if (response.winner === 0) {
+                                                        let arrOfUsers = group.getArrayOfPlayers();
+                                                        for (let user of arrOfUsers) {
+                                                            user.character.getAchievements().unlock(2, user);
+                                                        }
+                                                    }
+                                            }
                                         }
                                         //Globals.fightManager.fightPvE(Globals.connectedUsers[res.locals.id], message, idEnemy, canIFightTheMonster);
                                     } else {
