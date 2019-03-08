@@ -257,6 +257,7 @@ class Group {
             members: members,
             invitedPlayers: invitedPlayers,
             avgPower: await this.getAveragePower(),
+            avgLevel: await this.getAverageLevel(),
             numberOfPlayers: this.nbOfPlayers(),
             numberOfInvitedPlayers: this.nbOfInvitedPlayers(),
         }

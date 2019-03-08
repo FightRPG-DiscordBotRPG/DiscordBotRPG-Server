@@ -170,7 +170,7 @@
     "nobody_was_invited": "Ninguém foi convidado para juntar-se ao seu grupo",
     "group": "Grupo",
     "avg_level": "Nível Médio: %d",
-    "avg_power": "Poder Médio: %d%",
+    "avg_power": "Poder Médio: %d",
     "members_of_the_group": "Membros do Grupo",
     "invited_users": "Usuários convidados",
     "settings_menu_mute": "%s Notificações de grupo"
@@ -342,7 +342,8 @@
     "achievement_title": "Achievements List (%d / %d) - %d Points",
     "achievement_earned_word": "Earned",
     "achievement_name": "%s (%d Points)",
-    "no_desc": "No desciption for this achievement"
+    "no_desc": "No desciption for this achievement",
+    "maximum_stun_chance": "Maximum Stun Chance"
   },
   "economic": {
     "sell_for_x": "Você vendeu seu item por %dG",

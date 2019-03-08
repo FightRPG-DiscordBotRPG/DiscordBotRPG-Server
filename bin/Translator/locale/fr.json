@@ -170,7 +170,7 @@
     "nobody_was_invited": "Personne n'a été invité à rejoindre votre groupe",
     "group": "Groupe",
     "avg_level": "Level moyen : %d",
-    "avg_power": "Puissance Moyenne : %d%",
+    "avg_power": "Puissance Moyenne : %d",
     "members_of_the_group": "Membres du groupe",
     "invited_users": "Utilisateurs invités",
     "settings_menu_mute": "%s les notifications en rapport avec le groupe"
@@ -342,7 +342,8 @@
     "achievement_title": "Liste des Hauts Faits (%d / %d) - %d Points",
     "achievement_earned_word": "Obtenu",
     "achievement_name": "%s (%d Points)",
-    "no_desc": "Pas de description pour ce haut fait"
+    "no_desc": "Pas de description pour ce haut fait",
+    "maximum_stun_chance": "Chance Maximum d'Assommer"
   },
   "economic": {
     "sell_for_x": "Vous avez vendu votre objet pour %dG",

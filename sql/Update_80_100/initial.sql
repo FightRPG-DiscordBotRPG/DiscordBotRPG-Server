@@ -23,7 +23,7 @@ INSERT INTO levelsrequire VALUES
 INSERT INTO itemsbase VALUES 
 (56, 8, 5, "unknown", 11);
 
-INSERT INTO itemslocalizations VALUES
+INSERT INTO localizationitems VALUES
 (56, "fr", "Cheval de Glace", "Ce cheval a vécu tellement longtemps dans ce paradis froid et sans vie qu'il ne fait désormais plus qu'un avec le climat local."),
 (56, "en", "Frost Horse", "This horse has lived so long in this cold and lifeless paradise that it is now one with the local climate.");
 
@@ -127,7 +127,8 @@ VALUES
     (33, 5, 0, 1, 1),
     (33, 10, 0, 1, 1),
     (33, 15, 0, 1, 1),
-    (33, 20, 0, 1, 1);
+    (33, 20, 0, 1, 1),
+    (33, 56, 0.0001, 1, 1);
 
 INSERT INTO areasmonsterslevels
 VALUES
@@ -146,7 +147,7 @@ INSERT INTO localizationareas VALUES
 (31, "fr", "Grand Manoir du Baron Galssor", "Ce manoir labyrinthique était jadis occupé par un baron très puissant et ses serviteurs. Oh, regardez, il y a même une machine à café ! Je me demande si ça marche encore."),
 (32, "fr", "Village Hanté de Horth", "Alors que la neige souffle dans le vent, vous voyez des figures spectrales terribles et déformées errer dans ce village, comme s'il s'agissait encore de personnes vivantes habitant le village. Vous espérez donner du repos à ces âmes."),
 (33, "fr", "Caverne des Miroirs de Glace", "La légende dit qu'il est possible de voir le reflet de votre âme dans les murs de glace en verre de cette grotte. Personnellement, vous ne ressentez qu'un frisson, comme c'est décevant."),
-(34, "fr", "Forge Antique Naine", "Une fois dans cette forge naine, de nombreuses armes légendaires furent fabriquées par les nains les plus habiles de la région, chauffées par le feu de cette forge. Aujourd'hui, beaucoup de ces armes sont perdues ou enterrées dans la neige. Les Trésors légendaires attendent d'être trouvé.")
+(34, "fr", "Forge Antique Naine", "Une fois dans cette forge naine, de nombreuses armes légendaires furent fabriquées par les nains les plus habiles de la région, chauffées par le feu de cette forge. Aujourd'hui, beaucoup de ces armes sont perdues ou enterrées dans la neige. Les Trésors légendaires attendent d'être trouvé."),
 
 (28, "en", "Horth Ice Tower", "This antique tower gives you chills and brings you a nostalgic feeling, as if thousands of battles have happened here before. You wonder what's waiting for you on the top of it."),
 (29, "en", "Frozen Wind Village", "A small village that managed to survive through the intense cold of the region. You would definitely prefer a warm hotel in the Bahamas, but life goes on."),

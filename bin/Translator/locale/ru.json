@@ -170,7 +170,7 @@
     "nobody_was_invited": "Никто не был приглашен присоединиться к вашей группе",
     "group": "Группа",
     "avg_level": "Средний Уровень: %d",
-    "avg_power": "Средняя Мощность: %d%",
+    "avg_power": "Средняя Мощность: %d",
     "members_of_the_group": "Члены группы",
     "invited_users": "Приглашенные пользователи",
     "settings_menu_mute": "%s Групповых уведомлений"
@@ -342,7 +342,8 @@
     "achievement_title": "Achievements List (%d / %d) - %d Points",
     "achievement_earned_word": "Earned",
     "achievement_name": "%s (%d Points)",
-    "no_desc": "No desciption for this achievement"
+    "no_desc": "No desciption for this achievement",
+    "maximum_stun_chance": "Maximum Stun Chance"
   },
   "economic": {
     "sell_for_x": "Вы продали свой предмет за %dG",
