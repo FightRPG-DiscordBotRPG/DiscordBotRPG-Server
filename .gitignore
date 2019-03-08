@@ -3,4 +3,4 @@ build
 npm-debug.log
 .env
 .DS_Store
-/bin/Translator/locale
+bin/Translator/locale
