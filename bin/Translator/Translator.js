@@ -107,7 +107,6 @@ class Translator {
         for (let lang of conf.published_langs) {
             try {
                 let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json');
-                res.status = 500;
                 if (res.status == 200) {
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
