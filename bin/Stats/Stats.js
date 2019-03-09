@@ -21,7 +21,7 @@ class Stats {
     }
 
     getStat(statName) {
-        if(this[statName] >= 0) {
+        if (this[statName] >= 0) {
             return this[statName];
         }
         return 0;
@@ -61,19 +61,29 @@ class Stats {
         return r;
     }
 
-    getOptimalArmor(level=1) {
-        return ((8 * (Math.pow(level,2))) / 7 + 5);
+    getOptimalArmor(level = 1) {
+        return ((8 * (Math.pow(level, 2))) / 7 + 5);
     }
 
-    getOptimalCrit(level=1) {
+    getOptimalCrit(level = 1) {
         return level * 8;
     }
 
-    getOptimalStun(level=1) {
+    getOptimalStun(level = 1) {
         return level * 8;
     }
 
 
 }
+
+async function loadPossibleStats() {
+    let res = await conn.query("SELECT * FROM stats;");
+    Stats.prototype.possibleStats = [];
+    for (let stat of res) {
+        Stats.prototype.possibleStats.push(stat.nom);
+    }
+}
+
+loadPossibleStats();
 
 module.exports = Stats;

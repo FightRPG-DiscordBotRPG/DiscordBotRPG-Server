@@ -1,5 +1,5 @@
 module.exports = {
-    server: "1.6.1a",
-    discord: "1.6.1a",
+    server: "1.6.2",
+    discord: "1.6.2",
     website: null,
 }
