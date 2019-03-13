@@ -253,7 +253,12 @@ class AdminModule extends GModule {
             return res.json(data);
         });
 
-        this.router.get("/debug/:idAchiev?", async (req, res, next) => {
+        this.router.get("/debug/", async (req, res, next) => {
+            let arrOfUsers = res.locals.group != null ? res.locals.group.getArrayOfPlayers() : [];
+            for (let user of arrOfUsers) {
+                user.character.getAchievements().unlock(2, user);
+            }
+            await next();
             return res.send("null");
         });
 

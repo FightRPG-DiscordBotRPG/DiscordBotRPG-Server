@@ -230,6 +230,8 @@ class Guild {
         this.id = id;
         this.level = res["level"];
         this.money = res["argent"];
+        this.members = {};
+        this.nbrMembers = 0;
 
         // Members
         res = await conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);

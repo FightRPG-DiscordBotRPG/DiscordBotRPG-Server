@@ -311,7 +311,7 @@ class GroupModule extends GModule {
                                             // Achiev linked to monsters fights
                                             switch (Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                                                 case 33:
-                                                    if (response.winner === 0) {
+                                                    if (response.summary.winner === 0) {
                                                         let arrOfUsers = group.getArrayOfPlayers();
                                                         for (let user of arrOfUsers) {
                                                             user.character.getAchievements().unlock(2, user);

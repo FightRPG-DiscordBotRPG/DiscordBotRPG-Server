@@ -3,7 +3,7 @@ const Globals = require("../Globals");
 class CraftSystem {
 
     static getXP(craftLevel, playerCraftlevel, rarity, collect) {
-        let xp = Math.ceil(10 * (Math.pow(playerCraftlevel, 2) / 1.5) * (1 / 10));
+        let xp = Math.ceil(9 * (Math.pow(playerCraftlevel, 2) / 1.5) * (1 / 10));
         xp = xp * (1 + (1 / 5));
 
         let diff = playerCraftlevel - craftLevel;
@@ -22,7 +22,7 @@ class CraftSystem {
 
     static haveCollectItem(intellect, collectRarity) {
         let chance = Math.random();
-        let luckModifier = intellect / 200 + 1;
+        let luckModifier = intellect / (Globals.maxLevel * 6) + 1;
         //console.log(chance);
         let chanceToGet = 0;
 

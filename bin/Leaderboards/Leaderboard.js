@@ -25,6 +25,7 @@ class Leaderboard {
             rankings: res,
             offset: offset,
             maximumRank: maximumRank,
+            sumOfAll: await this.getSumOfAll(),
         }
         return data;
     }
@@ -39,6 +40,10 @@ class Leaderboard {
 
     async dbGetLeaderboard() {
         return {};
+    }
+
+    async getSumOfAll() {
+        return 1;
     }
 
 

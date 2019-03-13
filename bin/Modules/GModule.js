@@ -207,7 +207,7 @@ class GModule {
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
                     "info": Translator.getString(lang, "help_panel", "info"),
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
-                    "leaderboard": Translator.getString(lang, "help_panel", "leaderboard"),
+                    "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
                     "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 };
@@ -271,6 +271,7 @@ class GModule {
                     "gleaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
                     "grename \"<name>\"": Translator.getString(lang, "help_panel", "grename", [Globals.guilds.basePriceLevel]),
                     "gterritories": Translator.getString(lang, "help_panel", "gterritories"),
+                    "gkick <idCharacter>": Translator.getString(lang, "help_panel", "gkick"),
                 }
                 break;
             case 5:

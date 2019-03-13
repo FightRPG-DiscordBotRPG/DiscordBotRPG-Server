@@ -23,6 +23,10 @@ class LeaderboardPvP extends Leaderboard {
         return await conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, users.isConnected, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
     }
 
+    async getSumOfAll() {
+        return (await conn.query("SELECT SUM(charactershonor.Honor) as totalHonor FROM charactershonor;"))[0];
+    }
+
 }
 
 module.exports = LeaderboardPvP;
