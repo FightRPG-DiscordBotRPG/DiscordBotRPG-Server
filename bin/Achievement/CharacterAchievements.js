@@ -11,7 +11,7 @@ class CharacterAchievements {
     }
 
     async hasAchievement(idAchiev) {
-        let res = await conn.query("SELECT * FROM charactersachievements WHERE idAchievement = ?;", [idAchiev]);
+        let res = await conn.query("SELECT * FROM charactersachievements WHERE idAchievement = ? AND idCharacter = ?;", [idAchiev, this.id]);
         return res.length > 0;
     }
 
