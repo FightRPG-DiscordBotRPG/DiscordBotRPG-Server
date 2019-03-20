@@ -109,9 +109,9 @@ class CharacterModule extends GModule {
         this.router.post("/update", async (req, res, next) => {
             if (req.body.username != null) {
                 if (req.body.username.length <= 37) {
-                    conn.query("UPDATE users SET userName = ? WHERE idUser = ?;", [req.body.username, res.locals.id]);
+                    await conn.query("UPDATE users SET userName = ? WHERE idUser = ?;", [req.body.username, res.locals.id]);
                     if (Globals.connectedUsers[res.locals.id]) {
-                        Globals.connectedUsers[res.locals.id].updateInMemmoryUsername(req.bod.username);
+                        Globals.connectedUsers[res.locals.id].updateInMemmoryUsername(req.body.username);
                     }
                 }
             }
