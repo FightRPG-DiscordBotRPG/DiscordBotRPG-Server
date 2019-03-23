@@ -212,7 +212,7 @@ class Character extends CharacterEntity {
                     stat = "dexterity";
                     break;
 
-                    // Secondaires
+                // Secondaires
 
                 case "cha":
                     this.stats.charisma += nbr;
@@ -424,8 +424,7 @@ class Character extends CharacterEntity {
         await order.place();
     }
 
-    // TODO :
-    // Must change when is not stackable (add an item for each number => insert)
+
     async marketplaceCollectThisItem(order) {
         let item = new Item(order.idItem);
         await item.loadItem();
@@ -649,7 +648,7 @@ class Character extends CharacterEntity {
     }
 
     async saveHonor() {
-        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?" [await this.getHonor(), this.id]);
+        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?"[await this.getHonor(), this.id]);
     }
 
     async toApiSimple() {

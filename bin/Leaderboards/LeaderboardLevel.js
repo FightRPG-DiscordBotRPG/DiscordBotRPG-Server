@@ -9,7 +9,7 @@ class LeaderboardLevel extends Leaderboard {
     }
 
     async getPlayerRank() {
-        let res = await conn.query("SELECT DISTINCT * FROM(SELECT @rn:=@rn+1 as rank, characters.idCharacter FROM characters INNER JOIN levels ON levels.idCharacter = characters.idCharacter, (select @rn:=0) row_nums GROUP BY characters.idCharacter ORDER BY levels.actualLevel DESC, levels.actualExp DESC, characters.idCharacter) user_ranks WHERE idCharacter = ?;", [this.id]);
+        let res = await conn.query("SELECT DISTINCT * FROM(SELECT *, @rn:=@rn+1 as rank FROM(SELECT characters.idCharacter FROM characters INNER JOIN levels ON levels.idCharacter = characters.idCharacter, (select @rn:=0) row_nums GROUP BY characters.idCharacter ORDER BY levels.actualLevel DESC, levels.actualExp DESC, characters.idCharacter) user_ranks) user_ranks_2 WHERE idCharacter = ?;", [this.id]);
 
         return res != null && res[0] ? res[0].rank : 1;
     }

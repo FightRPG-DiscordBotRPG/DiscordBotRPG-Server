@@ -9,7 +9,7 @@ class LeaderboardCraftLevel extends Leaderboard {
     }
 
     async getPlayerRank() {
-        let res = await conn.query("SELECT DISTINCT * FROM(SELECT @rn:=@rn+1 as rank, characters.idCharacter FROM characters INNER JOIN characterscraftlevel ON characterscraftlevel.idCharacter = characters.idCharacter, (select @rn:=0) row_nums GROUP BY characters.idCharacter ORDER BY characterscraftlevel.actualLevel DESC, characterscraftlevel.actualExp DESC, characters.idCharacter) user_ranks WHERE idCharacter = ?;", [this.id]);
+        let res = await conn.query("SELECT DISTINCT * FROM(SELECT *, @rn:=@rn+1 as rank FROM(SELECT characters.idCharacter FROM characters INNER JOIN characterscraftlevel ON characterscraftlevel.idCharacter = characters.idCharacter, (select @rn:=0) row_nums GROUP BY characters.idCharacter ORDER BY characterscraftlevel.actualLevel DESC, characterscraftlevel.actualExp DESC, characters.idCharacter) user_ranks) user_ranks_2 WHERE idCharacter = ?;", [this.id]);
 
         return res != null && res[0] ? res[0].rank : 1;
     }

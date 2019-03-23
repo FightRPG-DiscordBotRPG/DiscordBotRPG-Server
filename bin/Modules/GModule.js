@@ -21,6 +21,12 @@ class GModule {
 
     }
 
+    unStuck(id) {
+        if (Globals.lockedMembers[id] == true) {
+            Globals.lockedMembers[id] = false;
+        }
+    }
+
     startLoading(name = "Generic Module") {
         this.loadingTime = Date.now();
         console.log("Loading module : " + name);
@@ -63,14 +69,13 @@ class GModule {
                         } catch (e) {
                             console.log(e);
                         }
-
-                        await this.freeLockedMembers();
+                        this.unStuck(res.locals.id);
                         return res.json({
                             error: msgError,
                         });
                     }
                 }
-                await this.freeLockedMembers();
+                this.unStuck(res.locals.id);
                 return res.json({
                     error: "There is something wrong with this module :/",
                 });
