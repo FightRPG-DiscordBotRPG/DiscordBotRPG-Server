@@ -164,18 +164,18 @@ class MarketplaceModule extends GModule {
                             if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(orderToBuy.price * numberOrderToBuy)) {
                                 let temp = (await conn.query("SELECT idUser FROM users WHERE idCharacter = ?", [orderToBuy.idCharacter]))[0]["idUser"];
 
-                                //here i'm loading the item before it could be deleted and get infos about it
-                                let item = await orderToBuy.toApi(Globals.connectedUsers[temp].getLang());
-
-                                // Recupération de l'objet
-                                await Globals.connectedUsers[res.locals.id].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
                                 // Puis donne l'argent au vendeur
-                                if (Globals.connectedUsers[temp]) {
+                                if (Globals.connectedUsers[temp] != null) {
+                                    var item = await orderToBuy.toApi(Globals.connectedUsers[temp].getLang());
                                     await Globals.connectedUsers[temp].character.addMoney(orderToBuy.price * numberOrderToBuy);
                                     Globals.connectedUsers[temp].marketTell(Translator.getString(Globals.connectedUsers[temp].getLang(), "marketplace", numberOrderToBuy > 1 ? "you_sold_plur" : "you_sold", [item.item.name, numberOrderToBuy, orderToBuy.price * numberOrderToBuy]));
                                 } else {
                                     await conn.query("UPDATE characters SET money = money + ? WHERE idCharacter = ?;", [orderToBuy.price * numberOrderToBuy, orderToBuy.idCharacter]);
                                 }
+
+                                // Recupération de l'objet par l'acheteur
+                                await Globals.connectedUsers[res.locals.id].character.marketplaceBuyThisItem(orderToBuy, numberOrderToBuy);
+
 
                                 PStatistics.incrStat(orderToBuy.idCharacter, "gold_marketplace", orderToBuy.price * numberOrderToBuy);
 
