@@ -302,9 +302,9 @@ class Guild {
         return crank[0] != null ? crank[0].idGuildRank : 1;
     }
 
-    async setMessage(idCharacter, message, lang) {
+    async setMessage(idCharacter, message = "", lang = "en") {
         let err = [];
-        if (message.length < 255) {
+        if (message != null && message != "" && message.length < 255) {
             if (await this.getRankCharacter(idCharacter) >= 2) {
                 await this.saveMessage(message);
             } else {
