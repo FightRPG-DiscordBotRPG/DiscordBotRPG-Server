@@ -40,6 +40,8 @@ class GModule {
     crashHandler() {
         if (this.router != null) {
             this.router.use(async (err, req, res, next) => {
+                let errorDate = new Date();
+                console.log(errorDate.toUTCString());
                 console.log(err);
                 if (this.isReloadable) {
                     if (!this.devMode) {

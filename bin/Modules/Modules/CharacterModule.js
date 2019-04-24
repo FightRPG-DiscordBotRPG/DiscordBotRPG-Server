@@ -107,14 +107,21 @@ class CharacterModule extends GModule {
         });
 
         this.router.post("/update", async (req, res, next) => {
+            let err = null;
             if (req.body.username != null) {
                 if (req.body.username.length <= 37) {
                     await conn.query("UPDATE users SET userName = ? WHERE idUser = ?;", [req.body.username, res.locals.id]);
                     if (Globals.connectedUsers[res.locals.id]) {
                         Globals.connectedUsers[res.locals.id].updateInMemmoryUsername(req.body.username);
                     }
+                } else {
+                    err = "InvalidUsername";
                 }
+            } else {
+                err = "InvalidUsername";
             }
+
+            return err != null ? res.json({ error: err }) : res.json({ done: true });
         });
 
         this.router.get("/info", async (req, res, next) => {
