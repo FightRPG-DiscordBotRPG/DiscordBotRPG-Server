@@ -118,11 +118,21 @@ class GModule {
         this.router.use((req, res, next) => {
             if (Globals.connectedUsers[res.locals.id].isLoaded = true) {
                 for (let i in req.body) {
-                    req.body[i] = decodeURIComponent(req.body[i]);
+                    try {
+                        req.body[i] = decodeURIComponent(req.body[i]);
+                    } catch (e) {
+                        req.body[i] = encodeURIComponent(req.body[i]);
+                        req.body[i] = decodeURIComponent(req.body[i]);
+                    }
                 }
 
                 for (let i in req.query) {
-                    req.query[i] = decodeURIComponent(req.query[i]);
+                    try {
+                        req.query[i] = decodeURIComponent(req.query[i]);
+                    } catch (e) {
+                        req.query[i] = encodeURIComponent(req.query[i]);
+                        req.query[i] = decodeURIComponent(req.query[i]);
+                    }
                 }
 
                 res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
