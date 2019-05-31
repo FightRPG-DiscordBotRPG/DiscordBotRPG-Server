@@ -101,12 +101,21 @@ class Translator {
     }
 
     static async loadFromJson() {
-        let conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json');
-        conf = conf.data;
+        try {
+            var conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
+            conf = conf.data;
+        } catch (e) {
+            console.log("Unable to read Config File...\nLoading saved translations...");
+            let localeList = await fs.readdirSync(__dirname + "/locale/");
+            var conf = { published_langs: [] };
+            for (let item of localeList) {
+                conf.published_langs.push(item.split(".")[0]);
+            }
+        }
 
         for (let lang of conf.published_langs) {
             try {
-                let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json');
+                let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json', { timeout: 2000 });
                 if (res.status == 200) {
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
@@ -128,7 +137,15 @@ class Translator {
                     }
                 }
             } catch (e) {
-                console.log("ERROR: " + e);
+                console.log("CDN Unavailable for : " + lang + ".json");
+                console.log("Loading from Backup files...");
+                try {
+                    this.translations[lang] = JSON.parse(fs.readFileSync(__dirname + "/locale/" + lang + ".json"));
+                    this.nbOfTranslations++;
+                    console.log("Backup Successfully Loaded !");
+                } catch (e) {
+                    console.log("ERROR: Unable to read from backup file for the translation file : " + lang + ".json");
+                }
             }
         }
     }

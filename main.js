@@ -56,6 +56,8 @@ process.on('unhandledRejection', up => {
 let startUp = async () => {
     await Globals.loadGlobals();
 
+    await Translator.load();
+
     let syncStartWith = Date.now();
     let totalGameStartTime = Date.now();
 
@@ -77,8 +79,6 @@ let startUp = async () => {
 
     let wbs = new WorldBossSpawner();
     await wbs.startUp();
-
-    await Translator.load();
 
 
     var connectedUsers = {};
