@@ -106,6 +106,9 @@ class Translator {
             conf = conf.data;
         } catch (e) {
             console.log("Unable to read Config File...\nLoading saved translations...");
+            if (!fs.existsSync(__dirname + "/locale/")) {
+                fs.mkdirSync(__dirname + "/locale");
+            }
             let localeList = await fs.readdirSync(__dirname + "/locale/");
             var conf = { published_langs: [] };
             for (let item of localeList) {

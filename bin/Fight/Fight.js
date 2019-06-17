@@ -1,4 +1,5 @@
 const WorldEntity = require("../Entities/WorldEntity");
+const Globals = require("../Globals");
 class Fight {
     /**
      * Classe de gestion d'un combat
@@ -33,8 +34,22 @@ class Fight {
             honor: 0,
             levelUpped: [],
             xpGained: {},
-            goldGained: {}
+            goldGained: {},
+            usersIds: [],
         };
+
+        this.loadUsersIds();
+    }
+
+    loadUsersIds() {
+        for (let entity of this.entities[0]) {
+            if (entity.getIdUser() != null) {
+                let entityOwnerID = entity.getIdUser();
+                if (Globals.connectedUsers[entityOwnerID] != null && !Globals.connectedUsers[entityOwnerID].isFightMuted()) {
+                    this.summary.usersIds.push(entity.getIdUser());
+                }
+            }
+        }
     }
 
     initiativeUpdate() {
@@ -168,7 +183,7 @@ class Fight {
 
     }
 
-    async endFight() {};
+    async endFight() { };
 
     getThisTeamLife(teamIndex) {
         let hp = 0;

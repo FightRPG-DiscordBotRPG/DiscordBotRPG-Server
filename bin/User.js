@@ -13,7 +13,7 @@ class User {
     // Discord User Info
     constructor(id, username, avatar) {
         this.id = id;
-        this.character = new Character();
+        this.character = new Character(id);
         this.avatar = avatar != null ? avatar : "";
         this.username = username; //username.replace(/[\u0800-\uFFFF]/g, '');
         this.isNew = false;
@@ -80,6 +80,7 @@ class User {
             this.preferences.lang = res[0]["lang"];
             this.preferences.groupmute = res[0]["groupmute"];
             this.preferences.marketplacemute = res[0]["marketplacemute"];
+            this.preferences.fightmute = res[0]["fightmute"];
         }
 
     }
@@ -144,6 +145,10 @@ class User {
         //return conn.query("SELECT groupmute FROM userspreferences WHERE idUser = ?", [this.id])[0]["groupmute"];
     }
 
+    isFightMuted() {
+        return this.preferences.fightmute;
+    }
+
     isMarketplaceMuted() {
         return this.preferences.marketplacemute;
         //return conn.query("SELECT marketplacemute FROM userspreferences WHERE idUser = ?", [this.id])[0]["marketplacemute"];
@@ -161,6 +166,11 @@ class User {
     async muteMarketplace(bool) {
         this.preferences.marketplacemute = bool;
         await conn.query("UPDATE userspreferences SET marketplacemute = ? WHERE idUser = ?;", [bool, this.id]);
+    }
+
+    async muteFight(bool) {
+        this.preferences.fightmute = bool;
+        await conn.query("UPDATE userspreferences SET fightmute = ? WHERE idUser = ?;", [bool, this.id]);
     }
 
     async marketTell(str) {

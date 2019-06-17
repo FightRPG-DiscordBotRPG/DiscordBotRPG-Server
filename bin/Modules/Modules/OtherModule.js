@@ -86,7 +86,7 @@ class OtherModule extends GModule {
             await next();
             return res.json(data);
         });
-        // TODO mute not working properly
+
         this.router.post("/settings", async (req, res, next) => {
             let data = {};
             let success = "";
@@ -107,6 +107,15 @@ class OtherModule extends GModule {
                 } else {
                     await Globals.connectedUsers[res.locals.id].muteMarketplace(true);
                     success += Translator.getString(res.locals.lang, "marketplace", "now_muted") + "\n";
+                }
+            }
+            if (req.body.mFight != null) {
+                if (Globals.connectedUsers[res.locals.id].isFightMuted()) {
+                    await Globals.connectedUsers[res.locals.id].muteFight(false);
+                    success += Translator.getString(res.locals.lang, "fight_general", "now_unmuted") + "\n";
+                } else {
+                    await Globals.connectedUsers[res.locals.id].muteFight(true);
+                    success += Translator.getString(res.locals.lang, "fight_general", "now_muted") + "\n";
                 }
             }
             if (success != "") {

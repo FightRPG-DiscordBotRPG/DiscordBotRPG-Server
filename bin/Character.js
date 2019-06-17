@@ -14,10 +14,11 @@ const CharacterAchievement = require("./Achievement/CharacterAchievements");
 
 class Character extends CharacterEntity {
 
-    constructor(id) {
-        super(id);
+    constructor(idUser) {
+        super();
         this._type = "Character";
-        this.id = id;
+        this.id = null;
+        this.idUser = idUser != null ? idUser : null;
         this.inv = new CharacterInventory();
         this.craftSystem = new PlayerCraft();
         this.achievements = new CharacterAchievement();
@@ -31,6 +32,10 @@ class Character extends CharacterEntity {
         // Party mechanics
         this.pendingPartyInvite = null;
         this.group = null;
+    }
+
+    getIdUser() {
+        return this.idUser;
     }
 
     async init() {

@@ -9,9 +9,9 @@ class CharacterEntity extends WorldEntity {
      * 
      * @param {number} id 
      */
-    constructor(id) {
+    constructor() {
         super();
-        this.id = id;
+        this.id = null;
         this.stats = new StatsPlayer();
         this.equipement = new CharacterEquipement();
         this.levelSystem = new LevelSystem();
