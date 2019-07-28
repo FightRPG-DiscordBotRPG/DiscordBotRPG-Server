@@ -6,7 +6,7 @@ const CharacterInventory = require("./CharacterInventory");
 
 class LootSystem {
     // Discord User Info
-    constructor() {}
+    constructor() { }
 
     /**
      * 
@@ -56,6 +56,14 @@ class LootSystem {
         return await this.giveToPlayer(character, idBase, character.getLevel(), number);
     }
 
+
+    /**
+     * Don't use of classes, for more efficent processing (Need to be changed if soemthing about the database is changed)
+     * @param {*} idCharacter 
+     * @param {*} idBase 
+     * @param {*} level 
+     * @param {*} number 
+     */
     async giveToPlayerDatabase(idCharacter, idBase = 0, level = 1, number = 1) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;

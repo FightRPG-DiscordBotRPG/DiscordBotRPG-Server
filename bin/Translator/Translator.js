@@ -28,7 +28,7 @@ class Translator {
         return returnNull ? null : lang + " | " + type + " | " + name;
     }
 
-    static formatString(s, args, lang = "en") {
+    static formatString(s, args = [], lang = "en") {
         let str = "",
             tempStr;
         let argsAlreadyPassed = 0;

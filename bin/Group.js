@@ -121,7 +121,6 @@ class Group {
         delete this.pendingPlayers[player.id];
         this.players[player.id] = player;
         player.character.group = this;
-
     }
 
     kick(playername) {

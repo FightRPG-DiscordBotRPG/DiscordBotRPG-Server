@@ -115,10 +115,10 @@ class CharacterModule extends GModule {
                         Globals.connectedUsers[res.locals.id].updateInMemmoryUsername(req.body.username);
                     }
                 } else {
-                    err = "InvalidUsername";
+                    err = "InvalidUsername (Too Long: " + req.body.username.length + " characters)";
                 }
             } else {
-                err = "InvalidUsername";
+                err = "InvalidUsername (No username entered)";
             }
 
             return err != null ? res.json({ error: err }) : res.json({ done: true });
@@ -126,6 +126,16 @@ class CharacterModule extends GModule {
 
         this.router.get("/info", async (req, res, next) => {
             let data = await Globals.connectedUsers[res.locals.id].apiInfoPanel(res.locals.lang);
+            await next();
+            return res.json(
+                data
+            );
+        });
+
+        this.router.get("/isTrading", async (req, res, next) => {
+            let data = {
+                isTrading: Globals.connectedUsers[res.locals.id].character.isTrading()
+            };
             await next();
             return res.json(
                 data

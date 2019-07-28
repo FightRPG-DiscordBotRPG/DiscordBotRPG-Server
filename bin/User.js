@@ -81,6 +81,7 @@ class User {
             this.preferences.groupmute = res[0]["groupmute"];
             this.preferences.marketplacemute = res[0]["marketplacemute"];
             this.preferences.fightmute = res[0]["fightmute"];
+            this.preferences.trademute = res[0]["trademute"];
         }
 
     }
@@ -154,6 +155,10 @@ class User {
         //return conn.query("SELECT marketplacemute FROM userspreferences WHERE idUser = ?", [this.id])[0]["marketplacemute"];
     }
 
+    isTradeMuted() {
+        return this.preferences.trademute;
+    }
+
     isAchievementsMuted() {
         return false;
     }
@@ -173,6 +178,11 @@ class User {
         await conn.query("UPDATE userspreferences SET fightmute = ? WHERE idUser = ?;", [bool, this.id]);
     }
 
+    async muteTrade(bool) {
+        this.preferences.trademute = bool;
+        await conn.query("UPDATE userspreferences SET trademute = ? WHERE idUser = ?;", [bool, this.id]);
+    }
+
     async marketTell(str) {
         if (!this.isMarketplaceMuted()) {
             this.tell(str);
@@ -187,6 +197,12 @@ class User {
 
     async achievementTell(str) {
         if (!this.isAchievementsMuted()) {
+            this.tell(str);
+        }
+    }
+
+    async tradeTell(str) {
+        if (!this.isTradeMuted()) {
             this.tell(str);
         }
     }

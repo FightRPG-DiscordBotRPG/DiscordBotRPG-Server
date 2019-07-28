@@ -135,9 +135,11 @@ class GModule {
                     }
                 }
 
+                res.locals.trade = Globals.connectedUsers[res.locals.id].character.trade;
                 res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
                 res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
                 res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
+                res.locals.pendingTrade = Globals.connectedUsers[res.locals.id].character.pendingTradeInvite;
                 res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
                 res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
                 res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
@@ -208,7 +210,7 @@ class GModule {
     }
 
     helpPanel(lang, page) {
-        let maxPage = 7;
+        let maxPage = 8;
         page = page && page > 0 && page <= maxPage ? page : 1;
         let data = {};
         let commands = {};
@@ -337,6 +339,19 @@ class GModule {
                 }
                 break;
             case 7:
+                commands[Translator.getString(lang, "help_panel", "trade_title")] = {
+                    "tpropose @mention": Translator.getString(lang, "help_panel", "tpropose"),
+                    "taccept": Translator.getString(lang, "help_panel", "taccept"),
+                    "tcancel": Translator.getString(lang, "help_panel", "tcancel"),
+                    "tshow": Translator.getString(lang, "help_panel", "tshow"),
+                    "titem <idInTrade>": Translator.getString(lang, "help_panel", "titem"),
+                    "tadd <idItemInInventory> <amount>": Translator.getString(lang, "help_panel", "tadd"),
+                    "tremove <idInTrade> <amount>": Translator.getString(lang, "help_panel", "tremove"),
+                    "tsetmoney <amount>": Translator.getString(lang, "help_panel", "tsetmoney"),
+                    "tvalidate": Translator.getString(lang, "help_panel", "tvalidate"),
+                }
+                break;
+            case 8:
                 commands[Translator.getString(lang, "help_panel", "other_title")] = {
                     "lang": Translator.getString(lang, "help_panel", "lang"),
                     "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),

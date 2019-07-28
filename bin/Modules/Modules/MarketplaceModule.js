@@ -76,18 +76,19 @@ class MarketplaceModule extends GModule {
                                 // nb = amount of player items
                                 let nb = await Globals.connectedUsers[res.locals.id].character.getAmountOfThisItem(toPlaceIdItem);
                                 if (nb >= nbOfItemsToPlace) {
-                                    if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem)) {
+                                    if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem) || req.body.forced != null) {
                                         if (await res.locals.currentArea.haveOwner()) {
                                             let marketplaceTax = Math.round(priceToPlace * await res.locals.marketplace.getTax());
                                             if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(marketplaceTax)) {
+                                                let tempItem = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toPlaceIdItem);
                                                 // enlever la taxe
-                                                await Promise.all([
-                                                    Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace),
+                                                let arrayToGetOrderObject = await Promise.all([
+                                                    Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace, res.locals.lang),
                                                     Globals.connectedUsers[res.locals.id].character.removeMoney(marketplaceTax),
                                                     Guild.addMoney(await res.locals.currentArea.getOwnerID(), marketplaceTax)
-                                                ])
+                                                ]);
 
-                                                data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed")) + "\n";
+                                                data.success = Translator.getString(res.locals.lang, "marketplace", (nbOfItemsToPlace > 1 ? "placed_plur" : "placed"), [arrayToGetOrderObject[0].item.name, arrayToGetOrderObject[0].item.number, arrayToGetOrderObject[0].idItem]) + "\n";
                                                 data.success += Translator.getString(res.locals.lang, "marketplace", "you_paid_tax", [marketplaceTax]);
                                             } else {
                                                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_enough_to_pay_tax");

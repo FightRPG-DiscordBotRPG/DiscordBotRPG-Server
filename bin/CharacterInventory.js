@@ -308,15 +308,22 @@ class CharacterInventory {
         return null;
     }
 
-    async isThisItemInInventory(idItem) {
+    /**
+     * 
+     * @param {*} idItem 
+     * @param {*} number
+     * ID Item is the real ID, not the id relative to inventory emplacement 
+     * Number is to also check if the item number is at least the Number argument (optional)
+     */
+    async isThisItemInInventory(idItem, number = 1) {
         idItem = idItem >= 0 ? idItem : 0;
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [this.id, idItem]);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ? AND number >= ?;", [this.id, idItem, number]);
         return res[0] != null;
     }
 
-    static async isThisItemInInventory(idCharacter, idItem) {
+    static async isThisItemInInventory(idCharacter, idItem, number = 1) {
         idItem = idItem >= 0 ? idItem : 0;
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ?;", [idCharacter, idItem]);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ? AND number >= ?;", [idCharacter, idItem, number]);
         return res[0] != null;
     }
 
@@ -339,14 +346,14 @@ class CharacterInventory {
     }
 
 
-    // Instantiate the require item
-    // If idEmplacement not valid 
-    // Intantiate first item in inventory
-    // If inventory is empty => throw err 
     /**
      * 
      * @param {*} idEmplacement 
      * @returns {Promise<Item>}
+     * Instantiate the require item
+     * If idEmplacement not valid 
+     * Intantiate first item in inventory
+     * If inventory is empty => throw err 
      */
     async getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;

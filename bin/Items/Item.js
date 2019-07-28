@@ -62,6 +62,13 @@ class Item {
         await conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
     }
 
+    static async lightInsert(idBase, level) {
+        if (idBase != null && idBase > 0 && level != null && level > 0) {
+            return (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [idBase, level]))["insertId"];
+        }
+        return -1;
+    }
+
     /**
      * 
      * @param {Array<number>} idItems 

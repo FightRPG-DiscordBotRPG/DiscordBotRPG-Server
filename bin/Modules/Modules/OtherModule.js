@@ -118,6 +118,15 @@ class OtherModule extends GModule {
                     success += Translator.getString(res.locals.lang, "fight_general", "now_muted") + "\n";
                 }
             }
+            if (req.body.mTrade != null) {
+                if (Globals.connectedUsers[res.locals.id].isTradeMuted()) {
+                    await Globals.connectedUsers[res.locals.id].muteTrade(false);
+                    success += Translator.getString(res.locals.lang, "trade", "now_unmuted") + "\n";
+                } else {
+                    await Globals.connectedUsers[res.locals.id].muteTrade(true);
+                    success += Translator.getString(res.locals.lang, "trade", "now_muted") + "\n";
+                }
+            }
             if (success != "") {
                 data.success = success;
             } else {

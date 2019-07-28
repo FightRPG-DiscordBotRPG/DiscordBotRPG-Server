@@ -32,6 +32,10 @@ class Character extends CharacterEntity {
         // Party mechanics
         this.pendingPartyInvite = null;
         this.group = null;
+
+        // Trade mechanic
+        this.pendingTradeInvite = null;
+        this.trade = null;
     }
 
     getIdUser() {
@@ -166,6 +170,15 @@ class Character extends CharacterEntity {
     // Group System
     leaveGroup() {
         this.group = null;
+    }
+
+    // Trade system
+    cancelTrade() {
+        this.trade = null;
+    }
+
+    isTrading() {
+        return this.trade != null;
     }
 
     damageCalcul() {
@@ -413,7 +426,7 @@ class Character extends CharacterEntity {
 
     // Marketplace
 
-    async sellToMarketplace(marketplace, idEmplacement, nbr, price) {
+    async sellToMarketplace(marketplace, idEmplacement, nbr, price, lang = "en") {
         let order;
         let idItem;
         if (await this.getAmountOfThisItem(idEmplacement) > nbr) {
@@ -427,6 +440,8 @@ class Character extends CharacterEntity {
         await this.getInv().removeSomeFromInventory(idEmplacement, nbr, false);
         order = new MarketplaceOrder(marketplace.id, idItem, this.id, nbr, price);
         await order.place();
+
+        return await order.toApi(lang);
     }
 
 
