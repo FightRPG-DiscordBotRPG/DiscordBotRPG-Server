@@ -1,18 +1,16 @@
 'use strict';
 var MySql = require('mysql');
 const util = require("util");
-const deasync = require("deasync");
 
 var connection = MySql.createConnection({
     host: 'localhost',
     user: 'discord_bot_rpg',
-    password: 'sdobFWDViY5tgGYe',
+    password: '',
     database: 'discord_bot_rpg',
     charset: "utf8mb4_unicode_ci"
 });
 
 var query = util.promisify(connection.query).bind(connection);
-//query = deasync(query);
 let connMaker = {
     connection: connection,
     query: async (sql, arr = []) => {
@@ -28,6 +26,3 @@ let connMaker = {
 
 
 module.exports = connMaker;
-
-//sdo#FWDViY5tgG*e
-//sdobFWDViY5tgGYe

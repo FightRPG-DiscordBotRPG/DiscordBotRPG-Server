@@ -116,7 +116,7 @@ class GModule {
 
     loadNeededVariables() {
         this.router.use((req, res, next) => {
-            if (Globals.connectedUsers[res.locals.id].isLoaded = true) {
+            if (Globals.connectedUsers[res.locals.id].isLoaded == true) {
                 for (let i in req.body) {
                     try {
                         req.body[i] = decodeURIComponent(req.body[i]);

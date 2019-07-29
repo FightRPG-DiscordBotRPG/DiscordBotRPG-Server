@@ -314,7 +314,7 @@ class ModuleHandler extends GModule {
                     await Globals.connectedGuilds[idGuild].loadGuild(idGuild);
                 }
             }
-            Globals.connectedUsers[authorIdentifier].character.isLoaded = true;
+            Globals.connectedUsers[authorIdentifier].isLoaded = true;
         }
         if (Globals.connectedUsers[authorIdentifier].isNew) {
             Globals.connectedUsers[authorIdentifier].isNew = false;
