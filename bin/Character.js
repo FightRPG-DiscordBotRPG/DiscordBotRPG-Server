@@ -432,7 +432,7 @@ class Character extends CharacterEntity {
         if (await this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
             let item = await this.getInv().getItem(idEmplacement);
-            idItem = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
+            idItem = await Item.lightInsert(item.idBaseItem, item.level);
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
             idItem = await this.getInv().getIdItemOfThisEmplacement(idEmplacement);
@@ -479,7 +479,7 @@ class Character extends CharacterEntity {
                 if (inventoryItemID != null) {
                     await this.getInv().addToInventory(inventoryItemID, number);
                 } else {
-                    let idItem = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?)", [item.idBaseItem, item.level]))["insertId"];
+                    let idItem = await Item.lightInsert(item.idBaseItem, item.level);
                     await this.getInv().addToInventory(idItem, number);
                 }
             }

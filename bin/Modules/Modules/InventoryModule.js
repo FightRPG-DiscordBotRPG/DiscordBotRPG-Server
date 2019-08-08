@@ -186,7 +186,10 @@ class InventoryModule extends GModule {
                 params.type = parseInt(req.query.idType);
             } else if (req.query.level != null) {
                 params.level = parseInt(req.query.level);
+            } else if (req.query.power != null) {
+                params.power = parseInt(req.query.power)
             }
+
             let invPage = parseInt(req.params.page, 10);
             if (invPage == null || invPage != null && !Number.isInteger(invPage)) {
                 invPage = 0;

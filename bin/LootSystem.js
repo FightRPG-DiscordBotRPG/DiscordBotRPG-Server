@@ -3,6 +3,8 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const PStatistics = require("./Achievement/PStatistics");
 const CharacterInventory = require("./CharacterInventory");
+const Item = require("./Items/Item");
+const Stats = require("./Stats/Stats");
 
 class LootSystem {
     // Discord User Info
@@ -127,7 +129,7 @@ class LootSystem {
         let res = await conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idBaseItem = ?`, [idBase]);
         if (res[0]) {
             let rarity = res[0].idRarity;
-            let stats = {};
+            let stats = new Stats(0);;
             let statsPossible = Object.keys(Globals.statsIds);
             let alreadyDone = this.getStatsNumber(rarity);
             let objectType = res[0]["nomType"];
@@ -162,10 +164,13 @@ class LootSystem {
             }
 
 
-            let idInsert = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, " + idBase + ", " + level + ")"))["insertId"];
+            // Here stats have exactly the same architechture of a stats object
+            // So we can calculate power
+
+            let idInsert = await Item.lightInsert(idBase, level, Item.calculPower(stats));
             let promises = [];
-            for (let i in stats) {
-                promises.push(conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + Globals.statsIds[i] + ", " + stats[i] + ")"));
+            for (let i in Globals.statsIds) {
+                promises.push(conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + parseInt(Globals.statsIds[i]) + ", " + stats[i] + ")"));
             }
 
             await Promise.all(promises);

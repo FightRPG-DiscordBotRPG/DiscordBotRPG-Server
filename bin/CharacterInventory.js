@@ -124,7 +124,11 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
+            } else if (params.power != null && params.power >= 0) {
+                more += "power >= ?"
+                moreValue = params.power;
             }
+
 
             if (moreValue != null) {
                 more = "AND " + more;
@@ -135,14 +139,14 @@ class CharacterInventory {
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
         let ids = [];
         for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
         // Delete from inventory
-        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
 
         // Delete items
         await Item.deleteItems(ids);
@@ -162,6 +166,9 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
+            } else if (params.power != null && params.power >= 0) {
+                more += "power >= ?"
+                moreValue = params.power;
             }
 
             if (moreValue != null) {
@@ -170,7 +177,7 @@ class CharacterInventory {
             }
 
         }
-        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
+        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
         value = value[0]["value"];
         return value;
     }
@@ -202,6 +209,9 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
+            } else if (params.power != null && params.power >= 0) {
+                more += "power >= ?"
+                moreValue = params.power;
             }
 
             if (moreValue != null) {
@@ -211,7 +221,7 @@ class CharacterInventory {
 
         }
 
-        let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
+        let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
 
         for (let i in res) {
             let item = await Item.newItem(res[i].idItem, res[i].nomSousType);
@@ -261,6 +271,9 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
+            } else if (params.power != null && params.power >= 0) {
+                more += "power >= ?"
+                moreValue = params.power;
             }
 
             if (moreValue != null) {
@@ -269,7 +282,7 @@ class CharacterInventory {
             }
 
         }
-        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE idCharacter = ? " + more + ";", sqlParams);
+        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? " + more + ";", sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
 

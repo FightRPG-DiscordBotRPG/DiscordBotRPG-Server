@@ -48,6 +48,7 @@ class Marketplace {
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ?`,
             [lang, this.id, itemName, level]);
         let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
@@ -56,6 +57,7 @@ class Marketplace {
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                 INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                 WHERE marketplacesorders.idMarketplace = ? AND instr(localizationitems.nameItem, ?) AND items.level = ? ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
             [lang, this.id, itemName, level, perPage, (page - 1) * perPage]);
 
@@ -73,6 +75,7 @@ class Marketplace {
         let res = await conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                 WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC`,
             [this.id]);
         let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
@@ -81,6 +84,7 @@ class Marketplace {
         res = await conn.query(`SELECT * FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                 WHERE marketplacesorders.idMarketplace = ? ORDER BY marketplacesorders.price DESC LIMIT ? OFFSET ?`,
             [this.id, perPage, (page - 1) * perPage]);
 

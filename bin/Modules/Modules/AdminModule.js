@@ -254,9 +254,9 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
-            let arrOfUsers = res.locals.group != null ? res.locals.group.getArrayOfPlayers() : [];
-            for (let user of arrOfUsers) {
-                user.character.getAchievements().unlock(2, user);
+            console.log(Globals.statsIds)
+            for (let i in Globals.statsIds) {
+                console.log(Globals.statsIds[i])
             }
             await next();
             return res.send("null");

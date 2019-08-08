@@ -148,7 +148,7 @@ class CraftingModule extends GModule {
                             if (idToCollect) {
                                 await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idToCollect, numberItemsCollected);
                             } else {
-                                let idInsert = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES(NULL, ?, 1)", [resourceToCollect.idBaseItem]))["insertId"];
+                                let idInsert = await Item.lightInsert(resourceToCollect.idBaseItem, 1);
                                 await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idInsert, numberItemsCollected);
                             }
 
