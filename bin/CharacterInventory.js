@@ -146,7 +146,7 @@ class CharacterInventory {
         }
 
         // Delete from inventory
-        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = ci.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
 
         // Delete items
         await Item.deleteItems(ids);
