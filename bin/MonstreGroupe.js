@@ -1,7 +1,7 @@
 'use strict';
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
-const Monstre = require("./Monstre");
+const Monstre = require("./Entities/Monster");
 
 class MonstreGroup {
 

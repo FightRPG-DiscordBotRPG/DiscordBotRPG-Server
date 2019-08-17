@@ -1,5 +1,5 @@
 'use strict';
-const Monstre = require("./Monstre.js");
+const Monstre = require("./Entities/Monster.js");
 const Globals = require("./Globals");
 const LootSystem = require("./LootSystem.js");
 const FightPvE = require("./Fight/FightPvE");
