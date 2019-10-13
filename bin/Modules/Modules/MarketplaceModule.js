@@ -78,9 +78,8 @@ class MarketplaceModule extends GModule {
                                 if (nb >= nbOfItemsToPlace) {
                                     if (!await Globals.connectedUsers[res.locals.id].character.isItemFavorite(toPlaceIdItem) || req.body.forced != null) {
                                         if (await res.locals.currentArea.haveOwner()) {
-                                            let marketplaceTax = Math.round(priceToPlace * await res.locals.marketplace.getTax());
+                                            let marketplaceTax = Math.round(priceToPlace * await res.locals.marketplace.getTax() * nbOfItemsToPlace);
                                             if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(marketplaceTax)) {
-                                                let tempItem = Globals.connectedUsers[res.locals.id].character.getInv().getItem(toPlaceIdItem);
                                                 // enlever la taxe
                                                 let arrayToGetOrderObject = await Promise.all([
                                                     Globals.connectedUsers[res.locals.id].character.sellToMarketplace(res.locals.marketplace, toPlaceIdItem, nbOfItemsToPlace, priceToPlace, res.locals.lang),
