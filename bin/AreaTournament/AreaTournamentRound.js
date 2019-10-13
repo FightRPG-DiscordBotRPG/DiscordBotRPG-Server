@@ -16,14 +16,16 @@ class AreaTournamentRound {
         this.initialGuilds = selectedGuilds;
         this.guildsPlacements = [];
         this.winners = [];
+    }
 
-        this.pairGuilds();
+    async init() {
+        await this.pairGuilds()
     }
 
     /**
      * Pair guilds
      */
-    pairGuilds() {
+    async pairGuilds() {
         //console.log(this.initialGuilds);
         this.shuffle(this.initialGuilds);
         //console.log(this.initialGuilds);        
@@ -35,7 +37,7 @@ class AreaTournamentRound {
                 pair.push(0);
             }
             this.guildsPlacements.push(pair);
-            conn.query("INSERT INTO conquesttournamentrounds VALUES (?, ?, ?, ?, 0)", [this.idArea, this.round, pair[0], pair[1] == 0 ? null : pair[1]]);
+            await conn.query("INSERT INTO conquesttournamentrounds VALUES (?, ?, ?, ?, 0)", [this.idArea, this.round, pair[0], pair[1] == 0 ? null : pair[1]]);
         }
     }
 
@@ -55,11 +57,11 @@ class AreaTournamentRound {
                 await fight.init();
                 if (fight.summary.winner == 0) {
                     this.winners.push(guilds[0]);
-                    conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
+                    await conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
                     //console.log(g1.name);
                 } else {
                     this.winners.push(guilds[1]);
-                    conn.query("UPDATE conquesttournamentrounds SET winner = 2 WHERE idRound = ? AND idGuild_2 = ?", [this.round, guilds[1]]);
+                    await conn.query("UPDATE conquesttournamentrounds SET winner = 2 WHERE idRound = ? AND idGuild_2 = ?", [this.round, guilds[1]]);
                     //console.log(g2.name);
                 }
 
@@ -67,7 +69,7 @@ class AreaTournamentRound {
                 //let g0 = new GuildEntity(guilds[0]);
                 //console.log(g0.name);
                 this.winners.push(guilds[0]);
-                conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
+                await conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
             }
         }
         //console.log(this.round + " : ");

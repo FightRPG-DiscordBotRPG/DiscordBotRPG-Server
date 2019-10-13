@@ -11,6 +11,9 @@ class AreaTournament {
     constructor(idArea) {
         this.idArea = idArea;
         this.areasGuildsIncriptions = [];
+        /**
+         * @type {Array<AreaTournamentRound>}
+         */
         this.rounds = {};
         this.isStarted = false;
         this.actualRound = 0;
@@ -77,12 +80,13 @@ class AreaTournament {
         for (let inscription of inscriptions) {
             this.areasGuildsIncriptions.push(inscription.idGuild);
         }
-        this.calculMaxRounds(this.areasGuildsIncriptions.length);
+        this.calculMaxRounds();
         this.actualRound = 1;
 
         await conn.query("UPDATE conquesttournamentinfo SET started = ?, actualRound = ? WHERE idArea = ?;", [this.isStarted, this.actualRound, this.idArea]);
 
         this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.areasGuildsIncriptions, this.idArea);
+        await this.rounds[this.actualRound].init()
 
         // Do all the fights for this area
         await this.doFights();
