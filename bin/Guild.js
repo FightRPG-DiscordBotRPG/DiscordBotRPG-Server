@@ -253,17 +253,12 @@ class Guild {
         let request = "SELECT areasowners.idArea, nameArea, nameRegion FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY areasowners.idArea;";
 
         // First get number of territories own by the guild
-        let numberOfOnwedTerritories = await conn.query("SELECT COUNT(*) as number FROM areasowners WHERE idGuild = ?;", [this.id]);
+        let numberOfOnwedTerritories = (await conn.query("SELECT COUNT(*) as number FROM areasowners WHERE idGuild = ?;", [this.id]))[0].number;
 
         // Then we get the list
         let res = await conn.query(request, [this.id, lang, lang]);
-        let englishRes = [];
 
-        // Then if the number is incorrect we get the english version
-        if (lang != "en" && res.length < numberOfOnwedTerritories[0].number) {
-            // If an area or a region is not translated 
-            englishRes = await conn.query(request, [this.id, "en", "en"]);
-        }
+        let englishRes = await conn.query(request, [this.id, "en", "en"]);
 
         let territories = {};
         let indexShift = 0
