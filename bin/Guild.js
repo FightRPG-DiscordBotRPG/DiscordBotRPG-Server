@@ -256,7 +256,7 @@ class Guild {
         let numberOfOnwedTerritories = (await conn.query("SELECT COUNT(*) as number FROM areasowners WHERE idGuild = ?;", [this.id]))[0].number;
 
         // Then we get the list
-        let res = await conn.query(request, [this.id, lang, lang]);
+        let localeRes = await conn.query(request, [this.id, lang, lang]);
 
         let englishRes = await conn.query(request, [this.id, "en", "en"]);
 
@@ -264,8 +264,8 @@ class Guild {
         let indexShift = 0
         let actualIndex = 0
         for (let territory of englishRes) {
-            if (res.length > 0 && res[actualIndex - indexShift].idArea == territory.idArea) {
-                territory = res[actualIndex - indexShift];
+            if (localeRes.length > 0 && localeRes[actualIndex - indexShift] && localeRes[actualIndex - indexShift].idArea == territory.idArea) {
+                territory = localeRes[actualIndex - indexShift];
             } else {
                 indexShift++;
             }
