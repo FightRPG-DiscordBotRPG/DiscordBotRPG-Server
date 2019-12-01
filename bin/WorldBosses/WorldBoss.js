@@ -34,6 +34,8 @@ class WorldBoss {
 
     async wound(nb = 0) {
         if (nb > 0) {
+            this.actualHp = this.actualHp - nb;
+            this.actualHp = this.actualHp > 0 ? this.actualHp : 0;
             await conn.query("UPDATE spawnedbosses SET actualHp = (CASE WHEN actualHp >= ? THEN actualHp - ? ELSE actualHp = 0 END);", [nb, nb]);
         }
     }

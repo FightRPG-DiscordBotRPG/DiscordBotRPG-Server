@@ -374,6 +374,9 @@ class WorldBossSpawner {
         WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
         let wbs = new WorldBossSpawner();
 
+        // pourquoi j'ai remove wb.load() ?!
+        // actual hp n'était pas à jour du coup.
+        // Maintenant .wound mets à jour les pvs.
         if (wb.actualHp <= 0) {
             WorldBossSpawner.giveRewards(wb.id);
             await wbs.reset();
