@@ -18182,7 +18182,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFiuTZxUX804sI="
 							},
-							"name": "idMonstre",
+							"name": "idEntities/Monster,
 							"visibility": "private",
 							"isStatic": false,
 							"isLeaf": false,
@@ -19778,7 +19778,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFiuWseoqQLTq0="
 							},
-							"name": "groupeMonstre",
+							"name": "groupeEntities/Monster,
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -40129,7 +40129,7 @@
 													"height": 13,
 													"autoResize": false,
 													"underline": false,
-													"text": "Diminue la vie du monstre",
+													"text": "Diminue la vie du Entities/Monster,
 													"horizontalAlignment": 2,
 													"verticalAlignment": 5,
 													"wordWrap": false
@@ -42665,7 +42665,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFiw+s4yfS7EsE="
 									},
-									"name": "Diminue la vie du monstre",
+									"name": "Diminue la vie du Entities/Monster,
 									"visibility": "public"
 								},
 								{
