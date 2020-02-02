@@ -105,6 +105,9 @@ class Translator {
             var conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
             conf = conf.data;
         } catch (e) {
+            console.log("ERROR WHEN READING CONFIG FILE:\n");
+            console.log(e.message + "\n");
+
             console.log("Unable to read Config File...\nLoading saved translations...");
             if (!fs.existsSync(__dirname + "/locale/")) {
                 fs.mkdirSync(__dirname + "/locale");
