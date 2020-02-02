@@ -12,7 +12,7 @@
       "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
       "version": "1.0.0"
     },
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-runtime": {
       "integrity": "sha1-llxwWGaOgrVde/4E/yM3vItWR/4=",
       "requires": {
