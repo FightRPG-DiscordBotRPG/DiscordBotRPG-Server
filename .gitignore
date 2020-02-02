@@ -6,3 +6,4 @@ npm-debug.log
 bin/Translator/locale
 discordbotrpg-server.zip
 .vscode/launch.json
+node_modules/
