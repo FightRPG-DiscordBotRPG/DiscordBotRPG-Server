@@ -70,12 +70,14 @@ class CharacterInventory {
     async removeSomeFromInventory(idEmplacement, number, deleteObject) {
         number = number ? number : 1;
         let item = await this.getItem(idEmplacement);
-        item.number -= number;
-        if (item.number <= 0) {
-            await this.deleteFromInventory(item, deleteObject);
-        } else {
-            await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
-        }
+        if(item != null) {
+            item.number -= number;
+            if (item.number <= 0) {
+                await this.deleteFromInventory(item, deleteObject);
+            } else {
+                await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
+            }
+		}
     }
 
     /**
@@ -366,14 +368,18 @@ class CharacterInventory {
      * Instantiate the require item
      * If idEmplacement not valid 
      * Intantiate first item in inventory
-     * If inventory is empty => throw err 
+     * If inventory is empty => throw err  ----> 21/02/2020 Now returns null
      */
     async getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
         let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
-        let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
-        item.number = res[0].number;
-        return item;
+        if(res[0] != null) {
+            let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
+            item.number = res[0].number;
+            return item;
+		}
+        return null;  
+
     }
 
     // Only used by craft -> don't care about level of item take first one
