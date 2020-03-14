@@ -133,13 +133,15 @@ class Fight {
         damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
         damage = Math.round(damage);
 
-        // Critical hit
+        // Critical hit and stun
         critical = attacker.isThisACriticalHit();
-        damage = critical === true ? damage * 2 : damage;
-
-        // Calcul du stun si pas critique
-        if (!critical) {
-            stun = attacker.stun(defender.getStat("will"));
+        stun = attacker.stun(defender.getStat("will"));
+        
+        // Crit + stun does 25% more dmg, crit does double, else default
+        if (critical && stun) {
+            damage * 1.25;
+        } else if (critical) {
+            damage * 2;
         }
 
         defender.actualHP -= damage;
