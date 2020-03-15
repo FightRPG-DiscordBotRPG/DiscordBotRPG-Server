@@ -1,7 +1,6 @@
 const Globals = require("./bin/Globals.js");
 const Translator = require("./bin/Translator/Translator");
 const Discord = require("discord.js");
-const Key = require("./conf/botkey.js");
 const FightManager = require("./bin/FightManager");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
@@ -44,7 +43,7 @@ if (conf.env === "prod") {
 
 
 process.on('unhandledRejection', up => {
-    throw up
+    throw up;
 });
 
 
@@ -92,6 +91,6 @@ let startUp = async () => {
 
     // Load api after all 
     const mHandler = new ModuleHandler();
-}
+};
 
 startUp();
