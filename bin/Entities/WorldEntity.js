@@ -18,8 +18,8 @@ class WorldEntity {
     }
 
     damageCalcul() {
-        let baseDamage = (this.getStat("strength") + 1) * 2;
-        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
+        let baseDamage = this.getStat("strength") + 1;
+        return Math.ceil(Math.random() * 2.5 * baseDamage);
     }
 
     getLevel() {
