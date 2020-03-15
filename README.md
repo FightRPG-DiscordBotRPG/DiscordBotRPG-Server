@@ -1,7 +1,7 @@
 [![FightRPG](https://images.discordapp.net/avatars/401421644968624129/eb4988a9c27061da9ce3b23787fbd7e3.png?size=512)](https://wiki.fight-rpg.com)
 
 
-## Table of Contents (Optional)
+## Table of Contents
 
 > If your `README` has a lot of info, section headers might be nice.
 
@@ -61,4 +61,4 @@ Reach out to me at one of the following places!
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
 - **[MPL 2.0 license](https://github.com/FightRPG-DiscordBotRPG/DiscordBotRPG-Server/blob/master/LICENSE)**
-- Copyright 2020 © <a href="https://fight-rpg.com" target="_blank">Fight-RPG</a>.
+- Copyright 2020 Â© <a href="https://fight-rpg.com" target="_blank">Fight-RPG</a>.
