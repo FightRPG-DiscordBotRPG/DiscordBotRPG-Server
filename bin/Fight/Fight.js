@@ -122,6 +122,7 @@ class Fight {
         let done = 0;
         let critical = false;
         let stun = false;
+        const maxConsecutiveStuns = 1;
 
         let attacker = this.entities[this.initiative[0]][this.initiative[1]];
         let defender = this.getDefender(this.entities[this.initiative[0] == 0 ? 1 : 0]);
@@ -150,9 +151,12 @@ class Fight {
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
-        if (stun) {
+        if (stun && attacker.consecutiveStuns < maxConsecutiveStuns) {
             if (this.entitiesStunned.indexOf(defender) == -1) {
                 this.entitiesStunned.push(defender);
+                attacker.consecutiveStuns += 1;
+            } else {
+                attacker.consecutiveStuns = 0;
             }
         }
 
