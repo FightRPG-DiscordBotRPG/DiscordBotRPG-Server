@@ -9,3 +9,4 @@ discordbotrpg-server.zip
 node_modules/
 .vs/
 sql/
+conf/conf.js
