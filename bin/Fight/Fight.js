@@ -136,7 +136,9 @@ class Fight {
 
         // Critical hit and stun
         critical = attacker.isThisACriticalHit();
-        stun = attacker.stun(defender.getStat("will"));
+        if (attacker.consecutiveStuns < maxConsecutiveStuns) {
+            stun = attacker.stun(defender.getStat("will"));
+        }
         
         // Crit + stun does 25% more dmg, crit does double, else default
         if (critical && stun) {
@@ -151,7 +153,7 @@ class Fight {
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
-        if (stun && attacker.consecutiveStuns < maxConsecutiveStuns) {
+        if (stun) {
             if (this.entitiesStunned.indexOf(defender) == -1) {
                 this.entitiesStunned.push(defender);
                 attacker.consecutiveStuns += 1;
