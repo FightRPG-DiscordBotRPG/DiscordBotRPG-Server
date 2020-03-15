@@ -54,7 +54,7 @@ Next with nodejs run "init.js" and follow the instructions
 Reach out to me at one of the following places!
 
 - contact@fight-rpg.com
-- <a href="https://discord.gg/vhHJY8V" target="_blank">`Discord FIght-RPG`</a>
+- <a href="https://discord.gg/vhHJY8V" target="_blank">`Discord Fight-RPG`</a>
 
 ## Licence
 
