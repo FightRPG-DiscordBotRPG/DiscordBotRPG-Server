@@ -10,6 +10,7 @@ class WorldEntity {
         this.maxHP = 0;
         this.level = 0;
         this.stats = new Stats();
+        this.consecutiveStuns = 0;
     }
 
     updateStats() {
