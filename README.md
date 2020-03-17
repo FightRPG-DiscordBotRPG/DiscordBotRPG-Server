@@ -19,7 +19,7 @@
 > Install
 - npm
 - Node.js (recommended 12.16.1 LTS)
-- Mysql Database (latest 5.7.X)
+- Mysql Database (5.7.X) OR MariaDB (10.3.X)
 
 ### Clone
 
