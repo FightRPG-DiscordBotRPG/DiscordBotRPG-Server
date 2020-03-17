@@ -10,3 +10,4 @@ node_modules/
 .vs/
 sql/
 conf/conf.js
+.zip
