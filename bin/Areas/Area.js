@@ -91,12 +91,19 @@ class Area {
 
         // Load max rarity/quality item
         res = await conn.query(
-            "SELECT DISTINCT itemsrarities.nomRarity " +
-            "FROM itemsbase " +
-            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity " +
-            "INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = " + this.id + " " +
-            "GROUP BY itemsrarities.idRarity DESC LIMIT 1;"
-        );
+            `SELECT
+                DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity
+                FROM
+                itemsbase
+                INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity
+                INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem
+                AND areasitems.idArea = ?
+                GROUP BY
+                itemsrarities.idRarity
+                ORDER BY itemsrarities.idRarity DESC
+                LIMIT 1`
+            , [this.id]);
+
         if (res[0]) {
             this.maxItemRarity = res[0]["nomRarity"];
         }
@@ -187,10 +194,6 @@ class Area {
             }
         }
         return this.monsters[index].getMonsters();
-    }
-
-    getMaxItemQuality() {
-        return this.maxItemRarity;
     }
 
     /**
@@ -457,13 +460,13 @@ class Area {
 
     async getMaxItemQuality() {
         let res = await conn.query(
-            "SELECT DISTINCT itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity DESC LIMIT 1;", [this.id]);
+            "SELECT DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ORDER BY itemsrarities.idRarity DESC LIMIT 1;", [this.id]);
         return res[0] != null ? res[0]["nomRarity"] : "common";
     }
 
     async getMinItemQuality() {
         let res = await conn.query(
-            "SELECT DISTINCT itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ASC LIMIT 1;", [this.id]);
+            "SELECT DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ORDER BY itemsrarities.idRarity ASC LIMIT 1;", [this.id]);
         return res[0] != null ? res[0]["nomRarity"] : "common";
     }
 
@@ -516,7 +519,7 @@ class Area {
     }
 
     minMaxLevelToString() {
-        return this.minLevel != this.maxLevel ? this.minLevel + "-" + this.maxLevel : this.maxLevel + "";
+        return this.minLevel !== this.maxLevel ? this.minLevel + "-" + this.maxLevel : this.maxLevel + "";
     }
 
     /**
