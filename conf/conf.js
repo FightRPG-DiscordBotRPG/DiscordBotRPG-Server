@@ -1,1 +1,0 @@
-const conf={env:"dev",discordbotskey:"",webhookkey:"",registerkey:"DEFAULT_KEY",database:{host:"localhost",user:"discord_bot_rpg",password:"",database:"discord_bot_rpg",charset:"utf8mb4_unicode_ci",multipleStatements:true}};module.exports=conf;
