@@ -259,5 +259,7 @@
       "version": "3.3.3"
     }
   },
-  "start": "node main.js && node mainTournaments.js"
+  "scripts": {
+    "start": "node main.js && node mainTournaments.js"
+  }
 }
