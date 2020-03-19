@@ -84,7 +84,8 @@ class Guild {
     }
 
     async getTournamentAreaEnrolled() {
-        return (await conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id]))[0].idArea;
+        let res = (await conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id]))[0];
+        return res ? temp.idArea : null;
     }
 
 
@@ -280,8 +281,10 @@ class Guild {
         return { totalNumberOfTerritories: numberOfOnwedTerritories, territories: territories };
     }
 
-    async toApi() {
+    async toApi(lang = "en") {
         await this.loadGuild(this.id);
+        let idOfAreaEnroll = await this.getTournamentAreaEnrolled();
+        console.log(lang);
         let toApi = {
             members: this.members,
             id: this.id,
@@ -293,7 +296,7 @@ class Guild {
             maxLevel: Globals.guilds.maxLevel,
             nextLevelPrice: await this.getNextLevelPrice(this.level),
             money: this.money,
-
+            currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null
         }
         return toApi;
     }
