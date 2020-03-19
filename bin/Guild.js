@@ -85,7 +85,7 @@ class Guild {
 
     async getTournamentAreaEnrolled() {
         let res = (await conn.query("SELECT idArea FROM conquesttournamentinscriptions WHERE idGuild = ?", [this.id]))[0];
-        return res ? temp.idArea : null;
+        return res ? res.idArea : null;
     }
 
 
