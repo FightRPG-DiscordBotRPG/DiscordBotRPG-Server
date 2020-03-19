@@ -1,8 +1,8 @@
-const Entity = require("./WorldEntity");
+const WorldEntity = require("./WorldEntity");
 const StatsGuild = require("../Stats/StatsGuild");
 const conn = require("../../conf/mysql");
 
-class GuildEntity extends Entity {
+class GuildEntity extends WorldEntity {
 
     /**
      * 

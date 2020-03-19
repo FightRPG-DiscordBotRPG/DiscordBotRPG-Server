@@ -68,6 +68,10 @@ class WorldEntity {
         return Math.random() <= chanceToStun ? true : false;
     }
 
+    getIdUser() {
+        return null;
+    }
+
 }
 
 module.exports = WorldEntity;

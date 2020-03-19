@@ -1,4 +1,4 @@
 module.exports = {
-    server: "1.8.8",
+    server: "1.8.9",
     website: null,
 }

@@ -7,7 +7,7 @@ class AreaTournamentRound {
     /**
      * 
      * @param {number} round Round number
-     * @param {Array<number>} selectedGuilds 
+     * @param {Array<number>} selectedGuilds id of guilds 
      * @param {number} idArea
      */
     constructor(round, selectedGuilds, idArea) {
