@@ -258,6 +258,6 @@
       "resolved": "https://registry.npmjs.org/ws/-/ws-3.3.3.tgz",
       "version": "3.3.3"
     }
-  }
-  "start":  "node main.js && node mainTournaments.js"
+  },
+  "start": "node main.js && node mainTournaments.js"
 }
