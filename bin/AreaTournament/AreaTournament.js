@@ -191,20 +191,27 @@ class AreaTournament {
         return (await conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea]))[0].total;
     }
 
+    hasWinner() {
+        return this.maxRounds > 0;
+    }
+
 
     /**
      * End Tournament
      * then reset it
      */
     async endTournament() {
-        let oldOwner = await Area.staticGetOwnerID(this.idArea);
-        if (oldOwner != this.rounds[this.maxRounds].winners[0]) {
-            await Area.resetBonuses(this.idArea);
-            // TODO: Améliorer le système pour le rendre plus juste
-            //await Area.oneLessLevel(this.idArea);
+        if (hasWinner()) {
+            let oldOwner = await Area.staticGetOwnerID(this.idArea);
+            if (oldOwner !== this.rounds[this.maxRounds].winners[0]) {
+                await Area.resetBonuses(this.idArea);
+                // TODO: Améliorer le système pour le rendre plus juste
+                //await Area.oneLessLevel(this.idArea);
+            }
+            await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
+            console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
         }
-        await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
-        console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
+
         await this.resetTournament();
         await this.scheduleTournament();
         await this.resetInscriptions();
