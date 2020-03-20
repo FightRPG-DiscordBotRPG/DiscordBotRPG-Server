@@ -153,13 +153,11 @@ class Fight {
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
-        if (stun) {
-            if (this.entitiesStunned.indexOf(defender) == -1) {
-                this.entitiesStunned.push(defender);
-                attacker.consecutiveStuns += 1;
-            } else {
-                attacker.consecutiveStuns = 0;
-            }
+        if (stun && this.entitiesStunned.indexOf(defender) == -1) {
+            this.entitiesStunned.push(defender);
+            attacker.consecutiveStuns += 1;
+        } else {
+            attacker.consecutiveStuns = 0;
         }
 
         if (defender.actualHP <= 0) {
