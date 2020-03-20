@@ -140,7 +140,7 @@ class Fight {
             stun = attacker.stun(defender.getStat("will"));
         }
         
-        // Crit + stun does 25% more dmg, crit does double, else default
+        // Crit + stun does 50% more dmg, crit does double, else default
         if (critical && stun) {
             damage * 1.5;
         } else if (critical) {
