@@ -201,7 +201,7 @@ class AreaTournament {
      * then reset it
      */
     async endTournament() {
-        if (hasWinner()) {
+        if (this.hasWinner()) {
             let oldOwner = await Area.staticGetOwnerID(this.idArea);
             if (oldOwner !== this.rounds[this.maxRounds].winners[0]) {
                 await Area.resetBonuses(this.idArea);
@@ -210,6 +210,8 @@ class AreaTournament {
             }
             await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
             console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
+        } else {
+            console.log(`No Winner, idArea: ${this.idArea}\nDebug Info: ${this}`);
         }
 
         await this.resetTournament();
