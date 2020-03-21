@@ -1,22 +1,47 @@
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Base de données :  `discord_bot_rpg`
---
 
--- --------------------------------------------------------
+DELIMITER $$
+DROP PROCEDURE IF EXISTS `doesPlayerHaveEnoughMatsToCraftThisItem`$$
+CREATE DEFINER=`discord_bot_rpg`@`%` PROCEDURE `doesPlayerHaveEnoughMatsToCraftThisItem` (IN `idCharacterToLook` INT, IN `idCaftToLook` INT)  BEGIN
+	SELECT 
+    IF((SELECT 
+                COUNT(*)
+            FROM
+                charactersinventory
+                    INNER JOIN
+                items ON items.idItem = charactersinventory.idItem
+            WHERE
+                charactersinventory.idCharacter = idCharacterToLook
+                    AND items.idBaseItem IN (SELECT 
+                        craftitemsneeded.NeededItem
+                    FROM
+                        craftitemsneeded
+                    WHERE
+                        craftitemsneeded.IdCraftItem = idCaftToLook)
+                    AND charactersinventory.number >= (SELECT 
+                        craftitemsneeded.number
+                    FROM
+                        craftitemsneeded
+                    WHERE
+                        craftitemsneeded.IdCraftItem = idCaftToLook
+                            AND craftitemsneeded.NeededItem = items.idBaseItem)) = (SELECT 
+                COUNT(*)
+            FROM
+                craftitemsneeded
+            WHERE
+                craftitemsneeded.IdCraftItem = idCaftToLook),
+        'true',
+        'false') AS doesPlayerHaveEnoughMats;
+END$$
 
---
--- Structure de la table `achievement`
---
+DELIMITER ;
 
 DROP TABLE IF EXISTS `achievement`;
 CREATE TABLE IF NOT EXISTS `achievement` (
@@ -26,21 +51,11 @@ CREATE TABLE IF NOT EXISTS `achievement` (
   PRIMARY KEY (`idAchievement`),
   UNIQUE KEY `idAchievement_UNIQUE` (`idAchievement`),
   UNIQUE KEY `name_identifier_UNIQUE` (`name_identifier`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `achievement`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `achievement` (`idAchievement`, `name_identifier`, `points`) VALUES
 (1, 'founder', 100),
 (2, 'last_challenge', 100);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `areas`
---
 
 DROP TABLE IF EXISTS `areas`;
 CREATE TABLE IF NOT EXISTS `areas` (
@@ -53,11 +68,7 @@ CREATE TABLE IF NOT EXISTS `areas` (
   UNIQUE KEY `idArea_UNIQUE` (`idArea`),
   KEY `fk_Areas_AreasTypes1_idx` (`idAreaType`),
   KEY `fk_Areas_AreasLevels1_idx` (`AreaLevel`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areas`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `areas` (`idArea`, `AreaImage`, `idAreaType`, `AreaLevel`, `statPoints`) VALUES
 (1, 'https://c1.staticflickr.com/6/5082/5260289771_1e133585fb_b.jpg', 1, 1, 5),
@@ -91,15 +102,9 @@ REPLACE INTO `areas` (`idArea`, `AreaImage`, `idAreaType`, `AreaLevel`, `statPoi
 (29, 'http://i.imgur.com/28FLw.jpg', 2, 1, 0),
 (30, 'https://vignette.wikia.nocookie.net/rsroleplay/images/6/61/Cadderoccourtyard.jpg/', 1, 1, 0),
 (31, 'https://cdn.fight-rpg.com/images/areas/HauntedHouse.png', 1, 1, 0),
-(32, 'https://cdn.fight-rpg.com/images/areas/HauntedVillage.png', 1, 1, 5),
+(32, 'https://cdn.fight-rpg.com/images/areas/HauntedVillage.png', 1, 4, 5),
 (33, 'http://img07.deviantart.net/446c/i/2013/158/9/e/ice_cave_by_devin87-d68585o.jpg', 3, 1, 5),
 (34, 'https://bnetcmsus-a.akamaihd.net/cms/gallery/A0IFUJNHQ73S1421193822596.jpg', 2, 1, 0);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `areasbonuses`
---
 
 DROP TABLE IF EXISTS `areasbonuses`;
 CREATE TABLE IF NOT EXISTS `areasbonuses` (
@@ -109,10 +114,6 @@ CREATE TABLE IF NOT EXISTS `areasbonuses` (
   PRIMARY KEY (`idArea`,`idBonusTypes`),
   KEY `fk_AreasBonuses_BonusTypes1_idx` (`idBonusTypes`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasbonuses`
---
 
 REPLACE INTO `areasbonuses` (`idArea`, `idBonusTypes`, `value`) VALUES
 (1, 1, 0),
@@ -304,7 +305,7 @@ REPLACE INTO `areasbonuses` (`idArea`, `idBonusTypes`, `value`) VALUES
 (32, 1, 0),
 (32, 2, 0),
 (32, 3, 0),
-(32, 4, 0),
+(32, 4, 15),
 (32, 5, 0),
 (32, 6, 0),
 (33, 1, 0),
@@ -320,12 +321,6 @@ REPLACE INTO `areasbonuses` (`idArea`, `idBonusTypes`, `value`) VALUES
 (34, 5, 0),
 (34, 6, 0);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasitems`
---
-
 DROP TABLE IF EXISTS `areasitems`;
 CREATE TABLE IF NOT EXISTS `areasitems` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -336,10 +331,6 @@ CREATE TABLE IF NOT EXISTS `areasitems` (
   PRIMARY KEY (`idArea`,`idBaseItem`),
   KEY `fk_AreasItems_ItemsBase1_idx` (`idBaseItem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasitems`
---
 
 REPLACE INTO `areasitems` (`idArea`, `idBaseItem`, `percentage`, `min`, `max`) VALUES
 (1, 1, 0, 1, 1),
@@ -615,35 +606,19 @@ REPLACE INTO `areasitems` (`idArea`, `idBaseItem`, `percentage`, `min`, `max`) V
 (33, 20, 0, 1, 1),
 (33, 56, 0.0001, 1, 1);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areaslevels`
---
-
 DROP TABLE IF EXISTS `areaslevels`;
 CREATE TABLE IF NOT EXISTS `areaslevels` (
   `idAreaLevel` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `price` bigint(19) UNSIGNED NOT NULL DEFAULT '1000000',
   PRIMARY KEY (`idAreaLevel`),
   UNIQUE KEY `idAreaLevel_UNIQUE` (`idAreaLevel`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areaslevels`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `areaslevels` (`idAreaLevel`, `price`) VALUES
 (1, 250000),
 (2, 500000),
-(3, 300000),
-(4, 10000000);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `areasmonsters`
---
+(3, 750000),
+(4, 1000000);
 
 DROP TABLE IF EXISTS `areasmonsters`;
 CREATE TABLE IF NOT EXISTS `areasmonsters` (
@@ -653,10 +628,6 @@ CREATE TABLE IF NOT EXISTS `areasmonsters` (
   PRIMARY KEY (`idArea`,`idMonstreGroupe`,`idMonstre`),
   KEY `fk_AreasMonsters_MonstresGroupes1_idx` (`idMonstreGroupe`,`idMonstre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasmonsters`
---
 
 REPLACE INTO `areasmonsters` (`idArea`, `idMonstreGroupe`, `idMonstre`) VALUES
 (1, 1, 1),
@@ -757,12 +728,6 @@ REPLACE INTO `areasmonsters` (`idArea`, `idMonstreGroupe`, `idMonstre`) VALUES
 (33, 77, 80),
 (33, 77, 81);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasmonsterslevels`
---
-
 DROP TABLE IF EXISTS `areasmonsterslevels`;
 CREATE TABLE IF NOT EXISTS `areasmonsterslevels` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -770,10 +735,6 @@ CREATE TABLE IF NOT EXISTS `areasmonsterslevels` (
   `maxLevel` int(10) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasmonsterslevels`
---
 
 REPLACE INTO `areasmonsterslevels` (`idArea`, `minLevel`, `maxLevel`) VALUES
 (1, 1, 5),
@@ -811,12 +772,6 @@ REPLACE INTO `areasmonsterslevels` (`idArea`, `minLevel`, `maxLevel`) VALUES
 (33, 100, 100),
 (34, 100, 100);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasowners`
---
-
 DROP TABLE IF EXISTS `areasowners`;
 CREATE TABLE IF NOT EXISTS `areasowners` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -824,12 +779,6 @@ CREATE TABLE IF NOT EXISTS `areasowners` (
   PRIMARY KEY (`idArea`,`idGuild`),
   KEY `fk_AreasOwners_Guilds1_idx` (`idGuild`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `areaspaths`
---
 
 DROP TABLE IF EXISTS `areaspaths`;
 CREATE TABLE IF NOT EXISTS `areaspaths` (
@@ -840,10 +789,6 @@ CREATE TABLE IF NOT EXISTS `areaspaths` (
   PRIMARY KEY (`idArea1`,`idArea2`),
   KEY `fk_AreasPaths_Areas2_idx` (`idArea2`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areaspaths`
---
 
 REPLACE INTO `areaspaths` (`idArea1`, `idArea2`, `time`, `goldPrice`) VALUES
 (1, 2, 45, 0),
@@ -921,12 +866,6 @@ REPLACE INTO `areaspaths` (`idArea1`, `idArea2`, `time`, `goldPrice`) VALUES
 (33, 29, 120, 0),
 (34, 31, 350, 0);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasregions`
---
-
 DROP TABLE IF EXISTS `areasregions`;
 CREATE TABLE IF NOT EXISTS `areasregions` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -934,10 +873,6 @@ CREATE TABLE IF NOT EXISTS `areasregions` (
   PRIMARY KEY (`idArea`),
   KEY `fk_AreasRegions_Regions1_idx` (`idRegion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasregions`
---
 
 REPLACE INTO `areasregions` (`idArea`, `idRegion`) VALUES
 (1, 1),
@@ -975,12 +910,6 @@ REPLACE INTO `areasregions` (`idArea`, `idRegion`) VALUES
 (33, 5),
 (34, 5);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasrequirements`
---
-
 DROP TABLE IF EXISTS `areasrequirements`;
 CREATE TABLE IF NOT EXISTS `areasrequirements` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -989,18 +918,8 @@ CREATE TABLE IF NOT EXISTS `areasrequirements` (
   KEY `fk_AreasRequirements_Achievement1_idx` (`idAchievement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Contenu de la table `areasrequirements`
---
-
 REPLACE INTO `areasrequirements` (`idArea`, `idAchievement`) VALUES
 (34, 2);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `areasresources`
---
 
 DROP TABLE IF EXISTS `areasresources`;
 CREATE TABLE IF NOT EXISTS `areasresources` (
@@ -1009,10 +928,6 @@ CREATE TABLE IF NOT EXISTS `areasresources` (
   PRIMARY KEY (`idArea`,`idBaseItem`),
   KEY `fk_AreasResources_ItemsBase1_idx` (`idBaseItem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasresources`
---
 
 REPLACE INTO `areasresources` (`idArea`, `idBaseItem`) VALUES
 (2, 21),
@@ -1116,12 +1031,6 @@ REPLACE INTO `areasresources` (`idArea`, `idBaseItem`) VALUES
 (13, 35),
 (25, 35);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areasshops`
---
-
 DROP TABLE IF EXISTS `areasshops`;
 CREATE TABLE IF NOT EXISTS `areasshops` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -1129,10 +1038,6 @@ CREATE TABLE IF NOT EXISTS `areasshops` (
   PRIMARY KEY (`idArea`,`idShop`),
   KEY `fk_AreasShops_Shop1_idx` (`idShop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areasshops`
---
 
 REPLACE INTO `areasshops` (`idArea`, `idShop`) VALUES
 (6, 1),
@@ -1145,34 +1050,18 @@ REPLACE INTO `areasshops` (`idArea`, `idShop`) VALUES
 (29, 8),
 (34, 9);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `areastypes`
---
-
 DROP TABLE IF EXISTS `areastypes`;
 CREATE TABLE IF NOT EXISTS `areastypes` (
   `idAreaType` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `NomAreaType` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`idAreaType`),
   UNIQUE KEY `idAreaType_UNIQUE` (`idAreaType`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `areastypes`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `areastypes` (`idAreaType`, `NomAreaType`) VALUES
 (1, 'wild'),
 (2, 'city'),
 (3, 'dungeon');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `bonustypes`
---
 
 DROP TABLE IF EXISTS `bonustypes`;
 CREATE TABLE IF NOT EXISTS `bonustypes` (
@@ -1180,11 +1069,7 @@ CREATE TABLE IF NOT EXISTS `bonustypes` (
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idBonusTypes`),
   UNIQUE KEY `idbonusTypes_UNIQUE` (`idBonusTypes`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `bonustypes`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `bonustypes` (`idBonusTypes`, `nom`) VALUES
 (1, 'xp_fight'),
@@ -1194,34 +1079,18 @@ REPLACE INTO `bonustypes` (`idBonusTypes`, `nom`) VALUES
 (5, 'item_drop'),
 (6, 'collect_drop');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `bosses`
---
-
 DROP TABLE IF EXISTS `bosses`;
 CREATE TABLE IF NOT EXISTS `bosses` (
   `idBoss` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `hpBase` bigint(19) UNSIGNED NOT NULL DEFAULT '1000000',
   PRIMARY KEY (`idBoss`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `bosses`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `bosses` (`idBoss`, `hpBase`) VALUES
 (1, 100000),
 (2, 200000),
 (3, 250000),
 (4, 500000);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `bossspawninfo`
---
 
 DROP TABLE IF EXISTS `bossspawninfo`;
 CREATE TABLE IF NOT EXISTS `bossspawninfo` (
@@ -1234,12 +1103,6 @@ CREATE TABLE IF NOT EXISTS `bossspawninfo` (
   KEY `fk_BossSpawnInfo_SpawnedBosses1_idx` (`idSpawnedBoss`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `characters`
---
-
 DROP TABLE IF EXISTS `characters`;
 CREATE TABLE IF NOT EXISTS `characters` (
   `idCharacter` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1249,13 +1112,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   PRIMARY KEY (`idCharacter`),
   UNIQUE KEY `idCharacter_UNIQUE` (`idCharacter`),
   KEY `fk_Characters_Areas1_idx` (`idArea`)
-) ENGINE=InnoDB AUTO_INCREMENT=9565 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `charactersachievements`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `charactersachievements`;
 CREATE TABLE IF NOT EXISTS `charactersachievements` (
@@ -1264,12 +1121,6 @@ CREATE TABLE IF NOT EXISTS `charactersachievements` (
   PRIMARY KEY (`idCharacter`,`idAchievement`),
   KEY `fk_CharactersAchievements_Achievement1_idx` (`idAchievement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `charactersattacks`
---
 
 DROP TABLE IF EXISTS `charactersattacks`;
 CREATE TABLE IF NOT EXISTS `charactersattacks` (
@@ -1281,12 +1132,6 @@ CREATE TABLE IF NOT EXISTS `charactersattacks` (
   KEY `fk_CharactersAttacks_SpawnedBosses1_idx` (`idSpawnedBoss`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `characterscraftlevel`
---
-
 DROP TABLE IF EXISTS `characterscraftlevel`;
 CREATE TABLE IF NOT EXISTS `characterscraftlevel` (
   `idCharacter` int(10) UNSIGNED NOT NULL,
@@ -1295,12 +1140,6 @@ CREATE TABLE IF NOT EXISTS `characterscraftlevel` (
   PRIMARY KEY (`idCharacter`),
   KEY `fk_CharactersCraftLevel_LevelsRequire1_idx` (`actualLevel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `charactersequipements`
---
 
 DROP TABLE IF EXISTS `charactersequipements`;
 CREATE TABLE IF NOT EXISTS `charactersequipements` (
@@ -1313,24 +1152,12 @@ CREATE TABLE IF NOT EXISTS `charactersequipements` (
   KEY `fk_CharactersEquipements_ItemsTypes1_idx` (`idType`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `charactershonor`
---
-
 DROP TABLE IF EXISTS `charactershonor`;
 CREATE TABLE IF NOT EXISTS `charactershonor` (
   `idCharacter` int(10) UNSIGNED NOT NULL,
   `Honor` int(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`idCharacter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `charactersinventory`
---
 
 DROP TABLE IF EXISTS `charactersinventory`;
 CREATE TABLE IF NOT EXISTS `charactersinventory` (
@@ -1342,12 +1169,6 @@ CREATE TABLE IF NOT EXISTS `charactersinventory` (
   KEY `fk_CharactersInventory_Items1_idx` (`idItem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `charactersstatistics`
---
-
 DROP TABLE IF EXISTS `charactersstatistics`;
 CREATE TABLE IF NOT EXISTS `charactersstatistics` (
   `idStatisticBase` int(10) UNSIGNED NOT NULL,
@@ -1357,12 +1178,6 @@ CREATE TABLE IF NOT EXISTS `charactersstatistics` (
   KEY `fk_CharactersStatistics_Characters1_idx` (`idCharacter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `commandslogs`
---
-
 DROP TABLE IF EXISTS `commandslogs`;
 CREATE TABLE IF NOT EXISTS `commandslogs` (
   `idCommandsLogs` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1370,13 +1185,7 @@ CREATE TABLE IF NOT EXISTS `commandslogs` (
   `command` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unknown',
   `timestamp` bigint(19) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`idCommandsLogs`,`idUser`)
-) ENGINE=InnoDB AUTO_INCREMENT=3003132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `conquesttournamentinfo`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `conquesttournamentinfo`;
 CREATE TABLE IF NOT EXISTS `conquesttournamentinfo` (
@@ -1387,12 +1196,6 @@ CREATE TABLE IF NOT EXISTS `conquesttournamentinfo` (
   PRIMARY KEY (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `conquesttournamentinscriptions`
---
-
 DROP TABLE IF EXISTS `conquesttournamentinscriptions`;
 CREATE TABLE IF NOT EXISTS `conquesttournamentinscriptions` (
   `idGuild` int(10) UNSIGNED NOT NULL,
@@ -1402,12 +1205,6 @@ CREATE TABLE IF NOT EXISTS `conquesttournamentinscriptions` (
   KEY `fk_AreaConquestTournament_Guilds1_idx` (`idGuild`),
   KEY `fk_ConquestTournamentIncriptions_Areas1_idx` (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `conquesttournamentrounds`
---
 
 DROP TABLE IF EXISTS `conquesttournamentrounds`;
 CREATE TABLE IF NOT EXISTS `conquesttournamentrounds` (
@@ -1421,12 +1218,6 @@ CREATE TABLE IF NOT EXISTS `conquesttournamentrounds` (
   KEY `fk_ConquestTournamentRounds_ConquestTournamentInscriptions2_idx` (`idGuild_2`),
   KEY `fk_ConquestTournamentRounds_Areas1_idx` (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `craftbuilding`
---
 
 DROP TABLE IF EXISTS `craftbuilding`;
 CREATE TABLE IF NOT EXISTS `craftbuilding` (
@@ -1445,11 +1236,7 @@ CREATE TABLE IF NOT EXISTS `craftbuilding` (
   KEY `fk_CraftBuilding_LevelsRequire1_idx` (`minLevel`),
   KEY `fk_CraftBuilding_LevelsRequire2_idx` (`maxLevel`),
   KEY `fk_CraftBuilding_ItemsRarities2_idx` (`rarityMin`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `craftbuilding`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `craftbuilding` (`idCraftBuilding`, `idArea`, `active`, `rarityMin`, `rarityMax`, `minLevel`, `maxLevel`) VALUES
 (1, 5, 1, 1, 5, 11, 20),
@@ -1462,12 +1249,6 @@ REPLACE INTO `craftbuilding` (`idCraftBuilding`, `idArea`, `active`, `rarityMin`
 (8, 29, 1, 3, 5, 81, 100),
 (9, 34, 1, 6, 6, 100, 100);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `craftitem`
---
-
 DROP TABLE IF EXISTS `craftitem`;
 CREATE TABLE IF NOT EXISTS `craftitem` (
   `idCraftItem` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1478,11 +1259,7 @@ CREATE TABLE IF NOT EXISTS `craftitem` (
   KEY `fk_CraftItem_LevelsRequire1_idx` (`maxLevel`),
   KEY `fk_CraftItem_LevelsRequire2_idx` (`minLevel`),
   KEY `fk_CraftItem_ItemsBase1_idx` (`idBaseItem`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `craftitem`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `craftitem` (`idCraftItem`, `maxLevel`, `minLevel`, `idBaseItem`) VALUES
 (1, 100, 1, 1),
@@ -1510,12 +1287,6 @@ REPLACE INTO `craftitem` (`idCraftItem`, `maxLevel`, `minLevel`, `idBaseItem`) V
 (23, 100, 100, 47),
 (24, 100, 100, 48);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `craftitemsneeded`
---
-
 DROP TABLE IF EXISTS `craftitemsneeded`;
 CREATE TABLE IF NOT EXISTS `craftitemsneeded` (
   `IdCraftItem` int(10) UNSIGNED NOT NULL,
@@ -1525,10 +1296,6 @@ CREATE TABLE IF NOT EXISTS `craftitemsneeded` (
   KEY `fk_CraftItemsNeeded_CraftItem1_idx` (`IdCraftItem`),
   KEY `fk_CraftItemsNeeded_ItemsBase1` (`NeededItem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `craftitemsneeded`
---
 
 REPLACE INTO `craftitemsneeded` (`IdCraftItem`, `NeededItem`, `number`) VALUES
 (1, 31, 1),
@@ -1588,12 +1355,6 @@ REPLACE INTO `craftitemsneeded` (`IdCraftItem`, `NeededItem`, `number`) VALUES
 (24, 35, 15),
 (24, 49, 1000);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `guilds`
---
-
 DROP TABLE IF EXISTS `guilds`;
 CREATE TABLE IF NOT EXISTS `guilds` (
   `idGuild` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1604,13 +1365,7 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   PRIMARY KEY (`idGuild`),
   UNIQUE KEY `idGuild_UNIQUE` (`idGuild`),
   UNIQUE KEY `nom_UNIQUE` (`nom`)
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `guildsappliances`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `guildsappliances`;
 CREATE TABLE IF NOT EXISTS `guildsappliances` (
@@ -1619,12 +1374,6 @@ CREATE TABLE IF NOT EXISTS `guildsappliances` (
   PRIMARY KEY (`idGuild`,`idCharacter`),
   KEY `fk_table1_Characters1_idx` (`idCharacter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `guildsmembers`
---
 
 DROP TABLE IF EXISTS `guildsmembers`;
 CREATE TABLE IF NOT EXISTS `guildsmembers` (
@@ -1636,25 +1385,13 @@ CREATE TABLE IF NOT EXISTS `guildsmembers` (
   KEY `fk_GuildsMembers_GuildsRanks1_idx` (`idGuildRank`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `guildsranks`
---
-
 DROP TABLE IF EXISTS `guildsranks`;
 CREATE TABLE IF NOT EXISTS `guildsranks` (
   `idGuildRank` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`idGuildRank`),
   UNIQUE KEY `idGuildRank_UNIQUE` (`idGuildRank`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `items`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `items`;
 CREATE TABLE IF NOT EXISTS `items` (
@@ -1666,13 +1403,7 @@ CREATE TABLE IF NOT EXISTS `items` (
   UNIQUE KEY `idItems_UNIQUE` (`idItem`),
   KEY `fk_Items_ItemsBase1_idx` (`idBaseItem`),
   KEY `fk_Items_LevelsRequire1_idx` (`level`)
-) ENGINE=InnoDB AUTO_INCREMENT=474648 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `itemsbase`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `itemsbase`;
 CREATE TABLE IF NOT EXISTS `itemsbase` (
@@ -1686,53 +1417,49 @@ CREATE TABLE IF NOT EXISTS `itemsbase` (
   KEY `fk_Items_ItemsTypes1_idx` (`idType`),
   KEY `fk_ItemsBase_ItemsRarities1_idx` (`idRarity`),
   KEY `fk_ItemsBase_ItemsSousTypes1_idx` (`idSousType`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `itemsbase`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `itemsbase` (`idBaseItem`, `idType`, `idRarity`, `imageItem`, `idSousType`) VALUES
-(1, 1, 1, 'unknwon', 4),
-(2, 1, 2, 'unknwon', 4),
-(3, 1, 3, 'unknwon', 4),
-(4, 1, 4, 'unknwon', 4),
-(5, 1, 5, 'unknwon', 4),
-(6, 2, 1, 'unknwon', 6),
-(7, 2, 2, 'unknwon', 6),
-(8, 2, 3, 'unknwon', 6),
-(9, 2, 4, 'unknwon', 6),
-(10, 2, 5, 'unknwon', 6),
-(11, 3, 1, 'unknwon', 6),
-(12, 3, 2, 'unknwon', 6),
-(13, 3, 3, 'unknwon', 6),
-(14, 3, 4, 'unknwon', 6),
-(15, 3, 5, 'unknwon', 6),
-(16, 4, 1, 'unknwon', 6),
-(17, 4, 2, 'unknwon', 6),
-(18, 4, 3, 'unknwon', 6),
-(19, 4, 4, 'unknwon', 6),
-(20, 4, 5, 'unknwon', 6),
-(21, 5, 1, 'unknwon', 1),
-(22, 5, 2, 'unknwon', 1),
-(23, 5, 3, 'unknwon', 1),
-(24, 5, 4, 'unknwon', 1),
-(25, 5, 5, 'unknwon', 1),
-(26, 5, 1, 'unknwon', 2),
-(27, 5, 2, 'unknwon', 2),
-(28, 5, 3, 'unknwon', 2),
-(29, 5, 4, 'unknwon', 2),
-(30, 5, 5, 'unknwon', 2),
-(31, 5, 1, 'unknwon', 3),
-(32, 5, 2, 'unknwon', 3),
-(33, 5, 3, 'unknwon', 3),
-(34, 5, 4, 'unknwon', 3),
-(35, 5, 5, 'unknwon', 3),
-(36, 8, 1, 'unknwon', 11),
-(37, 8, 2, 'unknwon', 11),
-(38, 8, 3, 'unknwon', 11),
-(39, 8, 4, 'unknwon', 11),
-(40, 8, 5, 'unknwon', 11),
+(1, 1, 1, 'unknown', 4),
+(2, 1, 2, 'unknown', 4),
+(3, 1, 3, 'unknown', 4),
+(4, 1, 4, 'unknown', 4),
+(5, 1, 5, 'unknown', 4),
+(6, 2, 1, 'unknown', 6),
+(7, 2, 2, 'unknown', 6),
+(8, 2, 3, 'unknown', 6),
+(9, 2, 4, 'unknown', 6),
+(10, 2, 5, 'unknown', 6),
+(11, 3, 1, 'unknown', 6),
+(12, 3, 2, 'unknown', 6),
+(13, 3, 3, 'unknown', 6),
+(14, 3, 4, 'unknown', 6),
+(15, 3, 5, 'unknown', 6),
+(16, 4, 1, 'unknown', 6),
+(17, 4, 2, 'unknown', 6),
+(18, 4, 3, 'unknown', 6),
+(19, 4, 4, 'unknown', 6),
+(20, 4, 5, 'unknown', 6),
+(21, 5, 1, 'unknown', 1),
+(22, 5, 2, 'unknown', 1),
+(23, 5, 3, 'unknown', 1),
+(24, 5, 4, 'unknown', 1),
+(25, 5, 5, 'unknown', 1),
+(26, 5, 1, 'unknown', 2),
+(27, 5, 2, 'unknown', 2),
+(28, 5, 3, 'unknown', 2),
+(29, 5, 4, 'unknown', 2),
+(30, 5, 5, 'unknown', 2),
+(31, 5, 1, 'unknown', 3),
+(32, 5, 2, 'unknown', 3),
+(33, 5, 3, 'unknown', 3),
+(34, 5, 4, 'unknown', 3),
+(35, 5, 5, 'unknown', 3),
+(36, 8, 1, 'unknown', 11),
+(37, 8, 2, 'unknown', 11),
+(38, 8, 3, 'unknown', 11),
+(39, 8, 4, 'unknown', 11),
+(40, 8, 5, 'unknown', 11),
 (41, 6, 1, 'unknown', 9),
 (42, 7, 5, 'unknown', 10),
 (43, 7, 4, 'unknown', 12),
@@ -1750,24 +1477,12 @@ REPLACE INTO `itemsbase` (`idBaseItem`, `idType`, `idRarity`, `imageItem`, `idSo
 (55, 6, 6, 'unknown', 14),
 (56, 8, 5, 'unknown', 11);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `itemspower`
---
-
 DROP TABLE IF EXISTS `itemspower`;
 CREATE TABLE IF NOT EXISTS `itemspower` (
   `idItem` int(10) UNSIGNED NOT NULL,
   `power` int(10) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`idItem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `itemsrarities`
---
 
 DROP TABLE IF EXISTS `itemsrarities`;
 CREATE TABLE IF NOT EXISTS `itemsrarities` (
@@ -1776,11 +1491,7 @@ CREATE TABLE IF NOT EXISTS `itemsrarities` (
   `couleurRarity` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`idRarity`),
   UNIQUE KEY `idItemRaritie_UNIQUE` (`idRarity`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `itemsrarities`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `itemsrarities` (`idRarity`, `nomRarity`, `couleurRarity`) VALUES
 (1, 'common', '#FFFFFF'),
@@ -1790,23 +1501,13 @@ REPLACE INTO `itemsrarities` (`idRarity`, `nomRarity`, `couleurRarity`) VALUES
 (5, 'legendary', '#C80000'),
 (6, 'mythic', '#FFA500');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `itemssoustypes`
---
-
 DROP TABLE IF EXISTS `itemssoustypes`;
 CREATE TABLE IF NOT EXISTS `itemssoustypes` (
   `idSousType` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nomSousType` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`idSousType`),
   UNIQUE KEY `idSousType_UNIQUE` (`idSousType`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `itemssoustypes`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `itemssoustypes` (`idSousType`, `nomSousType`) VALUES
 (1, 'ore'),
@@ -1824,12 +1525,6 @@ REPLACE INTO `itemssoustypes` (`idSousType`, `nomSousType`) VALUES
 (13, 'crystal'),
 (14, 'energy_potion');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `itemsstats`
---
-
 DROP TABLE IF EXISTS `itemsstats`;
 CREATE TABLE IF NOT EXISTS `itemsstats` (
   `idItem` int(10) UNSIGNED NOT NULL,
@@ -1838,12 +1533,6 @@ CREATE TABLE IF NOT EXISTS `itemsstats` (
   PRIMARY KEY (`idItem`,`idStat`),
   KEY `fk_ItemsStats_Stats1_idx` (`idStat`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `itemstypes`
---
 
 DROP TABLE IF EXISTS `itemstypes`;
 CREATE TABLE IF NOT EXISTS `itemstypes` (
@@ -1854,11 +1543,7 @@ CREATE TABLE IF NOT EXISTS `itemstypes` (
   `usable` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idType`),
   UNIQUE KEY `idType_UNIQUE` (`idType`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `itemstypes`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `itemstypes` (`idType`, `nomType`, `equipable`, `stackable`, `usable`) VALUES
 (1, 'weapon', 1, 0, 0),
@@ -1870,21 +1555,11 @@ REPLACE INTO `itemstypes` (`idType`, `nomType`, `equipable`, `stackable`, `usabl
 (7, 'lootbox', 0, 1, 1),
 (8, 'mount', 1, 0, 0);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `languages`
---
-
 DROP TABLE IF EXISTS `languages`;
 CREATE TABLE IF NOT EXISTS `languages` (
   `lang` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en',
   PRIMARY KEY (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `languages`
---
 
 REPLACE INTO `languages` (`lang`) VALUES
 ('en'),
@@ -1892,12 +1567,6 @@ REPLACE INTO `languages` (`lang`) VALUES
 ('fr'),
 ('pt-BR'),
 ('ru');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `levels`
---
 
 DROP TABLE IF EXISTS `levels`;
 CREATE TABLE IF NOT EXISTS `levels` (
@@ -1909,23 +1578,13 @@ CREATE TABLE IF NOT EXISTS `levels` (
   KEY `fk_Levels_LevelsRequire1_idx` (`actualLevel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `levelsrequire`
---
-
 DROP TABLE IF EXISTS `levelsrequire`;
 CREATE TABLE IF NOT EXISTS `levelsrequire` (
   `level` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `expNextLevel` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`level`),
   UNIQUE KEY `level_UNIQUE` (`level`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `levelsrequire`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `levelsrequire` (`level`, `expNextLevel`) VALUES
 (1, 2),
@@ -2029,12 +1688,6 @@ REPLACE INTO `levelsrequire` (`level`, `expNextLevel`) VALUES
 (99, 1940598),
 (100, 2000000);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationachievements`
---
-
 DROP TABLE IF EXISTS `localizationachievements`;
 CREATE TABLE IF NOT EXISTS `localizationachievements` (
   `idAchievement` int(10) UNSIGNED NOT NULL,
@@ -2044,10 +1697,6 @@ CREATE TABLE IF NOT EXISTS `localizationachievements` (
   PRIMARY KEY (`idAchievement`,`lang`),
   KEY `fk_LocalizationAchievements_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationachievements`
---
 
 REPLACE INTO `localizationachievements` (`idAchievement`, `lang`, `nameAchievement`, `descAchievement`) VALUES
 (1, 'en', 'Founder', 'Available only to players who were there during the beta phase of the game.'),
@@ -2061,12 +1710,6 @@ REPLACE INTO `localizationachievements` (`idAchievement`, `lang`, `nameAchieveme
 (2, 'pt-BR', 'Um último desafio', 'Lute com o Chefe dentro da masmorra nível 100 e vença a batalha para liberar o acesso à Antiga Forja Anã!'),
 (2, 'ru', 'Последний вызов', 'Борьба с боссом внутри подземелья уровня 100 и выиграть битву, чтобы открыть доступ к Антикварной кузнице гномов!');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationareas`
---
-
 DROP TABLE IF EXISTS `localizationareas`;
 CREATE TABLE IF NOT EXISTS `localizationareas` (
   `idArea` int(10) UNSIGNED NOT NULL,
@@ -2076,10 +1719,6 @@ CREATE TABLE IF NOT EXISTS `localizationareas` (
   PRIMARY KEY (`idArea`,`lang`),
   KEY `fk_LocalizationAreas_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationareas`
---
 
 REPLACE INTO `localizationareas` (`idArea`, `lang`, `nameArea`, `descArea`) VALUES
 (1, 'en', 'Buldaar Forest', 'This forest welcomes a large number of beginners wishing to go on an adventure, unfortunately for them, the adventure is not easy, even here.'),
@@ -2247,12 +1886,6 @@ REPLACE INTO `localizationareas` (`idArea`, `lang`, `nameArea`, `descArea`) VALU
 (34, 'fr', 'Forge Antique Naine', 'Une fois dans cette forge naine, de nombreuses armes légendaires furent fabriquées par les nains les plus habiles de la région, chauffées par le feu de cette forge. Aujourd\'hui, beaucoup de ces armes sont perdues ou enterrées dans la neige. Les Trésors légendaires attendent d\'être trouvé.'),
 (34, 'pt-BR', 'Antiga Forja Anã', 'Uma vez nesta forja anã, muitas armas lendárias foram criadas pelos anões mais habilidosos desta região, aquecidos pelo fogo desta forja. Agora muitas dessas armas estão perdidas, ou enterradas na neve. Tesouros lendários que aguardam por serem encontrados.');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationbosses`
---
-
 DROP TABLE IF EXISTS `localizationbosses`;
 CREATE TABLE IF NOT EXISTS `localizationbosses` (
   `idBoss` int(10) UNSIGNED NOT NULL,
@@ -2261,10 +1894,6 @@ CREATE TABLE IF NOT EXISTS `localizationbosses` (
   PRIMARY KEY (`idBoss`,`lang`),
   KEY `fk_LocalizationBosses_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationbosses`
---
 
 REPLACE INTO `localizationbosses` (`idBoss`, `lang`, `nameBoss`) VALUES
 (1, 'en', 'Clusters of Spirits of Ancient Adventurers'),
@@ -2284,12 +1913,6 @@ REPLACE INTO `localizationbosses` (`idBoss`, `lang`, `nameBoss`) VALUES
 (4, 'fr', 'Démon Destructeur de Mondes'),
 (4, 'pt-BR', 'Demônio Destruidor de Mundos');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationitems`
---
-
 DROP TABLE IF EXISTS `localizationitems`;
 CREATE TABLE IF NOT EXISTS `localizationitems` (
   `idBaseItem` int(10) UNSIGNED NOT NULL,
@@ -2299,10 +1922,6 @@ CREATE TABLE IF NOT EXISTS `localizationitems` (
   PRIMARY KEY (`idBaseItem`,`lang`),
   KEY `fk_LocalizationItems_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationitems`
---
 
 REPLACE INTO `localizationitems` (`idBaseItem`, `lang`, `nameItem`, `descItem`) VALUES
 (1, 'en', 'Rudimentary Sword', 'A rudimentary sword, made mainly of wood.'),
@@ -2441,26 +2060,32 @@ REPLACE INTO `localizationitems` (`idBaseItem`, `lang`, `nameItem`, `descItem`) 
 (27, 'pt-BR', 'Espuma Anciã', 'Uma espuma que muda de cor, a única certeza é que não é comestível.'),
 (27, 'ru', 'Древняя Пена', 'Пена, которая начинает менять цвет, уверен, что это не съедобно.'),
 (28, 'en', 'Grows-Everywhere', 'This plant is really everywhere, it grows everywhere. Oh, I think I just found it\'s name.'),
+(28, 'es', 'Crece-En-Todas-Partes', 'Esta planta realmente está en todos lados, crece en todas partes. Oh, creo que acabo de encontrar su nombre.	'),
 (28, 'fr', 'Pousse-Partout', 'Cette plante est vraiment partout, elle pousse partout. Oh je crois que j\'ai trouvé son nom.'),
 (28, 'pt-BR', 'Cresce-Em-Todo-Canto', 'Essa planta realmente está em todo lugar, e cresce em todo canto. Oh, acho que acabei de achar o nome dela.'),
 (28, 'ru', 'Везде-Растун', 'Это растение действительно везде, оно растет везде. Кажется, я только что нашел его имя.'),
 (29, 'en', 'Lava Flower', 'A very strange flower, the inside seems to be filled with lava.'),
+(29, 'es', 'Flor de Lava', 'Una flor muy extraña, el interior parece estar lleno de lava.'),
 (29, 'fr', 'Fleur de Lave', 'Une fleur très bizarre, l\'intérieur semble être rempli de lave.'),
 (29, 'pt-BR', 'Flor de Lava', 'Uma flor muito estranha, seu interior parecer estar preenchido com lava.'),
 (29, 'ru', 'Лавовый Цветок', 'Очень странный цветок, внутри, кажется, наполненный лавой.'),
 (30, 'en', 'Scathing Creeper', 'These vines are really dangerous, you should avoid rubbing them.'),
+(30, 'es', 'Enredadera Mordaz', 'Estas enredaderas son realmente peligrosas, debes evitar frotarlas.'),
 (30, 'fr', 'Lianes Cinglantes', 'Ces lianes sont vraiment dangereuses, il faut éviter de s\'y frotter.'),
 (30, 'pt-BR', 'Trepadeira Mordaz', 'Essas vinhas são realmente perigosas, você deve evitar esfregá-las.'),
 (30, 'ru', 'Хлесткая Лоза', 'Эти лозы действительно опасны, вы должны избегать их касаний.'),
 (31, 'en', 'Ash Wood', 'Ash Wood, yes.'),
+(31, 'es', 'Ceniza de Madera.', 'sí, ceniza de madera.'),
 (31, 'fr', 'Bois de Frêne', 'Du bois, de frêne, oui oui.'),
 (31, 'pt-BR', 'Madeira de Cinzas', 'Madeira de Cinzas, sim.'),
 (31, 'ru', 'Древесина Ясеня', 'Древесина Ясень, да.'),
 (32, 'en', 'Chestnut Wood', 'If you like chestnuts, you shouldn\'t have cut down the tree...'),
+(32, 'es', 'Madera de Castaño', 'Si te gustan los castaños, no deberías haber cortado el árbol ...'),
 (32, 'fr', 'Bois de Châtaignier', 'Si tu aimes les châtaignes, il ne fallait pas couper l\'arbre...'),
 (32, 'pt-BR', 'Madeira de Castanha', 'Se você gosta de castanhas, então não devia ter cortado a árvore...'),
 (32, 'ru', 'Древесина Каштана', 'Если ты любишь каштаны, тебе не стоило срубать дерево...'),
 (33, 'en', 'Cactus', 'A cactus, soaked with water.'),
+(33, 'es', 'Cactus', 'Un cactus, mojado con agua.'),
 (33, 'fr', 'Cactus', 'Un cactus, imbibé d\'eau.'),
 (33, 'pt-BR', 'Cacto', 'Um cacto, encharcado de água.'),
 (33, 'ru', 'Кактус', 'Кактус, пропитанный водой.'),
@@ -2543,12 +2168,6 @@ REPLACE INTO `localizationitems` (`idBaseItem`, `lang`, `nameItem`, `descItem`) 
 (56, 'fr', 'Cheval de Glace', 'Ce cheval a vécu tellement longtemps dans ce paradis froid et sans vie qu\'il ne fait désormais plus qu\'un avec le climat local.'),
 (56, 'pt-BR', 'Cavalo Gélido', 'Este cavalo viveu por tanto tempo neste paraíso frio e sem vida que agora ele e o clima local são um só.');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationmonsters`
---
-
 DROP TABLE IF EXISTS `localizationmonsters`;
 CREATE TABLE IF NOT EXISTS `localizationmonsters` (
   `idMonstre` int(10) UNSIGNED NOT NULL,
@@ -2557,10 +2176,6 @@ CREATE TABLE IF NOT EXISTS `localizationmonsters` (
   PRIMARY KEY (`idMonstre`,`lang`),
   KEY `fk_LocalizationMonsters_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationmonsters`
---
 
 REPLACE INTO `localizationmonsters` (`idMonstre`, `lang`, `nameMonster`) VALUES
 (1, 'en', 'Wisp'),
@@ -2958,12 +2573,6 @@ REPLACE INTO `localizationmonsters` (`idMonstre`, `lang`, `nameMonster`) VALUES
 (81, 'fr', 'Puissant Elémentaire de Glace'),
 (81, 'pt-BR', 'Elemental de Gelo Poderoso');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `localizationregions`
---
-
 DROP TABLE IF EXISTS `localizationregions`;
 CREATE TABLE IF NOT EXISTS `localizationregions` (
   `idRegion` int(10) UNSIGNED NOT NULL,
@@ -2973,10 +2582,6 @@ CREATE TABLE IF NOT EXISTS `localizationregions` (
   PRIMARY KEY (`idRegion`,`lang`),
   KEY `fk_LocalizationRegions_Languages1_idx` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `localizationregions`
---
 
 REPLACE INTO `localizationregions` (`idRegion`, `lang`, `nameRegion`, `imageRegion`) VALUES
 (1, 'en', 'Isle of Depraved', 'https://image.ibb.co/gLjAoL/isle-of-depraved-en.png'),
@@ -3005,12 +2610,6 @@ REPLACE INTO `localizationregions` (`idRegion`, `lang`, `nameRegion`, `imageRegi
 (5, 'pt-BR', 'Terras Glaciais de Horth', 'https://cdn.fight-rpg.com/images/regions/horth-glacial-land-en.png'),
 (5, 'ru', 'Ледниковые Земли Хорта', '');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `marketplaces`
---
-
 DROP TABLE IF EXISTS `marketplaces`;
 CREATE TABLE IF NOT EXISTS `marketplaces` (
   `idMarketplace` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3021,11 +2620,7 @@ CREATE TABLE IF NOT EXISTS `marketplaces` (
   UNIQUE KEY `idMarketplace_UNIQUE` (`idMarketplace`),
   UNIQUE KEY `idArea_UNIQUE` (`idArea`),
   KEY `fk_Marketplaces_Areas1_idx` (`idArea`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `marketplaces`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `marketplaces` (`idMarketplace`, `tax`, `idArea`, `active`) VALUES
 (1, 0.05, 5, 1),
@@ -3037,12 +2632,6 @@ REPLACE INTO `marketplaces` (`idMarketplace`, `tax`, `idArea`, `active`) VALUES
 (10, 0.05, 22, 1),
 (11, 0.05, 29, 1),
 (12, 0.05, 34, 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `marketplacesorders`
---
 
 DROP TABLE IF EXISTS `marketplacesorders`;
 CREATE TABLE IF NOT EXISTS `marketplacesorders` (
@@ -3057,12 +2646,6 @@ CREATE TABLE IF NOT EXISTS `marketplacesorders` (
   KEY `fk_MarketplacesOrders_Characters1_idx` (`idCharacter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `monstres`
---
-
 DROP TABLE IF EXISTS `monstres`;
 CREATE TABLE IF NOT EXISTS `monstres` (
   `idMonstre` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3071,11 +2654,7 @@ CREATE TABLE IF NOT EXISTS `monstres` (
   PRIMARY KEY (`idMonstre`),
   UNIQUE KEY `idMonstre_UNIQUE` (`idMonstre`),
   KEY `fk_Monstres_MonstresTypes1_idx` (`idType`)
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `monstres`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `monstres` (`idMonstre`, `avglevel`, `idType`) VALUES
 (1, 1, 1),
@@ -3161,12 +2740,6 @@ REPLACE INTO `monstres` (`idMonstre`, `avglevel`, `idType`) VALUES
 (81, 0, 3),
 (82, 0, 1);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `monstresgroupes`
---
-
 DROP TABLE IF EXISTS `monstresgroupes`;
 CREATE TABLE IF NOT EXISTS `monstresgroupes` (
   `idMonstreGroupe` int(10) UNSIGNED NOT NULL,
@@ -3175,10 +2748,6 @@ CREATE TABLE IF NOT EXISTS `monstresgroupes` (
   PRIMARY KEY (`idMonstreGroupe`,`idMonstre`),
   KEY `fk_MonstresGroupes_Monstres1_idx` (`idMonstre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `monstresgroupes`
---
 
 REPLACE INTO `monstresgroupes` (`idMonstreGroupe`, `idMonstre`, `number`) VALUES
 (1, 1, 1),
@@ -3265,23 +2834,13 @@ REPLACE INTO `monstresgroupes` (`idMonstreGroupe`, `idMonstre`, `number`) VALUES
 (77, 80, 4),
 (77, 81, 1);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `monstrestypes`
---
-
 DROP TABLE IF EXISTS `monstrestypes`;
 CREATE TABLE IF NOT EXISTS `monstrestypes` (
   `idType` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`idType`),
   UNIQUE KEY `idType_UNIQUE` (`idType`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `monstrestypes`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `monstrestypes` (`idType`, `nom`) VALUES
 (1, 'normal'),
@@ -3290,22 +2849,12 @@ REPLACE INTO `monstrestypes` (`idType`, `nom`) VALUES
 (4, 'boss'),
 (5, 'boss');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `regions`
---
-
 DROP TABLE IF EXISTS `regions`;
 CREATE TABLE IF NOT EXISTS `regions` (
   `idRegion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`idRegion`),
   UNIQUE KEY `idRegions_UNIQUE` (`idRegion`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `regions`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `regions` (`idRegion`) VALUES
 (1),
@@ -3313,12 +2862,6 @@ REPLACE INTO `regions` (`idRegion`) VALUES
 (3),
 (4),
 (5);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `regionsbosses`
---
 
 DROP TABLE IF EXISTS `regionsbosses`;
 CREATE TABLE IF NOT EXISTS `regionsbosses` (
@@ -3328,21 +2871,11 @@ CREATE TABLE IF NOT EXISTS `regionsbosses` (
   KEY `fk_RegionsBosses_Regions1_idx` (`idRegion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Contenu de la table `regionsbosses`
---
-
 REPLACE INTO `regionsbosses` (`idBoss`, `idRegion`) VALUES
 (1, 1),
 (2, 2),
 (3, 3),
 (4, 4);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `sellableitems`
---
 
 DROP TABLE IF EXISTS `sellableitems`;
 CREATE TABLE IF NOT EXISTS `sellableitems` (
@@ -3353,11 +2886,7 @@ CREATE TABLE IF NOT EXISTS `sellableitems` (
   `price` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`idSellableItems`),
   KEY `fk_SellableItems_ItemsBase1_idx` (`idBaseItem`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `sellableitems`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `sellableitems` (`idSellableItems`, `idBaseItem`, `level`, `number`, `price`) VALUES
 (1, 43, 10, 1, 65),
@@ -3385,12 +2914,6 @@ REPLACE INTO `sellableitems` (`idSellableItems`, `idBaseItem`, `level`, `number`
 (23, 44, 90, 1, 800),
 (24, 44, 100, 1, 1000);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `serversstats`
---
-
 DROP TABLE IF EXISTS `serversstats`;
 CREATE TABLE IF NOT EXISTS `serversstats` (
   `idServer` varchar(21) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3401,23 +2924,13 @@ CREATE TABLE IF NOT EXISTS `serversstats` (
   PRIMARY KEY (`idServer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `shop`
---
-
 DROP TABLE IF EXISTS `shop`;
 CREATE TABLE IF NOT EXISTS `shop` (
   `idShop` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `tax` float UNSIGNED NOT NULL DEFAULT '0.05',
   `active` tinyint(3) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`idShop`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `shop`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `shop` (`idShop`, `tax`, `active`) VALUES
 (1, 0.05, 1),
@@ -3430,12 +2943,6 @@ REPLACE INTO `shop` (`idShop`, `tax`, `active`) VALUES
 (8, 0.05, 1),
 (9, 0.05, 1);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `shopitems`
---
-
 DROP TABLE IF EXISTS `shopitems`;
 CREATE TABLE IF NOT EXISTS `shopitems` (
   `idShop` int(10) UNSIGNED NOT NULL,
@@ -3443,10 +2950,6 @@ CREATE TABLE IF NOT EXISTS `shopitems` (
   PRIMARY KEY (`idShop`,`idSellableItems`),
   KEY `fk_ShopItems_SellableItems1_idx` (`idSellableItems`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `shopitems`
---
 
 REPLACE INTO `shopitems` (`idShop`, `idSellableItems`) VALUES
 (1, 1),
@@ -3484,12 +2987,6 @@ REPLACE INTO `shopitems` (`idShop`, `idSellableItems`) VALUES
 (8, 23),
 (9, 24);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `spawnedbosses`
---
-
 DROP TABLE IF EXISTS `spawnedbosses`;
 CREATE TABLE IF NOT EXISTS `spawnedbosses` (
   `idSpawnedBoss` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3498,13 +2995,7 @@ CREATE TABLE IF NOT EXISTS `spawnedbosses` (
   `idBoss` int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`idSpawnedBoss`),
   KEY `fk_SpawnedBosses_Bosses1_idx` (`idBoss`)
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `spawnedbossesareas`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `spawnedbossesareas`;
 CREATE TABLE IF NOT EXISTS `spawnedbossesareas` (
@@ -3513,10 +3004,6 @@ CREATE TABLE IF NOT EXISTS `spawnedbossesareas` (
   PRIMARY KEY (`idSpawnedBoss`),
   KEY `fk_SpawnedBossesAreas_Areas1_idx` (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `spawnedbossesareas`
---
 
 REPLACE INTO `spawnedbossesareas` (`idSpawnedBoss`, `idArea`) VALUES
 (21, 1),
@@ -3634,23 +3121,13 @@ REPLACE INTO `spawnedbossesareas` (`idSpawnedBoss`, `idArea`) VALUES
 (80, 27),
 (105, 27);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `statisticsbases`
---
-
 DROP TABLE IF EXISTS `statisticsbases`;
 CREATE TABLE IF NOT EXISTS `statisticsbases` (
   `idStatisticBase` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unknown',
   PRIMARY KEY (`idStatisticBase`),
   UNIQUE KEY `idStatisticBase_UNIQUE` (`idStatisticBase`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `statisticsbases`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `statisticsbases` (`idStatisticBase`, `name`) VALUES
 (1, 'pvefights_victories'),
@@ -3700,12 +3177,6 @@ REPLACE INTO `statisticsbases` (`idStatisticBase`, `name`) VALUES
 (45, 'items_mythic_collected'),
 (46, 'items_mythic_loot');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `stats`
---
-
 DROP TABLE IF EXISTS `stats`;
 CREATE TABLE IF NOT EXISTS `stats` (
   `idStat` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3714,11 +3185,7 @@ CREATE TABLE IF NOT EXISTS `stats` (
   PRIMARY KEY (`idStat`),
   UNIQUE KEY `idStat_UNIQUE` (`idStat`),
   UNIQUE KEY `nom_UNIQUE` (`nom`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `stats`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `stats` (`idStat`, `nom`, `desc`) VALUES
 (1, 'strength', NULL),
@@ -3732,12 +3199,6 @@ REPLACE INTO `stats` (`idStat`, `nom`, `desc`) VALUES
 (9, 'charisma', NULL),
 (10, 'luck', NULL);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `statscharacters`
---
-
 DROP TABLE IF EXISTS `statscharacters`;
 CREATE TABLE IF NOT EXISTS `statscharacters` (
   `idCharacter` int(10) UNSIGNED NOT NULL,
@@ -3747,12 +3208,6 @@ CREATE TABLE IF NOT EXISTS `statscharacters` (
   KEY `fk_StatsCharacters_Stats1_idx` (`idStat`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `statsmonstres`
---
-
 DROP TABLE IF EXISTS `statsmonstres`;
 CREATE TABLE IF NOT EXISTS `statsmonstres` (
   `idMonstre` int(10) UNSIGNED NOT NULL,
@@ -3760,10 +3215,6 @@ CREATE TABLE IF NOT EXISTS `statsmonstres` (
   PRIMARY KEY (`idMonstre`),
   KEY `fk_StatsMonstres_StatsProfil1_idx` (`idStatsProfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `statsmonstres`
---
 
 REPLACE INTO `statsmonstres` (`idMonstre`, `idStatsProfil`) VALUES
 (1, 1),
@@ -3848,22 +3299,12 @@ REPLACE INTO `statsmonstres` (`idMonstre`, `idStatsProfil`) VALUES
 (63, 9),
 (75, 9);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `statsprofil`
---
-
 DROP TABLE IF EXISTS `statsprofil`;
 CREATE TABLE IF NOT EXISTS `statsprofil` (
   `idStatsProfil` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idStatsProfil`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `statsprofil`
---
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 REPLACE INTO `statsprofil` (`idStatsProfil`, `name`) VALUES
 (1, 'balance_low'),
@@ -3876,12 +3317,6 @@ REPLACE INTO `statsprofil` (`idStatsProfil`, `name`) VALUES
 (8, 'damage_crit'),
 (9, 'tanky');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `statsrepartition`
---
-
 DROP TABLE IF EXISTS `statsrepartition`;
 CREATE TABLE IF NOT EXISTS `statsrepartition` (
   `idStatsProfil` int(10) UNSIGNED NOT NULL,
@@ -3890,10 +3325,6 @@ CREATE TABLE IF NOT EXISTS `statsrepartition` (
   PRIMARY KEY (`idStatsProfil`,`idStat`),
   KEY `fk_StatsRepartition_Stats1_idx` (`idStat`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Contenu de la table `statsrepartition`
---
 
 REPLACE INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES
 (1, 1, 5),
@@ -3932,12 +3363,6 @@ REPLACE INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES
 (9, 5, 5),
 (9, 9, 5);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `users`
---
-
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `idUser` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3953,12 +3378,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `fk_Users_Character_idx` (`idCharacter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `userspreferences`
---
-
 DROP TABLE IF EXISTS `userspreferences`;
 CREATE TABLE IF NOT EXISTS `userspreferences` (
   `idUser` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -3971,12 +3390,6 @@ CREATE TABLE IF NOT EXISTS `userspreferences` (
   UNIQUE KEY `idUser_UNIQUE` (`idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `wbrewardstates`
---
-
 DROP TABLE IF EXISTS `wbrewardstates`;
 CREATE TABLE IF NOT EXISTS `wbrewardstates` (
   `idSpawnedBoss` int(10) UNSIGNED NOT NULL,
@@ -3984,173 +3397,98 @@ CREATE TABLE IF NOT EXISTS `wbrewardstates` (
   PRIMARY KEY (`idSpawnedBoss`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Contraintes pour les tables exportées
---
 
---
--- Contraintes pour la table `areas`
---
 ALTER TABLE `areas`
   ADD CONSTRAINT `fk_Areas_AreasLevels1` FOREIGN KEY (`AreaLevel`) REFERENCES `areaslevels` (`idAreaLevel`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Areas_AreasTypes1` FOREIGN KEY (`idAreaType`) REFERENCES `areastypes` (`idAreaType`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasbonuses`
---
 ALTER TABLE `areasbonuses`
   ADD CONSTRAINT `fk_AreasBonuses_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasBonuses_BonusTypes1` FOREIGN KEY (`idBonusTypes`) REFERENCES `bonustypes` (`idBonusTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasitems`
---
 ALTER TABLE `areasitems`
   ADD CONSTRAINT `fk_AreasItems_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasItems_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasmonsters`
---
 ALTER TABLE `areasmonsters`
   ADD CONSTRAINT `fk_AreasMonsters_MonstresGroupes1` FOREIGN KEY (`idMonstreGroupe`,`idMonstre`) REFERENCES `monstresgroupes` (`idMonstreGroupe`, `idMonstre`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_table1_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasmonsterslevels`
---
 ALTER TABLE `areasmonsterslevels`
   ADD CONSTRAINT `fk_AreasMonstersLevels_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasowners`
---
 ALTER TABLE `areasowners`
   ADD CONSTRAINT `fk_AreasOwners_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasOwners_Guilds1` FOREIGN KEY (`idGuild`) REFERENCES `guilds` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areaspaths`
---
 ALTER TABLE `areaspaths`
   ADD CONSTRAINT `fk_AreasPaths_Areas1` FOREIGN KEY (`idArea1`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasPaths_Areas2` FOREIGN KEY (`idArea2`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasregions`
---
 ALTER TABLE `areasregions`
   ADD CONSTRAINT `fk_AreasRegions_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasRegions_Regions1` FOREIGN KEY (`idRegion`) REFERENCES `regions` (`idRegion`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasrequirements`
---
 ALTER TABLE `areasrequirements`
   ADD CONSTRAINT `fk_AreasRequirements_Achievement1` FOREIGN KEY (`idAchievement`) REFERENCES `achievement` (`idAchievement`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasRequirements_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasresources`
---
 ALTER TABLE `areasresources`
   ADD CONSTRAINT `fk_AreasResources_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasResources_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `areasshops`
---
 ALTER TABLE `areasshops`
   ADD CONSTRAINT `fk_AreasShops_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_AreasShops_Shop1` FOREIGN KEY (`idShop`) REFERENCES `shop` (`idShop`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `bossspawninfo`
---
 ALTER TABLE `bossspawninfo`
   ADD CONSTRAINT `fk_BossSpawnInfo_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_BossSpawnInfo_Bosses1` FOREIGN KEY (`idBoss`) REFERENCES `bosses` (`idBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_BossSpawnInfo_SpawnedBosses1` FOREIGN KEY (`idSpawnedBoss`) REFERENCES `spawnedbosses` (`idSpawnedBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `characters`
---
 ALTER TABLE `characters`
   ADD CONSTRAINT `fk_Characters_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactersachievements`
---
 ALTER TABLE `charactersachievements`
   ADD CONSTRAINT `fk_CharactersAchievements_Achievement1` FOREIGN KEY (`idAchievement`) REFERENCES `achievement` (`idAchievement`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersAchievements_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactersattacks`
---
 ALTER TABLE `charactersattacks`
   ADD CONSTRAINT `fk_CharactersAttacks_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersAttacks_SpawnedBosses1` FOREIGN KEY (`idSpawnedBoss`) REFERENCES `spawnedbosses` (`idSpawnedBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `characterscraftlevel`
---
 ALTER TABLE `characterscraftlevel`
   ADD CONSTRAINT `fk_CharactersCraftLevel_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersCraftLevel_LevelsRequire1` FOREIGN KEY (`actualLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactersequipements`
---
 ALTER TABLE `charactersequipements`
   ADD CONSTRAINT `fk_CharactersEquipements_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersEquipements_Items1` FOREIGN KEY (`idItem`) REFERENCES `items` (`idItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersEquipements_ItemsTypes1` FOREIGN KEY (`idType`) REFERENCES `itemstypes` (`idType`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactershonor`
---
 ALTER TABLE `charactershonor`
   ADD CONSTRAINT `fk_CharacterHonor_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactersinventory`
---
 ALTER TABLE `charactersinventory`
   ADD CONSTRAINT `fk_CharactersInventory_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersInventory_Items1` FOREIGN KEY (`idItem`) REFERENCES `items` (`idItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `charactersstatistics`
---
 ALTER TABLE `charactersstatistics`
   ADD CONSTRAINT `fk_CharactersStatistics_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CharactersStatistics_StatisticsBases1` FOREIGN KEY (`idStatisticBase`) REFERENCES `statisticsbases` (`idStatisticBase`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `conquesttournamentinfo`
---
 ALTER TABLE `conquesttournamentinfo`
   ADD CONSTRAINT `fk_ConquestTournamentInfo_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `conquesttournamentinscriptions`
---
 ALTER TABLE `conquesttournamentinscriptions`
   ADD CONSTRAINT `fk_AreaConquestTournament_Guilds1` FOREIGN KEY (`idGuild`) REFERENCES `guilds` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ConquestTournamentIncriptions_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `conquesttournamentrounds`
---
 ALTER TABLE `conquesttournamentrounds`
   ADD CONSTRAINT `fk_ConquestTournamentRounds_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ConquestTournamentRounds_ConquestTournamentInscriptions1` FOREIGN KEY (`idGuild_1`) REFERENCES `conquesttournamentinscriptions` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ConquestTournamentRounds_ConquestTournamentInscriptions2` FOREIGN KEY (`idGuild_2`) REFERENCES `conquesttournamentinscriptions` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `craftbuilding`
---
 ALTER TABLE `craftbuilding`
   ADD CONSTRAINT `fk_CraftBuilding_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CraftBuilding_ItemsRarities1` FOREIGN KEY (`rarityMax`) REFERENCES `itemsrarities` (`idRarity`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -4158,211 +3496,120 @@ ALTER TABLE `craftbuilding`
   ADD CONSTRAINT `fk_CraftBuilding_LevelsRequire1` FOREIGN KEY (`minLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CraftBuilding_LevelsRequire2` FOREIGN KEY (`maxLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `craftitem`
---
 ALTER TABLE `craftitem`
   ADD CONSTRAINT `fk_CraftItem_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CraftItem_LevelsRequire1` FOREIGN KEY (`maxLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CraftItem_LevelsRequire2` FOREIGN KEY (`minLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `craftitemsneeded`
---
 ALTER TABLE `craftitemsneeded`
   ADD CONSTRAINT `fk_CraftItemsNeeded_CraftItem1` FOREIGN KEY (`IdCraftItem`) REFERENCES `craftitem` (`idCraftItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_CraftItemsNeeded_ItemsBase1` FOREIGN KEY (`NeededItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `guildsappliances`
---
 ALTER TABLE `guildsappliances`
   ADD CONSTRAINT `fk_table1_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_table1_Guilds1` FOREIGN KEY (`idGuild`) REFERENCES `guilds` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `guildsmembers`
---
 ALTER TABLE `guildsmembers`
   ADD CONSTRAINT `fk_GuildsMembers_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_GuildsMembers_Guilds1` FOREIGN KEY (`idGuild`) REFERENCES `guilds` (`idGuild`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_GuildsMembers_GuildsRanks1` FOREIGN KEY (`idGuildRank`) REFERENCES `guildsranks` (`idGuildRank`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `items`
---
 ALTER TABLE `items`
   ADD CONSTRAINT `fk_Items_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Items_LevelsRequire1` FOREIGN KEY (`level`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `itemsbase`
---
 ALTER TABLE `itemsbase`
   ADD CONSTRAINT `fk_ItemsBase_ItemsRarities1` FOREIGN KEY (`idRarity`) REFERENCES `itemsrarities` (`idRarity`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ItemsBase_ItemsSousTypes1` FOREIGN KEY (`idSousType`) REFERENCES `itemssoustypes` (`idSousType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Items_ItemsTypes1` FOREIGN KEY (`idType`) REFERENCES `itemstypes` (`idType`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `itemspower`
---
 ALTER TABLE `itemspower`
   ADD CONSTRAINT `fk_ItemsPower_Items1` FOREIGN KEY (`idItem`) REFERENCES `items` (`idItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `itemsstats`
---
 ALTER TABLE `itemsstats`
   ADD CONSTRAINT `fk_ItemsStats_Items1` FOREIGN KEY (`idItem`) REFERENCES `items` (`idItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ItemsStats_Stats1` FOREIGN KEY (`idStat`) REFERENCES `stats` (`idStat`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `levels`
---
 ALTER TABLE `levels`
   ADD CONSTRAINT `fk_Levels_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Levels_LevelsRequire1` FOREIGN KEY (`actualLevel`) REFERENCES `levelsrequire` (`level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationachievements`
---
 ALTER TABLE `localizationachievements`
   ADD CONSTRAINT `fk_LocalizationAchievements_Achievement1` FOREIGN KEY (`idAchievement`) REFERENCES `achievement` (`idAchievement`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationAchievements_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationareas`
---
 ALTER TABLE `localizationareas`
   ADD CONSTRAINT `fk_LocalizationAreas_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationAreas_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationbosses`
---
 ALTER TABLE `localizationbosses`
   ADD CONSTRAINT `fk_LocalizationBosses_Bosses1` FOREIGN KEY (`idBoss`) REFERENCES `bosses` (`idBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationBosses_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationitems`
---
 ALTER TABLE `localizationitems`
   ADD CONSTRAINT `fk_LocalizationItems_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationItems_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationmonsters`
---
 ALTER TABLE `localizationmonsters`
   ADD CONSTRAINT `fk_LocalizationMonsters_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationMonsters_Monstres1` FOREIGN KEY (`idMonstre`) REFERENCES `monstres` (`idMonstre`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `localizationregions`
---
 ALTER TABLE `localizationregions`
   ADD CONSTRAINT `fk_LocalizationRegions_Languages1` FOREIGN KEY (`lang`) REFERENCES `languages` (`lang`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_LocalizationRegions_Regions1` FOREIGN KEY (`idRegion`) REFERENCES `regions` (`idRegion`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `marketplaces`
---
 ALTER TABLE `marketplaces`
   ADD CONSTRAINT `fk_Marketplaces_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `marketplacesorders`
---
 ALTER TABLE `marketplacesorders`
   ADD CONSTRAINT `fk_MarketplacesOrders_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_MarketplacesOrders_Items1` FOREIGN KEY (`idItem`) REFERENCES `items` (`idItem`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_MarketplacesOrders_Marketplaces1` FOREIGN KEY (`idMarketplace`) REFERENCES `marketplaces` (`idMarketplace`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `monstres`
---
 ALTER TABLE `monstres`
   ADD CONSTRAINT `fk_Monstres_MonstresTypes1` FOREIGN KEY (`idType`) REFERENCES `monstrestypes` (`idType`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `monstresgroupes`
---
 ALTER TABLE `monstresgroupes`
   ADD CONSTRAINT `fk_MonstresGroupes_Monstres1` FOREIGN KEY (`idMonstre`) REFERENCES `monstres` (`idMonstre`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `regionsbosses`
---
 ALTER TABLE `regionsbosses`
   ADD CONSTRAINT `fk_RegionsBosses_Bosses1` FOREIGN KEY (`idBoss`) REFERENCES `bosses` (`idBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_RegionsBosses_Regions1` FOREIGN KEY (`idRegion`) REFERENCES `regions` (`idRegion`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `sellableitems`
---
 ALTER TABLE `sellableitems`
   ADD CONSTRAINT `fk_SellableItems_ItemsBase1` FOREIGN KEY (`idBaseItem`) REFERENCES `itemsbase` (`idBaseItem`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `shopitems`
---
 ALTER TABLE `shopitems`
   ADD CONSTRAINT `fk_ShopItems_SellableItems1` FOREIGN KEY (`idSellableItems`) REFERENCES `sellableitems` (`idSellableItems`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_ShopItems_Shop1` FOREIGN KEY (`idShop`) REFERENCES `shop` (`idShop`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `spawnedbosses`
---
 ALTER TABLE `spawnedbosses`
   ADD CONSTRAINT `fk_SpawnedBosses_Bosses1` FOREIGN KEY (`idBoss`) REFERENCES `bosses` (`idBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `spawnedbossesareas`
---
 ALTER TABLE `spawnedbossesareas`
   ADD CONSTRAINT `fk_SpawnedBossesAreas_Areas1` FOREIGN KEY (`idArea`) REFERENCES `areas` (`idArea`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_SpawnedBossesAreas_SpawnedBosses1` FOREIGN KEY (`idSpawnedBoss`) REFERENCES `spawnedbosses` (`idSpawnedBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `statscharacters`
---
 ALTER TABLE `statscharacters`
   ADD CONSTRAINT `fk_StatsCharacters_Characters1` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_StatsCharacters_Stats1` FOREIGN KEY (`idStat`) REFERENCES `stats` (`idStat`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `statsmonstres`
---
 ALTER TABLE `statsmonstres`
   ADD CONSTRAINT `fk_StatsMonstres_Monstres1` FOREIGN KEY (`idMonstre`) REFERENCES `monstres` (`idMonstre`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_StatsMonstres_StatsProfil1` FOREIGN KEY (`idStatsProfil`) REFERENCES `statsprofil` (`idStatsProfil`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `statsrepartition`
---
 ALTER TABLE `statsrepartition`
   ADD CONSTRAINT `fk_StatsRepartition_Stats1` FOREIGN KEY (`idStat`) REFERENCES `stats` (`idStat`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_StatsRepartition_StatsProfil1` FOREIGN KEY (`idStatsProfil`) REFERENCES `statsprofil` (`idStatsProfil`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `users`
---
 ALTER TABLE `users`
   ADD CONSTRAINT `fk_Users_Character` FOREIGN KEY (`idCharacter`) REFERENCES `characters` (`idCharacter`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `userspreferences`
---
 ALTER TABLE `userspreferences`
   ADD CONSTRAINT `fk_UsersPreferences_Users1` FOREIGN KEY (`idUser`) REFERENCES `users` (`idUser`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
---
--- Contraintes pour la table `wbrewardstates`
---
 ALTER TABLE `wbrewardstates`
   ADD CONSTRAINT `fk_WBRewardStates_SpawnedBosses1` FOREIGN KEY (`idSpawnedBoss`) REFERENCES `spawnedbosses` (`idSpawnedBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-SET FOREIGN_KEY_CHECKS=1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
