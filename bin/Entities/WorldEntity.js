@@ -10,16 +10,18 @@ class WorldEntity {
         this.maxHP = 0;
         this.level = 0;
         this.stats = new Stats();
+        this.consecutiveStuns = 0;
     }
 
     updateStats() {
         this.maxHP = 10 + this.getStat("constitution") * 10;
         this.actualHP = this.maxHP;
+        this.consecutiveStuns = 0;
     }
 
     damageCalcul() {
-        let baseDamage = (this.getStat("strength") + 1) * 2;
-        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
+        let baseDamage = this.getStat("strength") + 1;
+        return Math.ceil(Math.random() * 2.5 * baseDamage);
     }
 
     getLevel() {

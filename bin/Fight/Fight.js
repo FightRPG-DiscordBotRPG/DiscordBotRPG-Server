@@ -133,13 +133,17 @@ class Fight {
         damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
         damage = Math.round(damage);
 
-        // Critical hit
+        // Critical hit and stun
         critical = attacker.isThisACriticalHit();
-        damage = critical === true ? damage * 2 : damage;
-
-        // Calcul du stun si pas critique
-        if (!critical) {
+        if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
             stun = attacker.stun(defender.getStat("will"));
+        }
+        
+        // Crit + stun does 50% more dmg, crit does double, else default
+        if (critical && stun) {
+            damage * 1.5;
+        } else if (critical) {
+            damage * 2;
         }
 
         defender.actualHP -= damage;
@@ -148,10 +152,11 @@ class Fight {
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
-        if (stun) {
-            if (this.entitiesStunned.indexOf(defender) == -1) {
-                this.entitiesStunned.push(defender);
-            }
+        if (stun && this.entitiesStunned.indexOf(defender) == -1) {
+            this.entitiesStunned.push(defender);
+            attacker.consecutiveStuns += 1;
+        } else {
+            attacker.consecutiveStuns = 0;
         }
 
         if (defender.actualHP <= 0) {
