@@ -16,6 +16,7 @@ class WorldEntity {
     updateStats() {
         this.maxHP = 10 + this.getStat("constitution") * 10;
         this.actualHP = this.maxHP;
+        this.consecutiveStuns = 0;
     }
 
     damageCalcul() {
