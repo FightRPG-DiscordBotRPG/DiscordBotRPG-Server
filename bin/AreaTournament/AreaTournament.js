@@ -128,7 +128,8 @@ class AreaTournament {
             this.actualRound++;
             await conn.query("UPDATE conquesttournamentinfo SET actualRound = ? WHERE idArea = ?;", [this.actualRound, this.idArea]);
             this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.rounds[this.actualRound - 1].winners, this.idArea);
-            this.doFights();
+            this.rounds[this.actualRound].init();
+            await this.doFights();
         }
         //console.log("Tournament Finished for area : " + this.idArea + " Winner is : " + this.rounds[this.actualRound].winners[0].name);
     }
@@ -191,28 +192,20 @@ class AreaTournament {
         return (await conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea]))[0].total;
     }
 
-    hasWinner() {
-        return this.maxRounds > 0;
-    }
-
 
     /**
      * End Tournament
      * then reset it
      */
     async endTournament() {
-        if (this.hasWinner()) {
-            let oldOwner = await Area.staticGetOwnerID(this.idArea);
-            if (oldOwner !== this.rounds[this.maxRounds].winners[0]) {
-                await Area.resetBonuses(this.idArea);
-                // TODO: Améliorer le système pour le rendre plus juste
-                //await Area.oneLessLevel(this.idArea);
-            }
-            await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
-            console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
-        } else {
-            console.log(`No Winner, idArea: ${this.idArea}\nDebug Info: ${this}`);
+        let oldOwner = await Area.staticGetOwnerID(this.idArea);
+        if (oldOwner !== this.rounds[this.maxRounds].winners[0]) {
+            await Area.resetBonuses(this.idArea);
+            // TODO: Améliorer le système pour le rendre plus juste
+            //await Area.oneLessLevel(this.idArea);
         }
+        await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
+        console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
 
         await this.resetTournament();
         await this.scheduleTournament();
