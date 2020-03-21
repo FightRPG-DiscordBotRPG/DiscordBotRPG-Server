@@ -122,7 +122,6 @@ class Fight {
         let done = 0;
         let critical = false;
         let stun = false;
-        const maxConsecutiveStuns = 1;
 
         let attacker = this.entities[this.initiative[0]][this.initiative[1]];
         let defender = this.getDefender(this.entities[this.initiative[0] == 0 ? 1 : 0]);
@@ -136,7 +135,7 @@ class Fight {
 
         // Critical hit and stun
         critical = attacker.isThisACriticalHit();
-        if (attacker.consecutiveStuns < maxConsecutiveStuns) {
+        if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
             stun = attacker.stun(defender.getStat("will"));
         }
         
