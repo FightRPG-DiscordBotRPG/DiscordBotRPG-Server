@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -6,9 +7,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-
-DELIMITER $$
-DROP PROCEDURE IF EXISTS `doesPlayerHaveEnoughMatsToCraftThisItem`$$
+DROP PROCEDURE IF EXISTS `doesPlayerHaveEnoughMatsToCraftThisItem`;
 CREATE DEFINER=`discord_bot_rpg`@`%` PROCEDURE `doesPlayerHaveEnoughMatsToCraftThisItem` (IN `idCharacterToLook` INT, IN `idCaftToLook` INT)  BEGIN
 	SELECT 
     IF((SELECT 
@@ -39,9 +38,7 @@ CREATE DEFINER=`discord_bot_rpg`@`%` PROCEDURE `doesPlayerHaveEnoughMatsToCraftT
                 craftitemsneeded.IdCraftItem = idCaftToLook),
         'true',
         'false') AS doesPlayerHaveEnoughMats;
-END$$
-
-DELIMITER ;
+END;
 
 DROP TABLE IF EXISTS `achievement`;
 CREATE TABLE IF NOT EXISTS `achievement` (
@@ -103,7 +100,7 @@ REPLACE INTO `areas` (`idArea`, `AreaImage`, `idAreaType`, `AreaLevel`, `statPoi
 (30, 'https://vignette.wikia.nocookie.net/rsroleplay/images/6/61/Cadderoccourtyard.jpg/', 1, 1, 0),
 (31, 'https://cdn.fight-rpg.com/images/areas/HauntedHouse.png', 1, 1, 0),
 (32, 'https://cdn.fight-rpg.com/images/areas/HauntedVillage.png', 1, 4, 5),
-(33, 'http://img07.deviantart.net/446c/i/2013/158/9/e/ice_cave_by_devin87-d68585o.jpg', 3, 1, 5),
+(33, 'http://img07.deviantart.net/446c/i/2013/158/9/e/ice_cave_by_devin87-d68585o.jpg', 3, 1, 0),
 (34, 'https://bnetcmsus-a.akamaihd.net/cms/gallery/A0IFUJNHQ73S1421193822596.jpg', 2, 1, 0);
 
 DROP TABLE IF EXISTS `areasbonuses`;
@@ -312,7 +309,7 @@ REPLACE INTO `areasbonuses` (`idArea`, `idBonusTypes`, `value`) VALUES
 (33, 2, 0),
 (33, 3, 0),
 (33, 4, 0),
-(33, 5, 0),
+(33, 5, 5),
 (33, 6, 0),
 (34, 1, 0),
 (34, 2, 0),
@@ -1392,6 +1389,11 @@ CREATE TABLE IF NOT EXISTS `guildsranks` (
   PRIMARY KEY (`idGuildRank`),
   UNIQUE KEY `idGuildRank_UNIQUE` (`idGuildRank`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+REPLACE INTO `guildsranks` (`idGuildRank`, `nom`) VALUES
+(1, 'member'),
+(2, 'officer'),
+(3, 'guild_master');
 
 DROP TABLE IF EXISTS `items`;
 CREATE TABLE IF NOT EXISTS `items` (
@@ -3005,122 +3007,6 @@ CREATE TABLE IF NOT EXISTS `spawnedbossesareas` (
   KEY `fk_SpawnedBossesAreas_Areas1_idx` (`idArea`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-REPLACE INTO `spawnedbossesareas` (`idSpawnedBoss`, `idArea`) VALUES
-(21, 1),
-(39, 1),
-(35, 2),
-(76, 2),
-(90, 2),
-(113, 2),
-(26, 3),
-(38, 3),
-(6, 4),
-(66, 4),
-(77, 4),
-(93, 4),
-(64, 5),
-(65, 5),
-(112, 5),
-(13, 6),
-(17, 6),
-(51, 6),
-(8, 7),
-(37, 7),
-(53, 7),
-(94, 7),
-(103, 7),
-(11, 8),
-(16, 8),
-(32, 8),
-(36, 8),
-(67, 8),
-(85, 8),
-(18, 9),
-(25, 9),
-(75, 9),
-(81, 9),
-(98, 9),
-(108, 9),
-(19, 10),
-(68, 10),
-(71, 10),
-(73, 10),
-(83, 10),
-(104, 10),
-(15, 11),
-(100, 11),
-(106, 11),
-(42, 12),
-(47, 12),
-(107, 12),
-(110, 12),
-(33, 13),
-(60, 13),
-(79, 13),
-(91, 13),
-(87, 14),
-(92, 14),
-(9, 15),
-(10, 15),
-(22, 15),
-(70, 15),
-(84, 15),
-(1, 16),
-(31, 16),
-(49, 16),
-(86, 16),
-(95, 16),
-(4, 17),
-(28, 17),
-(41, 17),
-(44, 17),
-(55, 17),
-(56, 17),
-(78, 17),
-(114, 18),
-(3, 19),
-(7, 19),
-(27, 19),
-(50, 19),
-(52, 19),
-(57, 19),
-(14, 20),
-(20, 20),
-(63, 20),
-(2, 21),
-(29, 21),
-(30, 21),
-(45, 21),
-(82, 21),
-(111, 21),
-(23, 22),
-(43, 22),
-(88, 22),
-(97, 22),
-(102, 22),
-(109, 22),
-(34, 23),
-(46, 23),
-(48, 23),
-(69, 23),
-(99, 23),
-(12, 24),
-(24, 24),
-(40, 24),
-(61, 24),
-(89, 24),
-(54, 25),
-(101, 25),
-(5, 26),
-(62, 26),
-(74, 26),
-(96, 26),
-(58, 27),
-(59, 27),
-(72, 27),
-(80, 27),
-(105, 27);
-
 DROP TABLE IF EXISTS `statisticsbases`;
 CREATE TABLE IF NOT EXISTS `statisticsbases` (
   `idStatisticBase` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3610,6 +3496,7 @@ ALTER TABLE `userspreferences`
 
 ALTER TABLE `wbrewardstates`
   ADD CONSTRAINT `fk_WBRewardStates_SpawnedBosses1` FOREIGN KEY (`idSpawnedBoss`) REFERENCES `spawnedbosses` (`idSpawnedBoss`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+SET FOREIGN_KEY_CHECKS=1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
