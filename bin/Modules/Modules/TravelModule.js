@@ -67,7 +67,9 @@ class TravelModule extends GModule {
                     if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
-                        let requiredAchievements = areaObjectTravel.getRequiredAchievements();
+                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID(), res.locals.lang);
+
+                        let requiredAchievements = costs.neededAchievements;
                         let missingAchievements = [];
                         for (let i in requiredAchievements) {
                             if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
@@ -82,7 +84,6 @@ class TravelModule extends GModule {
                             }
                             data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
                         } else {
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
                             let realWaitTime = (await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait)) / 1000;
                             data = {
                                 from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
@@ -114,7 +115,9 @@ class TravelModule extends GModule {
                     if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
-                        let requiredAchievements = areaObjectTravel.getRequiredAchievements();
+                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID(), res.locals.lang);
+
+                        let requiredAchievements = costs.neededAchievements;
                         let missingAchievements = [];
                         for (let i in requiredAchievements) {
                             if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
@@ -129,7 +132,6 @@ class TravelModule extends GModule {
                             }
                             data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
                         } else {
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
                             // Get area to switch
                             wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
                             // change de zone
@@ -160,7 +162,9 @@ class TravelModule extends GModule {
                     if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
-                        let requiredAchievements = areaObjectTravel.getRequiredAchievements();
+                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID(), res.locals.lang);
+
+                        let requiredAchievements = costs.neededAchievements;
                         let missingAchievements = [];
                         for (let i in requiredAchievements) {
                             if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
@@ -175,7 +179,6 @@ class TravelModule extends GModule {
                             }
                             data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
                         } else {
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
                             let realWaitTime = (await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait)) / 1000;
                             data = {
                                 from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
@@ -207,7 +210,9 @@ class TravelModule extends GModule {
                     if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                         data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                     } else {
-                        let requiredAchievements = areaObjectTravel.getRequiredAchievements();
+                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID(), res.locals.lang);
+
+                        let requiredAchievements = costs.neededAchievements;
                         let missingAchievements = [];
                         for (let i in requiredAchievements) {
                             if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
@@ -222,7 +227,6 @@ class TravelModule extends GModule {
                             }
                             data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
                         } else {
-                            let costs = Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
                             if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(costs.goldPrice)) {
                                 wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 

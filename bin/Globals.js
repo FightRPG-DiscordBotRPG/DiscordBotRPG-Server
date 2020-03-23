@@ -79,6 +79,9 @@ var Globals = {
      */
     "connectedUsers": [],
     "connectedGuilds": {},
+    /**
+     * @type {AreasManager}
+     */
     "areasManager": {},
     "fightManager": {},
     "lockedMembers": {},
@@ -188,3 +191,4 @@ var Globals = {
 module.exports = Globals;
 
 //const User = require("./User");
+const AreasManager = require("./Areas/AreasManager");

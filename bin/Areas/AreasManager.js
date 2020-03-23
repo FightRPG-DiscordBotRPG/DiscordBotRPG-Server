@@ -8,6 +8,8 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Graph = require('node-dijkstra');
 const Region = require("./Region");
+const Area = require("./Area");
+const Achievements = require("../Achievement/Achievements");
 
 
 class AreasManager {
@@ -18,6 +20,7 @@ class AreasManager {
         this.regions = {};
         this.paths = new Graph();
         this.pathsGoldCosts = new Graph();
+        this.pathsAchievementsNeededCost = new Graph();
     }
 
     async loadAreasManager() {
@@ -72,13 +75,22 @@ class AreasManager {
             let paths = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
             let node = {};
             let nodeGold = {};
+            let nodeAchievements = {};
             for (let path of paths) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
                 node[path.idArea2] = path.time;
                 nodeGold[path.idArea2] = path.goldPrice + 1;
+
+                let achievementsNeeded = await conn.query("SELECT idAchievement FROM areasrequirements WHERE idArea = ?;", [area.idArea1]);
+                if (achievementsNeeded.length > 0) {
+                    nodeAchievements[path.idArea2] = 2;
+                } else {
+                    nodeAchievements[path.idArea2] = 1;
+                }
             }
             this.paths.addNode(area.idArea1.toString(), node);
             this.pathsGoldCosts.addNode(area.idArea1.toString(), nodeGold);
+            this.pathsAchievementsNeededCost.addNode(area.idArea1.toString(), nodeAchievements)
         }
     }
 
@@ -87,17 +99,36 @@ class AreasManager {
      * @param {string} from 
      * @param {string} to 
      */
-    getPathCosts(from, to) {
+    async getPathCosts(from, to, lang="en") {
         let path = this.paths.path(from.toString(), to.toString(), {
             cost: true
         });
         let pathGold = this.pathsGoldCosts.path(from.toString(), to.toString(), {
             cost: true
         });
+        let pathAchievement = this.pathsAchievementsNeededCost.path(from.toString(), to.toString(), { cost: true });
+
+        let achievementsNeeded = [];
+
+        // Somehow the node ignore the TO area
+        achievementsNeeded = achievementsNeeded.concat(this.getArea(to).getRequiredAchievements());
+
+        if (pathAchievement.cost - pathAchievement.path.length === 0) {
+            for (let idArea of pathAchievement.path) {
+                idArea = parseInt(idArea);
+                // But don't ignore the FROM so we need to ignore it, it will be bad to stuck a player in an area
+                if (idArea !== from) {
+                    achievementsNeeded = achievementsNeeded.concat(this.getArea(idArea).getRequiredAchievements());
+                }
+            }
+        }
+
         let toReturn = {
             timeToWait: path.cost,
-            goldPrice: pathGold.cost - (pathGold.path.length - 1)
-        }
+            goldPrice: pathGold.cost - (pathGold.path.length - 1),
+            neededAchievements: await achievementsNeeded
+}
+
         return toReturn;
     }
 
@@ -238,6 +269,11 @@ class AreasManager {
         return await area.haveOwner();
     }
 
+    /**
+     * 
+     * @param {any} idArea
+     * @returns {Area}
+     */
     getArea(idArea) {
         return this.areas.get(idArea);
     }
