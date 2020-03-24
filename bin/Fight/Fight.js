@@ -141,9 +141,9 @@ class Fight {
         
         // Crit + stun does 50% more dmg, crit does double, else default
         if (critical && stun) {
-            damage * 1.5;
+            damage *= 1.5;
         } else if (critical) {
-            damage * 2;
+            damage *= 2;
         }
 
         defender.actualHP -= damage;
