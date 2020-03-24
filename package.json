@@ -1,6 +1,14 @@
 {
   "requires": true,
   "lockfileVersion": 1,
+  "name": "discordbotrpg-server",
+  "version": "1.9.0",
+  "description": "",
+  "author": "Jean-Charles TECHER",
+  "license": "SEE LICENCE IN LICENSE.md",
+  "scripts": {
+    "start": "node main.js && node mainTournaments.js"
+  },
   "dependencies": {
     "asap": {
       "integrity": "sha1-sqRdpf36ILBJb8N2jMJ8EvqRan0=",
@@ -258,8 +266,5 @@
       "resolved": "https://registry.npmjs.org/ws/-/ws-3.3.3.tgz",
       "version": "3.3.3"
     }
-  },
-  "scripts": {
-    "start": "node main.js && node mainTournaments.js"
   }
 }
