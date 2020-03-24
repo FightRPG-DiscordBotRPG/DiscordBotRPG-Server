@@ -131,7 +131,6 @@ class Fight {
         damage = damage * defender.damageDefenceReduction();
         let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
         damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
-        damage = Math.round(damage);
 
         // Critical hit and stun
         critical = attacker.isThisACriticalHit();
@@ -141,10 +140,11 @@ class Fight {
         
         // Crit + stun does 50% more dmg, crit does double, else default
         if (critical && stun) {
-            damage * 1.5;
+            damage *= 1.5;
         } else if (critical) {
-            damage * 2;
+            damage *= 2;
         }
+        damage = Math.round(damage);
 
         defender.actualHP -= damage;
         damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
