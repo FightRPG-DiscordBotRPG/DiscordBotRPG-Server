@@ -254,10 +254,7 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
-            console.log(Globals.statsIds)
-            for (let i in Globals.statsIds) {
-                console.log(Globals.statsIds[i])
-            }
+            await new Promise(resolve => setTimeout(resolve, 10000));
             await next();
             return res.send("null");
         });
