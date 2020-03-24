@@ -284,6 +284,7 @@ class Character extends CharacterEntity {
     }
 
     async addExp(exp) {
+        exp = exp >= 0 ? exp : 0;
         let startingLevel = this.levelSystem.actualLevel;
         await this.levelSystem.addThisExp(exp);
         if (startingLevel < this.levelSystem.actualLevel) {

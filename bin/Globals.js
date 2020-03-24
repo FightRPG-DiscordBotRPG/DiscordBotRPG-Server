@@ -190,5 +190,5 @@ var Globals = {
 
 module.exports = Globals;
 
-//const User = require("./User");
 const AreasManager = require("./Areas/AreasManager");
+const User = require("./User");
