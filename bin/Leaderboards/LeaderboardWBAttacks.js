@@ -9,8 +9,7 @@ class LeaderboardWBAttacks extends LeaderboardWB {
     }
 
     async getPlayerRank() {
-        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, charactersattacks.idCharacter FROM charactersattacks INNER JOIN users ON users.idCharacter = charactersattacks.idCharacter, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY charactersattacks.attackCount DESC) user_ranks WHERE idCharacter = ?;", [await this.getBossID(), this.id]);
-
+        let res = await conn.query("WITH ranked_orders AS (SELECT idCharacter, RANK() OVER(ORDER BY charactersattacks.attackCount DESC) as 'rnk' FROM charactersattacks WHERE idSpawnedBoss = ?) SELECT rnk as 'rank' FROM ranked_orders WHERE idCharacter = ?;", [await this.getBossID(), this.id]);
         return res != null && res[0] ? res[0].rank : 1;
     }
 
