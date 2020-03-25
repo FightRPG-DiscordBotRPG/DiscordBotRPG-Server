@@ -40,7 +40,7 @@ class Monstre extends WorldEntity {
             this.luckBonus = 40;
 
         } else if (this.type == "normal") {
-            let tDifficulty = Math.floor(Math.random() * (4 - 0) + 0);
+            let tDifficulty = Math.floor(Math.random() * 4);
             this.difficulty = Globals.mDifficulties[tDifficulty];
             multiplier = this.difficulty.value;
         } else if (this.type == "boss") {
