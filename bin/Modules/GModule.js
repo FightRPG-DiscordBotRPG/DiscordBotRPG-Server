@@ -226,6 +226,7 @@ class GModule {
 
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
                     "info": Translator.getString(lang, "help_panel", "info"),
+                    "attributes": Translator.getString(lang, "help_panel", "attributes"),
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
