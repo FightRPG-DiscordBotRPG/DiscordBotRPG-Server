@@ -249,6 +249,7 @@ class GModule {
                     "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                     "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                     "sellall": Translator.getString(lang, "help_panel", "sellall"),
+                    "sellall <filter> <filterValue>": Translator.getString(lang, "help_panel", "sellall_filter"),
                     "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
                 }
 
