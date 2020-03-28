@@ -92,10 +92,10 @@ class CharacterModule extends GModule {
         this.router.get("/reset", async (req, res, next) => {
             if (await Globals.connectedUsers[res.locals.id].character.resetStats()) {
                 let ptsLeft = await Globals.connectedUsers[res.locals.id].character.getStatPoints();
-                await next();
                 let statPointsPlur = ptsLeft > 1 ? "_plural" : "";
                 let ptsLeftStr = Translator.getString(res.locals.lang, "character", "attribute_x_points_available" + statPointsPlur, [ptsLeft]);
                 let output = Translator.getString(res.locals.lang, "character", "reset_done") + " " + ptsLeftStr;
+                await next();
                 return res.json({
                     success: output,
                     lang: res.locals.lang,
