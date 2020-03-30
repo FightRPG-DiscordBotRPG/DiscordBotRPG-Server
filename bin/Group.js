@@ -35,21 +35,31 @@ class Group {
         return true;
     }
 
+    getTotalStat(statName="strength") {
+        return this.getArrayOfCharacters().reduce((acc, char) => {
+            return acc + char.getStat(statName);
+        }, 0);
+    }
+
+    getAverageTotalStat(statName = "strength") {
+        return this.getTotalStat(statName) / this.nbOfPlayers();
+    }
+
     getArrayOfPlayers() {
         let arrPlayers = [];
+        arrPlayers.push(this.leader);
         for (let i in this.players) {
             arrPlayers.push(this.players[i]);
         }
-        arrPlayers.push(this.leader);
         return arrPlayers;
     }
 
     getArrayOfCharacters() {
         let arrCharacters = [];
+        arrCharacters.push(this.leader.character);
         for (let i in this.players) {
             arrCharacters.push(this.players[i].character);
         }
-        arrCharacters.push(this.leader.character);
         return arrCharacters;
     }
 
