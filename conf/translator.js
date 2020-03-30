@@ -2,7 +2,7 @@
 
 const conf = {
     //"cdn_translator_url": "http://localhost/cdn/localization/"
-    "cdn_translator_url": "https://cdn.fight-rpg.com/localization/"
+    "cdn_translator_url": "https://cdn.fight-rpg.com/dev-localization/"
 }
 
 module.exports = conf;

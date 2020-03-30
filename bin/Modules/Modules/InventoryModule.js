@@ -91,83 +91,13 @@ class InventoryModule extends GModule {
         });
 
         this.router.post("/itemfav", async (req, res, next) => {
-            let data = {};
-            data.lang = res.locals.lang;
-
-            let idItemToFav = parseInt(req.body.idItem, 10);
-            let isRealID = req.body.isRealID;
-            if (idItemToFav != null && Number.isInteger(idItemToFav)) {
-                if (isRealID == null || isRealID == false) {
-                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToFav)) {
-                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToFav, true);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-                } else {
-                    let itemToFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemToFav);
-                    if (itemToFav != null) {
-                        await itemToFav.setFavorite(true);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-                }
-            } else {
-                idItemToFav = this.getEquipableIDType(req.body.idItem);
-                if (idItemToFav > 0) {
-                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToFav) != null) {
-                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToFav, true);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_tag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                }
-            }
+            let data = await this.setFavoriteValueItem(req, res, true);
             await next();
             return res.json(data);
         });
 
         this.router.post("/itemunfav", async (req, res, next) => {
-            let data = {};
-            data.lang = res.locals.lang;
-
-            let idItemToUnFav = parseInt(req.body.idItem, 10);
-            let isRealID = req.body.isRealID;
-            if (idItemToUnFav != null && Number.isInteger(idItemToUnFav)) {
-                if (isRealID == null || isRealID == false) {
-                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemToUnFav)) {
-                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemToUnFav, false);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-                } else {
-                    let itemToUnFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemToUnFav);
-                    if (itemToUnFav != null) {
-                        await itemToUnFav.setFavorite(false);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-                }
-
-            } else {
-                idItemToUnFav = this.getEquipableIDType(req.body.idItem);
-                if (idItemToUnFav > 0) {
-                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemToUnFav) != null) {
-                        await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemToUnFav, false);
-                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_untag_as_favorite");
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                    }
-
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                }
-            }
+            let data = await this.setFavoriteValueItem(req, res, false);
 
             await next();
             return res.json(data);
@@ -259,31 +189,15 @@ class InventoryModule extends GModule {
         });
 
         this.router.post("/sellall", async (req, res, next) => {
-            let data = {};
-            data.lang = res.locals.lang;
-            let params = {
-                rarity: 0,
-                type: 0,
-                level: 0
-            }
+            let data = await this.commonSellChecks(req, res);
 
-            if (req.body.idRarity != null) {
-                params.rarity = parseInt(req.body.idRarity);
-            } else if (req.body.idType != null) {
-                params.type = parseInt(req.body.idType);
-            } else if (req.body.level != null) {
-                params.level = parseInt(req.body.level);
-            }
-
-            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                let allSelled = await Globals.connectedUsers[res.locals.id].character.sellAllInventory(params);
+            if (!data.error) {
+                let allSelled = await Globals.connectedUsers[res.locals.id].character.sellAllInventory(data.params);
                 if (allSelled > 0) {
                     data.success = Translator.getString(res.locals.lang, "economic", "sell_all_for_x", [allSelled]);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_sell_nothing");
                 }
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
             }
 
             await next();
@@ -291,26 +205,11 @@ class InventoryModule extends GModule {
         });
 
         this.router.post("/sellall/value", async (req, res, next) => {
-            let data = {};
-            data.lang = res.locals.lang;
-            let params = {
-                rarity: 0,
-                type: 0,
-                level: 0
-            }
-
-            if (req.body.idRarity != null) {
-                params.rarity = parseInt(req.body.idRarity);
-            } else if (req.body.idType != null) {
-                params.type = parseInt(req.body.idType);
-            } else if (req.body.level != null) {
-                params.level = parseInt(req.body.level);
-            }
-
-            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                data.value = await Globals.connectedUsers[res.locals.id].character.getInv().getAllInventoryValue(params);
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
+            let data = await this.commonSellChecks(req, res);
+            if (!data.error) {
+                let sellData = await Globals.connectedUsers[res.locals.id].character.getInv().getAllInventoryValue(data.params);
+                data.value = sellData.value;
+                data.isFiltered = sellData.isFiltered;
             }
 
             await next();
@@ -381,6 +280,83 @@ class InventoryModule extends GModule {
         });
 
 
+    }
+
+    /**
+     * 
+     * @param {any} req
+     * @param {any} res
+     * @param {boolean} toFavorite True if you fav the item, false if unfav it
+     */
+    async setFavoriteValueItem(req, res, toFavorite) {
+
+        let data = {};
+        data.lang = res.locals.lang;
+
+        let idItemFav = parseInt(req.body.idItem, 10);
+        let isRealID = req.body.isRealID;
+
+        let favoriteTextKey = toFavorite === true ? "item_tag_as_favorite" : "item_untag_as_favorite";
+        if (idItemFav != null && Number.isInteger(idItemFav)) {
+            if (isRealID == null || isRealID == false) {
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemFav)) {
+                    let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemFav, toFavorite);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            } else {
+                let itemFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemFav);
+                if (itemFav != null) {
+                    await itemFav.setFavorite(toFavorite);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [itemFav.getName(data.lang)]);
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            }
+        } else {
+            idItemFav = this.getEquipableIDType(req.body.idItem);
+            if (idItemFav > 0) {
+                if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemFav) != null) {
+                    let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemFav, toFavorite);
+                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+            }
+        }
+
+        return data;
+    }
+
+    async commonSellChecks(req, res) {
+        let data = {};
+        data.lang = res.locals.lang;
+        let params = {
+            rarity: 0,
+            type: 0,
+            level: 0,
+            power: 0,
+        }
+
+        if (req.body.idRarity != null) {
+            params.rarity = parseInt(req.body.idRarity);
+        } else if (req.body.idType != null) {
+            params.type = parseInt(req.body.idType);
+        } else if (req.body.level != null) {
+            params.level = parseInt(req.body.level);
+        } else if (req.body.power != null) {
+            params.power = parseInt(req.body.power);
+        }
+
+        if (!Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+            data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
+        } else {
+            data.params = params;
+        }
+        return data;
     }
 
 }

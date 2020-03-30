@@ -369,7 +369,7 @@ class Character extends CharacterEntity {
     }
 
     async sellAllInventory(params) {
-        let value = await this.getInv().getAllInventoryValue(params);
+        let value = await (await this.getInv().getAllInventoryValue(params)).value;
         await Promise.all([
             this.getInv().deleteAllFromInventory(params),
             this.addMoney(value)
@@ -379,11 +379,15 @@ class Character extends CharacterEntity {
     }
 
     async setItemFavoriteInv(idEmplacement, fav) {
-        await (await (this.getInv()).getItem(idEmplacement)).setFavorite(fav ? fav : false);
+        let item = await this.getInv().getItem(idEmplacement);
+        await item.setFavorite(fav);
+        return item;
     }
 
     async setItemFavoriteEquip(idEquip, fav) {
-        await (await (this.equipement).getItem(idEquip)).setFavorite(fav ? fav : false);
+        let item = await this.equipement.getItem(idEquip);
+        await item.setFavorite(fav);
+        return item;
     }
 
     async getItemFromAllInventories(idItem) {
