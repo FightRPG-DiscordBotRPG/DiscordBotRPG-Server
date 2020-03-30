@@ -2,6 +2,7 @@ const Globals = require("../Globals");
 const LootSystem = require("../LootSystem");
 const axios = require("axios").default;
 const Translator = require("../Translator/Translator");
+const PStatistics = require("../Achievement/PStatistics");
 
 
 class GModule {
@@ -147,7 +148,6 @@ class GModule {
                 res.locals.tLootSystem = new LootSystem();
                 next();
             } else {
-                console.log("yep async bullshit !");
                 res.json({
                     error: "Your character is loading, you must wait a little."
                 });
@@ -207,6 +207,87 @@ class GModule {
                 error: 'Not Authorized!'
             });
         }
+    }
+
+    /**
+     * 
+     * @param {any} req
+     * @param {any} res
+     * @param {Number} fightType (0 => Solo | 1 => Group)
+     */
+    async FightPvERoute(req, res, fightType) {
+        if (fightType === 1) {
+            // It's needed since it's only added on all fight commands, but not on group fight one
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
+        }
+        let group = res.locals.group;
+        let data = {}
+        let idEnemyGroup = parseInt(req.body.idMonster, 10);
+
+        if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+            if (idEnemyGroup != null && Number.isInteger(idEnemyGroup)) {
+                if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
+                    let canIFightTheMonster = false;
+                    let grpEnemies = [];
+                    let grpCharacters = [];
+                    // Used for achievements
+                    let grpUsers = [];
+
+                    if (fightType === 0) {
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                        grpCharacters = [Globals.connectedUsers[res.locals.id].character];
+                        grpUsers = [Globals.connectedUsers[res.locals.id]];
+                    } else {
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat("perception"));
+                        grpCharacters = group.getArrayOfCharacters();
+                        grpUsers = group.getArrayOfPlayers();
+                    }
+
+
+                    if (!canIFightTheMonster) {
+                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                    } else {
+                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                    }
+                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang);
+                    if (response.error) {
+                        data.error = response.error;
+                    } else {
+                        data = response;
+                        this.fightAchievement(grpUsers, response.summary);
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
+                }
+            } else {
+                // Error Message
+                data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
+            }
+        } else {
+            data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
+        }
+        return data;
+    }
+
+    /**
+     * 
+     * @param {Array<User>} grpOfUsers
+     */
+    fightAchievement(grpOfUsers, fightSummary) {
+        let currentArea = Globals.areasManager.getArea(grpOfUsers[0].character.getIdArea());
+        let achievToUnlock = new AchievementUnlocker(grpOfUsers);
+
+        if (fightSummary.winner === 0) {
+            switch (currentArea.id) {
+                case 33:
+                    achievToUnlock.addAchievementToAllUsers(2);
+            }
+        }
+
+        // No await since we can let this running 'in background'
+        // Unlocks all achievements added to it (if there are achievements to unlock)
+        achievToUnlock.unlockAchievementsForAll();
+
     }
 
     helpPanel(lang, page) {
@@ -371,6 +452,74 @@ class GModule {
 
 }
 
+class AchievementUnlocker {
+    /**
+     * 
+     * @param {Array<User>} grpOfUsers
+     */
+    constructor(grpOfUsers) {
+        /**
+         * @type {Array<AchievementUnlockStructure>}
+         */
+        this.listOfPlayerAndRelatedAchievements = {};
+
+        for (let user of grpOfUsers) {
+            this.listOfPlayerAndRelatedAchievements[user.id] = new AchievementUnlockStructure(user);
+        }
+    }
+
+    /**
+     * 
+     * @param {User} user
+     * @param {number} idAchievement
+     */
+    addAchievement(user, idAchievement) {
+        this.listOfPlayerAndRelatedAchievements[user.id].achievements.push(idAchievement);
+    }
+
+    /**
+     * 
+     * @param {number} idAchievement
+     */
+    addAchievementToAllUsers(idAchievement) {
+        for (let achievUnlockerStructure of Object.values(this.listOfPlayerAndRelatedAchievements)) {
+            achievUnlockerStructure.achievements.push(idAchievement);
+        }
+    }
+
+    async unlockAchievementsForAll() {
+        let promises = [];
+        for (let unlockStructure of Object.values(this.listOfPlayerAndRelatedAchievements)) {
+            promises.push(unlockStructure.unlockAchievements());
+        }
+        await Promise.all(promises);
+    }
+}
+
+class AchievementUnlockStructure {
+    /**
+     * 
+     * @param {User} user
+     */
+    constructor(user) {
+        this.user = user; 
+
+        /**
+         * @type {Array<Number>}
+         */
+        this.achievements = [];
+    }
+
+    async unlockAchievements() {
+        let promises = [];
+        for (let id of this.achievements) {
+            promises.push(this.user.character.getAchievements().unlock(id, this.user));
+        }
+        await Promise.all(promises);
+    }
+}
 
 
 module.exports = GModule;
+
+const User = require("../User")

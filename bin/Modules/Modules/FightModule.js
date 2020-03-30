@@ -44,46 +44,7 @@ class FightModule extends GModule {
 
     loadRoutes() {
         this.router.post("/monster", async (req, res, next) => {
-            let data = {}
-            let idEnemy = parseInt(req.body.idMonster, 10);
-            if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                if (idEnemy != null && Number.isInteger(idEnemy)) {
-                    if (res.locals.currentArea.getMonsterId(idEnemy) != null) {
-                        let canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
-                        let enemies = [];
-                        if (!canIFightTheMonster) {
-                            enemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
-                        } else {
-                            enemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemy);
-                        }
-                        let response = await Globals.fightManager.fightPvE([Globals.connectedUsers[res.locals.id].character], enemies, res.locals.id, canIFightTheMonster, res.locals.lang);
-                        if (response.error) {
-                            data.error = response.error;
-                        } else {
-                            data = response;
-
-                            // Achiev linked to monsters fights
-                            switch (Globals.connectedUsers[res.locals.id].character.getIdArea()) {
-                                case 33:
-                                    if (response.summary.winner === 0) {
-                                        await Globals.connectedUsers[res.locals.id].character.getAchievements().unlock(2, Globals.connectedUsers[res.locals.id]);
-                                    }
-                            }
-                        }
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
-                    }
-                } else {
-                    // Error Message
-                    data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
-                }
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
-            }
-
-
-
-            data.lang = res.locals.lang;
+            let data = await this.FightPvERoute(req, res, 0)
             await next();
             return res.json(data);
         });
