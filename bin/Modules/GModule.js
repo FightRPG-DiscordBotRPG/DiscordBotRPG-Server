@@ -307,6 +307,7 @@ class GModule {
 
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
                     "info": Translator.getString(lang, "help_panel", "info"),
+                    "attributes": Translator.getString(lang, "help_panel", "attributes"),
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
@@ -329,6 +330,7 @@ class GModule {
                     "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                     "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                     "sellall": Translator.getString(lang, "help_panel", "sellall"),
+                    "sellall <filter> <filterValue>": Translator.getString(lang, "help_panel", "sellall_filter"),
                     "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
                 }
 
