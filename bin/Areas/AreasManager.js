@@ -16,6 +16,9 @@ class AreasManager {
 
 
     constructor() {
+        /**
+         * @type {Map<Number, Area>}
+         * */
         this.areas = new Map();
         this.regions = {};
         this.paths = new Graph();
@@ -140,12 +143,17 @@ class AreasManager {
      * @returns {boolean}
      */
     canIFightThisMonster(idArea, idEnemy, perception) {
-        let monsterID = this.areas.get(idArea).getMonsterId(idEnemy);
-        if (monsterID) {
-            let bonus = 1 + (perception / 100);
-            let chance = Math.random();
-            if (chance <= Globals.chanceToFightTheMonsterYouWant * bonus) {
-                return true;
+        let area = this.areas.get(idArea);
+        if (area.areaType === "dungeon") {
+            return true;
+        } else {
+            let monsterID = this.areas.get(idArea).getMonsterId(idEnemy);
+            if (monsterID) {
+                let bonus = 1 + (perception / 100);
+                let chance = Math.random();
+                if (chance <= Globals.chanceToFightTheMonsterYouWant * bonus) {
+                    return true;
+                }
             }
         }
 
