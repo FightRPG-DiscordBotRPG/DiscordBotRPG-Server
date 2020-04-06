@@ -135,8 +135,8 @@ class WorldBossSpawner {
             "Total attacks dealt: " + statsFight.totalAttacks + "\n" +
             "Average number of attacks: " + statsFight.averageAttackCount + "\n" +
             "The #1 player in attack count dealt: " + statsFight.highestAttackCount + " attacks! That's about " + attackGap.toFixed(2) + "% of the total attack count! " + atkImpressive + "\\`\\`\\`" + "\n";
-        str += "Your rewards is being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
-        str += "Next boss will arrive soon, here are some informations about the next boss spawn!\n";
+        str += "Your rewards are being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
+        str += "Next boss will arrive soon, here are some details about the next boss spawn:\n";
         str += "\\`\\`\\`" + Translator.getString("en", "world_bosses", "spawn_date", [date.toLocaleString("en-EN") + " UTC"]) + "\\`\\`\\`";
         WorldBossSpawner.wbTell(str);
     }
