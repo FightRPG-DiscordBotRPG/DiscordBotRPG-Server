@@ -673,7 +673,7 @@ class Character extends CharacterEntity {
     }
 
     async saveHonor() {
-        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?"[await this.getHonor(), this.id]);
+        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?", [await this.getHonor(), this.id]);
     }
 
     async toApiSimple() {

@@ -284,7 +284,6 @@ class Guild {
     async toApi(lang = "en") {
         await this.loadGuild(this.id);
         let idOfAreaEnroll = await this.getTournamentAreaEnrolled();
-        console.log(lang);
         let toApi = {
             members: this.members,
             id: this.id,
