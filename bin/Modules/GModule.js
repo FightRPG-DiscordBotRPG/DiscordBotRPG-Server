@@ -96,8 +96,7 @@ class GModule {
                     Globals.lockedMembers[res.locals.id] = true;
                     next();
                 }
-                next();
-
+                //next();
             } else {
                 return res.json({
                     error: "Due to an error, this module is deactivated. The following commands will be disabled : " + this.commands.toString(),

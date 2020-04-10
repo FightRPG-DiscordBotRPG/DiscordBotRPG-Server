@@ -156,6 +156,8 @@ class CharacterModule extends GModule {
                 err = Translator.getString(res.locals.lang, "errors", "character_attribute_dont_exist");
             }
 
+
+            await next();
             if (err != null) {
                 return res.json({
                     error: err,
