@@ -146,28 +146,35 @@ class CharacterModule extends GModule {
             );
         });
 
+        // TODO: A fix dans la 1.9
+        // To Fix in 1.9 find why next is sending headers
+        // Seems to be linked to a bad order in middlewares
         this.router.post("/up", async (req, res, next) => {
             let err;
             if (this.authorizedAttributes.indexOf(req.body.attr) !== -1) {
                 let done = await Globals.connectedUsers[res.locals.id].character.upStat(req.body.attr, parseInt(req.body.number));
-                if (done) {
-                    await next();
-                    return res.json({
-                        value: Globals.connectedUsers[res.locals.id].character.stats[this.getToStrShort(req.body.attr)],
-                        pointsLeft: Globals.connectedUsers[res.locals.id].character.statPoints,
-                        lang: res.locals.lang
-                    });
-                } else {
+                if (!done) {
                     err = Translator.getString(res.locals.lang, "errors", "character_you_cant_distribute_this_amount_of_points");
                 }
             } else {
                 err = Translator.getString(res.locals.lang, "errors", "character_attribute_dont_exist");
             }
+
+
             await next();
-            return res.json({
-                error: err,
-                lang: res.locals.lang,
-            });
+            if (err != null) {
+                return res.json({
+                    error: err,
+                    lang: res.locals.lang,
+                });
+            } else {
+                return res.json({
+                    value: Globals.connectedUsers[res.locals.id].character.stats[this.getToStrShort(req.body.attr)],
+                    pointsLeft: await Globals.connectedUsers[res.locals.id].character.getStatPoints(),
+                    lang: res.locals.lang
+                });
+            }
+
         });
 
         this.router.get("/achievements/:page?", async (req, res, next) => {
