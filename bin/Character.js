@@ -58,8 +58,6 @@ class Character extends CharacterEntity {
             this.achievements.load(this.id)
         ]);
 
-        this.statPoints = 5;
-        this.money = 100;
         this.idArea = 1;
 
         this.updateStats();
@@ -81,8 +79,6 @@ class Character extends CharacterEntity {
             this.achievements.load(id)
         ]);
 
-        this.statPoints = res["statPoints"];
-        this.money = res["money"];
         this.idArea = res["idArea"];
 
         res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [id]);
@@ -210,7 +206,7 @@ class Character extends CharacterEntity {
      */
     async upStat(stat, nbr) {
         nbr = parseInt(nbr, 10);
-        if (nbr > 0 && nbr <= this.statPoints) {
+        if (nbr > 0 && nbr <= await this.getStatPoints()) {
             switch (stat) {
                 // Principaux
                 case "str":
@@ -253,11 +249,12 @@ class Character extends CharacterEntity {
                     stat = "luck";
                     break;
             }
-            await this.stats.saveThisStat(stat);
-            // Remove attributes points
 
-            this.statPoints -= nbr;
-            await this.saveStatsPoints();
+            await Promise.all([
+                this.stats.saveThisStat(stat),
+                this.removeStatPoints(nbr)
+            ]);
+
             this.updateStats();
             return true;
         }
@@ -271,8 +268,7 @@ class Character extends CharacterEntity {
         if (await this.doIHaveEnoughMoney(resetValue)) {
             await this.removeMoney(resetValue);
             await this.stats.reset();
-            this.statPoints = this.levelSystem.actualLevel * 5;
-            await this.saveStatsPoints();
+            await this.setStatPoints(this.levelSystem.actualLevel * 5);
             return true;
         }
         return false;
@@ -287,9 +283,10 @@ class Character extends CharacterEntity {
         let startingLevel = this.levelSystem.actualLevel;
         await this.levelSystem.addThisExp(exp);
         if (startingLevel < this.levelSystem.actualLevel) {
-            this.statPoints += 5 * (this.levelSystem.actualLevel - startingLevel);
-            await this.saveStatsPoints();
-            await this.levelSystem.saveMyLevel();
+            await Promise.all([
+                this.addStatPoints(5 * (this.levelSystem.actualLevel - startingLevel)),
+                this.levelSystem.saveMyLevel()
+            ]);
         } else {
             await this.levelSystem.saveMyExp();
         }
@@ -303,6 +300,21 @@ class Character extends CharacterEntity {
     async removeMoney(money) {
         money = money >= 0 ? money : 0;
         await conn.query("UPDATE characters SET money = money - ? WHERE idCharacter = ?;", [money, this.id]);
+    }
+
+    async addStatPoints(statPoints) {
+        statPoints = statPoints >= 0 ? statPoints : 0;
+        await conn.query("UPDATE characters SET statPoints = statPoints + ? WHERE idCharacter = ?;", [statPoints, this.id]);
+    }
+
+    async removeStatPoints(statPoints) {
+        statPoints = statPoints >= 0 ? statPoints : 0;
+        await conn.query("UPDATE characters SET statPoints = statPoints - ? WHERE idCharacter = ?;", [statPoints, this.id]);
+    }
+
+    async setStatPoints(statPoints) {
+        statPoints = statPoints >= 0 ? statPoints : 0;
+        await conn.query("UPDATE characters SET statPoints = ? WHERE idCharacter = ?;", [statPoints, this.id]);
     }
 
     async doIHaveEnoughMoney(money) {
@@ -592,8 +604,7 @@ class Character extends CharacterEntity {
 
     // GetSpecial
     async getStatPoints() {
-        return this.statPoints;
-        //return conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]);
+        return (await conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]))[0].statPoints;
     }
 
     async getHonor() {
@@ -656,19 +667,6 @@ class Character extends CharacterEntity {
     async getIDGuild() {
         let res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [this.id]);
         return res[0] != null ? res[0].idGuild : 0;
-    }
-
-    // Partie Base De Donn�e
-    async saveStatsPoints() {
-        await conn.query("UPDATE characters SET statPoints = ? WHERE idCharacter = ?;", [await this.getStatPoints(), this.id]);
-    }
-
-    async saveMoney() {
-        await conn.query("UPDATE characters SET money = ? WHERE idCharacter = ?;", [await this.getMoney(), this.id]);
-    }
-
-    async saveHonor() {
-        await conn.query("UPDATE charactershonor SET honor = ? WHERE idCharacter = ?"[await this.getHonor(), this.id]);
     }
 
     async toApiSimple() {

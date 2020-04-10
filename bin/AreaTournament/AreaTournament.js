@@ -158,7 +158,8 @@ class AreaTournament {
      * @param {number} idGuild 
      */
     static async enrollGuild(idGuild, idArea) {
-        await conn.query("INSERT INTO conquesttournamentinscriptions VALUES (?, ?);", [idGuild, idArea]);
+        // TODO Fix in 1.9 REPLACE INTO instead of INSERT INTO
+        await conn.query("REPLACE INTO conquesttournamentinscriptions VALUES (?, ?);", [idGuild, idArea]);
     }
 
     /**
