@@ -3,6 +3,8 @@ const Translator = require("../Translator/Translator");
 const WorldBoss = require("./WorldBoss");
 const LootSystem = require("../LootSystem");
 const axios = require("axios").default;
+const LeaderboardWBAttacks = require("../Leaderboards/LeaderboardWBAttacks");
+const LeaderboardWBDamage = require("../Leaderboards/LeaderboardWBDamage");
 
 class WorldBossSpawner {
     async startUp() {
@@ -349,16 +351,6 @@ class WorldBossSpawner {
         return items;
     }
 
-    static async getRankDamage(idCharacter, idSpawnedBoss) {
-        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
-        return res != null && res[0] ? res[0].rank : 1;
-    }
-
-    static async getRankAttackCount(idCharacter, idSpawnedBoss) {
-        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
-        return res != null && res[0] ? res[0].rank : 1;
-    }
-
     /**
      * 
      * @param {Character} character 
@@ -405,12 +397,14 @@ class WorldBossSpawner {
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();
+            let ldDamage = new LeaderboardWBDamage(idCharacter);
+            let ldAttacks = new LeaderboardWBAttacks(idCharacter);
             return {
                 damage: res[0].damage,
                 attackCount: res[0].attackCount,
                 bossName: wb.getName(lang),
-                damageRank: await WorldBossSpawner.getRankDamage(idCharacter, res[0].idSpawnedBoss),
-                attackCountRank: await WorldBossSpawner.getRankAttackCount(idCharacter, res[0].idSpawnedBoss),
+                damageRank: await ldDamage.getPlayerRank(),
+                attackCountRank: await ldAttacks.getPlayerRank(),
             }
         }
         return null;
