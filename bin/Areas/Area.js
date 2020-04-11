@@ -13,6 +13,9 @@ class Area {
         this.image = "";
         this.minLevel = 1;
         this.maxLevel = 1;
+        /**
+         * dungeon, city, wild
+         */
         this.areaType = "";
         this.idRegion = 0;
         //this.nbrPlayers = 0;
@@ -34,6 +37,12 @@ class Area {
         this.services = {};
         this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
         this.requiredAchievements = [];
+
+        // Used to know idAreas from and to
+        this.paths = {
+            to: [],
+            from: []
+        }
     }
 
     async loadArea() {

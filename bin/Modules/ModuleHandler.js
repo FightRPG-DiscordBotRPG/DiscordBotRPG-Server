@@ -43,7 +43,7 @@ class ModuleHandler extends GModule {
             extended: true
         }));
         app.use(express.json());
-        //app.use(compression());
+        app.use(compression());
         app.use("/game", async (req, res, next) => {
             let urlParam1 = req.url.split("/");
             urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;

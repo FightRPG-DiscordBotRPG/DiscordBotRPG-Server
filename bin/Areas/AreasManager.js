@@ -28,10 +28,8 @@ class AreasManager {
 
     async loadAreasManager() {
         await this.loadRegions();
-        await Promise.all([
-            this.loadAreas(),
-            this.loadPaths()
-        ]);
+        await this.loadAreas();
+        await this.loadPaths();
         await this.loadConnectedAreas();
     }
 
@@ -73,13 +71,14 @@ class AreasManager {
     }
 
     async loadPaths() {
+        // TODO rewrite this to go for sure through all areas
         let res = await conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
         for (let area of res) {
-            let paths = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
+            let pathsTo = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
             let node = {};
             let nodeGold = {};
             let nodeAchievements = {};
-            for (let path of paths) {
+            for (let path of pathsTo) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
                 node[path.idArea2] = path.time;
                 nodeGold[path.idArea2] = path.goldPrice + 1;
@@ -90,10 +89,23 @@ class AreasManager {
                 } else {
                     nodeAchievements[path.idArea2] = 1;
                 }
+
+                // Adding id areas to area1 paths (used to know what areas are connected => example for dungeons to know if first floor)
+                this.getArea(area.idArea1).paths.to.push(path.idArea2);
             }
             this.paths.addNode(area.idArea1.toString(), node);
             this.pathsGoldCosts.addNode(area.idArea1.toString(), nodeGold);
             this.pathsAchievementsNeededCost.addNode(area.idArea1.toString(), nodeAchievements)
+
+            // Doing a request to get paths from for areas
+            let pathsFrom = await conn.query("SELECT * FROM areaspaths WHERE idArea2 = ?", [area.idArea1]);
+            for (let path of pathsFrom) {
+                this.getArea(area.idArea1).paths.from.push(path.idArea1);
+            }
+
+            //if (area.idArea1 === 7) {
+            //    console.log(this.getArea(area.idArea1).getEntrance());
+            //}
         }
     }
 

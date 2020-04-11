@@ -8,8 +8,9 @@ const PStatistics = require("../Achievement/PStatistics");
 class FightPvE extends Fight {
 
     /**
-     * @param {Character} entities1 
-     * @param {Monstre} entities2 
+     * @param {Array<Character>} entities1 
+     * @param {Array<Monstre>} entities2 
+     * @param {string} lang
      */
     constructor(entities1, entities2, lang) {
         super(entities1, entities2, lang);
@@ -162,3 +163,6 @@ class FightPvE extends Fight {
 }
 
 module.exports = FightPvE;
+
+const Character = require("../Character");
+const Monstre = require("../Entities/Monster");

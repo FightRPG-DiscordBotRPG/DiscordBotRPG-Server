@@ -13,7 +13,6 @@ const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
 
 class Character extends CharacterEntity {
-
     constructor(idUser) {
         super();
         this._type = "Character";
@@ -26,7 +25,7 @@ class Character extends CharacterEntity {
         this.money = 0;
         this.canFightAt = 0;
         this.idArea = 1;
-        this.area;
+        this.area = new Area();
         this.idGuild = 0;
 
         // Party mechanics
@@ -90,10 +89,31 @@ class Character extends CharacterEntity {
 
     }
 
+    /**    
+     * Loads a lighter version of the character (only stats, and equipements)
+     * USE WITH CAUTION ONLY FOR PVP FIGHTS (Don't use any non loaded components)
+     * @param {number} id
+     */
+    async lightLoad(id) {
+        this.id = id;
+        await Promise.all([
+            this.stats.loadStat(id),
+            this.levelSystem.loadLevelSystem(id),
+            this.equipement.loadEquipements(id),
+        ]);
+
+        this.updateStats();
+    }
+
     async saveArea() {
         await conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
+    /**
+     * 
+     * @param {Area} area
+     * @param {number} waitTime
+     */
     async changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
         let baseTimeToWait = await this.getWaitTimeTravel(waitTime);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");

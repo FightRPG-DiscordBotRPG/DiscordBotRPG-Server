@@ -67,45 +67,33 @@ class FightModule extends GModule {
                 // useless
                 data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_choose_enemy");
             }
-            // Ici on lance le combat si connecté
-            if (Globals.connectedUsers[mId]) {
+
+            if (mId != -1 && await User.exist(mId)) {
                 if (res.locals.id !== mId) {
-                    response = await Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [Globals.connectedUsers[mId].character], res.locals.id, res.locals.lang);
-                    if (response.error != null) {
-                        data.error = response.error;
+                    if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                        let userToAttack = new User(mId);
+                        await userToAttack.lightLoad();
+
+                        let userWhoAttack = new User(res.locals.id);
+                        await userWhoAttack.lightLoad();
+
+                        response = await Globals.fightManager.fightPvP([userWhoAttack.character], [userToAttack.character], res.locals.id, res.locals.lang);
+
+                        if (response.error != null) {
+                            data.error = response.error;
+                        } else {
+                            data = response;
+                        }
                     } else {
-                        data = response;
+                        data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
                     }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
                 }
-
             } else {
-                if (mId != -1 && await User.exist(mId)) {
-                    if (res.locals.id !== mId) {
-                        if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
-                            let notConnectedEnemy = new User(mId);
-                            await notConnectedEnemy.loadUser();
-                            notConnectedEnemy.character.setArea(Globals.areasManager.getArea(notConnectedEnemy.character.idArea));
-
-                            response = await Globals.fightManager.fightPvP([Globals.connectedUsers[res.locals.id].character], [notConnectedEnemy.character], res.locals.id, res.locals.lang);
-
-                            if (response.error != null) {
-                                data.error = response.error;
-                            } else {
-                                data = response;
-                            }
-                        } else {
-                            data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
-                        }
-                    } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
-                    }
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_not_same_area");
-                }
+                // TODO: Should be user don't exist or something
+                data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_not_same_area");
             }
-
 
 
             data.lang = res.locals.lang;

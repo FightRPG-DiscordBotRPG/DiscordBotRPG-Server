@@ -83,6 +83,9 @@ var Globals = {
      * @type {AreasManager}
      */
     "areasManager": {},
+    /**
+     * @type {FightManager}
+     */
     "fightManager": {},
     "lockedMembers": {},
     randomInclusive: (min, max) => {
@@ -192,3 +195,4 @@ module.exports = Globals;
 
 const AreasManager = require("./Areas/AreasManager");
 const User = require("./User");
+const FightManager = require("./FightManager");

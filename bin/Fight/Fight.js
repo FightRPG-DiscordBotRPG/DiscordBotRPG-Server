@@ -19,6 +19,9 @@ class Fight {
         ];
 
         this.initiative = [0, 0];
+        /**
+         * @type {Array<Entity>}
+         **/
         this.initiatives = entities1.concat(entities2);
         this.initiativeIndex = -1;
 
@@ -36,6 +39,7 @@ class Fight {
             xpGained: {},
             goldGained: {},
             usersIds: [],
+            winner: 0
         };
 
         this.loadUsersIds();
@@ -70,20 +74,23 @@ class Fight {
                 } else {
                     this.entitiesStunned.splice(indexOfStun, 1);
                     this.initiativeUpdate();
-
                 }
             }
         }
         return false;
     }
 
-    async init() {
+    async init(resetStats=true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
         for (let i in this.initiatives) {
             this.initiatives.sort((a, b) => {
                 return b.getStat("intellect") - a.getStat("intellect");
             });
             this.initiatives[i].updateStats();
+
+            if (resetStats) {
+                this.initiatives[i].resetFullHp();
+            }
         }
 
         this.initiativeUpdate();
@@ -238,3 +245,5 @@ class Fight {
 }
 
 module.exports = Fight
+
+const Entity = require("../Entities/WorldEntity");

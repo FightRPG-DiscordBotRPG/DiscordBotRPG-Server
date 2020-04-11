@@ -229,6 +229,9 @@ class GModule {
                 if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
                     let canIFightTheMonster = false;
                     let grpEnemies = [];
+                    /** Typing variables like this to get references in visual studio
+                    * @type {Array<Character>}
+                    */
                     let grpCharacters = [];
                     // Used for achievements
                     let grpUsers = [];
@@ -249,12 +252,41 @@ class GModule {
                     } else {
                         grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
                     }
-                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang);
+
+                    // Specific to dungeon
+                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !res.locals.currentArea.isFirstFloor())
+
+                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, shouldHealPlayer);
                     if (response.error) {
                         data.error = response.error;
                     } else {
                         data = response;
                         this.fightAchievement(grpUsers, response.summary);
+
+                        // Travel to entrance if dungeon and loose
+                        if (res.locals.currentArea.areaType === "dungeon") {
+                            /**
+                             * @type {Area}
+                             */
+                            let areaToTravel;
+
+                            // 0 means first group aka users
+                            if (response.summary.winner === 0) {
+                                areaToTravel = res.locals.currentArea.getNextFloorOrExit();
+                            } else {
+                                // They lost, so they go to entrance
+                                areaToTravel = res.locals.currentArea.getEntrance();
+                            }
+
+                            let travelAwaits = [];
+                            for (let character of grpCharacters) {
+                                travelAwaits.push(character.changeArea(areaToTravel, 0));
+                            }
+
+                            await Promise.all(travelAwaits);
+                            data.playersMovedTo = areaToTravel.getName(res.locals.lang);
+                        }
+
                     }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
@@ -524,4 +556,6 @@ class AchievementUnlockStructure {
 
 module.exports = GModule;
 
-const User = require("../User")
+const User = require("../User");
+const Character = require("../Character");
+const Area = require("../Areas/Area");

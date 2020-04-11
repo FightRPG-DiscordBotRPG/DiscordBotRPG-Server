@@ -54,7 +54,7 @@ class AreaTournamentRound {
                 await Promise.all([g1.loadGuild(), g2.loadGuild()]);
 
                 let fight = new Fight([g1], [g2]);
-                await fight.init();
+                await fight.init(true);
                 if (fight.summary.winner == 0) {
                     this.winners.push(guilds[0]);
                     await conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
