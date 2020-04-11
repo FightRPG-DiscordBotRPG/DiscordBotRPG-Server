@@ -544,6 +544,10 @@ class Area {
         return null;
     }
 
+    canTravelTo() {
+        return true;
+    }
+
 }
 
 module.exports = Area;

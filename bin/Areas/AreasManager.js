@@ -20,6 +20,9 @@ class AreasManager {
          * @type {Map<Number, Area>}
          * */
         this.areas = new Map();
+        /**
+         * @type {Array<Region>}
+         **/
         this.regions = {};
         this.paths = new Graph();
         this.pathsGoldCosts = new Graph();
@@ -71,37 +74,58 @@ class AreasManager {
     }
 
     async loadPaths() {
-        // TODO rewrite this to go for sure through all areas
-        let res = await conn.query("SELECT DISTINCT idArea1 FROM areaspaths");
+        let res = await conn.query("SELECT DISTINCT idArea FROM areas");
+
+        // Need to load paths from each areas before doing nodes for path travel system
+
         for (let area of res) {
-            let pathsTo = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea1]);
+            // Adding id areas to area1 paths (used to know what areas are connected => example for dungeons to know if first floor)
+            // Doing a request to get paths from for areas
+            let pathsFrom = await conn.query("SELECT * FROM areaspaths WHERE idArea2 = ?", [area.idArea]);
+            for (let path of pathsFrom) {
+                this.getArea(area.idArea).paths.from.push(path.idArea1);
+            }
+
+            let pathsTo = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea]);
+            for (let path of pathsTo) {
+                this.getArea(area.idArea).paths.to.push(path.idArea2);
+            }
+
+
+        }
+
+        for (let area of res) {
+            let pathsTo = await conn.query("SELECT * FROM areaspaths WHERE idArea1 = ?", [area.idArea]);
             let node = {};
             let nodeGold = {};
             let nodeAchievements = {};
             for (let path of pathsTo) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
-                node[path.idArea2] = path.time;
-                nodeGold[path.idArea2] = path.goldPrice + 1;
+                if (this.getArea(path.idArea2).canTravelTo()) {
+                    node[path.idArea2] = path.time;
+                    nodeGold[path.idArea2] = path.goldPrice + 1;
 
-                let achievementsNeeded = await conn.query("SELECT idAchievement FROM areasrequirements WHERE idArea = ?;", [area.idArea1]);
-                if (achievementsNeeded.length > 0) {
-                    nodeAchievements[path.idArea2] = 2;
+                    let achievementsNeeded = await conn.query("SELECT idAchievement FROM areasrequirements WHERE idArea = ?;", [area.idArea]);
+                    if (achievementsNeeded.length > 0) {
+                        nodeAchievements[path.idArea2] = 2;
+                    } else {
+                        nodeAchievements[path.idArea2] = 1;
+                    }
                 } else {
-                    nodeAchievements[path.idArea2] = 1;
+                    console.log(this.getArea(path.idArea2));
                 }
 
-                // Adding id areas to area1 paths (used to know what areas are connected => example for dungeons to know if first floor)
-                this.getArea(area.idArea1).paths.to.push(path.idArea2);
             }
-            this.paths.addNode(area.idArea1.toString(), node);
-            this.pathsGoldCosts.addNode(area.idArea1.toString(), nodeGold);
-            this.pathsAchievementsNeededCost.addNode(area.idArea1.toString(), nodeAchievements)
 
-            // Doing a request to get paths from for areas
-            let pathsFrom = await conn.query("SELECT * FROM areaspaths WHERE idArea2 = ?", [area.idArea1]);
-            for (let path of pathsFrom) {
-                this.getArea(area.idArea1).paths.from.push(path.idArea1);
-            }
+            // Add it only if you can travel to area (example for not working travel: dungeon that is not first room)
+            //if (this.getArea(area.idArea).canTravelTo()) {
+                this.paths.addNode(area.idArea.toString(), node);
+                this.pathsGoldCosts.addNode(area.idArea.toString(), nodeGold);
+                this.pathsAchievementsNeededCost.addNode(area.idArea.toString(), nodeAchievements);
+            //}
+
+
+
 
             //if (area.idArea1 === 7) {
             //    console.log(this.getArea(area.idArea1).getEntrance());
@@ -114,7 +138,7 @@ class AreasManager {
      * @param {string} from 
      * @param {string} to 
      */
-    async getPathCosts(from, to, lang="en") {
+    async getPathCosts(from, to) {
         let path = this.paths.path(from.toString(), to.toString(), {
             cost: true
         });

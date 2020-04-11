@@ -127,25 +127,29 @@ class TravelModule extends GModule {
                 if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                     data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                 } else {
-                    let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID(), res.locals.lang);
+                    if (areaObjectTravel.canTravelTo()) {
+                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
 
-                    let requiredAchievements = costs.neededAchievements;
-                    let missingAchievements = [];
-                    for (let i in requiredAchievements) {
-                        if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
-                            missingAchievements.push(requiredAchievements[i]);
+                        let requiredAchievements = costs.neededAchievements;
+                        let missingAchievements = [];
+                        for (let i in requiredAchievements) {
+                            if (!await Globals.connectedUsers[res.locals.id].character.getAchievements().hasAchievement(requiredAchievements[i])) {
+                                missingAchievements.push(requiredAchievements[i]);
+                            }
                         }
-                    }
 
-                    if (missingAchievements.length > 0) {
-                        let achievementsNames = [];
-                        for (let i in missingAchievements) {
-                            achievementsNames.push((await Globals.connectedUsers[res.locals.id].character.getAchievements().getSpecificAchievement(missingAchievements[i], res.locals.lang)).nameAchievement);
+                        if (missingAchievements.length > 0) {
+                            let achievementsNames = [];
+                            for (let i in missingAchievements) {
+                                achievementsNames.push((await Globals.connectedUsers[res.locals.id].character.getAchievements().getSpecificAchievement(missingAchievements[i], res.locals.lang)).nameAchievement);
+                            }
+                            data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
+                        } else {
+                            data.costs = costs;
+                            data.areaObjectTravel = areaObjectTravel;
                         }
-                        data.error = Translator.getString(res.locals.lang, "errors", "travel_missing_achievements", [achievementsNames.toString()]);
                     } else {
-                        data.costs = costs;
-                        data.areaObjectTravel = areaObjectTravel;
+                        data.error = Translator.getString(res.locals.lang, "errors", "travel_area_cant_travel");
                     }
                 }
             } else {

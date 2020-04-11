@@ -11,8 +11,18 @@ class DungeonArea extends Area {
     }
 
     isFirstFloor() {
-        if (this.paths.from[0]) {
-            return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
+        if (this.paths.from.length >= 1) {
+            if (this.paths.from.length === 1) {
+                return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
+            } else {
+                let fromArea = Globals.areasManager.getArea(this.paths.from[0]);
+                for (let idArea of this.paths.from) {
+                    fromArea = Globals.areasManager.getArea(idArea)
+                    if (fromArea.constructor !== DungeonArea) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -26,7 +36,22 @@ class DungeonArea extends Area {
     }
 
     getNextFloorOrExit() {
-        return Globals.areasManager.getArea(this.paths.to[0]);
+        if (this.paths.to.length === 1) {
+            return Globals.areasManager.getArea(this.paths.to[0]);
+        } else {
+            let areaToReturn = Globals.areasManager.getArea(this.paths.to[0]);
+            for (let idArea of this.paths.to) {
+                areaToReturn = Globals.areasManager.getArea(idArea)
+                if (areaToReturn.constructor === DungeonArea) {
+                    return areaToReturn;
+                }
+            }
+            return areaToReturn;
+        }
+    }
+
+    canTravelTo() {
+        return this.isFirstFloor();
     }
 }
 
