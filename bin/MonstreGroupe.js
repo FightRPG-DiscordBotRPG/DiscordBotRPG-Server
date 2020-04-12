@@ -41,7 +41,6 @@ class MonstreGroup {
                 needToBeMaxLevel: Globals.monstersIds[listMonster[i].type] > 1 ? true : false,
                 number: listMonster[i].number
             });
-
         }
         this.name = listMonster[indexTo].name;
         this.type = listMonster[indexTo].type;

@@ -1,5 +1,6 @@
 const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
+
 class Fight {
     /**
      * Classe de gestion d'un combat
@@ -20,7 +21,7 @@ class Fight {
 
         this.initiative = [0, 0];
         /**
-         * @type {Array<Entity>}
+         * @type {Array<WorldEntity>}
          **/
         this.initiatives = entities1.concat(entities2);
         this.initiativeIndex = -1;
@@ -88,7 +89,7 @@ class Fight {
             });
             this.initiatives[i].updateStats();
 
-            if (resetStats) {
+            if (resetStats || this.initiatives[i].constructor === Monster) {
                 this.initiatives[i].resetFullHp();
             }
         }
@@ -246,4 +247,5 @@ class Fight {
 
 module.exports = Fight
 
-const Entity = require("../Entities/WorldEntity");
+const Monster = require("../Entities/Monster");
+

@@ -6,6 +6,7 @@
   "description": "",
   "author": "Jean-Charles TECHER",
   "license": "SEE LICENCE IN LICENSE.md",
+  "main": "main.js",
   "scripts": {
     "start": "node main.js && node mainTournaments.js"
   },
