@@ -3,7 +3,6 @@ const Translator = require("../Translator/Translator");
 const Globals = require("../Globals");
 const fs = require("fs");
 const conn = require("../../conf/mysql");
-const Discord = require("discord.js");
 const User = require("../User");
 const Guild = require("../Guild");
 const PStatistics = require("../Achievement/PStatistics");

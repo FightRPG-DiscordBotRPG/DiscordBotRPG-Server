@@ -1,7 +1,6 @@
 'use strict';
 const conn = require("../conf/mysql.js");
 const Character = require("./Character");
-const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");

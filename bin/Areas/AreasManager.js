@@ -4,7 +4,6 @@ const WildArea = require("./WildArea.js");
 const CityArea = require("./CityArea.js");
 const DungeonArea = require("./DungeonArea");
 const Globals = require("../Globals.js");
-const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Graph = require('node-dijkstra');
 const Region = require("./Region");

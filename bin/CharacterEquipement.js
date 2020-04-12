@@ -2,7 +2,6 @@
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Item = require("./Items/Item.js");
-const Discord = require("discord.js");
 const StatsEquipment = require("./Stats/StatsEquipment");
 const Translator = require("./Translator/Translator");
 

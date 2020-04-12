@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");

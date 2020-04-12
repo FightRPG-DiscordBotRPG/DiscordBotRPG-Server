@@ -1,6 +1,5 @@
 const Globals = require("./bin/Globals.js");
 const Translator = require("./bin/Translator/Translator");
-const Discord = require("discord.js");
 const FightManager = require("./bin/FightManager");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
