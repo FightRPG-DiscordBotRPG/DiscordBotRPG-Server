@@ -11,6 +11,7 @@ class Leaderboard {
 
         let maximumRank = await this.getMaximumRank();
         let maxPage = Math.ceil(maximumRank / this.itemsPerPage);
+        let playerRank = await this.getPlayerRank(this.id);
         let offset = 0;
 
         page = page != null ? Number.parseInt(page) : null;
@@ -19,7 +20,7 @@ class Leaderboard {
 
             offset = (page - 1) * this.itemsPerPage;
         } else {
-            let actualRank = await this.getPlayerRank(this.id);
+            let actualRank = playerRank;
 
             offset = actualRank - Math.ceil(this.itemsPerPage / 2);
 
@@ -32,18 +33,20 @@ class Leaderboard {
                 offset -= halfPerPage - (maximumRank - actualRank);
             }
 
-            page = offset % this.itemsPerPage;
         }
 
 
         offset = offset >= 0 ? offset : 0;
 
+        page = offset % this.itemsPerPage;
+
         let res = await this.dbGetLeaderboard(offset);
         let data = {
-            page: page,
+            page: page > 0 ? page : 1,
             maxPage: maxPage,
             rankings: res,
             offset: offset,
+            playerRank: playerRank,
             maximumRank: maximumRank,
             sumOfAll: await this.getSumOfAll(),
         }
@@ -65,8 +68,6 @@ class Leaderboard {
     async getSumOfAll() {
         return 1;
     }
-
-
 
 }
 
