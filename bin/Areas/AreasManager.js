@@ -315,7 +315,7 @@ class AreasManager {
     /**
      * 
      * @param {any} idArea
-     * @returns {Area}
+     * @returns {Area | CityArea | DungeonArea | WildArea}
      */
     getArea(idArea) {
         return this.areas.get(idArea);
