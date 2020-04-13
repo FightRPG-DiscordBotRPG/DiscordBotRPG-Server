@@ -101,17 +101,17 @@ class WorldBosses extends GModule {
             return res.json(data);
         });
 
-        this.router.get("/leaderboard/damage", async (req, res, next) => {
+        this.router.get("/leaderboard/damage/:page?", async (req, res, next) => {
             let ld = new LeaderboardWBDamage(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
         });
 
-        this.router.get("/leaderboard/attacks", async (req, res, next) => {
+        this.router.get("/leaderboard/attacks/:page?", async (req, res, next) => {
             let ld = new LeaderboardWBAttacks(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);

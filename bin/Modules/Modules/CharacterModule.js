@@ -48,9 +48,9 @@ class CharacterModule extends GModule {
     }
 
     loadRoutes() {
-        this.router.get("/leaderboard/arena", async (req, res, next) => {
+        this.router.get("/leaderboard/arena/:page?", async (req, res, next) => {
             let ld = new LeaderboardPvP(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
@@ -58,9 +58,9 @@ class CharacterModule extends GModule {
             )
         });
 
-        this.router.get("/leaderboard/gold", async (req, res, next) => {
+        this.router.get("/leaderboard/gold/:page?", async (req, res, next) => {
             let ld = new LeaderboardGold(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
@@ -68,9 +68,9 @@ class CharacterModule extends GModule {
             )
         });
 
-        this.router.get("/leaderboard/level", async (req, res, next) => {
+        this.router.get("/leaderboard/level/:page?", async (req, res, next) => {
             let ld = new LeaderboardLevel(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
@@ -78,9 +78,9 @@ class CharacterModule extends GModule {
             )
         });
 
-        this.router.get("/leaderboard/craft/level", async (req, res, next) => {
+        this.router.get("/leaderboard/craft/level/:page?", async (req, res, next) => {
             let ld = new LeaderboardCraftLevel(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(

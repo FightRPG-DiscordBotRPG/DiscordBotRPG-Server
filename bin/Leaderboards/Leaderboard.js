@@ -4,24 +4,44 @@ class Leaderboard {
 
     constructor(id) {
         this.id = id;
+        this.itemsPerPage = 11;
     }
 
-    async getPlayerLeaderboard() {
-        let actualRank = await this.getPlayerRank(this.id);
-        let maximumRank = await this.getMaximumRank();
-        let offset = actualRank - 6;
+    async getPlayerLeaderboard(page) {
 
-        if (actualRank <= 5) {
-            offset = 0;
+        let maximumRank = await this.getMaximumRank();
+        let maxPage = Math.ceil(maximumRank / this.itemsPerPage);
+        let offset = 0;
+
+        page = page != null ? Number.parseInt(page) : null;
+        if (Number.isInteger(page) && page > 0) {
+            page = maxPage > 0 && maxPage < page ? maxPage : page;
+
+            offset = (page - 1) * this.itemsPerPage;
+        } else {
+            let actualRank = await this.getPlayerRank(this.id);
+
+            offset = actualRank - Math.ceil(this.itemsPerPage / 2);
+
+            let halfPerPage = Math.floor(this.itemsPerPage / 2)
+
+            if (actualRank <= halfPerPage) {
+                offset = 0;
+            }
+            if (maximumRank - actualRank < halfPerPage) {
+                offset -= halfPerPage - (maximumRank - actualRank);
+            }
+
+            page = offset % this.itemsPerPage;
         }
-        if (maximumRank - actualRank < 5) {
-            offset -= 5 - (maximumRank - actualRank);
-        }
+
 
         offset = offset >= 0 ? offset : 0;
 
         let res = await this.dbGetLeaderboard(offset);
         let data = {
+            page: page,
+            maxPage: maxPage,
             rankings: res,
             offset: offset,
             maximumRank: maximumRank,
