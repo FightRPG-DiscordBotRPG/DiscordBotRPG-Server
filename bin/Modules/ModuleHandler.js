@@ -301,7 +301,12 @@ class ModuleHandler extends GModule {
             if (Globals.connectedUsers[authorIdentifier].isNew) {
                 Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
             } else {
-                Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
+                // Making user moving out of dungeon when connecting
+                let area = Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea);
+                if (area.constructor === DungeonArea) {
+                    area = area.getEntrance();
+                }
+                Globals.connectedUsers[authorIdentifier].character.setArea(area);
             }
 
 
@@ -327,3 +332,5 @@ class ModuleHandler extends GModule {
 }
 
 module.exports = ModuleHandler;
+
+const DungeonArea = require("../Areas/DungeonArea");

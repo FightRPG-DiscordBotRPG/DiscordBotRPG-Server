@@ -123,6 +123,10 @@ class Character extends CharacterEntity {
         PStatistics.incrStat(this.id, "travels", 1);
     }
 
+    /**
+     * 
+     * @param {Area} area
+     */
     setArea(area) {
         this.area = area;
     }
