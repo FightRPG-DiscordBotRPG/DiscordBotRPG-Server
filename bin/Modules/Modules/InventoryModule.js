@@ -248,7 +248,7 @@ class InventoryModule extends GModule {
                     if (res.locals.id !== mId) {
                         userSendMoney = Globals.connectedUsers[res.locals.id];
                         userReceiveMoney = new User(mId);
-                        await userReceiveMoney.loadUser();
+                        await userReceiveMoney.lightLoad();
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "economic_cant_send_money_to_youself");
                     }
