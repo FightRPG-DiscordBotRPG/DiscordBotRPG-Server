@@ -88,12 +88,13 @@ class GModule {
     reactHandler() {
         this.router.use((req, res, next) => {
             if (this.isActive == true || this.devMode == true) {
-                if (Globals.lockedMembers[res.locals.id] == true) {
+                if (Globals.lockedMembers[res.locals.id] == true && !Globals.connectedUsers[res.locals.id].canBeUnstuck()) {
                     return res.json({
                         error: Translator.getString(res.locals.lang, "errors", "already_doing_something_command")
                     })
                 } else {
                     Globals.lockedMembers[res.locals.id] = true;
+                    Globals.connectedUsers[res.locals.id].lastCommandTime = Date.now();
                     next();
                 }
                 //next();
@@ -107,9 +108,7 @@ class GModule {
 
     freeLockedMembers() {
         this.router.use((req, res) => {
-            if (Globals.lockedMembers[res.locals.id] == true) {
-                Globals.lockedMembers[res.locals.id] = false;
-            }
+            Globals.lockedMembers[res.locals.id] = false;
         })
     }
 

@@ -17,6 +17,7 @@ class User {
         this.avatar = avatar != null ? avatar : "";
         this.username = username; //username.replace(/[\u0800-\uFFFF]/g, '');
         this.isNew = false;
+        this.lastCommandTime = Date.now();
 
         this.preferences = {
             lang: "en",
@@ -254,6 +255,10 @@ class User {
 
         };
         return infos;
+    }
+
+    canBeUnstuck() {
+        return Date.now() - this.lastCommandTime >= 5000;
     }
 
 
