@@ -9,6 +9,7 @@ const PStatistics = require("../Achievement/PStatistics");
 const path = require('path');
 const conf = require("../../conf/conf");
 const versions = require("../../conf/versions");
+const TournamentViewer = require("../Helper/TournamentViewer");
 const express = require("express"),
     app = express(),
     port = 8880,
@@ -109,6 +110,11 @@ class ModuleHandler extends GModule {
         });
         helpersRouter.get("/versions", async (req, res) => {
             res.send(versions);
+        });
+        helpersRouter.get("/areas/tournaments", async (req, res) => {
+            let urlParts = url.parse(req.url, true);
+            let parameters = urlParts.query;
+            res.send(await (new TournamentViewer()).toHtml(parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en" ));
         });
         app.use("/helpers", helpersRouter);
     }

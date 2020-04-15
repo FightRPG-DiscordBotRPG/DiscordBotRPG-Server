@@ -193,6 +193,8 @@ var Globals = {
 
 module.exports = Globals;
 
-const AreasManager = require("./Areas/AreasManager");
-const User = require("./User");
-const FightManager = require("./FightManager");
+/**
+ * @typedef {import("./Areas/AreasManager")} AreasManager
+ * @typedef {import("./User")} User
+ * @typedef {import("./FightManager")} FightManager
+ **/

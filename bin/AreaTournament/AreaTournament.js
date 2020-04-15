@@ -18,6 +18,7 @@ class AreaTournament {
         this.isStarted = false;
         this.actualRound = 0;
         this.maxRounds = 0;
+        this.date = null;
     }
 
     async init() {
@@ -45,6 +46,7 @@ class AreaTournament {
         if (res && res.nextTournament != null) {
             date.setTime(res.nextTournament);
         }
+        date = new Date(Date.now() + 20000);
         return date;
     }
 
@@ -68,6 +70,7 @@ class AreaTournament {
      */
     async startTournament() {
         this.isStarted = true;
+        this.date = Date.now();
         let inscriptions = await conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idArea = ?", [this.idArea]);
         if (inscriptions.length == 0) {
             console.log("Area : " + this.idArea + ", No guilds registered, mission abort ! ");
@@ -80,6 +83,9 @@ class AreaTournament {
         for (let inscription of inscriptions) {
             this.areasGuildsIncriptions.push(inscription.idGuild);
         }
+        // Sort here just one time to be real tournamenet like system
+        this.areasGuildsIncriptions.sort(() => Math.random() - 0.5);
+
         this.calculMaxRounds();
         this.actualRound = 1;
 
@@ -128,7 +134,7 @@ class AreaTournament {
             this.actualRound++;
             await conn.query("UPDATE conquesttournamentinfo SET actualRound = ? WHERE idArea = ?;", [this.actualRound, this.idArea]);
             this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.rounds[this.actualRound - 1].winners, this.idArea);
-            this.rounds[this.actualRound].init();
+            await this.rounds[this.actualRound].init();
             await this.doFights();
         }
         //console.log("Tournament Finished for area : " + this.idArea + " Winner is : " + this.rounds[this.actualRound].winners[0].name);
@@ -208,9 +214,15 @@ class AreaTournament {
         await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
         console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
 
+        await this.saveToFile();
         await this.resetTournament();
         await this.scheduleTournament();
         await this.resetInscriptions();
+    }
+
+    async saveToFile() {
+        const fs = require("fs").promises;
+        await fs.writeFile("F:\\FightRPG Tournament Datas\\" + this.idArea + ".json", JSON.stringify(this));
     }
 
 
@@ -218,5 +230,4 @@ class AreaTournament {
 
 module.exports = AreaTournament;
 
-// Prevent cyclic bullshit from nodejs
 const Area = require("../Areas/Area");
