@@ -16,7 +16,7 @@ class TournamentViewer {
                         <link href='https://cdn.fight-rpg.com/css/tournament.css' rel='stylesheet' type='text/css'>
                         <link rel="icon" href="https://cdn.fight-rpg.com/images/frpg_favicon.ico" />
                         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-                        <script src='https://cdn.fight-rpg.com/js/tournament.js?v=1'></script>
+                        <script src='https://cdn.fight-rpg.com/js/tournament.js?v=2'></script>
 
 
                         <title>FightRPG - Tournaments</title>
@@ -25,16 +25,22 @@ class TournamentViewer {
                     <body>
                         <header class="hero">
                             <div class="hero-wrap">
-                                <p class="intro" id="intro">Fight RPG</p>
-                                <h1 id="headline">Tournament</h1>
-                                <p class="year"><i class="fa fa-star"></i><span id='date'>00/00/0000</span> <i class="fa fa-star"></i></p>
-                                <p id="area">Lyrial Dead End</p>
-                                <p>Participants: <span id='participants'>0</span></p>
+                                <div class="flex-container flex-space">
+                                    <p class="intro" id="intro">Fight RPG</p>
+                                    <h1 id="headline">Tournament</h1>
+                                    <p class="year"><i class="fa fa-star"></i><span id='date'>00/00/0000</span> <i class="fa fa-star"></i>
+                                    </p>
+                                </div>
+                                <div class="flex-container flex-space">
+                                    <p id="area">Lyrial Dead End</p>
+                                    <p>Participants: <span id='participants'>0</span></p>
+                                </div>
+
                                 <div class='flex-container'>
                                     <button class='button-menu' onclick="showHtmlList()">Main menu</button>
                                     <button class='button-menu' onclick="reload()">Refresh</button>
                                 </div>
-                            </div>
+                            </div>  
                         </header>   
                         <p id='areaslist'>
                             ${Array.from(Globals.areasManager.areas.keys()).join(",")}
