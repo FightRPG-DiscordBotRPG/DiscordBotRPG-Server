@@ -125,7 +125,7 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
-            } else if (params.power != null && params.power >= 0) {
+            } else if (params.power != null && params.power > 0) {
                 more += "power <= ?"
                 moreValue = params.power;
             }
@@ -167,7 +167,7 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
-            } else if (params.power != null && params.power >= 0) {
+            } else if (params.power != null && params.power > 0) {
                 more += "power <= ?"
                 moreValue = params.power;
             }
@@ -179,6 +179,8 @@ class CharacterInventory {
 
         }
         let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
+        console.log(params);
+
         value = value[0]["value"];
         return { value: value, isFiltered: moreValue != null };
     }
@@ -210,7 +212,7 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
-            } else if (params.power != null && params.power >= 0) {
+            } else if (params.power != null && params.power > 0) {
                 more += "power <= ?"
                 moreValue = params.power;
             }
@@ -272,7 +274,7 @@ class CharacterInventory {
             } else if (params.type != null && params.type > 0) {
                 more += "idType = ?";
                 moreValue = params.type;
-            } else if (params.power != null && params.power >= 0) {
+            } else if (params.power != null && params.power > 0) {
                 more += "power <= ?"
                 moreValue = params.power;
             }
