@@ -1,9 +1,7 @@
-const axios = require('axios');
-const conn = require("../../conf/mysql");
 const Globals = require("../Globals");
 
 class TournamentViewer {
-    toHtml(lang = "en") {
+    toHtml() {
         return `<head>
                         <meta charset="utf-8">
                         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
