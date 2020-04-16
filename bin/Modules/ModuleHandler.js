@@ -114,7 +114,7 @@ class ModuleHandler extends GModule {
         helpersRouter.get("/areas/tournaments", async (req, res) => {
             let urlParts = url.parse(req.url, true);
             let parameters = urlParts.query;
-            res.send(await (new TournamentViewer()).toHtml(parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en" ));
+            res.send(new TournamentViewer().toHtml(parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en" ));
         });
         app.use("/helpers", helpersRouter);
     }
