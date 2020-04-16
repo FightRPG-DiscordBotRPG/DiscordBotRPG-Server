@@ -125,6 +125,16 @@ class Area {
 
     }
 
+    async lightLoad() {
+        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
+        res = res[0];
+        this.idRegion = res["idRegion"];
+        this.image = res["AreaImage"];
+        this.areaType = res["NomAreaType"];
+        this.minLevel = res["minLevel"];
+        this.maxLevel = res["maxLevel"];
+    }
+
     getMonstersToApiLight(lang) {
         let monsters = [];
         for (let i in this.monsters) {
