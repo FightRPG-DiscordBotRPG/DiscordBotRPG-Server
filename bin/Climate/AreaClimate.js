@@ -1,6 +1,7 @@
 const conn = require("../../conf/mysql");
 const Weather = require("./Weather");
 const Climate = require("./Climate");
+const Globals = require("../Globals");
 
 class AreaClimate {
     constructor(id) {
@@ -14,6 +15,7 @@ class AreaClimate {
         */
         this.currentWeather = null;
         this.intensity = 1;
+        this.dateNextWeatherChange = new Date();
     }
 
     async load() {
@@ -23,6 +25,21 @@ class AreaClimate {
         this.intensity = res.intensity / 100;
 
         await Promise.all([this.climate.load(), this.currentWeather.load()]);
+        this.scheduleNextWeatherChange();
+    }
+
+    changeWeather() {
+        this.weather = this.climate.getRandomWeather();
+        conn.query("UPDATE areasclimates SET currentWeather = ? WHERE idArea = ?;", [this.weather.id, this.id]);
+        //if (this.weather.shorthand != "sunny") {
+        //    console.log(this.weather.shorthand);
+        //}
+    }
+
+    scheduleNextWeatherChange() {
+        let delay = (Math.random() * (Globals.weather.maxBeforeChange - Globals.weather.minBeforeChange) + Globals.weather.minBeforeChange) * 60000;
+        setTimeout(() => this.changeWeather(), delay);
+        this.dateNextWeatherChange = new Date(Date.now() + delay);
     }
 
 }

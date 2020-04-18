@@ -118,9 +118,9 @@ class AreasManager {
 
             // Add it only if you can travel to area (example for not working travel: dungeon that is not first room)
             //if (this.getArea(area.idArea).canTravelTo()) {
-                this.paths.addNode(area.idArea.toString(), node);
-                this.pathsGoldCosts.addNode(area.idArea.toString(), nodeGold);
-                this.pathsAchievementsNeededCost.addNode(area.idArea.toString(), nodeAchievements);
+            this.paths.addNode(area.idArea.toString(), node);
+            this.pathsGoldCosts.addNode(area.idArea.toString(), nodeGold);
+            this.pathsAchievementsNeededCost.addNode(area.idArea.toString(), nodeAchievements);
             //}
 
 
@@ -161,11 +161,32 @@ class AreasManager {
             }
         }
 
+        let timeToWait = path.cost;
+        let timeChangeDueToWeather = { climatesChanges: [], totalTimeAddedDueToWeather: 0 };
+
+        for (let index in path.path) {
+            index = parseInt(index);
+
+            if (path.path[index + 1] != null) {
+                let area = this.getArea(parseInt(path.path[index]));
+
+                let pathTemp = this.paths.path(path.path[index], path.path[index + 1], { cost: true });
+
+                let costChange = (pathTemp.cost / area.areaClimate.currentWeather.travelSpeed) - pathTemp.cost;
+
+                timeChangeDueToWeather.climatesChanges[area.areaClimate.currentWeather.shorthand] = timeChangeDueToWeather.climatesChanges[area.areaClimate.currentWeather.shorthand] != null ? timeChangeDueToWeather.climatesChanges[area.areaClimate.currentWeather.shorthand] + costChange : costChange;
+                timeChangeDueToWeather.totalTimeAddedDueToWeather += costChange;
+            }
+        }
+
+        timeToWait += timeChangeDueToWeather.totalTimeAddedDueToWeather;
+
         let toReturn = {
-            timeToWait: path.cost,
+            timeToWait: timeToWait,
+            timeChangeDueToWeather: timeChangeDueToWeather,
             goldPrice: pathGold.cost - (pathGold.path.length - 1),
-            neededAchievements: await achievementsNeeded
-}
+            neededAchievements: achievementsNeeded
+        }
 
         return toReturn;
     }

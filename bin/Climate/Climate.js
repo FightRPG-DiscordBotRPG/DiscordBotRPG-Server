@@ -19,11 +19,29 @@ class Climate {
             let newWeather = new Weather(item.idWeather);
             await newWeather.load();
 
-            this.possibleWeathers[newWeather.id] = new ClimateWeather(newWeather, item.probability);
+            this.possibleWeathers[newWeather.id] = new ClimateWeather(newWeather, item.probability / 100);
         }
 
         this.shorthand = (await conn.query("SELECT * FROM climates WHERE idClimate = ?;", [this.id]))[0].shorthand;
 
+    }
+
+    /**
+     * Get random weather based on probability of this weather occuring
+     */
+    getRandomWeather() {
+        let rand = Math.random();
+        /**
+         *  @type {ClimateWeather}
+         */
+        let cWeather;
+        for (cWeather of Object.values(this.possibleWeathers)) {
+            if (cWeather.probability >= rand) {
+                return cWeather.weather;
+            } else {
+                rand -= cWeather.probability;
+            }
+        }
     }
 
 }
@@ -33,7 +51,7 @@ class ClimateWeather {
     /**
      * 
      * @param {Weather} weather
-     * @param {number} probability
+     * @param {number} probability (0 >= x < 1)
      */
     constructor(weather, probability) {
         this.weather = weather;

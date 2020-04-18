@@ -16,7 +16,7 @@ COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`Weathers` (
   `idWeather` INT() UNSIGNED NOT NULL AUTO_INCREMENT,
-  `shothand` VARCHAR(45) NOT NULL DEFAULT 'none',
+  `shorthand` VARCHAR(45) NOT NULL DEFAULT 'none',
   `travelSpeed` INT() UNSIGNED NOT NULL DEFAULT 100,
   `collectSpeed` INT() UNSIGNED NOT NULL DEFAULT 100,
   `collectChances` INT() UNSIGNED NOT NULL DEFAULT 100,
