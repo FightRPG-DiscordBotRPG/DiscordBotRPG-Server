@@ -3,10 +3,10 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 ALTER TABLE `discord_bot_rpg`.`statsrepartition` 
-CHANGE COLUMN `percentage` `percentage` INT(10) UNSIGNED NOT NULL DEFAULT 0 ;
+CHANGE COLUMN `percentage` `percentage` INT() UNSIGNED NOT NULL DEFAULT 0 ;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`Climates` (
-  `idClimate` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idClimate` INT() UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(45) NOT NULL DEFAULT 'none',
   PRIMARY KEY (`idClimate`),
   UNIQUE INDEX `idClimate_UNIQUE` (`idClimate` ASC) VISIBLE)
@@ -15,11 +15,11 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`Weathers` (
-  `idWeather` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idWeather` INT() UNSIGNED NOT NULL AUTO_INCREMENT,
   `shothand` VARCHAR(45) NOT NULL DEFAULT 'none',
-  `travelSpeed` INT(10) UNSIGNED NOT NULL DEFAULT 100,
-  `collectSpeed` INT(10) UNSIGNED NOT NULL DEFAULT 100,
-  `collectChances` INT(10) UNSIGNED NOT NULL DEFAULT 100,
+  `travelSpeed` INT() UNSIGNED NOT NULL DEFAULT 100,
+  `collectSpeed` INT() UNSIGNED NOT NULL DEFAULT 100,
+  `collectChances` INT() UNSIGNED NOT NULL DEFAULT 100,
   PRIMARY KEY (`idWeather`),
   UNIQUE INDEX `idWeather_UNIQUE` (`idWeather` ASC) VISIBLE)
 ENGINE = InnoDB
@@ -27,9 +27,9 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`climatesweathers` (
-  `idClimate` INT(10) UNSIGNED NOT NULL,
-  `idWeather` INT(10) UNSIGNED NOT NULL,
-  `probability` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+  `idClimate` INT() UNSIGNED NOT NULL,
+  `idWeather` INT() UNSIGNED NOT NULL,
+  `probability` INT() UNSIGNED NOT NULL DEFAULT 1,
   PRIMARY KEY (`idClimate`, `idWeather`),
   INDEX `fk_ClimatesWeathers_Weathers1_idx` (`idWeather` ASC) VISIBLE,
   CONSTRAINT `fk_ClimatesWeathers_Climates1`
@@ -47,10 +47,10 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`AreasClimates` (
-  `idArea` INT(10) UNSIGNED NOT NULL,
-  `idClimate` INT(10) UNSIGNED NOT NULL,
-  `currentWeather` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-  `intensity` INT(10) UNSIGNED NOT NULL DEFAULT 100,
+  `idArea` INT() UNSIGNED NOT NULL,
+  `idClimate` INT() UNSIGNED NOT NULL,
+  `currentWeather` INT() UNSIGNED NOT NULL DEFAULT 1,
+  `intensity` INT() UNSIGNED NOT NULL DEFAULT 100,
   PRIMARY KEY (`idArea`),
   UNIQUE INDEX `Areas_idArea_UNIQUE` (`idArea` ASC) VISIBLE,
   INDEX `fk_AreasClimates_Climates1_idx` (`idClimate` ASC) VISIBLE,
