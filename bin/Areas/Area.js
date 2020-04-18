@@ -5,6 +5,7 @@ const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 const AreaBonus = require("./AreaBonus");
 const WorldBoss = require("../WorldBosses/WorldBoss");
+const AreaClimate = require("../Climate/AreaClimate");
 
 class Area {
 
@@ -43,6 +44,9 @@ class Area {
             to: [],
             from: []
         }
+
+        // Climate System
+        this.areaClimate = new AreaClimate(this.id);
     }
 
     async loadArea() {
@@ -122,6 +126,8 @@ class Area {
         for (let i in res) {
             this.requiredAchievements.push(res[i].idAchievement);
         }
+
+        await this.areaClimate.load();
 
     }
 
