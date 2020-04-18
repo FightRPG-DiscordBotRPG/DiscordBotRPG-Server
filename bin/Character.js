@@ -447,7 +447,35 @@ class Character extends CharacterEntity {
     async craft(craft) {
         let gotAllItems = true;
         if (craft.id > 0) {
-            gotAllItems = (await conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id]))[0][0].doesPlayerHaveEnoughMats;
+            gotAllItems = (await conn.query(`SELECT 
+                                                IF((SELECT 
+                                                            COUNT(*)
+                                                        FROM
+                                                            charactersinventory
+                                                                INNER JOIN
+                                                            items ON items.idItem = charactersinventory.idItem
+                                                        WHERE
+                                                            charactersinventory.idCharacter = ?
+                                                                AND items.idBaseItem IN (SELECT 
+                                                                    craftitemsneeded.NeededItem
+                                                                FROM
+                                                                    craftitemsneeded
+                                                                WHERE
+                                                                    craftitemsneeded.IdCraftItem = ?)
+                                                                AND charactersinventory.number >= (SELECT 
+                                                                    craftitemsneeded.number
+                                                                FROM
+                                                                    craftitemsneeded
+                                                                WHERE
+                                                                    craftitemsneeded.IdCraftItem = ?
+                                                                        AND craftitemsneeded.NeededItem = items.idBaseItem)) = (SELECT 
+                                                            COUNT(*)
+                                                        FROM
+                                                            craftitemsneeded
+                                                        WHERE
+                                                            craftitemsneeded.IdCraftItem = ?),
+                                                    'true',
+                                                    'false') AS doesPlayerHaveEnoughMats;`, [this.id, craft.id, craft.id, craft.id]))[0][0].doesPlayerHaveEnoughMats;
             if (gotAllItems == "true") {
                 let promises = [];
                 // Since it's idItem i can promise all without worrying if the right item is deleted
