@@ -11,6 +11,7 @@ const LootSystem = require("./LootSystem.js");
 const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
+const Mount = require("./Items/Mounts/Mount");
 
 class Character extends CharacterEntity {
     constructor(idUser) {
@@ -112,10 +113,14 @@ class Character extends CharacterEntity {
     /**
      * 
      * @param {Area} area
-     * @param {number} waitTime
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
      */
-    async changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
-        let baseTimeToWait = await this.getWaitTimeTravel(waitTime);
+    async changeArea(area, costObject) {
+        let baseTimeToWait = costObject;
+        if (!Number.isInteger(costObject)) {
+            baseTimeToWait = await this.getWaitTimeTravel(costObject);
+        }
+         
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + baseTimeToWait);
         this.area = area;
@@ -640,10 +645,24 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
 
-    async getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
+    /**
+     * 
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
+     */
+    async getWaitTimeTravel(costObject) {
+        let waitTime = costObject.timeToWait;
+        /**
+         *  @type {Mount}
+         */
         let mount = await this.getEquipement().getItemByTypeName("mount");
-        let multiplier = mount != null ? mount.getTravelReductionModifier() : 1;
-        let baseTimeToWait = Math.floor((waitTime * multiplier)) * 1000;
+        let baseTimeToWait = waitTime;
+        if (mount != null) {
+            for (let climate in costObject.timeChangeDueToWeather.climatesChanges) {
+                let timeAdded = costObject.timeChangeDueToWeather.climatesChanges[climate];
+                timeAdded = Math.round(mount.getTravelReductionModifier(climate) * timeAdded);
+                baseTimeToWait -= timeAdded;
+            }
+        }
         return baseTimeToWait;
     }
 

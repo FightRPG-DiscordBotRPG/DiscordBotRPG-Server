@@ -161,7 +161,7 @@ class TravelModule extends GModule {
     }
 
     async getDataTravelCosts(req, res, costs, areaObjectTravel) {
-        let realWaitTime = (await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs.timeToWait)) / 1000;
+        let realWaitTime = await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs);
         return {
             from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
             to_name: areaObjectTravel.getName(res.locals.lang),
@@ -176,7 +176,7 @@ class TravelModule extends GModule {
             let wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
 
             await Promise.all([
-                Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs.timeToWait),
+                Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs),
                 Globals.connectedUsers[res.locals.id].character.removeMoney(costs.goldPrice)
             ]);
 

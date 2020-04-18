@@ -76,7 +76,7 @@ COLLATE = utf8mb4_unicode_ci;
 
 REPLACE INTO `discord_bot_rpg`.`climates` VALUES
 (1, "temperate_oceanic"),
-(2, "fire_cap"),
+(2, "volcanic_hell"),
 (3, "hot_desert"),
 (4, "eternal_snow"),
 (5, "interior");
@@ -86,7 +86,7 @@ REPLACE INTO `discord_bot_rpg`.`weathers` VALUES
 (1, "sunny", 100, 100, 100),
 (2, "cloudy", 100, 90, 100),
 (3, "foggy", 75, 75, 75),
-(4, "rain", 85, 85, 100),
+(4, "rainy", 85, 85, 100),
 (5, "rainstorm", 60, 80, 100),
 (6, "snowy", 70, 85, 100),
 (7, "firestorm", 10, 10, 150),

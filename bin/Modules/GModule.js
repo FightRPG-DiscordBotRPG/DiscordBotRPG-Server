@@ -279,7 +279,7 @@ class GModule {
 
                             let travelAwaits = [];
                             for (let character of grpCharacters) {
-                                travelAwaits.push(character.changeArea(areaToTravel, 0));
+                                travelAwaits.push(character.changeArea(areaToTravel));
                             }
 
                             await Promise.all(travelAwaits);

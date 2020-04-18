@@ -73,6 +73,11 @@ class Translator {
         }
     }
 
+    /**
+     * 
+     * @param {string} lang
+     * @returns {Intl.NumberFormat}
+     */
     static getFormater(lang = "en") {
         return this.formaters[lang];
     }
