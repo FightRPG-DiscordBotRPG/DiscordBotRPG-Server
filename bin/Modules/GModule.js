@@ -297,6 +297,7 @@ class GModule {
         } else {
             data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
         }
+        data.lang = res.locals.lang;
         return data;
     }
 
