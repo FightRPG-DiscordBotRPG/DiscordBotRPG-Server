@@ -31,6 +31,7 @@ class AreaClimate {
     changeWeather() {
         this.currentWeather = this.climate.getRandomWeather();
         conn.query("UPDATE areasclimates SET currentWeather = ? WHERE idArea = ?;", [this.currentWeather.id, this.id]);
+        this.scheduleNextWeatherChange();
         //if (this.weather.shorthand != "sunny") {
         //    console.log(this.weather.shorthand);
         //}
@@ -38,8 +39,8 @@ class AreaClimate {
 
     scheduleNextWeatherChange() {
         let delay = (Math.random() * (Globals.weather.maxBeforeChange - Globals.weather.minBeforeChange) + Globals.weather.minBeforeChange) * 60000;
-        setTimeout(() => this.changeWeather(), delay);
         this.dateNextWeatherChange = new Date(Date.now() + delay);
+        setTimeout(() => this.changeWeather(), delay);
     }
 
 }
