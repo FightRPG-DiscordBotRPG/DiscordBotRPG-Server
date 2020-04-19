@@ -480,7 +480,7 @@ class Character extends CharacterEntity {
                                                         WHERE
                                                             craftitemsneeded.IdCraftItem = ?),
                                                     'true',
-                                                    'false') AS doesPlayerHaveEnoughMats;`, [this.id, craft.id, craft.id, craft.id]))[0][0].doesPlayerHaveEnoughMats;
+                                                    'false') AS doesPlayerHaveEnoughMats;`, [this.id, craft.id, craft.id, craft.id]))[0].doesPlayerHaveEnoughMats;
             if (gotAllItems == "true") {
                 let promises = [];
                 // Since it's idItem i can promise all without worrying if the right item is deleted
