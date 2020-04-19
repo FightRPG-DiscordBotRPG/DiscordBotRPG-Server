@@ -29,7 +29,7 @@ class AreaClimate {
     }
 
     changeWeather() {
-        this.weather = this.climate.getRandomWeather();
+        this.currentWeather = this.climate.getRandomWeather();
         conn.query("UPDATE areasclimates SET currentWeather = ? WHERE idArea = ?;", [this.weather.id, this.id]);
         //if (this.weather.shorthand != "sunny") {
         //    console.log(this.weather.shorthand);
