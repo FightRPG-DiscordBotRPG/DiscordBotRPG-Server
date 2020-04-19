@@ -365,14 +365,6 @@ class AreasManager {
         return areas;
     }
 
-    async toApiThisAreaFull(idArea) {
-        if (this.areas.get(idArea)) {
-            let area = this.areas.get(idArea);
-            return await area.toApiFull();
-        }
-        return null;
-    }
-
 
 }
 
