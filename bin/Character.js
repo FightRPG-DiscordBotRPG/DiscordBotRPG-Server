@@ -111,7 +111,7 @@ class Character extends CharacterEntity {
     }
 
     /**
-     * 
+     * Time to wait as seconds
      * @param {Area} area
      * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
      */
@@ -122,7 +122,7 @@ class Character extends CharacterEntity {
         }
          
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + baseTimeToWait);
+        this.setWaitTime(Date.now() + (baseTimeToWait * 1000));
         this.area = area;
         await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
@@ -630,7 +630,7 @@ class Character extends CharacterEntity {
 
     getWaitTimeResource(rarity = 1) {
         let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
-        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2);
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed ;
     }
 
     getWaitTimeFight(more = 0) {
@@ -647,7 +647,7 @@ class Character extends CharacterEntity {
 
     /**
      * 
-     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesTotalTravelTime: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
      */
     async getWaitTimeTravel(costObject) {
         let waitTime = costObject.timeToWait;
@@ -657,9 +657,8 @@ class Character extends CharacterEntity {
         let mount = await this.getEquipement().getItemByTypeName("mount");
         let baseTimeToWait = waitTime;
         if (mount != null) {
-            for (let climate in costObject.timeChangeDueToWeather.climatesChanges) {
-                let timeAdded = costObject.timeChangeDueToWeather.climatesChanges[climate];
-                timeAdded = Math.round(mount.getTravelReductionModifier(climate) * timeAdded);
+            for (let climate in costObject.timeChangeDueToWeather.climatesTotalTravelTime) {
+                let timeAdded = Math.round((1 -mount.getTravelReductionModifier(climate)) * costObject.timeChangeDueToWeather.climatesTotalTravelTime[climate]);
                 baseTimeToWait -= timeAdded;
             }
         }

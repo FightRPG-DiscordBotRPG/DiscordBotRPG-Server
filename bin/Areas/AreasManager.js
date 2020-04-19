@@ -162,7 +162,7 @@ class AreasManager {
         }
 
         let timeToWait = path.cost;
-        let timeChangeDueToWeather = { climatesChanges: [], weathersChanges: [], totalTimeAddedDueToWeather: 0 };
+        let timeChangeDueToWeather = { climatesTotalTravelTime: [], weathersChanges: [], totalTimeAddedDueToWeather: 0 };
 
         for (let index in path.path) {
             index = parseInt(index);
@@ -173,9 +173,10 @@ class AreasManager {
                 let pathTemp = this.paths.path(path.path[index], path.path[index + 1], { cost: true });
 
                 let costChange = (pathTemp.cost / area.areaClimate.currentWeather.travelSpeed) - pathTemp.cost;
+                let totalCostForThisAreaTravel = pathTemp.cost + costChange;
 
                 timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] = timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] != null ? timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] + costChange : costChange;
-                timeChangeDueToWeather.climatesChanges[area.areaClimate.climate.shorthand] = timeChangeDueToWeather.climatesChanges[area.areaClimate.climate.shorthand] != null ? timeChangeDueToWeather.climatesChanges[area.areaClimate.climate.shorthand] + costChange : costChange;
+                timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] = timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] != null ? timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] + totalCostForThisAreaTravel : totalCostForThisAreaTravel;
                 timeChangeDueToWeather.totalTimeAddedDueToWeather += costChange;
             }
         }
