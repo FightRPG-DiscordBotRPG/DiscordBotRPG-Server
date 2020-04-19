@@ -70,9 +70,9 @@ var Globals = {
         "membersPerLevels": 5,
         "maxApplies": 5,
     },
-    "addr": "http://azz-tech.no-ip.org:8080/",
-    "help": {
-        "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
+    "weather": {
+        "minBeforeChange": 10,
+        "maxBeforeChange" : 110,
     },
     /**
      * @type {Array<User>}

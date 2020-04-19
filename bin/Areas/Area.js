@@ -5,6 +5,7 @@ const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 const AreaBonus = require("./AreaBonus");
 const WorldBoss = require("../WorldBosses/WorldBoss");
+const AreaClimate = require("../Climate/AreaClimate");
 
 class Area {
 
@@ -43,6 +44,9 @@ class Area {
             to: [],
             from: []
         }
+
+        // Climate System
+        this.areaClimate = new AreaClimate(this.id);
     }
 
     async loadArea() {
@@ -123,6 +127,8 @@ class Area {
             this.requiredAchievements.push(res[i].idAchievement);
         }
 
+        await this.areaClimate.load();
+
     }
 
     async lightLoad() {
@@ -143,6 +149,7 @@ class Area {
             monsters.push({
                 name: this.monsters[i].getName(lang),
                 type: Translator.getString(lang, "monsters_types", this.monsters[i].type),
+                type_shorthand: this.monsters[i].type,
                 level: level,
                 number: this.monsters[i].numberOfMonsters,
             });
@@ -164,6 +171,7 @@ class Area {
                 id: i + 1,
                 name: Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem),
                 rarity: Translator.getString(lang, "rarities", this.resources[i]["nomRarity"]),
+                rarity_shorthand: this.resources[i]["nomRarity"],
             }
 
             switch (this.resources[i]["nomSousType"]) {
@@ -503,11 +511,9 @@ class Area {
         }
     }
 
-    toApiFull() {
-        return this;
-    }
-
     async toApi(lang) {
+        let minimumQuality = await this.getMinItemQuality();
+        let maximumQuality = await this.getMaxItemQuality();
         return {
             name: this.getName(lang),
             levels: this.minMaxLevelToString(),
@@ -516,9 +522,13 @@ class Area {
             haveOwner: await this.haveOwner(),
             image: this.image,
             desc: this.getDesc(lang),
-            minimum_quality: Translator.getString(lang, "rarities", await this.getMinItemQuality()),
+            minimum_quality: Translator.getString(lang, "rarities", minimumQuality),
+            minimum_quality_shorthand: minimumQuality,
+            maximum_quality: Translator.getString(lang, "rarities", maximumQuality),
+            maximum_quality_shorthand: maximumQuality,
             monsters: this.getMonstersToApiLight(lang),
             resources: this.getResourcesApiLight(lang),
+            climate: this.areaClimate
         }
     }
 

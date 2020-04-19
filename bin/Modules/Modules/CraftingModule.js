@@ -141,7 +141,7 @@ class CraftingModule extends GModule {
                         let collectBonuses = await res.locals.currentArea.getAllBonuses();
                         Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity);
                         idToCollect = await Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity);
+                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather);
                         data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [Globals.collectTriesOnce]) + "\n";
                         if (numberItemsCollected > 0) {
                             if (idToCollect) {

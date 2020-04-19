@@ -118,9 +118,9 @@ class AreasManager {
 
             // Add it only if you can travel to area (example for not working travel: dungeon that is not first room)
             //if (this.getArea(area.idArea).canTravelTo()) {
-                this.paths.addNode(area.idArea.toString(), node);
-                this.pathsGoldCosts.addNode(area.idArea.toString(), nodeGold);
-                this.pathsAchievementsNeededCost.addNode(area.idArea.toString(), nodeAchievements);
+            this.paths.addNode(area.idArea.toString(), node);
+            this.pathsGoldCosts.addNode(area.idArea.toString(), nodeGold);
+            this.pathsAchievementsNeededCost.addNode(area.idArea.toString(), nodeAchievements);
             //}
 
 
@@ -161,11 +161,34 @@ class AreasManager {
             }
         }
 
+        let timeToWait = path.cost;
+        let timeChangeDueToWeather = { climatesTotalTravelTime: [], weathersChanges: [], totalTimeAddedDueToWeather: 0 };
+
+        for (let index in path.path) {
+            index = parseInt(index);
+
+            if (path.path[index + 1] != null) {
+                let area = this.getArea(parseInt(path.path[index]));
+
+                let pathTemp = this.paths.path(path.path[index], path.path[index + 1], { cost: true });
+
+                let costChange = (pathTemp.cost / area.areaClimate.currentWeather.travelSpeed) - pathTemp.cost;
+                let totalCostForThisAreaTravel = pathTemp.cost + costChange;
+
+                timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] = timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] != null ? timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] + costChange : costChange;
+                timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] = timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] != null ? timeChangeDueToWeather.climatesTotalTravelTime[area.areaClimate.climate.shorthand] + totalCostForThisAreaTravel : totalCostForThisAreaTravel;
+                timeChangeDueToWeather.totalTimeAddedDueToWeather += costChange;
+            }
+        }
+
+        timeToWait += timeChangeDueToWeather.totalTimeAddedDueToWeather;
+
         let toReturn = {
-            timeToWait: path.cost,
+            timeToWait: timeToWait,
+            timeChangeDueToWeather: timeChangeDueToWeather,
             goldPrice: pathGold.cost - (pathGold.path.length - 1),
-            neededAchievements: await achievementsNeeded
-}
+            neededAchievements: achievementsNeeded
+        }
 
         return toReturn;
     }
@@ -340,14 +363,6 @@ class AreasManager {
             }
         }
         return areas;
-    }
-
-    async toApiThisAreaFull(idArea) {
-        if (this.areas.get(idArea)) {
-            let area = this.areas.get(idArea);
-            return await area.toApiFull();
-        }
-        return null;
     }
 
 

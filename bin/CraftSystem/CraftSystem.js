@@ -1,4 +1,5 @@
 const Globals = require("../Globals");
+const Weather = require("../Climate/Weather");
 
 class CraftSystem {
 
@@ -20,7 +21,13 @@ class CraftSystem {
         return xp;
     }
 
-    static haveCollectItem(intellect, collectRarity) {
+    /**
+     * 
+     * @param {number} intellect
+     * @param {number} collectRarity
+     * @param {Weather} weather
+     */
+    static haveCollectItem(intellect, collectRarity, weather) {
         let chance = Math.random();
         let luckModifier = intellect / (Globals.maxLevel * 6) + 1;
         //console.log(chance);
@@ -43,15 +50,17 @@ class CraftSystem {
                 chanceToGet = Globals.collectChances.legendaire;
                 break;
         }
+
+        chanceToGet *= weather.collectChances;
         //console.log(chance + " < " + chanceToGet * luckModifier);
         return chanceToGet * luckModifier > chance;
 
     }
 
-    static getNumberOfItemsCollected(intellect, collectRarity) {
+    static getNumberOfItemsCollected(intellect, collectRarity, weather, collectTries = Globals.collectTriesOnce) {
         let totalCollected = 0;
-        for (let i = 0; i < Globals.collectTriesOnce; i++) {
-            if (this.haveCollectItem(intellect, collectRarity)) {
+        for (let i = 0; i < collectTries; i++) {
+            if (this.haveCollectItem(intellect, collectRarity, weather)) {
                 totalCollected++;
             }
         }

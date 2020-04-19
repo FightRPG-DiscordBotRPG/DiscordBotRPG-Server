@@ -19,10 +19,10 @@ class Mount extends Item {
          * Lower than one means is faster
          */
         this.climateModifiers = {
-            "tempered": 1,
-            "desert": 1,
-            "hills": 1,
-            "snowy": 1,
+            "temperate_oceanic": 1,
+            "fire_cap": 1,
+            "hot_desert": 1,
+            "eternal_snow": 1,
         }
     }
 
@@ -104,7 +104,7 @@ class Mount extends Item {
             for (let i in inversedPropertiesObject) {
                 if (i != everythingElseID) {
                     for (let climate of inversedPropertiesObject[i]) {
-                        desc += " • " + Translator.getString(lang, "mounts", climate, [this.getClimateReduction(climate)]) + "\n";
+                        desc += " • " + Translator.getString(lang, "climates", climate) + ": " +  Translator.getFormater(lang).format(this.getClimateReduction(climate)) + "%\n";
                     }
                 }
             }
