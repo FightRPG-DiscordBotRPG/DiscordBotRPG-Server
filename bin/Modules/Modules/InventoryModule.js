@@ -104,20 +104,7 @@ class InventoryModule extends GModule {
 
         this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
-            let params = {
-                rarity: 0,
-                type: 0,
-                level: 0
-            }
-            if (req.query.idRarity != null) {
-                params.rarity = parseInt(req.query.idRarity);
-            } else if (req.query.idType != null) {
-                params.type = parseInt(req.query.idType);
-            } else if (req.query.level != null) {
-                params.level = parseInt(req.query.level);
-            } else if (req.query.power != null) {
-                params.power = parseInt(req.query.power)
-            }
+            let params = this.getSearchParams(req);
 
             let invPage = parseInt(req.params.page, 10);
             if (invPage == null || invPage != null && !Number.isInteger(invPage)) {
@@ -333,22 +320,8 @@ class InventoryModule extends GModule {
     async commonSellChecks(req, res) {
         let data = {};
         data.lang = res.locals.lang;
-        let params = {
-            rarity: 0,
-            type: 0,
-            level: 0,
-            power: 0,
-        }
+        let params = this.getSearchParams(req);
 
-        if (req.body.idRarity != null) {
-            params.rarity = parseInt(req.body.idRarity);
-        } else if (req.body.idType != null) {
-            params.type = parseInt(req.body.idType);
-        } else if (req.body.level != null) {
-            params.level = parseInt(req.body.level);
-        } else if (req.body.power != null) {
-            params.power = parseInt(req.body.power);
-        }
 
         if (!Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
             data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");

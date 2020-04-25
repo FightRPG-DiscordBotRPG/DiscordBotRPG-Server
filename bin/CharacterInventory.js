@@ -114,28 +114,11 @@ class CharacterInventory {
 
         let more = "";
         let sqlParams = [this.id];
-        if (params != null) {
-            let moreValue = null;
-            if (params.rarity != null && params.rarity > 0) {
-                more += "idRarity = ?";
-                moreValue = params.rarity;
-            } else if (params.level != null && params.level > 0) {
-                more += "level = ?";
-                moreValue = params.level;
-            } else if (params.type != null && params.type > 0) {
-                more += "idType = ?";
-                moreValue = params.type;
-            } else if (params.power != null && params.power > 0) {
-                more += "power <= ?"
-                moreValue = params.power;
-            }
 
-
-            if (moreValue != null) {
-                more = "AND " + more;
-                sqlParams.push(moreValue);
-            }
-
+        let searchParamsResult = Globals.getSearchParams(params, false, true);
+        if (searchParamsResult.values.length > 0) {
+            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            more = searchParamsResult.sqlQuery;
         }
 
         // Only way to do
@@ -157,27 +140,13 @@ class CharacterInventory {
         let more = "";
         let moreValue = null;
         let sqlParams = [this.id];
-        if (params != null) {
-            if (params.rarity != null && params.rarity > 0) {
-                more += "idRarity = ?";
-                moreValue = params.rarity;
-            } else if (params.level != null && params.level > 0) {
-                more += "level = ?";
-                moreValue = params.level;
-            } else if (params.type != null && params.type > 0) {
-                more += "idType = ?";
-                moreValue = params.type;
-            } else if (params.power != null && params.power > 0) {
-                more += "power <= ?"
-                moreValue = params.power;
-            }
 
-            if (moreValue != null) {
-                more = "AND " + more;
-                sqlParams.push(moreValue);
-            }
-
+        let searchParamsResult = Globals.getSearchParams(params, false, true);
+        if (searchParamsResult.values.length > 0) {
+            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            more = searchParamsResult.sqlQuery;
         }
+
         let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
 
         value = value[0]["value"];
@@ -189,7 +158,7 @@ class CharacterInventory {
     /**
      * 
      * @param {*} page 
-     * @param {{rarity: Number, type: Number, level: Number}} params 
+     * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
      */
     async getAllItemsAtThisPage(page, params) {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
@@ -200,27 +169,11 @@ class CharacterInventory {
         let more = "";
         let offset = (page - 1) * perPage;
         let sqlParams = [this.id, perPage, offset];
-        if (params != null) {
-            let moreValue = null;
-            if (params.rarity != null && params.rarity > 0) {
-                more += "idRarity = ?";
-                moreValue = params.rarity;
-            } else if (params.level != null && params.level > 0) {
-                more += "level = ?";
-                moreValue = params.level;
-            } else if (params.type != null && params.type > 0) {
-                more += "idType = ?";
-                moreValue = params.type;
-            } else if (params.power != null && params.power > 0) {
-                more += "power <= ?"
-                moreValue = params.power;
-            }
 
-            if (moreValue != null) {
-                more = "WHERE " + more;
-                sqlParams.splice(1, 0, moreValue);
-            }
-
+        let searchParamsResult = Globals.getSearchParams(params);
+        if (searchParamsResult.values.length > 0) {
+            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            more = searchParamsResult.sqlQuery;
         }
 
         let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
@@ -242,7 +195,7 @@ class CharacterInventory {
      * 
      * @param {*} page 
      * @param {*} lang 
-     * @param {{rarity: Number,type: Number,level: Number}} params
+     * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
      */
     async toApi(page, lang, params) {
         let res = await this.getAllItemsAtThisPage(page, params);
@@ -262,27 +215,11 @@ class CharacterInventory {
     async getNumberOfItem(params) {
         let sqlParams = [this.id];
         let more = "";
-        if (params != null) {
-            let moreValue = null;
-            if (params.rarity != null && params.rarity > 0) {
-                more += "idRarity = ?";
-                moreValue = params.rarity;
-            } else if (params.level != null && params.level > 0) {
-                more += "level = ?";
-                moreValue = params.level;
-            } else if (params.type != null && params.type > 0) {
-                more += "idType = ?";
-                moreValue = params.type;
-            } else if (params.power != null && params.power > 0) {
-                more += "power <= ?"
-                moreValue = params.power;
-            }
 
-            if (moreValue != null) {
-                more = "AND " + more;
-                sqlParams.push(moreValue);
-            }
-
+        let searchParamsResult = Globals.getSearchParams(params, false, true);
+        if (searchParamsResult.values.length > 0) {
+            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            more = searchParamsResult.sqlQuery;
         }
         let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? " + more + ";", sqlParams);
         return res[0] != null ? res[0].cnt : 0;

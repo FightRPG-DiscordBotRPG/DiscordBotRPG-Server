@@ -30,11 +30,23 @@ class Character extends CharacterEntity {
         this.idGuild = 0;
 
         // Party mechanics
+        /**
+        * @type {Group}
+        */
         this.pendingPartyInvite = null;
+        /**
+         * @type {Group}
+         */
         this.group = null;
 
         // Trade mechanic
+        /**
+         * @type {Trade}
+         */
         this.pendingTradeInvite = null;
+        /**
+         * @type {Trade}
+         */
         this.trade = null;
     }
 
@@ -120,7 +132,7 @@ class Character extends CharacterEntity {
         if (!Number.isInteger(costObject)) {
             baseTimeToWait = await this.getWaitTimeTravel(costObject);
         }
-         
+
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + (baseTimeToWait * 1000));
         this.area = area;
@@ -630,7 +642,7 @@ class Character extends CharacterEntity {
 
     getWaitTimeResource(rarity = 1) {
         let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
-        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed ;
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed;
     }
 
     getWaitTimeFight(more = 0) {
@@ -658,7 +670,7 @@ class Character extends CharacterEntity {
         let baseTimeToWait = waitTime;
         if (mount != null) {
             for (let climate in costObject.timeChangeDueToWeather.climatesTotalTravelTime) {
-                let timeAdded = Math.round((1 -mount.getTravelReductionModifier(climate)) * costObject.timeChangeDueToWeather.climatesTotalTravelTime[climate]);
+                let timeAdded = Math.round((1 - mount.getTravelReductionModifier(climate)) * costObject.timeChangeDueToWeather.climatesTotalTravelTime[climate]);
                 baseTimeToWait -= timeAdded;
             }
         }
@@ -780,3 +792,8 @@ class Character extends CharacterEntity {
 module.exports = Character;
 
 const Area = require("./Areas/Area");
+
+/**
+ * @typedef {import("./Trades/Trade")} Trade
+ * @typedef {import("./Group")} Group
+ **/

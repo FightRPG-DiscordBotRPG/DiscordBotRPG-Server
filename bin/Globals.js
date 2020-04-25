@@ -72,7 +72,7 @@ var Globals = {
     },
     "weather": {
         "minBeforeChange": 10,
-        "maxBeforeChange" : 110,
+        "maxBeforeChange": 110,
     },
     /**
      * @type {Array<User>}
@@ -187,6 +187,41 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
+    },
+    getSearchParams: (params, withWhere = true, withAndBefore = false) => {
+        let values = [];
+        let more = "";
+
+        if (params != null) {
+            let equivalent = {
+                "rarity": { name: "idRarity", sign: "=" },
+                "type": { name: "idType", sign: "=" },
+                "level": { name: "level", sign: "=" },
+                "power": { name: "power", sign: "<=" }
+            };
+
+            for (let param of Object.keys(params)) {
+                if (params[param] != null && params[param] > 0 && equivalent[param] != null) {
+                    if (more.length > 0) {
+                        more += " AND ";
+                    }
+
+                    more += `${equivalent[param].name} ${equivalent[param].sign} ?`;
+
+                    values.push(params[param]);
+                }
+            }
+
+            if (values.length > 0) {
+                if (withWhere) {
+                    more = "WHERE " + more;
+                } else if (withAndBefore) {
+                    more = "AND " + more;
+                }
+            }
+        }
+
+        return { sqlQuery: more, values: values };
     }
 }
 

@@ -6,6 +6,9 @@ const AreaTournament = require("../AreaTournament/AreaTournament");
 const AreaBonus = require("./AreaBonus");
 const WorldBoss = require("../WorldBosses/WorldBoss");
 const AreaClimate = require("../Climate/AreaClimate");
+const Marketplace = require("../Marketplace/Marketplace");
+const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
+const Shop = require("../Shops/Shop");
 
 class Area {
 
@@ -391,7 +394,7 @@ class Area {
     /**
      * 
      * @param {string} serviceName 
-     * @returns {Object} Service
+     * @returns {Marketplace | Shop | CraftingBuilding} Service
      */
     getService(serviceName) {
         return this.services[serviceName];
