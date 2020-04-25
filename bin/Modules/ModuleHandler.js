@@ -62,7 +62,7 @@ class ModuleHandler extends GModule {
                     next();
                 } else {
                     await this.connectUser(res.locals.id);
-                    next();
+                    await next();
                 }
             } else {
                 return res.status(403).json({
