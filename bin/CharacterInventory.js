@@ -110,44 +110,44 @@ class CharacterInventory {
     /**
      * Delete all objects from inventory
      */
-    async deleteAllFromInventory(params) {
+    async deleteAllFromInventory(params, lang="en") {
 
         let more = "";
-        let sqlParams = [this.id];
+        let sqlParams = [this.id, lang];
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
         if (searchParamsResult.values.length > 0) {
-            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            sqlParams = sqlParams.slice(0, 2).concat(searchParamsResult.values.concat(sqlParams.slice(2)))
             more = searchParamsResult.sqlQuery;
         }
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + more + ";", sqlParams);
         let ids = [];
         for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
         // Delete from inventory
-        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = ci.idItem WHERE idCharacter = ? AND favorite = 0 " + more + ";", sqlParams);
+        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = ci.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + more + ";", sqlParams);
 
         // Delete items
         await Item.deleteItems(ids);
     }
 
-    async getAllInventoryValue(params) {
+    async getAllInventoryValue(params, lang="en") {
         let more = "";
         let moreValue = null;
-        let sqlParams = [this.id];
+        let sqlParams = [this.id, lang];
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
         if (searchParamsResult.values.length > 0) {
-            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            sqlParams = sqlParams.slice(0, 2).concat(searchParamsResult.values.concat(sqlParams.slice(2)))
             more = searchParamsResult.sqlQuery;
         }
 
-        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? AND items.favorite = 0 " + more + ";", sqlParams);
+        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 AND lang = ? " + more + ";", sqlParams);
 
         value = value[0]["value"];
         return { value: value, isFiltered: moreValue != null };
@@ -160,23 +160,23 @@ class CharacterInventory {
      * @param {*} page 
      * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
      */
-    async getAllItemsAtThisPage(page, params) {
+    async getAllItemsAtThisPage(page, params, lang="en") {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
-        let maxPage = Math.ceil(await this.getNumberOfItem(params) / perPage);
+        let maxPage = Math.ceil(await this.getNumberOfItem(params, lang) / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let items = {};
         let more = "";
         let offset = (page - 1) * perPage;
-        let sqlParams = [this.id, perPage, offset];
+        let sqlParams = [this.id, lang, perPage, offset];
 
         let searchParamsResult = Globals.getSearchParams(params);
         if (searchParamsResult.values.length > 0) {
-            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            sqlParams = sqlParams.slice(0, 2).concat(searchParamsResult.values.concat(sqlParams.slice(2)))
             more = searchParamsResult.sqlQuery;
         }
 
-        let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
+        let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, localizationitems.nameItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
 
         for (let i in res) {
             let item = await Item.newItem(res[i].idItem, res[i].nomSousType);
@@ -198,7 +198,7 @@ class CharacterInventory {
      * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
      */
     async toApi(page, lang, params) {
-        let res = await this.getAllItemsAtThisPage(page, params);
+        let res = await this.getAllItemsAtThisPage(page, params, lang);
         for (let item in res.items) {
             res.items[item] = await res.items[item].toApiLight(lang);
         }
@@ -212,16 +212,16 @@ class CharacterInventory {
         return await this.getNumberOfItem() == 0;
     }
 
-    async getNumberOfItem(params) {
-        let sqlParams = [this.id];
+    async getNumberOfItem(params, lang="en") {
+        let sqlParams = [this.id, lang];
         let more = "";
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
         if (searchParamsResult.values.length > 0) {
-            sqlParams = sqlParams.slice(0, 1).concat(searchParamsResult.values.concat(sqlParams.slice(1)))
+            sqlParams = sqlParams.slice(0, 2).concat(searchParamsResult.values.concat(sqlParams.slice(2)))
             more = searchParamsResult.sqlQuery;
         }
-        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem WHERE idCharacter = ? " + more + ";", sqlParams);
+        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? " + more + ";", sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
 

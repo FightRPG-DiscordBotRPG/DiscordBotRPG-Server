@@ -194,19 +194,25 @@ var Globals = {
 
         if (params != null) {
             let equivalent = {
-                "rarity": { name: "idRarity", sign: "=" },
-                "type": { name: "idType", sign: "=" },
-                "level": { name: "level", sign: "=" },
-                "power": { name: "power", sign: "<=" }
+                "rarity": { name: "idRarity", sign: "=", isString:false},
+                "type": { name: "idType", sign: "=", isString:false},
+                "level": { name: "level", sign: "=", isString:false},
+                "power": { name: "power", sign: "<=", isString:false },
+                "name": {name: "nameItem", sign: "LIKE", isString:true}
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && params[param] > 0 && equivalent[param] != null) {
+                if (params[param] != null && equivalent[param] != null && (params[param] > 0 || equivalent[param].isString) ) {
                     if (more.length > 0) {
                         more += " AND ";
                     }
 
                     more += `${equivalent[param].name} ${equivalent[param].sign} ?`;
+
+                    if (equivalent[param].isString) {
+                        params[param] = `%${params[param]}%`;
+                    }
+
 
                     values.push(params[param]);
                 }

@@ -178,7 +178,7 @@ class InventoryModule extends GModule {
             let data = await this.commonSellChecks(req, res);
 
             if (!data.error) {
-                let allSelled = await Globals.connectedUsers[res.locals.id].character.sellAllInventory(data.params);
+                let allSelled = await Globals.connectedUsers[res.locals.id].character.sellAllInventory(data.params, data.lang);
                 if (allSelled > 0) {
                     data.success = Translator.getString(res.locals.lang, "economic", "sell_all_for_x", [allSelled]);
                 } else {
@@ -193,7 +193,7 @@ class InventoryModule extends GModule {
         this.router.post("/sellall/value", async (req, res, next) => {
             let data = await this.commonSellChecks(req, res);
             if (!data.error) {
-                let sellData = await Globals.connectedUsers[res.locals.id].character.getInv().getAllInventoryValue(data.params);
+                let sellData = await Globals.connectedUsers[res.locals.id].character.getInv().getAllInventoryValue(data.params, data.lang);
                 data.value = sellData.value;
                 data.isFiltered = sellData.isFiltered;
             }

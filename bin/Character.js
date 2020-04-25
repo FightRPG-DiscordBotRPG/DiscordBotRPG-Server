@@ -421,10 +421,10 @@ class Character extends CharacterEntity {
         return value;
     }
 
-    async sellAllInventory(params) {
-        let value = await (await this.getInv().getAllInventoryValue(params)).value;
+    async sellAllInventory(params, lang="en") {
+        let value = await (await this.getInv().getAllInventoryValue(params, lang)).value;
         await Promise.all([
-            this.getInv().deleteAllFromInventory(params),
+            this.getInv().deleteAllFromInventory(params, lang),
             this.addMoney(value)
         ]);
         PStatistics.incrStat(this.id, "gold_sell", value);
