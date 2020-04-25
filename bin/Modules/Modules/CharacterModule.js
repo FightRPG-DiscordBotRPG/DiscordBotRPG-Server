@@ -124,6 +124,7 @@ class CharacterModule extends GModule {
                 err = "InvalidUsername (No username entered)";
             }
 
+            await next();
             return err != null ? res.json({ error: err }) : res.json({ done: true });
         });
 
