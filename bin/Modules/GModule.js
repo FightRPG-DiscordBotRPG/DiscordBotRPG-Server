@@ -442,7 +442,7 @@ class GModule {
                     "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
                     "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
                     "craft <idCraft>": Translator.getString(lang, "help_panel", "craft"),
-                    "collect <idResource>": Translator.getString(lang, "help_panel", "collect"),
+                    "collect <idResource> <number>": Translator.getString(lang, "help_panel", "collect", [Globals.collectTriesOnce]),
                 }
 
                 commands[Translator.getString(lang, "help_panel", "shop_title")] = {

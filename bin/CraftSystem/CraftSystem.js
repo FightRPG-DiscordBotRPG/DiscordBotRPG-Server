@@ -58,6 +58,9 @@ class CraftSystem {
     }
 
     static getNumberOfItemsCollected(intellect, collectRarity, weather, collectTries = Globals.collectTriesOnce) {
+        if (collectTries <= 0 || collectTries > Globals.collectTriesOnce || isNaN(collectTries)) {
+            collectTries = 1;
+        }
         let totalCollected = 0;
         for (let i = 0; i < collectTries; i++) {
             if (this.haveCollectItem(intellect, collectRarity, weather)) {

@@ -622,8 +622,8 @@ class Character extends CharacterEntity {
         return waitTime;
     }
 
-    waitForNextResource(rarity = 1) {
-        let baseTimeToWait = this.getWaitTimeResource(rarity);
+    waitForNextResource(rarity = 1, number = Globals.collectTriesOnce) {
+        let baseTimeToWait = this.getWaitTimeResource(rarity, number);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
@@ -640,8 +640,8 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
     }
 
-    getWaitTimeResource(rarity = 1) {
-        let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
+    getWaitTimeResource(rarity = 1, number = Globals.collectTriesOnce) {
+        let waitTime = number * Globals.basicWaitTimeCollectTravel;
         return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed;
     }
 
