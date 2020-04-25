@@ -367,7 +367,7 @@ class GModule {
                     "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                     "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                     "sellall": Translator.getString(lang, "help_panel", "sellall"),
-                    "sellall <filter> <filterValue>": Translator.getString(lang, "help_panel", "sellall_filter"),
+                    "sellall <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "sellall_filter"),
                     "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
                 }
 
@@ -432,8 +432,7 @@ class GModule {
                     "mkplace <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
                     "mkcancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
                     "mkbuy <idItem>": Translator.getString(lang, "help_panel", "mkbuy"),
-                    "mksearch \"<itemName>\" <level> <page>": Translator.getString(lang, "help_panel", "mksearch"),
-                    "mkshow <page>": Translator.getString(lang, "help_panel", "mkshow"),
+                    "mkshow/mksearch <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch"),
                     "mksee <idItem>": Translator.getString(lang, "help_panel", "mksee"),
                 }
                 break;
