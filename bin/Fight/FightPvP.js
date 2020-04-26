@@ -2,6 +2,11 @@ const Fight = require("./Fight");
 
 class FightPvP extends Fight {
 
+    constructor(entities1, entities2, lang) {
+        super(entities1, entities2, lang);
+        this.summary.type = "pvp";
+    }
+
     async getAvgHonorTeam(idTeam) {
         let avg = 0;
         for (let i in this.entities[idTeam]) {

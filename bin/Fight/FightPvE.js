@@ -14,6 +14,7 @@ class FightPvE extends Fight {
      */
     constructor(entities1, entities2, lang) {
         super(entities1, entities2, lang);
+        this.summary.type = "pve";
     }
 
 

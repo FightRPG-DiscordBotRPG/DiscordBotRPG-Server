@@ -31,6 +31,7 @@ class Fight {
         this.winnerGroup = 0;
 
         this.summary = {
+            type: "generic",
             rounds: [],
             drops: [],
             xp: 0,
