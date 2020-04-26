@@ -125,9 +125,9 @@ class Character extends CharacterEntity {
     /**
      * Time to wait as seconds
      * @param {Area} area
-     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>} | number} costObject
      */
-    async changeArea(area, costObject) {
+    async changeArea(area, costObject=0) {
         let baseTimeToWait = costObject;
         if (!Number.isInteger(costObject)) {
             baseTimeToWait = await this.getWaitTimeTravel(costObject);
