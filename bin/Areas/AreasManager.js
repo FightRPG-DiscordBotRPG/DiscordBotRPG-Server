@@ -162,7 +162,8 @@ class AreasManager {
         }
 
         let timeToWait = path.cost;
-        let timeChangeDueToWeather = { climatesTotalTravelTime: [], weathersChanges: [], totalTimeAddedDueToWeather: 0 };
+        let timeChangeDueToWeather = {
+            climatesTotalTravelTime: {}, weathersChanges: {}, totalTimeAddedDueToWeather: 0 };
 
         for (let index in path.path) {
             index = parseInt(index);

@@ -60,6 +60,7 @@ class TravelModule extends GModule {
 
         this.router.get("/info/:idArea?", async (req, res, next) => {
             let data = await this.sharedAreaTests(req, res, false);
+
             if (!data.error) {
                 data = await this.getDataTravelCosts(req, res, data.costs, data.areaObjectTravel);
             }
