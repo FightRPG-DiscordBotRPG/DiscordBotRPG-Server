@@ -89,7 +89,7 @@ REPLACE INTO `discord_bot_rpg`.`weathers` VALUES
 (4, "rainy", 85, 85, 100),
 (5, "rainstorm", 60, 80, 100),
 (6, "snowy", 70, 85, 100),
-(7, "firestorm", 10, 10, 150),
+(7, "firestorm", 25,5, 150),
 (8, "sandstorm", 30, 25, 70),
 (9, "snowstorm", 30, 70, 25);
 
