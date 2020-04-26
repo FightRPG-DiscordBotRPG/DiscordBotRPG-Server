@@ -1,6 +1,7 @@
 const Globals = require("../Globals");
-const Weather = require("../Climate/Weather");
-
+/** 
+ * @typedef { import("../Climate/Weather") } Weather
+ */
 class CraftSystem {
 
     static getXP(craftLevel, playerCraftlevel, rarity, collect) {
