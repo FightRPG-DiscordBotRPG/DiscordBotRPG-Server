@@ -387,6 +387,7 @@ class GModule {
                     "areaupbonus <bonus_identifier> <pts_to_allocate>": Translator.getString(lang, "help_panel", "areaupbonus"),
                     "travel <areaID>": Translator.getString(lang, "help_panel", "travel"),
                     "travelregion <regionID>": Translator.getString(lang, "help_panel", "travelregion"),
+                    "traveldirect <realAreaID>": Translator.getString(lang, "help_panel", "traveldirect"),
                 }
                 break;
             case 4:

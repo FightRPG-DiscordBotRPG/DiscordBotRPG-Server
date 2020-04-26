@@ -16,6 +16,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
+const Area = require("../../Areas/Area");
 
 
 class TravelModule extends GModule {
@@ -82,6 +83,7 @@ class TravelModule extends GModule {
 
         this.router.get("/inforegion/:idArea?", async (req, res, next) => {
             let data = await this.sharedAreaTests(req, res, true);
+
             if (!data.error) {
                 data = await this.getDataTravelCosts(req, res, data.costs, data.areaObjectTravel);
             }
@@ -114,15 +116,44 @@ class TravelModule extends GModule {
 
     }
 
+    /**
+     * 
+     * @param {any} req
+     * @param {any} res
+     * @param {boolean} isForRegion
+     */
     async sharedAreaTests(req, res, isForRegion) {
         let data = {};
         let wantedAreaToTravel = parseInt(req.params.idArea, 10);
-        wantedAreaToTravel = isNaN(wantedAreaToTravel) ? parseInt(req.body.idArea, 10) :wantedAreaToTravel;
-        let doesAreaExist = isForRegion ? Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel) : Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+        wantedAreaToTravel = isNaN(wantedAreaToTravel) ? parseInt(req.body.idArea, 10) : wantedAreaToTravel;
+        let isRealId = req.query.isRealId ? req.query.isRealId : req.body.isRealId;
+        let doesAreaExist = false;
+        if (isRealId) {
+            doesAreaExist = Globals.areasManager.exist(wantedAreaToTravel);
+        } else {
+            if (isForRegion) {
+                doesAreaExist = Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+            } else {
+                doesAreaExist = Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+            }
+        }
 
         if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
             if (doesAreaExist) {
-                let areaObjectTravel = isForRegion ? Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel) : Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                /**
+                 * @type {Area}
+                 */
+                let areaObjectTravel;
+                if (isRealId) {
+                    areaObjectTravel = Globals.areasManager.getArea(wantedAreaToTravel);
+                } else {
+                    if (isForRegion) {
+                        areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    } else {
+                        areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                    }
+                }
+
                 if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                     data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                 } else {
@@ -170,10 +201,17 @@ class TravelModule extends GModule {
         };
     }
 
+    /**
+     * 
+     * @param {any} req
+     * @param {any} res
+     * @param {any} costs
+     * @param {Area} areaObjectTravel
+     */
     async travelAndGetData(req, res, costs, areaObjectTravel) {
         let data = {};
         if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(costs.goldPrice)) {
-            let wantedAreaToTravel = Globals.areasManager.getArea(areaObjectTravel.getID());
+            let wantedAreaToTravel = areaObjectTravel;
 
             await Promise.all([
                 Globals.connectedUsers[res.locals.id].character.changeArea(wantedAreaToTravel, costs),
