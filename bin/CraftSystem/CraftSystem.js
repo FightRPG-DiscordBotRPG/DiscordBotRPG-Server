@@ -57,6 +57,13 @@ class CraftSystem {
 
     }
 
+    /**
+     * 
+     * @param {number} intellect
+     * @param {number} collectRarity
+     * @param {Weather} weather
+     * @param {number} collectTries
+     */
     static getNumberOfItemsCollected(intellect, collectRarity, weather, collectTries = Globals.collectTriesOnce) {
         if (collectTries <= 0 || collectTries > Globals.collectTriesOnce || isNaN(collectTries)) {
             collectTries = 1;
