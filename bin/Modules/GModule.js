@@ -285,10 +285,16 @@ class GModule {
                             let travelAwaits = [];
                             for (let character of grpCharacters) {
                                 travelAwaits.push(character.changeArea(areaToTravel, 0));
+                                if (areaToTravel.areaType != "dungeon") {
+                                    character.resetFullHp();
+                                }
                             }
 
                             await Promise.all(travelAwaits);
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);
+
+                            // Heal players if out of dungeon
+
                         }
 
                     }

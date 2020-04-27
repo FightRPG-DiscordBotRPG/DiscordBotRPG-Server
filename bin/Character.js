@@ -73,6 +73,9 @@ class Character extends CharacterEntity {
         this.idArea = 1;
 
         this.updateStats();
+
+        // [Health]
+        this.resetFullHp();
     }
 
     async loadCharacter(id) {
@@ -99,6 +102,9 @@ class Character extends CharacterEntity {
         }
 
         this.updateStats();
+
+        // [Health]
+        this.resetFullHp();
 
     }
 

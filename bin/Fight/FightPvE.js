@@ -8,7 +8,7 @@ const PStatistics = require("../Achievement/PStatistics");
 class FightPvE extends Fight {
 
     /**
-     * @param {Array<Character>} entities1 
+     * @param {Array<Character>} entities1
      * @param {Array<Monstre>} entities2 
      * @param {string} lang
      */
@@ -60,10 +60,19 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
-            let areaBonuses = await this.entities[0][0].getArea().getAllBonuses();
+            /**
+             * @type {Area}
+             */
+            let area = this.entities[0][0].getArea();
+            let areaBonuses = await area.getAllBonuses();
 
             for (let i in this.entities[0]) {
                 let entity = this.entities[0][i];
+
+                if (area.areaType != "dungeon") {
+                    // [Health]
+                    entity.resetFullHp();
+                }
 
                 this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
 
@@ -167,3 +176,4 @@ module.exports = FightPvE;
 
 const Character = require("../Character");
 const Monstre = require("../Entities/Monster");
+const Area = require("../Areas/Area");

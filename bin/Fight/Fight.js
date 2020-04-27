@@ -9,6 +9,12 @@ class Fight {
      * de worldEntities
      */
 
+    /**
+     * 
+     * @param {Array<WorldEntity>} entities1
+     * @param {Array<WorldEntity>} entities2
+     * @param {string} lang
+     */
     constructor(entities1, entities2, lang = "en") {
         /**
          * @type {Array<WorldEntity>}

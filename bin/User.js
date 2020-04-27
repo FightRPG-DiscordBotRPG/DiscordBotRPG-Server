@@ -272,6 +272,8 @@ class User {
             power: await this.character.getPower(),
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
+            currentHp: this.character.actualHP,
+            maxHp: this.character.maxHP,
             craft: {
                 level: this.character.getCraftLevel(),
                 xp: this.character.getCratfXP(),
