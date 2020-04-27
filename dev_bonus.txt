@@ -1,0 +1,9 @@
+import * as Trade from "D:/discordbotrpg-server/bin/Trades/Trade";
+import * as Group from "D:/discordbotrpg-server/bin/Group";
+import * as Marketplace from "D:/discordbotrpg-server/bin/Marketplace/Marketplace";
+import * as CraftingBuilding from "D:/discordbotrpg-server/bin/CraftSystem/CraftingBuilding";
+import * as Shop from "D:/discordbotrpg-server/bin/Shops/Shop";
+import * as Area from "D:/discordbotrpg-server/bin/Areas/Area";
+import * as LootSystem from "D:/discordbotrpg-server/bin/LootSystem";
+
+    locals: { trade: Trade, group: Group, lang: string, pending: Group, pendingTrade: Trade, marketplace: Marketplace, craftingbuilding: CraftingBuilding, shop: Shop, currentArea: Area, tLootSystem: LootSystem };

@@ -17,8 +17,8 @@ class Item {
         this.level = 0;
         this.type = 0;
         this.typeName = "";
-        this.sousType = 0;
-        this.sousTypeName = "";
+        this.subType = 0;
+        this.subTypeName = "";
         this.equipable = true;
         this.stackable = false;
         this.stats = new StatsItems(id);
@@ -43,8 +43,8 @@ class Item {
         this.type = res["idType"];
         this.typeName = res["nomType"];
 
-        this.sousType = res["idSousType"];
-        this.sousTypeName = res["nomSousType"];
+        this.subType = res["idSousType"];
+        this.subTypeName = res["nomSousType"];
 
         this.equipable = res["equipable"];
         this.stackable = res["stackable"];
@@ -219,10 +219,13 @@ class Item {
             name: this.getName(lang),
             desc: this.getDesc(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
+            rarity_shorthand: this.rarity,
             rarityColor: this.rarityColor,
             level: this.getLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
-            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
+            type_shorthand: this.typeName,
+            subType: Translator.getString(lang, "item_sous_types", this.subTypeName),
+            subtype_shorthand: this.subTypeName,
             power: await this.getPower(),
             equipable: this.isEquipable(),
             number: this.number,
@@ -243,7 +246,7 @@ class Item {
             rarityColor: this.rarityColor,
             level: this.getLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
-            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
+            subType: Translator.getString(lang, "item_sous_types", this.subTypeName),
             power: await this.getPower(),
             equipable: this.isEquipable(),
             number: this.number,

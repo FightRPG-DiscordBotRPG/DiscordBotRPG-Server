@@ -221,7 +221,7 @@ class MarketplaceModule extends GModule {
             if (res.locals.marketplace != null) {
                 let mkToSeeOrder = await res.locals.marketplace.getThisOrder(req.params.idItem);
                 if (mkToSeeOrder != null) {
-                    data = await res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, res.locals.lang);
+                    data = await res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, mkToSeeOrder, res.locals.lang);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "marketplace_order_dont_exist");
                 }

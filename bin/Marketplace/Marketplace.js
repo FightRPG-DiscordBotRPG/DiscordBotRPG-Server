@@ -160,9 +160,17 @@ class Marketplace {
         return toApi;
     }
 
-    async apiItemOrder(idItem, character, lang) {
+    /**
+     * 
+     * @param {number} idItem
+     * @param {Character} character
+     * @param {MarketplaceOrder} order
+     * @param {string} lang
+     */
+    async apiItemOrder(idItem, character, order, lang="en") {
         let item = new Item(idItem);
         await item.loadItem();
+        item.number = order.number;
         let compareStats = await character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
         if (compareStats != null) {
             compareStats = compareStats.stats;
@@ -202,3 +210,6 @@ class Marketplace {
 }
 
 module.exports = Marketplace;
+/**
+ * @typedef {import("../Character")} Character
+ **/
