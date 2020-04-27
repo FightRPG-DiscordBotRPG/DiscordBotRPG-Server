@@ -214,10 +214,17 @@ class Item {
      */
 
     async toApi(lang) {
+        let toApiObject = await this.toApiLight();
+        toApiObject.desc = this.getDesc(lang);
+        toApiObject.stats = this.stats.toApi();
+
+        return toApiObject;
+    }
+
+    async toApiLight(lang) {
         let toApiObject = {
             id: this.id,
             name: this.getName(lang),
-            desc: this.getDesc(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
             rarity_shorthand: this.rarity,
             rarityColor: this.rarityColor,
@@ -233,27 +240,11 @@ class Item {
             isFavorite: this.isFavorite,
             image: this.image,
             usable: this.isUsable(),
-            stats: this.stats.toApi()
-        };
-        return toApiObject;
-    }
-
-    async toApiLight(lang) {
-        let toApiObject = {
-            id: this.id,
-            name: this.getName(lang),
-            rarity: Translator.getString(lang, "rarities", this.rarity),
-            rarityColor: this.rarityColor,
-            level: this.getLevel(),
-            type: Translator.getString(lang, "item_types", this.typeName),
-            subType: Translator.getString(lang, "item_sous_types", this.subTypeName),
-            power: await this.getPower(),
-            equipable: this.isEquipable(),
-            number: this.number,
-            price: this.getCost(),
-            isFavorite: this.isFavorite,
-            image: this.image,
-            usable: this.isUsable(),
+            desc: "",
+            /**
+             * @type {StatsItems}
+             */
+            stats: {}
         };
         return toApiObject;
     }
