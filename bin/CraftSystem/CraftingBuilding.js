@@ -45,7 +45,7 @@ class CraftingBuilding {
         };
     }
 
-    async craftingListToApi(page = 1, lang) {
+    async craftingListToApi(page = 1, lang="en") {
         let res = await this.getCraftingList(page);
         let toApi = {
             page: res.page,
@@ -61,9 +61,11 @@ class CraftingBuilding {
             let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
             craftToApi.name = itemName;
             craftToApi.type = Translator.getString(lang, "item_types", craft.nomType);
+            craftToApi.type_shorthand = craft.nomType;
             craftToApi.minLevel = craft.minLevel < this.getMinLevel() ? this.getMinLevel() : craft.minLevel;
             craftToApi.maxLevel = craft.maxLevel > this.getMaxLevel() ? this.getMaxLevel() : craft.maxLevel;
             craftToApi.rarity = Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]);
+            craftToApi.rarity_shorthand = Globals.itemsrarities[craft.idRarity];
             toApi.crafts[(index + indexOffset)] = craftToApi;
             index++;
         }
