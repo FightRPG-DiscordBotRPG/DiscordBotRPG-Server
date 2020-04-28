@@ -35,10 +35,10 @@ class Leaderboard {
 
         }
 
-
         offset = offset >= 0 ? offset : 0;
 
-        page = offset % this.itemsPerPage;
+        page = Math.ceil(offset / this.itemsPerPage) + 1;
+
 
         let res = await this.dbGetLeaderboard(offset);
         let data = {
