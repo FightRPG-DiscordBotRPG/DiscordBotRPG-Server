@@ -606,7 +606,7 @@ class Guild {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = await conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level DESC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
+        let res = await conn.query("SELECT GD.idGuild as id, GD.nom as name, GD.level, count(*) as nbMembers, SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter GROUP BY GD.idGuild ORDER BY totalPower DESC, totalLevel DESC, level DESC LIMIT 10 OFFSET ?", [((page - 1) * 10)]);
 
         for (let i in res) {
             res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));
