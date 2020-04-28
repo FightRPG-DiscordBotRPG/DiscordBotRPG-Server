@@ -306,7 +306,7 @@ class Guild {
      * @returns {{totalPower: Number, totalLevel: Number}}
      */
     async getGuildStats() {
-        return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
+        return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
     }
 
     async isMaxMembersLimitReached() {
