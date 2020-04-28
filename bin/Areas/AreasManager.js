@@ -173,7 +173,7 @@ class AreasManager {
 
                 let pathTemp = this.paths.path(path.path[index], path.path[index + 1], { cost: true });
 
-                let costChange = (pathTemp.cost / area.areaClimate.currentWeather.travelSpeed) - pathTemp.cost;
+                let costChange = Math.round((pathTemp.cost / area.areaClimate.currentWeather.travelSpeed) - pathTemp.cost);
                 let totalCostForThisAreaTravel = pathTemp.cost + costChange;
 
                 timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] = timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] != null ? timeChangeDueToWeather.weathersChanges[area.areaClimate.currentWeather.shorthand] + costChange : costChange;
