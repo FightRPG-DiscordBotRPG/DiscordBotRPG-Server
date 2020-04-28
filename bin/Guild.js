@@ -250,7 +250,7 @@ class Guild {
 
     // Fix when not translated
     async getTerritories(lang = "en") {
-        let request = "SELECT areasowners.idArea, nameArea, nameRegion, areas.statPoints FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion INNER JOIN areas ON areas.idArea = areasowners.idArea WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY areasowners.idArea;";
+        let request = "SELECT areasowners.idArea, nameArea, nameRegion, areas.statPoints, areastypes.NomAreaType FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion INNER JOIN areas ON areas.idArea = areasowners.idArea INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY areasowners.idArea;";
 
         // First get number of territories own by the guild
         let numberOfOnwedTerritories = (await conn.query("SELECT COUNT(*) as number FROM areasowners WHERE idGuild = ?;", [this.id]))[0].number;
@@ -273,7 +273,7 @@ class Guild {
             if (territories[territory.nameRegion] == null) {
                 territories[territory.nameRegion] = [];
             }
-            territories[territory.nameRegion].push(territory.nameArea + (territory.statPoints > 0 ? " (" + Translator.getString(lang, "area", "conquest_points_to_distribute", [territory.statPoints]) + ")" : ""));
+            territories[territory.nameRegion].push({ name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
 
             actualIndex++
         }
