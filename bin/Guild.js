@@ -490,7 +490,8 @@ class Guild {
         maxPage = Math.ceil(maxPage / 10);
         maxPage = maxPage <= 0 ? 1 : maxPage;
         page = page <= maxPage ? page : maxPage;
-        let res = await conn.query("SELECT guildsappliances.idCharacter as id, users.userName as name, levels.actualLevel as level FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
+
+        let res = await conn.query("SELECT GA.idCharacter as id, users.userName as name, levels.actualLevel as level, (SELECT IfNull(SUM(power), 0) FROM guildsappliances INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsappliances.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idCharacter = GA.idCharacter ) as power FROM guildsappliances GA INNER JOIN users ON users.idCharacter = GA.idCharacter INNER JOIN levels ON levels.idCharacter = GA.idCharacter WHERE GA.idGuild = ? ORDER BY power DESC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
         return {
             appliances: res,
             page: page,
