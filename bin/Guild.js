@@ -283,6 +283,7 @@ class Guild {
     async toApi(lang = "en") {
         await this.loadGuild(this.id);
         let idOfAreaEnroll = await this.getTournamentAreaEnrolled();
+        let stats = await this.getGuildStats();
         let toApi = {
             members: this.members,
             id: this.id,
@@ -294,9 +295,18 @@ class Guild {
             maxLevel: Globals.guilds.maxLevel,
             nextLevelPrice: await this.getNextLevelPrice(this.level),
             money: this.money,
-            currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null
+            currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null,
+            totalLevel: stats.totalLevel,
+            totalPower: stats.totalPower,
         }
         return toApi;
+    }
+
+    /**
+     * @returns {{totalPower: Number, totalLevel: Number}}
+     */
+    async getGuildStats() {
+        return conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id])[0];
     }
 
     async isMaxMembersLimitReached() {
