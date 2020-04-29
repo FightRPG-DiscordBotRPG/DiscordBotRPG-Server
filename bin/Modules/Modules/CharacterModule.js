@@ -8,6 +8,7 @@ const LeaderboardPvP = require("../../Leaderboards/LeaderboardPvP");
 const LeaderboardGold = require("../../Leaderboards/LeaderboardGold");
 const LeaderboardLevel = require("../../Leaderboards/LeaderboardLevel");
 const LeaderboardCraftLevel = require("../../Leaderboards/LeaderboardCraftLevel");
+const LeaderboardPower = require("../../Leaderboards/LeaderboardPower");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -55,7 +56,7 @@ class CharacterModule extends GModule {
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
         this.router.get("/leaderboard/gold/:page?", async (req, res, next) => {
@@ -65,7 +66,7 @@ class CharacterModule extends GModule {
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
         this.router.get("/leaderboard/level/:page?", async (req, res, next) => {
@@ -75,7 +76,7 @@ class CharacterModule extends GModule {
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
         this.router.get("/leaderboard/craft/level/:page?", async (req, res, next) => {
@@ -85,7 +86,17 @@ class CharacterModule extends GModule {
             await next();
             return res.json(
                 data
-            )
+            );
+        });
+
+        this.router.get("/leaderboard/power/:page?", async (req, res, next) => {
+            let ld = new LeaderboardPower(Globals.connectedUsers[res.locals.id].character.id);
+            let data = await ld.getPlayerLeaderboard(req.params.page);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(
+                data
+            );
         });
 
         this.router.get("/reset", async (req, res, next) => {
