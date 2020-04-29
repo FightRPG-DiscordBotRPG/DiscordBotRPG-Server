@@ -157,9 +157,6 @@ class CharacterModule extends GModule {
             );
         });
 
-        // TODO: A fix dans la 1.9
-        // To Fix in 1.9 find why next is sending headers
-        // Seems to be linked to a bad order in middlewares
         this.router.post("/up", async (req, res, next) => {
             let err;
             if (this.authorizedAttributes.indexOf(req.body.attr) !== -1) {
