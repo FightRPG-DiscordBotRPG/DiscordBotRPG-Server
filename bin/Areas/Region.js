@@ -58,10 +58,10 @@ class Region {
         return this.connectedAreas.get(index) != null;
     }
 
-    toApi(lang) {
+    async toApi(lang) {
         let areas = [];
         for (let [key, value] of this.areas) {
-            if (this.areas.get(key).canTravelTo()) {
+            if (await this.areas.get(key).canTravelTo()) {
                 areas.push({
                     id: key,
                     name: this.areas.get(key).getName(lang),
@@ -73,7 +73,7 @@ class Region {
 
         let connectedAreas = [];
         for (let [key, value] of this.connectedAreas) {
-            if (this.connectedAreas.get(key).canTravelTo()) {
+            if (await this.connectedAreas.get(key).canTravelTo()) {
                 connectedAreas.push({
                     id: key,
                     name: this.connectedAreas.get(key).getName(lang),

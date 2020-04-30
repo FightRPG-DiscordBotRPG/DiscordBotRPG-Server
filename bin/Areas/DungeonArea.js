@@ -1,6 +1,7 @@
 ﻿'use strict';
 const Area = require("./Area");
 const Globals = require("../Globals");
+const conn = require("../../conf/mysql");
 
 class DungeonArea extends Area {
 
@@ -10,7 +11,7 @@ class DungeonArea extends Area {
         this.authorizedBonuses = ["xp_fight", "xp_collect", "gold_drop", "item_drop", "collect_drop"];
     }
 
-    isFirstFloor() {
+    async isFirstFloor() {
         if (this.paths.from.length >= 1) {
             if (this.paths.from.length === 1) {
                 return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
@@ -21,6 +22,16 @@ class DungeonArea extends Area {
                     if (fromArea.constructor !== DungeonArea) {
                         return true;
                     }
+                }
+            }
+        } else {
+            // = 0 Meaning no link OR not loaded 
+            // Then we do a request to be sure
+            // This is useful when areas are loaded
+            let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea1 WHERE idArea2 = ?", [this.id]);
+            for (let item of res) {
+                if (item.idAreaType != 3) {
+                    return true;
                 }
             }
         }
@@ -50,8 +61,8 @@ class DungeonArea extends Area {
         }
     }
 
-    canTravelTo() {
-        return this.isFirstFloor();
+    async canTravelTo() {
+        return await this.isFirstFloor();
     }
 }
 

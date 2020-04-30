@@ -567,7 +567,7 @@ class Area {
         return null;
     }
 
-    canTravelTo() {
+    async canTravelTo() {
         return true;
     }
 

@@ -158,7 +158,7 @@ class TravelModule extends GModule {
                 if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
                     data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                 } else {
-                    if (areaObjectTravel.canTravelTo()) {
+                    if (await areaObjectTravel.canTravelTo()) {
                         let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
 
                         let requiredAchievements = costs.neededAchievements;

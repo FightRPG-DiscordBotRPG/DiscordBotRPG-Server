@@ -54,7 +54,9 @@ class AreasManager {
     async loadAreas() {
         let res = await conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, areasmonsterslevels.maxLevel ASC, idArea");
         let area;
+        let notDisplayedList = [];
         for (let i in res) {
+            let isDisplayed = true;
             switch (res[i].NomAreaType) {
                 case "wild":
                     area = new WildArea(res[i].idArea);
@@ -64,12 +66,28 @@ class AreasManager {
                     break;
                 case "dungeon":
                     area = new DungeonArea(res[i].idArea);
+                    isDisplayed = await area.isFirstFloor();
                     break;
             }
             await area.loadArea();
             this.areas.set(res[i].idArea, area);
-            this.regions[res[i].idRegion].addArea(this.areas.get(res[i].idArea));
+
+            // To be sure of order when displaying areas
+            if (isDisplayed) {
+                this.regions[res[i].idRegion].addArea(this.areas.get(res[i].idArea));
+            } else {
+                notDisplayedList.push({
+                    idRegion: res[i].idRegion,
+                    idArea: res[i].idArea,
+                });
+            }
         }
+
+        // Adding "invisibles" areas
+        for (let item of notDisplayedList) {
+            this.regions[item.idRegion].addArea(this.areas.get(item.idArea));
+        }
+
     }
 
     async loadPaths() {
@@ -100,7 +118,7 @@ class AreasManager {
             let nodeAchievements = {};
             for (let path of pathsTo) {
                 //console.log(path.idArea1 + " -> " + path.idArea2 + " | cost : " + path.time);
-                if (this.getArea(path.idArea2).canTravelTo()) {
+                if (await this.getArea(path.idArea2).canTravelTo()) {
                     node[path.idArea2] = path.time;
                     nodeGold[path.idArea2] = path.goldPrice + 1;
 
@@ -111,7 +129,8 @@ class AreasManager {
                         nodeAchievements[path.idArea2] = 1;
                     }
                 } else {
-                    console.log(this.getArea(path.idArea2));
+                    //console.log(this.getArea(path.idArea2));
+                    // Do nothing of course
                 }
 
             }
@@ -163,7 +182,8 @@ class AreasManager {
 
         let timeToWait = path.cost;
         let timeChangeDueToWeather = {
-            climatesTotalTravelTime: {}, weathersChanges: {}, totalTimeAddedDueToWeather: 0 };
+            climatesTotalTravelTime: {}, weathersChanges: {}, totalTimeAddedDueToWeather: 0
+        };
 
         for (let index in path.path) {
             index = parseInt(index);
