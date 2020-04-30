@@ -215,8 +215,8 @@ class GModule {
 
     /**
      * 
-     * @param {any} req
-     * @param {any} res
+     * @param {express.Request} req
+     * @param {express.Response} res
      * @param {Number} fightType (0 => Solo | 1 => Group)
      */
     async FightPvERoute(req, res, fightType) {
@@ -258,7 +258,7 @@ class GModule {
                     }
 
                     // Specific to dungeon
-                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !res.locals.currentArea.isFirstFloor())
+                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !(await res.locals.currentArea.isFirstFloor()));
 
                     let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, shouldHealPlayer);
                     if (response.error) {
