@@ -37,7 +37,7 @@ class Monstre extends WorldEntity {
 
         if (this.type == "elite") {
             bonus = 2;
-            this.luckBonus = 40;
+            this.luckBonus = 60;
 
         } else if (this.type == "normal") {
             let tDifficulty = Math.floor(Math.random() * 4);
@@ -45,7 +45,7 @@ class Monstre extends WorldEntity {
             multiplier = this.difficulty.value;
         } else if (this.type == "boss") {
             bonus = 8;
-            this.luckBonus = 120;
+            this.luckBonus = 1024;
         }
 
         await this.stats.loadStat(this.id, multiplier, this.getLevel());
