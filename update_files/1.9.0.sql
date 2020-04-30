@@ -209,6 +209,251 @@ VALUES
 (75,78,1),(76,79,1),(77,80,4),(77,81,1);
 
 
+-- New Dungeon System Addind new areas...
+
+-- First Region
+INSERT INTO areas
+VALUES
+(35, "https://i.ytimg.com/vi/qTJ8skYIpJc/maxresdefault.jpg", 3, 1, 5);
+
+REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+(35, 2, 1, 100);
+
+
+INSERT INTO areasitems
+VALUES
+(35, 5, 0, 1, 1),(35, 10, 0, 1, 1),(35, 15, 0, 1, 1),(35, 20, 0, 1, 1);
+
+INSERT INTO areasmonsterslevels
+VALUES
+(35, 20, 20);
+
+INSERT INTO localizationareas VALUES 
+(35, "fr", "Le pont des nappes feu-à-tiques", "Si tu trouve qu'il fait chaud, ne traverse pas ce pont, tu risque de fondre."),
+(35, "en", "Groundfire Bridge", "If you think it's hot, don't cross that bridge, you might melt...");
+
+
+INSERT INTO areasregions
+VALUES
+(35, 1);
+
+DELETE FROM areaspaths WHERE areaspaths.idArea1 = 7 OR areaspaths.idArea2 = 7;
+
+REPLACE INTO areaspaths
+VALUES
+(7, 4, 1, 0),
+(35, 7, 1, 0),
+(4, 35, 30, 0),
+(35, 4, 30, 0);
+
+INSERT INTO monstresgroupes
+VALUES
+(78, "two_monsters_of_region_1");
+
+INSERT INTO monstresgroupesassoc
+VALUES
+(78,14,2);
+
+INSERT INTO areasmonsters 
+VALUES 
+(35,78);
+
+
+-- Tywardreath
+INSERT INTO areas
+VALUES
+(36, "https://image.freepik.com/free-vector/cave-with-entrance_1308-17047.jpg", 3, 1, 5);
+
+REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+(36, 5, 1, 100);
+
+
+INSERT INTO areasitems
+VALUES
+(36, 5, 0, 1, 1),(36, 10, 0, 1, 1),(36, 15, 0, 1, 1),(36, 20, 0, 1, 1);
+
+INSERT INTO areasmonsterslevels
+VALUES
+(36, 40, 40);
+
+INSERT INTO localizationareas VALUES 
+(36, "fr", "Entrée des grottes de Tywardreath", "Seulement l'entrée d'une grotte froide et humide, des rumeurs racontent qu'un monstre puissant s'y cache."),
+(36, "en", "Tywardreath Caves Entrance", "Only the entrance to a cold and humid cave, rumors say a powerful monster is hiding there...");
+
+
+INSERT INTO areasregions
+VALUES
+(36, 2);
+
+DELETE FROM areaspaths WHERE areaspaths.idArea1 = 11 OR areaspaths.idArea2 = 11;
+
+REPLACE INTO areaspaths
+VALUES
+(11, 10, 1, 0),
+(36, 11, 1, 0),
+(10, 36, 30, 0),
+(36, 10, 30, 0);
+
+INSERT INTO monstresgroupes
+VALUES
+(79, "dungeon_tywardreath_floor_one");
+
+INSERT INTO monstresgroupesassoc
+VALUES
+(79,36,4);
+
+INSERT INTO areasmonsters 
+VALUES 
+(36,79);
+
+
+-- Tjesomunein Desert
+INSERT INTO areas
+VALUES
+(37, "https://cdn.fight-rpg.com/images/areas/TombEntrance.jpg", 3, 1, 5);
+
+REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+(37, 5, 1, 100);
+
+
+INSERT INTO areasitems
+VALUES
+(37, 5, 0, 1, 1),(37, 10, 0, 1, 1),(37, 15, 0, 1, 1),(37, 20, 0, 1, 1), (37, 39, 0.003, 1, 1);
+
+INSERT INTO areasmonsterslevels
+VALUES
+(37, 60, 60);
+
+INSERT INTO localizationareas VALUES 
+(37, "fr", "Entrée des Tombes Oubliées", "Vous ne savez pas ce qu'il se trouve entre ces murs. En y repensant, vous devriez trouver énormément de sable..."),
+(37, "en", "Entrance of The Forgotten Tombs", "You don't know what lies within these walls. Come to think of it, you should find a lot of sand...");
+
+
+INSERT INTO areasregions
+VALUES
+(37, 3);
+
+DELETE FROM areaspaths WHERE areaspaths.idArea1 = 21 OR areaspaths.idArea2 = 21;
+
+REPLACE INTO areaspaths
+VALUES
+(21, 20, 1, 0),
+(37, 21, 1, 0),
+(20, 37, 20, 0),
+(37, 20, 20, 0);
+
+INSERT INTO monstresgroupes
+VALUES
+(80, "dungeon_tjesomunein_floor_one");
+
+INSERT INTO monstresgroupesassoc
+VALUES
+(80,50,5);
+
+INSERT INTO areasmonsters 
+VALUES 
+(37,80);
+
+
+-- Daemonic Region
+INSERT INTO areas
+VALUES
+(38, "https://pbs.twimg.com/media/ES7MkdgXsAARRjR.jpg", 3, 1, 5);
+
+REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+(38, 2, 1, 100);
+
+
+INSERT INTO areasitems
+VALUES
+(38, 5, 0, 1, 1),(38, 10, 0, 1, 1),(38, 15, 0, 1, 1),(38, 20, 0, 1, 1), (38, 40, 0.0005, 1, 1);
+
+INSERT INTO areasmonsterslevels
+VALUES
+(38, 80, 80);
+
+INSERT INTO localizationareas VALUES 
+(38, "fr", "Entrée de La Citadelle Démoniaque", "Vous êtes au abords des problèmes. Seuls les plus braves peuvent entrer dans la citadelle et espérer vaincre les hordes démons enragés..."),
+(38, "en", "Entrance of The Daemonic Citadel", "You're on the verge of trouble. Only the bravest can enter the citadel and hope to vanquish the raging hordes of demons...");
+
+
+INSERT INTO areasregions
+VALUES
+(38, 4);
+
+DELETE FROM areaspaths WHERE areaspaths.idArea1 = 27 OR areaspaths.idArea2 = 27;
+
+REPLACE INTO areaspaths
+VALUES
+(27, 22, 1, 0),
+(38, 27, 1, 0),
+(22, 38, 30, 0),
+(38, 22, 30, 0);
+
+INSERT INTO monstresgroupes
+VALUES
+(81, "dungeon_demonic_citadel_floor_one");
+
+INSERT INTO monstresgroupesassoc
+VALUES
+(81,62,4), (81,69,1);
+
+INSERT INTO areasmonsters 
+VALUES 
+(38,81);
+
+
+-- Daemonic Region
+INSERT INTO areas
+VALUES
+(39, "https://cdn.clipart.email/694fdbe27e5c77d81560e5bb593d73fd_ice-cave-doodles-4-4-by-lastkrystaldragon-on-deviantart_1024-682.png", 3, 1, 5);
+
+REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+(39, 4, 1, 100);
+
+
+INSERT INTO areasitems
+VALUES
+(39, 5, 0, 1, 1),(39, 10, 0, 1, 1),(39, 15, 0, 1, 1),(39, 20, 0, 1, 1), (39, 56, 0.0001, 1, 1),
+(33, 49, 0.002, 25, 50);
+
+INSERT INTO areasmonsterslevels
+VALUES
+(39, 100, 100);
+
+INSERT INTO localizationareas VALUES 
+(39, "fr", "Entrée de la Caverne des Miroirs de Glace", "L'entrée de cette grotte n'est pas accueillante. Elle vous fait froid dans le dos. Peut-être découvrirez vous des mystères enfouis dans cet endroit glacé."),
+(39, "en", "Entrance of Ice Mirror Cave", "The entrance to this cave is not welcoming. It sends chills down your spine. Perhaps you will discover mysteries buried in this frozen place.");
+
+
+INSERT INTO areasregions
+VALUES
+(39, 5);
+
+DELETE FROM areaspaths WHERE areaspaths.idArea1 = 33 OR areaspaths.idArea2 = 33;
+
+REPLACE INTO areaspaths
+VALUES
+(33, 29, 1, 0),
+(39, 33, 1, 0),
+(29, 39, 30, 0),
+(39, 29, 30, 0);
+
+INSERT INTO monstresgroupes
+VALUES
+(82, "dungeon_ice_mirror_cave_floor_one");
+
+INSERT INTO monstresgroupesassoc
+VALUES
+(82,80,4), (82,74,1);
+
+INSERT INTO areasmonsters 
+VALUES 
+(39,82);
+
+
+
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
