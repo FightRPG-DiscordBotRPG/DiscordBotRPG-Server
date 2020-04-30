@@ -5,6 +5,7 @@ const LootSystem = require("./LootSystem.js");
 const FightPvE = require("./Fight/FightPvE");
 const FightPvP = require("./Fight/FightPvP");
 const Translator = require("./Translator/Translator");
+const conf = require("../conf/conf");
 
 class FightManager {
     constructor() {
@@ -24,7 +25,10 @@ class FightManager {
     }
 
     // PveFight
-
+    /**
+     * 
+     * @param {Array<Character>} users
+     */
     timeToFight(users) {
         for (let i in users) {
             if (!users[i].canDoAction()) {
@@ -74,6 +78,11 @@ class FightManager {
     }
 
     fightAlreadyInBattle(userid) {
+
+        if (conf.env == "dev") {
+            return false;
+        }
+
         let user = Globals.connectedUsers[userid];
         if (user != null && user.character.group != null) {
             let plrs = user.character.group.getArrayOfPlayers();
@@ -115,7 +124,7 @@ class FightManager {
 
             // For each people in the group
             if (characters.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
-                Globals.connectedUsers[userid].character.group.doingSomething = true;
+                Globals.connectedUsers[userid].character.group.doingSomething = conf.env == "dev" ? false : true;
                 let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
                 for (let i of fenters) {
                     this.fights[i] = fight;
