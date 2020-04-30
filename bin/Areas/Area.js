@@ -81,9 +81,16 @@ class Area {
         res = await conn.query("SELECT monstresgroupesassoc.idMonstresGroupe, monstresgroupesassoc.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM areasmonsters INNER JOIN monstresgroupes ON monstresgroupes.idMonstresGroupe = areasmonsters.idMonstresGroupe INNER JOIN monstresgroupesassoc ON monstresgroupesassoc.idMonstresGroupe = monstresgroupes.idMonstresGroupe INNER JOIN monstres ON monstres.idMonstre = monstresgroupesassoc.idMonstre INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE areasmonsters.idArea = ?;", [this.id]);
         let arrOfMonstersGroup = new Map();
         for (let i in res) {
+            let avgLevel = res[i]["avglevel"];
+
+            // If dungeon type we might want to add monsters with low level here but scale them to area level
+            if (this.areaType == "dungeon" && avgLevel < this.minLevel && avgLevel > 0) {
+                avgLevel = this.minLevel;
+            }
+
             let monsterLight = {
                 id: res[i]["idMonstre"],
-                avglevel: res[i]["avglevel"],
+                avglevel: avgLevel,
                 type: res[i]["nom"],
                 number: res[i]["number"]
             }

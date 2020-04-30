@@ -26,13 +26,13 @@ class Monstre extends WorldEntity {
     }
 
 
-    async loadMonster(level = 1) {
+    async loadMonster(level=null) {
         this.difficulty = Globals.mDifficulties[2];
         let res = await conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE idMonstre = ?;", [this.id]);
         res = res[0];
         let bonus = 1;
         this.type = res["nom"];
-        this.level = res["avglevel"] > 0 ? res["avglevel"] : level;
+        this.level = level && level > 0 ? level : (res["avglevel"] > 0 ? res["avglevel"] : 1);
         let multiplier = res["idType"];
 
         if (this.type == "elite") {

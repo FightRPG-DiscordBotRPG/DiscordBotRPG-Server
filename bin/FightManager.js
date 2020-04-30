@@ -60,8 +60,10 @@ class FightManager {
         for (let i in monsters) {
             for (let j = 0; j < monsters[i].number; j++) {
                 let realLevel = level;
-                if (monsters[i].needToBeMaxLevel == true) {
+                if (monsters[i].needToBeMaxLevel) {
                     realLevel = area.maxLevel;
+                } else if (monsters[i].level != 0){
+                    realLevel = monsters[i].level;
                 }
                 let ms = new Monstre(monsters[i].id);
                 await ms.loadMonster(realLevel);
