@@ -78,7 +78,7 @@ class Area {
 
         // Load monsters
 
-        res = await conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idMonstreGroupe = monstresgroupes.idMonstreGroupe WHERE areasmonsters.idArea = ?;", [this.id]);
+        res = await conn.query("SELECT monstresgroupesassoc.idMonstresGroupe, monstresgroupesassoc.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM areasmonsters INNER JOIN monstresgroupes ON monstresgroupes.idMonstresGroupe = areasmonsters.idMonstresGroupe INNER JOIN monstresgroupesassoc ON monstresgroupesassoc.idMonstresGroupe = monstresgroupes.idMonstresGroupe INNER JOIN monstres ON monstres.idMonstre = monstresgroupesassoc.idMonstre INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE areasmonsters.idArea = ?;", [this.id]);
         let arrOfMonstersGroup = new Map();
         for (let i in res) {
             let monsterLight = {
@@ -88,7 +88,7 @@ class Area {
                 number: res[i]["number"]
             }
 
-            let idToString = res[i]["idMonstreGroupe"].toString();
+            let idToString = res[i]["idMonstresGroupe"].toString();
             if (arrOfMonstersGroup.get(idToString) == null) {
                 arrOfMonstersGroup.set(idToString, []);
             }
