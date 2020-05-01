@@ -561,7 +561,7 @@ GROUP BY idCharacter;
 -- Join guild
 REPLACE INTO charactersachievements
 SELECT idCharacter, 11
-FROM guildsmembers
+FROM guildsmembers;
 
 -- More than 1000 monsters
 REPLACE INTO charactersachievements
@@ -579,12 +579,12 @@ WHERE idStatisticBase = 1 AND charactersstatistics.value >= 10000;
 -- Lvl 20 craft
 REPLACE INTO charactersachievements
 SELECT idCharacter, 14
-FROM levels WHERE levels.actualLevel >= 20;
+FROM characterscraftlevel WHERE characterscraftlevel.actualLevel >= 20;
 
 -- Lvl 100 craft
 REPLACE INTO charactersachievements
 SELECT idCharacter, 15
-FROM levels WHERE levels.actualLevel >= 100;
+FROM characterscraftlevel WHERE characterscraftlevel.actualLevel >= 100;
 
 
 
