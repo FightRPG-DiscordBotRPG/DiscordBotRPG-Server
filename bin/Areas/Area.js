@@ -50,6 +50,8 @@ class Area {
 
         // Climate System
         this.areaClimate = new AreaClimate(this.id);
+
+        this.bonusresetCooldown = 0;
     }
 
     async loadArea() {
@@ -396,6 +398,43 @@ class Area {
 
     canIFightHere() {
         return this.fightPossible;
+    }
+
+    //returns when area bonus can be reset
+    getResetCooldown() {
+        return this.bonusresetCooldown;
+    }
+
+    getResetCooldownString(lang="en") {
+        lang = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
+        return new Date(this.getResetCooldown()).toLocaleString(lang, { timeZone: 'UTC' }) + " GMT";
+    }
+
+    setResetCooldown(cooldown) {
+        this.bonusresetCooldown = cooldown;
+    }
+
+    setCooldownNextDay() {
+        let date = new Date();
+        date.setUTCMinutes(0);
+        date.setUTCSeconds(0);
+        date.setUTCHours(0);
+        date.setUTCDate(date.getUTCDate() + 1);
+        this.setResetCooldown(date.getTime());
+    }
+
+    canResetBonuses() {
+        return (this.getResetCooldown() <= Date.now());
+    }
+
+    //might or might not work
+    async getTotalLevel() {
+        let res = await conn.query("SELECT * FROM areasbonuses WHERE idArea = ? AND idBonusTypes;", [this.id]);
+        let totalLevel = 0;
+        for (let o of res) {
+            totalLevel += o.value;
+        }
+        return totalLevel;
     }
 
     /**

@@ -21,7 +21,7 @@ const express = require("express");
 class ConquestModule extends GModule {
     constructor() {
         super();
-        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest"];
+        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest", "arearesetbonuses"];
         this.startLoading("Conquest");
         this.init();
         this.endLoading("Conquest");
@@ -121,6 +121,38 @@ class ConquestModule extends GModule {
         this.router.get("/area", async (req, res, next) => {
             let data = {};
             data = await res.locals.currentArea.getConquest(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+
+        this.router.post("/area/bonus/resetbonuses", async (req, res, next) => {
+            let data = {};
+            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+            if (await res.locals.currentArea.getOwnerID() === tGuildId) {
+                if (await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) === 3) {
+                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                        if (await res.locals.currentArea.getTotalLevel() > 0) {
+                            if (res.locals.currentArea.canResetBonuses()) {
+                                await res.locals.currentArea.resetBonuses();
+                                await res.locals.currentArea.setCooldownNextDay();
+                                data.success = Translator.getString(res.locals.lang, "area", "reset_stats");
+                            } else {
+                                data.error = Translator.getString(res.locals.lang, "errors", "area_reset_wait_x", [res.locals.currentArea.getResetCooldownString(res.locals.lang)]);
+                            }
+                        } else {
+                            data.error = Translator.getString(res.locals.lang, "errors", "area_already_reset");
+                        }
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
+                }
+            } else {
+                data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
+            }
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
