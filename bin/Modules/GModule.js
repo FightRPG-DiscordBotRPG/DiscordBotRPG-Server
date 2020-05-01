@@ -265,7 +265,7 @@ class GModule {
                         data.error = response.error;
                     } else {
                         data = response;
-                        this.fightAchievement(grpUsers, response.summary);
+                        await this.fightAchievement(grpUsers, response.summary);
 
                         // Travel to entrance if dungeon and loose
                         if (res.locals.currentArea.areaType === "dungeon") {
@@ -316,16 +316,61 @@ class GModule {
      * 
      * @param {Array<User>} grpOfUsers
      */
-    fightAchievement(grpOfUsers, fightSummary) {
+    async fightAchievement(grpOfUsers, fightSummary) {
         let currentArea = Globals.areasManager.getArea(grpOfUsers[0].character.getIdArea());
         let achievToUnlock = new AchievementUnlocker(grpOfUsers);
 
+        let toWaitBefore = [];
+
         if (fightSummary.winner === 0) {
+
+            for (let user of grpOfUsers) {
+
+                let toDo = async () => {
+                    let numberOfVictories = await PStatistics.getStat(user.character.id, "pvefights_victories");
+                    if (numberOfVictories >= 10000) {
+                        achievToUnlock.addAchievement(user, 13);
+                    } else if (numberOfVictories >= 1000) {
+                        achievToUnlock.addAchievement(user, 12);
+                    }
+                }
+
+                toWaitBefore.push(toDo());
+            }
+
+            console.log(currentArea.getName());
+            console.log(currentArea.areaType);
+            console.log(await currentArea.isLastFloor())
+            if (currentArea.areaType == "dungeon" && await currentArea.isLastFloor()) {
+                achievToUnlock.addAchievementToAllUsers(6);
+            }
+
+            // Meaning in group
+            if (grpOfUsers.length > 1) {
+                achievToUnlock.addAchievementToAllUsers(7);
+            }
+
+            // For area related achievements
             switch (currentArea.id) {
                 case 33:
                     achievToUnlock.addAchievementToAllUsers(2);
+                    break;
+            }
+
+            // For drop related achievements
+            for (let userDrops of fightSummary.drops) {
+                if (userDrops.drop["4"] != null && userDrops.drop["4"].equipable > 0) {
+                    achievToUnlock.addAchievementByUserName(userDrops.name, 4);
+                }
+
+                if (userDrops.drop["5"] != null && userDrops.drop["5"].equipable > 0) {
+                    achievToUnlock.addAchievementByUserName(userDrops.name, 5);
+                }
             }
         }
+
+        // Waiting to get those async checks done
+        await Promise.all(toWaitBefore);
 
         // No await since we can let this running 'in background'
         // Unlocks all achievements added to it (if there are achievements to unlock)
@@ -517,9 +562,14 @@ class AchievementUnlocker {
          * @type {Array<AchievementUnlockStructure>}
          */
         this.listOfPlayerAndRelatedAchievements = {};
+        /**
+         * @type {Array<User>}
+         */
+        this.userByName = {};
 
         for (let user of grpOfUsers) {
             this.listOfPlayerAndRelatedAchievements[user.id] = new AchievementUnlockStructure(user);
+            this.userByName[user.getUsername()] = user;
         }
     }
 
@@ -530,6 +580,18 @@ class AchievementUnlocker {
      */
     addAchievement(user, idAchievement) {
         this.listOfPlayerAndRelatedAchievements[user.id].achievements.push(idAchievement);
+    }
+
+    /**
+    * 
+    * @param {string} username
+    * @param {number} idAchievement
+    */
+    addAchievementByUserName(username, idAchievement) {
+        if (this.userByName[username] != null) {
+            this.listOfPlayerAndRelatedAchievements[this.userByName[username].id].achievements.push(idAchievement);
+        }
+        
     }
 
     /**

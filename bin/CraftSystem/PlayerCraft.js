@@ -3,8 +3,9 @@ const conn = require("../../conf/mysql");
 const Globals = require("../Globals.js");
 
 class PlayerCraft {
-    constructor(id) {
-        this.id = id;
+    constructor(idUser) {
+        this.id = 0;
+        this.idUser = idUser;
         this.actualLevel = 1;
         this.actualXP = 0;
         this.expToNextLevel = 0;
@@ -49,6 +50,20 @@ class PlayerCraft {
         let res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = ?", [this.actualLevel]);
         this.expToNextLevel = res[0]["expNextLevel"];
         await this.saveMyLevel();
+
+
+        // Add achiev here
+        if (this.idUser != null) {
+            let u = Globals.connectedUsers[this.idUser];
+            switch (this.actualLevel) {
+                case 20:
+                    u.character.achievements.unlock(14, u);
+                    break;
+                case 100:
+                    u.character.achievements.unlock(15, u);
+                    break;
+            }
+        }
     }
 
     async saveMyExp() {

@@ -3,6 +3,8 @@ const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
 const AreaTournament = require("./AreaTournament/AreaTournament");
+const CharacterAchievements = require("./Achievement/CharacterAchievements");
+const User = require("./User");
 
 class Guild {
     // Discord User Info
@@ -54,6 +56,8 @@ class Guild {
         this.nbrMembers++;
 
         this.name = guildName;
+
+        CharacterAchievements.unlock(11, this.members[idCharacter].idUser);
         // err.length = 0 => pas d'erreurs;
         return err;
     }
@@ -99,6 +103,9 @@ class Guild {
         if (await this.getRankCharacter(idAsk) > 1) {
             if (!await this.isMaxMembersLimitReached()) {
                 await conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
+
+                // Don't need to wait it
+                CharacterAchievements.unlock(11, await User.getIDByIDCharacter(idOther));
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }

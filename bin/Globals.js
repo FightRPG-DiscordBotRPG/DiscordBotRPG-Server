@@ -78,6 +78,9 @@ var Globals = {
      * @type {Array<User>}
      */
     "connectedUsers": [],
+    /**
+     * @type {Array<Guild>}
+     */
     "connectedGuilds": {},
     /**
      * @type {AreasManager}
@@ -237,5 +240,6 @@ module.exports = Globals;
 /**
  * @typedef {import("./Areas/AreasManager")} AreasManager
  * @typedef {import("./User")} User
+ * @typedef {import("./Guild")} Guild
  * @typedef {import("./FightManager")} FightManager
  **/

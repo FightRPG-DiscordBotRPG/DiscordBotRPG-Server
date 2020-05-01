@@ -146,6 +146,11 @@ class User {
         return res[0] != null ? res[0].idUser : null;
     }
 
+    static async getIDByIDCharacterAndLang(idCharacter) {
+        let res = await conn.query("SELECT idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
+        return res[0];
+    }
+
     getUsername() {
         return this.username;
     }

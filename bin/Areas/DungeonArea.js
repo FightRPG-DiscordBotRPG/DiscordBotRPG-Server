@@ -18,7 +18,7 @@ class DungeonArea extends Area {
             } else {
                 let fromArea = Globals.areasManager.getArea(this.paths.from[0]);
                 for (let idArea of this.paths.from) {
-                    fromArea = Globals.areasManager.getArea(idArea)
+                    fromArea = Globals.areasManager.getArea(idArea);
                     if (fromArea.constructor !== DungeonArea) {
                         return true;
                     }
@@ -36,6 +36,33 @@ class DungeonArea extends Area {
             }
         }
         return false;
+    }
+
+    async isLastFloor() {
+        if (this.paths.to.length >= 1) {
+            if (this.paths.to.length === 1) {
+                return Globals.areasManager.getArea(this.paths.to[0]).constructor !== DungeonArea;
+            } else {
+                for (let idArea of this.paths.to) {
+                    let toArea = Globals.areasManager.getArea(idArea);
+                    if (toArea.constructor === DungeonArea) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            // = 0 Meaning no link OR not loaded 
+            // Then we do a request to be sure
+            // This is useful when areas are loaded
+            let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea2 WHERE idArea1 = ?", [this.id]);
+            for (let item of res) {
+                if (item.idAreaType === 3) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     getEntrance() {

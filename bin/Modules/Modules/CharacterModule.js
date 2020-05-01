@@ -186,14 +186,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/achievements/:page?", async (req, res, next) => {
-            let data = {};
-            let achPage = parseInt(req.params.page, 10);
-            if (achPage == null || achPage != null && !Number.isInteger(achPage)) {
-                achPage = 0;
-            }
-
-            data = await Globals.connectedUsers[res.locals.id].character.getAchievements().getAchievementList(data.page, res.locals.lang);
-
+            let data = await Globals.connectedUsers[res.locals.id].character.getAchievements().getAchievementList(parseInt(req.params.page, 10), res.locals.lang);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);

@@ -20,7 +20,7 @@ class Character extends CharacterEntity {
         this.id = null;
         this.idUser = idUser != null ? idUser : null;
         this.inv = new CharacterInventory();
-        this.craftSystem = new PlayerCraft();
+        this.craftSystem = new PlayerCraft(this.idUser);
         this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
@@ -61,7 +61,7 @@ class Character extends CharacterEntity {
 
         //Init level system
         await Promise.all([
-            this.levelSystem.init(this.id),
+            this.levelSystem.init(this.id, this.idUser),
             this.craftSystem.init(this.id),
             this.stats.init(this.id),
             this.getInv().loadInventory(this.id),
@@ -87,7 +87,7 @@ class Character extends CharacterEntity {
         this.id = id;
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id),
+            this.levelSystem.loadLevelSystem(id, this.idUser),
             this.craftSystem.load(id),
             this.getInv().loadInventory(id),
             this.equipement.loadEquipements(id),
@@ -117,7 +117,7 @@ class Character extends CharacterEntity {
         this.id = id;
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id),
+            this.levelSystem.loadLevelSystem(id, this.idUser),
             this.equipement.loadEquipements(id),
         ]);
 
@@ -509,6 +509,11 @@ class Character extends CharacterEntity {
 
                 let ls = new LootSystem();
                 await ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
+
+                // Achiev ---> If other use switch case or what ever
+                // This achiev is = craft 1 object
+                this.achievements.unlock(10, Globals.connectedUsers[this.idUser]);
+
                 return true;
             }
         }
@@ -693,6 +698,24 @@ class Character extends CharacterEntity {
         await this.craftSystem.addThisExp(xp);
         nextLevel = this.getCraftLevel();
         return nextLevel - actualLevel;
+    }
+
+    async checkEquipmentAchievements() {
+        let nbrOfMythics = 0;
+        
+        for (let item of await this.equipement.getAllItems()) {
+            // test everything except mount
+            if (item.type != 8) {
+                // Use switch case for every rarity
+                if (item.idRarity == 6) {
+                    nbrOfMythics++;
+                }
+            }
+        }
+
+        if (nbrOfMythics == 4) {
+            this.achievements.unlock(3, Globals.connectedUsers[this.idUser]);
+        }
     }
 
     // GetSpecial

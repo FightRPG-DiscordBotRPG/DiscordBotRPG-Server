@@ -617,6 +617,14 @@ class Area {
         return true;
     }
 
+    async isLastFloor() {
+        return true;
+    }
+
+    async isFirstFloor() {
+        return true;
+    }
+
 }
 
 module.exports = Area;

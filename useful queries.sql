@@ -45,3 +45,6 @@ SELECT * FROM monstres
 INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType
 INNER JOIN localizationmonsters ON localizationmonsters.idMonstre = monstres.idMonstre
 WHERE lang="en";
+
+-- Achievements
+SELECT * FROM achievement INNER JOIN localizationachievements ON localizationachievements.idAchievement = achievement.idAchievement WHERE lang = "en";

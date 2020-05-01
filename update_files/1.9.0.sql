@@ -403,7 +403,7 @@ VALUES
 (38,81);
 
 
--- Daemonic Region
+-- Horth Region
 INSERT INTO areas
 VALUES
 (39, "https://cdn.clipart.email/694fdbe27e5c77d81560e5bb593d73fd_ice-cave-doodles-4-4-by-lastkrystaldragon-on-deviantart_1024-682.png", 3, 1, 5);
@@ -450,6 +450,67 @@ VALUES
 INSERT INTO areasmonsters 
 VALUES 
 (39,82);
+
+-- Some achievements
+
+INSERT INTO achievement
+VALUES
+    (3, "shining_armor", 100),
+	(4, "first_epic", 25),
+	(5, "first_legendary", 50),
+	(6, "finish_dungeon", 30),
+	(7, "hangout_with_friends", 10),
+	(8, "level_20", 20),
+	(9, "level_100", 50),
+	(10, "craft_item", 5),
+	(11, "social_adventurer", 10),
+	(12, "experienced_fight_master", 50),
+	(13, "addict_fight_master", 100),
+	(14, "craft_level_20", 20),
+	(15, "craft_level_100", 50);
+
+INSERT INTO localizationachievements
+VALUES
+    (3, "fr", "Armure luisante", "Équipez vous d'un ensemble d’équipements de niveau 100 ou plus, de qualité mythique."),
+    (3, "en", "Shining armor", "Equip yourself with a set of equipment of level 100 or higher, of mythical quality."),
+	
+	(4, "fr", "Chance épicurienne", "Obtenez un équipement de qualité épique lors d'un combat."),
+    (4, "en", "Epicurean luck", "Get an epic-quality equipment from a fight."),
+	
+	(5, "fr", "Les gens d'air", "Obtenez un équipement de qualité légendaire lors d'un combat."),
+    (5, "en", "Legend diary", "Get an legendary-quality equipment from a fight."),
+	
+	(6, "fr", "Découverte des profondeurs", "Terminez n'importe quel donjon."),
+    (6, "en", "Discovery of the depths", "Complete any dungeon."),
+	
+	(7, "fr", "Sortie entre amis", "Faites un combat en groupe."),
+    (7, "en", "Hangout with friends", "Have a group fight."),
+	
+	(8, "fr", "Noob", "Atteindre le niveau 20."),
+    (8, "en", "Newbie", "Reach level 20."),
+
+	(9, "fr", "Joueur expérimenté", "Atteindre le niveau 100."),
+    (9, "en", "Experienced player", "Reach level 100."),
+	
+	(10, "fr", "Artisan débutant", "Fabriquez votre premier objet."),
+    (10, "en", "Beginner craftsman", "Craft your first item."),
+	
+	(11, "fr", "Aventurier social", "Rejoindre une guilde."),
+    (11, "en", "Social adventurer", "Join a guild."),
+	
+	(12, "fr", "Combattant chevronné", "Gagner 1 000 combats."),
+    (12, "en", "Experienced figther", "Win 1,000 fights."),
+	
+	(13, "fr", "Combattant addict", "Gagner 10 000 combats."),
+    (13, "en", "Addict figther", "Win 10,000 fights."),
+	
+	(14, "fr", "Artisan motivé", "Atteindre le niveau 20 en fabrication d'objets."),
+    (14, "en", "Motivated craftsman", "Reach level 20 in craft."),
+	
+	(15, "fr", "Artisan expérimenté", "Atteindre le niveau 100 en fabrication d'objets."),
+    (15, "en", "Experienced craftsman", "Reach level 100 in craft.");
+
+
 
 
 
