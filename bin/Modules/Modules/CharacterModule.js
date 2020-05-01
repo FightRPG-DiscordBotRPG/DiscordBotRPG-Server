@@ -9,6 +9,7 @@ const LeaderboardGold = require("../../Leaderboards/LeaderboardGold");
 const LeaderboardLevel = require("../../Leaderboards/LeaderboardLevel");
 const LeaderboardCraftLevel = require("../../Leaderboards/LeaderboardCraftLevel");
 const LeaderboardPower = require("../../Leaderboards/LeaderboardPower");
+const LeaderboardAchievements = require("../../Leaderboards/LeaderboardAchievements");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -88,9 +89,19 @@ class CharacterModule extends GModule {
                 data
             );
         });
-
+        
         this.router.get("/leaderboard/power/:page?", async (req, res, next) => {
             let ld = new LeaderboardPower(Globals.connectedUsers[res.locals.id].character.id);
+            let data = await ld.getPlayerLeaderboard(req.params.page);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(
+                data
+            );
+        });
+
+        this.router.get("/leaderboard/achievements/:page?", async (req, res, next) => {
+            let ld = new LeaderboardAchievements(Globals.connectedUsers[res.locals.id].character.id);
             let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();

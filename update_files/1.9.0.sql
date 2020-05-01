@@ -509,6 +509,87 @@ VALUES
 	
 	(15, "fr", "Artisan expérimenté", "Atteindre le niveau 100 en fabrication d'objets."),
     (15, "en", "Experienced craftsman", "Reach level 100 in craft.");
+	
+-- For achiev 3 mythic items	
+REPLACE INTO charactersachievements
+SELECT idCharacter, 3
+FROM 
+	(SELECT idCharacter, COUNT(*) as total
+	FROM charactersequipements
+	INNER JOIN items ON items.idItem = charactersequipements.idItem
+	INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+	WHERE itemsbase.idRarity = 6 AND itemsbase.idType != 8
+	GROUP BY charactersequipements.idCharacter) mythicTable 
+WHERE total >= 4;
+
+
+-- Epicurean
+REPLACE INTO charactersachievements
+SELECT idCharacter, 4
+FROM charactersstatistics
+WHERE idStatisticBase = 20 AND charactersstatistics.value >= 1;
+
+-- Legendary
+REPLACE INTO charactersachievements
+SELECT idCharacter, 5
+FROM charactersstatistics
+WHERE idStatisticBase = 21 AND charactersstatistics.value >= 1;
+
+-- Dungeon
+REPLACE INTO charactersachievements
+SELECT idCharacter, 6
+FROM charactersstatistics
+WHERE idStatisticBase = 13 AND charactersstatistics.value >= 1;
+
+-- Lvl 20
+REPLACE INTO charactersachievements
+SELECT idCharacter, 8
+FROM levels WHERE levels.actualLevel >= 20;
+
+-- Lvl 100
+REPLACE INTO charactersachievements
+SELECT idCharacter, 9
+FROM levels WHERE levels.actualLevel >= 100;
+
+-- First item craft
+REPLACE INTO charactersachievements
+SELECT idCharacter, 10
+FROM charactersstatistics
+WHERE idStatisticBase IN (24,25,26,27,28,44) AND charactersstatistics.value >= 1
+GROUP BY idCharacter;
+
+-- Join guild
+REPLACE INTO charactersachievements
+SELECT idCharacter, 11
+FROM guildsmembers
+
+-- More than 1000 monsters
+REPLACE INTO charactersachievements
+SELECT idCharacter, 12
+FROM charactersstatistics
+WHERE idStatisticBase = 1 AND charactersstatistics.value >= 1000;
+
+
+-- More than 10000 monsters
+REPLACE INTO charactersachievements
+SELECT idCharacter, 13
+FROM charactersstatistics
+WHERE idStatisticBase = 1 AND charactersstatistics.value >= 10000;
+
+-- Lvl 20 craft
+REPLACE INTO charactersachievements
+SELECT idCharacter, 14
+FROM levels WHERE levels.actualLevel >= 20;
+
+-- Lvl 100 craft
+REPLACE INTO charactersachievements
+SELECT idCharacter, 15
+FROM levels WHERE levels.actualLevel >= 100;
+
+
+
+	
+
 
 
 

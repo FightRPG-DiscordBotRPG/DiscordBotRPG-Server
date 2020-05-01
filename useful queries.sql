@@ -48,3 +48,6 @@ WHERE lang="en";
 
 -- Achievements
 SELECT * FROM achievement INNER JOIN localizationachievements ON localizationachievements.idAchievement = achievement.idAchievement WHERE lang = "en";
+
+-- Select items of type
+SELECT * FROM itemsbase INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem WHERE localizationitems.lang = "en";
