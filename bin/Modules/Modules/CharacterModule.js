@@ -27,7 +27,7 @@ const express = require("express");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "up"];
+        this.commands = ["reset", "leaderboard", "info", "up", "attributes"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");

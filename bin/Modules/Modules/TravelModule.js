@@ -22,7 +22,7 @@ const Area = require("../../Areas/Area");
 class TravelModule extends GModule {
     constructor() {
         super();
-        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers"];
+        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "traveldirect"];
         this.startLoading("Travel");
         this.init();
         this.endLoading("Travel");
