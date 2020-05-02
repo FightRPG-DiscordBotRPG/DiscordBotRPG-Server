@@ -5,8 +5,6 @@
 
 - [Installation](#installation)
 - [Features](#features)
-<!--- [Team](#team)
-- [FAQ](#faq)-->
 - [Support](#support)
 - [License](#license)
 
@@ -16,8 +14,8 @@
 
 > Install
 - npm
-- Node.js (recommended 12.16.1 LTS)
-- Mysql Database (5.7.X || 8.0.X) OR MariaDB (10.3.X)
+- Node.js (recommended 12.16.3 LTS)
+- Mysql Database 8.0.X
 
 ### Clone
 
