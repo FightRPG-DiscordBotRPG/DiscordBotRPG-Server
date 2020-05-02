@@ -467,7 +467,7 @@ class Character extends CharacterEntity {
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
-    async craft(craft) {
+    async craft(craft, level = null) {
         let gotAllItems = true;
         if (craft.id > 0) {
             gotAllItems = (await conn.query(`SELECT 
@@ -508,7 +508,8 @@ class Character extends CharacterEntity {
                 await Promise.all(promises);
 
                 let ls = new LootSystem();
-                await ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
+                let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel)
+                await ls.giveToPlayer(this, craft.itemInfo.idBase, level != null && level > 0 && level <= maxLevel ? level : maxLevel, 1);
 
                 // Achiev ---> If other use switch case or what ever
                 // This achiev is = craft 1 object

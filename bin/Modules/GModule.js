@@ -494,7 +494,7 @@ class GModule {
                 commands[Translator.getString(lang, "help_panel", "craft_title")] = {
                     "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
                     "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
-                    "craft <idCraft>": Translator.getString(lang, "help_panel", "craft"),
+                    "craft <idCraft> <?level>": Translator.getString(lang, "help_panel", "craft"),
                     "collect <idResource> <number>": Translator.getString(lang, "help_panel", "collect", [Globals.collectTriesOnce]),
                 }
 
