@@ -255,6 +255,7 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
+            //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
             await next();
             return res.json({ succes: "done" });
         });

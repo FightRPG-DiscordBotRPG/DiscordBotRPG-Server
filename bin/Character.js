@@ -711,6 +711,34 @@ class Character extends CharacterEntity {
                 if (item.idRarity == 6) {
                     nbrOfMythics++;
                 }
+            } else {
+                // Test equip mount
+                if (item.idRarity >= 4) {
+                    let idAchiev = null;
+                    switch (item.subType) {
+                        case 11:
+                            idAchiev = 16;
+                            break;
+                        case 15:
+                            idAchiev = 17;
+                            break;
+                        case 16:
+                            idAchiev = 18;
+                            break;
+                        case 17:
+                            idAchiev = 19;
+                            break;
+                    }
+
+                    if (idAchiev != null) {
+                        await this.achievements.unlock(idAchiev, Globals.connectedUsers[this.idUser]);
+
+                        // Now test achiev total
+                        if (await this.achievements.hasEveryAchievements([16, 17, 18, 19])) {
+                            this.achievements.unlock(20, Globals.connectedUsers[this.idUser]);
+                        }
+                    }
+                }
             }
         }
 

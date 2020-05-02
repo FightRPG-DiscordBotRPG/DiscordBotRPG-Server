@@ -15,6 +15,10 @@ class CharacterAchievements {
         return res.length > 0;
     }
 
+    async hasEveryAchievements(listOfAchievements) {
+        return CharacterAchievements.hasEveryAchievements(listOfAchievements, this.id);
+    }
+
     async getAchievementEarnList(lang = "en") {
         let res = await conn.query("SELECT nameAchievement, descAchievement, points FROM charactersachievements INNER JOIN achievement ON achievement.idAchievement = charactersachievements.idAchievement INNER JOIN localizationachievements ON localizationachievements.idAchievement = charactersachievements.idAchievement WHERE idCharacter = ?;", [this.id]);
         return res;
@@ -68,6 +72,16 @@ class CharacterAchievements {
     static async hasAchievement(idAchiev, idCharacter) {
         let res = await conn.query("SELECT * FROM charactersachievements WHERE idAchievement = ? AND idCharacter = ?;", [idAchiev, idCharacter]);
         return res.length > 0;
+    }
+
+    /**
+     * 
+     * @param {Array<number>} listOfAchievements
+     * @param {number} idCharacter
+     */
+    static async hasEveryAchievements(listOfAchievements, idCharacter) {
+        let res = await conn.query("SELECT * FROM charactersachievements WHERE idAchievement IN (?) AND idCharacter = ?;", [listOfAchievements, idCharacter]);
+        return res.length == listOfAchievements.length;
     }
 
     static async unlock(idAchievement, idUser) {
