@@ -51,3 +51,43 @@ SELECT * FROM achievement INNER JOIN localizationachievements ON localizationach
 
 -- Select items of type
 SELECT * FROM itemsbase INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem WHERE localizationitems.lang = "en";
+
+-- Select area by climate
+SELECT * FROM areas INNER JOIN areasclimates ON areasclimates.idArea = areas.idArea WHERE areasclimates.idClimate = 2;
+
+-- Select id area for climate and type city
+SELECT areas.idArea FROM areas INNER JOIN areasclimates ON areasclimates.idArea = areas.idArea WHERE areasclimates.idClimate = 2 AND areas.idAreaType = 2;
+
+-- Select idShop of areas based on climate
+SELECT * FROM areas INNER JOIN areasclimates ON areasclimates.idArea = areas.idArea INNER JOIN areasshops ON areasshops.idArea = areas.idArea WHERE areasclimates.idClimate = 2 AND areas.idAreaType = 2;
+
+-- Select items sell by type
+SELECT * FROM sellableitems INNER JOIN itemsbase ON itemsbase.idBaseItem = sellableitems.idBaseItem WHERE itemsbase.idType = 8
+
+-- All list of items to area shop
+SELECT idShop FROM areas INNER JOIN areasclimates ON areasclimates.idArea = areas.idArea INNER JOIN areasshops ON areasshops.idArea = areas.idArea WHERE areasclimates.idClimate = 2 AND areas.idAreaType = 2;
+
+-- Add to all areas listed an item to drop
+-- Utilisez n'importe quel type de select
+REPLACE INTO areasitems
+VALUES SELECT areas.idArea, 1 as idBaseItem, 0 as percentage, 1 as min, 1 as max FROM areas INNER JOIN areasclimates ON areasclimates.idArea = areas.idArea WHERE areasclimates.idClimate = 2 AND areas.idAreaType = 1;
+
+-- Select items in area
+SELECT * FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

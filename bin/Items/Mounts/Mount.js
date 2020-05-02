@@ -8,7 +8,7 @@ class Mount extends Item {
 
         /**
          * Reduction is a percentage that we take off the travel time for a specific climate
-         * 0.1 means 10% faster, at 0.5 it means it's 50% faster to travel
+         * 0.1 means 10% faster, at 0.5 it means it's 50% faster to travel ->
          * This don't take into account climate modifiers that change the base travel time due to bonus/penalties
          * based on the mount type
          */
@@ -19,10 +19,10 @@ class Mount extends Item {
          * Lower than one means is faster
          */
         this.climateModifiers = {
-            "temperate_oceanic": 1,
-            "fire_cap": 1,
-            "hot_desert": 1,
-            "eternal_snow": 1,
+            "temperate_oceanic": 0,
+            "volcanic_hell": 0,
+            "hot_desert": 0,
+            "eternal_snow": 0,
         }
     }
 
@@ -34,11 +34,15 @@ class Mount extends Item {
          */
         let reduction;
         if (climate != null && this.climateModifiers[climate] != null) {
-            reduction = this.climateModifiers[climate] - (this.reductionPerRarity * this.getIdRarity());
+            reduction = 1 - (this.climateModifiers[climate] * this.getFlatModifer());
         } else {
-            reduction = 1 - (this.reductionPerRarity * this.getIdRarity());
+            reduction = 1;
         }
-        return reduction < 0.1 ? 0.1 : reduction;
+        return reduction < 0.1 ? 0.1 : reduction.toFixed(2);
+    }
+
+    getFlatModifer() {
+        return this.reductionPerRarity * this.getIdRarity() + (this.getIdRarity() > 4 ? this.reductionPerRarity * (this.getIdRarity() - 4) : 0);
     }
 
     /**

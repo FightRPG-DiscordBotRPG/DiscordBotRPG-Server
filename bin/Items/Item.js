@@ -272,6 +272,15 @@ Item.newItem = async (idItem, stype) => {
         case "horse":
             itemToReturn = new Horse(idItem);
             break;
+        case "salamander":
+            itemToReturn = new Salamander(idItem);
+            break;
+        case "camel":
+            itemToReturn = new Camel(idItem);
+            break;
+        case "polar_bear":
+            itemToReturn = new PolarBear(idItem);
+            break;
         case "energy_potion":
             itemToReturn = new EnergyPotion(idItem);
             break;
@@ -292,5 +301,8 @@ const ResetTimePotion = require("./Potions/ResetTimePotion");
 const FounderGift = require("./LootBoxes/FounderGift");
 const EquipmentRandomLootBox = require("./LootBoxes/EquipmentRandomLootBox");
 const Horse = require("./Mounts/Horse");
+const Salamander = require("./Mounts/Salamander");
+const Camel = require("./Mounts/Camel");
+const PolarBear = require("./Mounts/PolarBear");
 const EnergyPotion = require("./Potions/EnergyPotion");
 const Stats = require("../Stats/Stats")
