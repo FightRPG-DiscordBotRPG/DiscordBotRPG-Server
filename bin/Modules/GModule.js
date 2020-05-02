@@ -338,9 +338,6 @@ class GModule {
                 toWaitBefore.push(toDo());
             }
 
-            console.log(currentArea.getName());
-            console.log(currentArea.areaType);
-            console.log(await currentArea.isLastFloor())
             if (currentArea.areaType == "dungeon" && await currentArea.isLastFloor()) {
                 achievToUnlock.addAchievementToAllUsers(6);
             }
