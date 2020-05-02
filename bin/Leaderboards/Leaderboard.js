@@ -1,4 +1,5 @@
 'use strict';
+const conn = require("../../conf/mysql");
 
 class Leaderboard {
 
