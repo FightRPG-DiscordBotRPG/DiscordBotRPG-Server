@@ -14,11 +14,6 @@ class LeaderboardGold extends Leaderboard {
         return res != null && res[0] ? res[0].rank : 1;
     }
 
-    async getMaximumRank() {
-        let res = await conn.query("SELECT COUNT(*) as count FROM characters");
-        return res != null && res[0] ? res[0].count : 1;
-    }
-
     async dbGetLeaderboard(offset) {
         return await conn.query("SELECT DISTINCT characters.idCharacter, characters.money, users.userName, users.isConnected, levels.actualLevel FROM characters INNER JOIN levels ON levels.idCharacter = characters.idCharacter INNER JOIN users ON users.idCharacter = characters.idCharacter ORDER BY money DESC, characters.idCharacter LIMIT ?, 11", [offset]);
     }

@@ -58,7 +58,8 @@ class Leaderboard {
     }
 
     async getMaximumRank() {
-        return 1;
+        let res = await conn.query("SELECT COUNT(*) as count FROM characters");
+        return res != null && res[0] ? res[0].count : 1;
     }
 
     async dbGetLeaderboard() {

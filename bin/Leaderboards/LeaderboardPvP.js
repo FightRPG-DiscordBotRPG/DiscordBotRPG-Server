@@ -13,11 +13,6 @@ class LeaderboardPvP extends Leaderboard {
         return res != null && res[0] ? res[0].rank : 1;
     }
 
-    async getMaximumRank() {
-        let res = await conn.query("SELECT COUNT(*) as count FROM charactershonor");
-        return res != null && res[0] ? res[0].count : 1;
-    }
-
     async dbGetLeaderboard(offset) {
         return await conn.query("SELECT DISTINCT charactershonor.idCharacter, charactershonor.Honor, users.userName, users.isConnected, levels.actualLevel FROM charactershonor INNER JOIN levels ON levels.idCharacter = charactershonor.idCharacter INNER JOIN users ON users.idCharacter = charactershonor.idCharacter ORDER BY Honor DESC, charactershonor.idCharacter LIMIT ?, 11", [offset]);
     }

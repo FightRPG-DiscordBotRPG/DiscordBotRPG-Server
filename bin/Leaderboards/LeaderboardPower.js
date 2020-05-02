@@ -14,11 +14,6 @@ class LeaderboardPower extends Leaderboard {
         return res != null && res[0] ? res[0].rank : 1;
     }
 
-    async getMaximumRank() {
-        let res = await conn.query("SELECT COUNT(*) as count FROM characters");
-        return res != null && res[0] ? res[0].count : 1;
-    }
-
     async dbGetLeaderboard(offset) {
         return await conn.query("SELECT users.idCharacter, users.userName, users.isConnected, power, actualLevel FROM (SELECT characters.idCharacter, IfNull(SUM(power), 0) as power FROM characters LEFT JOIN charactersequipements ON charactersequipements.idCharacter = characters.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem GROUP by characters.idCharacter) rankings INNER JOIN users ON users.idCharacter = rankings.idCharacter INNER JOIN levels ON levels.idCharacter = users.idCharacter ORDER BY rankings.power DESC, actualLevel DESC, users.idCharacter ASC LIMIT ?, 11", [offset]);
     }
