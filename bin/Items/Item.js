@@ -17,8 +17,8 @@ class Item {
         this.level = 0;
         this.type = 0;
         this.typeName = "";
-        this.sousType = 0;
-        this.sousTypeName = "";
+        this.subType = 0;
+        this.subTypeName = "";
         this.equipable = true;
         this.stackable = false;
         this.stats = new StatsItems(id);
@@ -43,8 +43,8 @@ class Item {
         this.type = res["idType"];
         this.typeName = res["nomType"];
 
-        this.sousType = res["idSousType"];
-        this.sousTypeName = res["nomSousType"];
+        this.subType = res["idSousType"];
+        this.subTypeName = res["nomSousType"];
 
         this.equipable = res["equipable"];
         this.stackable = res["stackable"];
@@ -199,11 +199,11 @@ class Item {
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
 
-    static getName(lang = "en", idBase) {
+    static getName(idBase, lang = "en") {
         return Translator.getString(lang, "itemsNames", idBase);
     }
 
-    static getDesc(lang = "en", idBase) {
+    static getDesc(idBase, lang = "en") {
         let desc = Translator.getString(lang, "itemsDesc", idBase, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
@@ -214,24 +214,10 @@ class Item {
      */
 
     async toApi(lang) {
-        let toApiObject = {
-            id: this.id,
-            name: this.getName(lang),
-            desc: this.getDesc(lang),
-            rarity: Translator.getString(lang, "rarities", this.rarity),
-            rarityColor: this.rarityColor,
-            level: this.getLevel(),
-            type: Translator.getString(lang, "item_types", this.typeName),
-            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
-            power: await this.getPower(),
-            equipable: this.isEquipable(),
-            number: this.number,
-            price: this.getCost(),
-            isFavorite: this.isFavorite,
-            image: this.image,
-            usable: this.isUsable(),
-            stats: this.stats.toApi()
-        };
+        let toApiObject = await this.toApiLight();
+        toApiObject.desc = this.getDesc(lang);
+        toApiObject.stats = this.stats.toApi();
+
         return toApiObject;
     }
 
@@ -240,10 +226,13 @@ class Item {
             id: this.id,
             name: this.getName(lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
+            rarity_shorthand: this.rarity,
             rarityColor: this.rarityColor,
             level: this.getLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
-            subType: Translator.getString(lang, "item_sous_types", this.sousTypeName),
+            type_shorthand: this.typeName,
+            subType: Translator.getString(lang, "item_sous_types", this.subTypeName),
+            subtype_shorthand: this.subTypeName,
             power: await this.getPower(),
             equipable: this.isEquipable(),
             number: this.number,
@@ -251,6 +240,11 @@ class Item {
             isFavorite: this.isFavorite,
             image: this.image,
             usable: this.isUsable(),
+            desc: "",
+            /**
+             * @type {StatsItems}
+             */
+            stats: {}
         };
         return toApiObject;
     }

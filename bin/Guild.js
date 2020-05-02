@@ -1,9 +1,10 @@
 'use strict';
 const conn = require("../conf/mysql.js");
-const Discord = require("discord.js");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
 const AreaTournament = require("./AreaTournament/AreaTournament");
+const CharacterAchievements = require("./Achievement/CharacterAchievements");
+const User = require("./User");
 
 class Guild {
     // Discord User Info
@@ -55,6 +56,8 @@ class Guild {
         this.nbrMembers++;
 
         this.name = guildName;
+
+        CharacterAchievements.unlock(11, this.members[idCharacter].idUser);
         // err.length = 0 => pas d'erreurs;
         return err;
     }
@@ -100,6 +103,9 @@ class Guild {
         if (await this.getRankCharacter(idAsk) > 1) {
             if (!await this.isMaxMembersLimitReached()) {
                 await conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
+
+                // Don't need to wait it
+                CharacterAchievements.unlock(11, await User.getIDByIDCharacter(idOther));
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
@@ -251,7 +257,7 @@ class Guild {
 
     // Fix when not translated
     async getTerritories(lang = "en") {
-        let request = "SELECT areasowners.idArea, nameArea, nameRegion FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY areasowners.idArea;";
+        let request = "SELECT areasowners.idArea, nameArea, nameRegion, areas.statPoints, areastypes.NomAreaType FROM areasowners INNER JOIN areasregions ON areasregions.idArea = areasowners.idArea INNER JOIN localizationareas ON localizationareas.idArea = areasowners.idArea INNER JOIN localizationregions ON localizationregions.idRegion = areasregions.idRegion INNER JOIN areas ON areas.idArea = areasowners.idArea INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType WHERE idGuild = ? AND localizationregions.lang = ? AND localizationareas.lang = ? ORDER BY areasowners.idArea;";
 
         // First get number of territories own by the guild
         let numberOfOnwedTerritories = (await conn.query("SELECT COUNT(*) as number FROM areasowners WHERE idGuild = ?;", [this.id]))[0].number;
@@ -274,7 +280,7 @@ class Guild {
             if (territories[territory.nameRegion] == null) {
                 territories[territory.nameRegion] = [];
             }
-            territories[territory.nameRegion].push(territory.nameArea);
+            territories[territory.nameRegion].push({ name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
 
             actualIndex++
         }
@@ -284,7 +290,7 @@ class Guild {
     async toApi(lang = "en") {
         await this.loadGuild(this.id);
         let idOfAreaEnroll = await this.getTournamentAreaEnrolled();
-        console.log(lang);
+        let stats = await this.getGuildStats();
         let toApi = {
             members: this.members,
             id: this.id,
@@ -296,9 +302,18 @@ class Guild {
             maxLevel: Globals.guilds.maxLevel,
             nextLevelPrice: await this.getNextLevelPrice(this.level),
             money: this.money,
-            currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null
+            currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null,
+            totalLevel: stats.totalLevel,
+            totalPower: stats.totalPower,
         }
         return toApi;
+    }
+
+    /**
+     * @returns {{totalPower: Number, totalLevel: Number}}
+     */
+    async getGuildStats() {
+        return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers LEFT JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
     }
 
     async isMaxMembersLimitReached() {
@@ -482,7 +497,8 @@ class Guild {
         maxPage = Math.ceil(maxPage / 10);
         maxPage = maxPage <= 0 ? 1 : maxPage;
         page = page <= maxPage ? page : maxPage;
-        let res = await conn.query("SELECT guildsappliances.idCharacter as id, users.userName as name, levels.actualLevel as level FROM guildsappliances INNER JOIN users ON users.idCharacter = guildsappliances.idCharacter INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idGuild = ? ORDER BY users.userName ASC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
+
+        let res = await conn.query("SELECT GA.idCharacter as id, users.userName as name, levels.actualLevel as level, (SELECT IfNull(SUM(power), 0) FROM guildsappliances INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsappliances.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idCharacter = GA.idCharacter ) as power FROM guildsappliances GA INNER JOIN users ON users.idCharacter = GA.idCharacter INNER JOIN levels ON levels.idCharacter = GA.idCharacter WHERE GA.idGuild = ? ORDER BY power DESC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
         return {
             appliances: res,
             page: page,
@@ -608,7 +624,7 @@ class Guild {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = await conn.query("SELECT guilds.idGuild as id, guilds.nom as name, guilds.level, count(*) as nbMembers FROM guilds INNER JOIN guildsmembers ON guildsmembers.idGuild = guilds.idGuild GROUP BY guilds.idGuild ORDER BY level DESC LIMIT 10 OFFSET ?;", [((page - 1) * 10)]);
+        let res = await conn.query("SELECT GD.idGuild as id, GD.nom as name, GD.level, count(*) as nbMembers, SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter GROUP BY GD.idGuild ORDER BY totalPower DESC, totalLevel DESC, level DESC LIMIT 10 OFFSET ?", [((page - 1) * 10)]);
 
         for (let i in res) {
             res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));

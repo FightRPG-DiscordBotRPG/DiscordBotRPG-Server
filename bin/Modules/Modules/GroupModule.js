@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
@@ -270,7 +269,6 @@ class GroupModule extends GModule {
         this.router.get("/show", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
-            let pending = res.locals.pending;
 
             if (group != null) {
                 data = await group.toApi();
@@ -286,50 +284,12 @@ class GroupModule extends GModule {
         this.router.post("/fight/monster", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
-            let pending = res.locals.pending;
 
-            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
-            let idEnemyGroup = parseInt(req.body.idMonster, 10);
             if (group != null) {
                 if (group.leader === Globals.connectedUsers[res.locals.id]) {
                     if (!group.doingSomething) {
                         if (group.allInSameArea()) {
-                            if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                                if (idEnemyGroup != undefined && Number.isInteger(idEnemyGroup)) {
-                                    if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
-                                        let grpEnemies = [];
-                                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
-                                        if (grpEnemies == null) {
-                                            grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
-                                        }
-                                        let response = await Globals.fightManager.fightPvE(group.getArrayOfCharacters(), grpEnemies, res.locals.id, true, res.locals.lang);
-                                        if (response.error != null) {
-                                            data.error = response.error;
-                                        } else {
-                                            data = response;
-
-                                            // Achiev linked to monsters fights
-                                            switch (Globals.connectedUsers[res.locals.id].character.getIdArea()) {
-                                                case 33:
-                                                    if (response.summary.winner === 0) {
-                                                        let arrOfUsers = group.getArrayOfPlayers();
-                                                        for (let user of arrOfUsers) {
-                                                            user.character.getAchievements().unlock(2, user);
-                                                        }
-                                                    }
-                                            }
-                                        }
-                                        //Globals.fightManager.fightPvE(Globals.connectedUsers[res.locals.id], message, idEnemy, canIFightTheMonster);
-                                    } else {
-                                        data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
-                                    }
-                                } else {
-                                    // Error Message
-                                    data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
-                                }
-                            } else {
-                                data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
-                            }
+                            data = await this.FightPvERoute(req, res, 1);
                         } else {
                             data.error = Translator.getString(res.locals.lang, "errors", "group_not_same_area");
                         }

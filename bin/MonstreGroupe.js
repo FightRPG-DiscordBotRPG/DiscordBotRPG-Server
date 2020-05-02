@@ -39,9 +39,9 @@ class MonstreGroup {
             this.enemiesObjetsToFight.push({
                 id: listMonster[i].id,
                 needToBeMaxLevel: Globals.monstersIds[listMonster[i].type] > 1 ? true : false,
-                number: listMonster[i].number
+                number: listMonster[i].number,
+                level: listMonster[i].avglevel,
             });
-
         }
         this.name = listMonster[indexTo].name;
         this.type = listMonster[indexTo].type;

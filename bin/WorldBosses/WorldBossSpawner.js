@@ -3,6 +3,8 @@ const Translator = require("../Translator/Translator");
 const WorldBoss = require("./WorldBoss");
 const LootSystem = require("../LootSystem");
 const axios = require("axios").default;
+const LeaderboardWBAttacks = require("../Leaderboards/LeaderboardWBAttacks");
+const LeaderboardWBDamage = require("../Leaderboards/LeaderboardWBDamage");
 
 class WorldBossSpawner {
     async startUp() {
@@ -32,7 +34,6 @@ class WorldBossSpawner {
         let randomArea = (await conn.query("SELECT idArea FROM areasregions WHERE areasregions.idRegion = ? ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
 
         // Date calcul
-        let actualDate = new Date();
         let date = await WorldBossSpawner.getNextBossDate();
         console.log("Next boss schedule for : " + date.toUTCString());
         await conn.query("INSERT INTO bossspawninfo (idBoss, idArea, spawnDate) VALUES (?, ?, ?);", [randomBossInfo.idBoss, randomArea, date.getTime()])
@@ -135,8 +136,8 @@ class WorldBossSpawner {
             "Total attacks dealt: " + statsFight.totalAttacks + "\n" +
             "Average number of attacks: " + statsFight.averageAttackCount + "\n" +
             "The #1 player in attack count dealt: " + statsFight.highestAttackCount + " attacks! That's about " + attackGap.toFixed(2) + "% of the total attack count! " + atkImpressive + "\\`\\`\\`" + "\n";
-        str += "Your rewards is being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
-        str += "Next boss will arrive soon, here are some informations about the next boss spawn!\n";
+        str += "Your rewards are being distributed, it may take some time. Due to the time needed to send you your items, we do not recommend you to use anything that can change your inventory. (Don't sell any items, you don't want to sell your rewards inadvertently)\n\n";
+        str += "Next boss will arrive soon, here are some details about the next boss spawn:\n";
         str += "\\`\\`\\`" + Translator.getString("en", "world_bosses", "spawn_date", [date.toLocaleString("en-EN") + " UTC"]) + "\\`\\`\\`";
         WorldBossSpawner.wbTell(str);
     }
@@ -349,16 +350,6 @@ class WorldBossSpawner {
         return items;
     }
 
-    static async getRankDamage(idCharacter, idSpawnedBoss) {
-        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
-        return res != null && res[0] ? res[0].rank : 1;
-    }
-
-    static async getRankAttackCount(idCharacter, idSpawnedBoss) {
-        let res = await conn.query("SELECT DISTINCT * FROM (SELECT @rn:=@rn+1 as rank, idCharacter FROM charactersattacks, (select @rn:=0) row_nums WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC) user_ranks WHERE idCharacter = ?;", [idSpawnedBoss, idCharacter]);
-        return res != null && res[0] ? res[0].rank : 1;
-    }
-
     /**
      * 
      * @param {Character} character 
@@ -405,12 +396,14 @@ class WorldBossSpawner {
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();
+            let ldDamage = new LeaderboardWBDamage(idCharacter);
+            let ldAttacks = new LeaderboardWBAttacks(idCharacter);
             return {
                 damage: res[0].damage,
                 attackCount: res[0].attackCount,
                 bossName: wb.getName(lang),
-                damageRank: await WorldBossSpawner.getRankDamage(idCharacter, res[0].idSpawnedBoss),
-                attackCountRank: await WorldBossSpawner.getRankAttackCount(idCharacter, res[0].idSpawnedBoss),
+                damageRank: await ldDamage.getPlayerRank(),
+                attackCountRank: await ldAttacks.getPlayerRank(),
             }
         }
         return null;

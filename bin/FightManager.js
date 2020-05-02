@@ -5,9 +5,13 @@ const LootSystem = require("./LootSystem.js");
 const FightPvE = require("./Fight/FightPvE");
 const FightPvP = require("./Fight/FightPvP");
 const Translator = require("./Translator/Translator");
+const conf = require("../conf/conf");
 
 class FightManager {
     constructor() {
+        /**
+         * @type {Array<Fight>}
+         */
         this.fights = {};
         this.lootSystem = new LootSystem();
     }
@@ -21,7 +25,10 @@ class FightManager {
     }
 
     // PveFight
-
+    /**
+     * 
+     * @param {Array<Character>} users
+     */
     timeToFight(users) {
         for (let i in users) {
             if (!users[i].canDoAction()) {
@@ -57,8 +64,10 @@ class FightManager {
         for (let i in monsters) {
             for (let j = 0; j < monsters[i].number; j++) {
                 let realLevel = level;
-                if (monsters[i].needToBeMaxLevel == true) {
+                if (monsters[i].needToBeMaxLevel) {
                     realLevel = area.maxLevel;
+                } else if (monsters[i].level != 0){
+                    realLevel = monsters[i].level;
                 }
                 let ms = new Monstre(monsters[i].id);
                 await ms.loadMonster(realLevel);
@@ -69,11 +78,16 @@ class FightManager {
     }
 
     fightAlreadyInBattle(userid) {
+
+        if (conf.env == "dev") {
+            return false;
+        }
+
         let user = Globals.connectedUsers[userid];
         if (user != null && user.character.group != null) {
             let plrs = user.character.group.getArrayOfPlayers();
-            for (let i of plrs) {
-                if (this.fights[plrs.id] !== undefined) {
+            for (let player of plrs) {
+                if (this.fights[player.id] !== undefined) {
                     return true;
                 }
             }
@@ -83,38 +97,46 @@ class FightManager {
         }
     }
 
-    async fightPvE(users, monsters, userid, canIFightTheMonster, lang) {
+    /**
+     * 
+     * @param {Array<Character>} characters
+     * @param {Array<Monstre>} monsters
+     * @param {string} userid
+     * @param {boolean} canIFightTheMonster
+     * @param {string} lang
+     * @param {boolean} resetFightStats
+     */
+    async fightPvE(characters, monsters, userid, canIFightTheMonster, lang, resetFightStats=true) {
         let toApi = {
             beingAttacked: false,
-            team1_number: users.length,
-            team2_number: monsters.length
+            team1_number: characters.length,
+            team2_number: monsters.length,
+            summary: new FightPvE([], []).summary
         }
-        let alreadyInBattle = users.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
-        let timeToFight = this.timeToFight(users);
+        let alreadyInBattle = characters.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
+        let timeToFight = this.timeToFight(characters);
         if (timeToFight < 0 && !alreadyInBattle) {
-            let enemies = await this.loadMonsters(monsters, users);
-            let thisPvEFight = {
-                fight: new FightPvE(users, enemies, lang),
-            };
-            await thisPvEFight.fight.init();
+            let enemies = await this.loadMonsters(monsters, characters);
+            let fight = new FightPvE(characters, enemies, lang);
+            await fight.init(resetFightStats);
 
-            this.fights[userid] = thisPvEFight;
+            this.fights[userid] = fight;
 
             // For each people in the group
-            if (users.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
-                Globals.connectedUsers[userid].character.group.doingSomething = true;
+            if (characters.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
+                Globals.connectedUsers[userid].character.group.doingSomething = conf.env == "dev" ? false : true;
                 let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
                 for (let i of fenters) {
-                    this.fights[i] = thisPvEFight;
+                    this.fights[i] = fight;
                 }
             }
 
             // Make them wait even if they delete the message
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, (thisPvEFight.fight.summary.rounds.length) * 4000);
+            }, (fight.summary.rounds.length) * 4000);
 
-            toApi.summary = this.fights[userid].fight.summary;
+            toApi.summary = this.fights[userid].summary;
             if (!canIFightTheMonster) {
                 toApi.beingAttacked = true;
             }
@@ -132,8 +154,8 @@ class FightManager {
     }
 
     deleteFight(userid) {
-        if (this.fights[userid] && this.fights[userid].fight.entities[0].length > 1 && Globals.connectedUsers[userid] && Globals.connectedUsers[userid].character.group != null) {
-            Globals.connectedUsers[userid].character.group.fightEndBoardcast(this.fights[userid].fight.summary);
+        if (this.fights[userid] && this.fights[userid].entities[0].length > 1 && Globals.connectedUsers[userid] && Globals.connectedUsers[userid].character.group != null) {
+            Globals.connectedUsers[userid].character.group.fightEndBoardcast(this.fights[userid].summary);
             Globals.connectedUsers[userid].character.group.doingSomething = false;
             let fenters = Globals.connectedUsers[userid].character.group.getUsersIDsExceptLeader();
             for (let i of fenters) {
@@ -143,11 +165,19 @@ class FightManager {
         delete this.fights[userid];
     }
 
+    /**
+     * 
+     * @param {Array<WolrdEntity>} attackers
+     * @param {Array<WolrdEntity>} defenders
+     * @param {string} userid
+     * @param {string} lang
+     */
     async fightPvP(attackers, defenders, userid, lang) {
         let toApi = {
             beingAttacked: false,
             team1_number: attackers.length,
-            team2_number: defenders.length
+            team2_number: defenders.length,
+            summary: new FightPvP([], []).summary
         }
 
         let alreadyInBattle = attackers.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
@@ -156,11 +186,9 @@ class FightManager {
 
         if (timeToFight < 0 && !alreadyInBattle) {
 
-            let pvpFight = {
-                fight: new FightPvP(attackers, defenders),
-            };
-            await pvpFight.fight.init();
-            toApi.summary = pvpFight.fight.summary;
+            let pvpFight = new FightPvP(attackers, defenders);
+            await pvpFight.init(true);
+            toApi.summary = pvpFight.summary;
             this.fights[userid] = pvpFight;
             if (attackers.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
                 Globals.connectedUsers[userid].character.group.doingSomething = true;
@@ -172,7 +200,7 @@ class FightManager {
             //console.log("Fight Initialized");
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, (pvpFight.fight.summary.rounds.length) * 4000);
+            }, (pvpFight.summary.rounds.length) * 4000);
 
         } else {
             // erreur
@@ -194,3 +222,9 @@ class FightManager {
 }
 
 module.exports = FightManager;
+
+const Fight = require("./Fight/Fight");
+const Character = require("./Character");
+const WolrdEntity = require("./Entities/WorldEntity");
+
+

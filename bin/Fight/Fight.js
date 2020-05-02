@@ -1,5 +1,6 @@
 const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
+
 class Fight {
     /**
      * Classe de gestion d'un combat
@@ -8,6 +9,12 @@ class Fight {
      * de worldEntities
      */
 
+    /**
+     * 
+     * @param {Array<WorldEntity>} entities1
+     * @param {Array<WorldEntity>} entities2
+     * @param {string} lang
+     */
     constructor(entities1, entities2, lang = "en") {
         /**
          * @type {Array<WorldEntity>}
@@ -19,6 +26,9 @@ class Fight {
         ];
 
         this.initiative = [0, 0];
+        /**
+         * @type {Array<WorldEntity>}
+         **/
         this.initiatives = entities1.concat(entities2);
         this.initiativeIndex = -1;
 
@@ -27,6 +37,7 @@ class Fight {
         this.winnerGroup = 0;
 
         this.summary = {
+            type: "generic",
             rounds: [],
             drops: [],
             xp: 0,
@@ -36,6 +47,7 @@ class Fight {
             xpGained: {},
             goldGained: {},
             usersIds: [],
+            winner: 0
         };
 
         this.loadUsersIds();
@@ -70,20 +82,23 @@ class Fight {
                 } else {
                     this.entitiesStunned.splice(indexOfStun, 1);
                     this.initiativeUpdate();
-
                 }
             }
         }
         return false;
     }
 
-    async init() {
+    async init(resetStats=true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
         for (let i in this.initiatives) {
             this.initiatives.sort((a, b) => {
                 return b.getStat("intellect") - a.getStat("intellect");
             });
             this.initiatives[i].updateStats();
+
+            if (resetStats || this.initiatives[i].constructor === Monster) {
+                this.initiatives[i].resetFullHp();
+            }
         }
 
         this.initiativeUpdate();
@@ -131,16 +146,20 @@ class Fight {
         damage = damage * defender.damageDefenceReduction();
         let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
         damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
-        damage = Math.round(damage);
 
-        // Critical hit
+        // Critical hit and stun
         critical = attacker.isThisACriticalHit();
-        damage = critical === true ? damage * 2 : damage;
-
-        // Calcul du stun si pas critique
-        if (!critical) {
+        if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
             stun = attacker.stun(defender.getStat("will"));
         }
+        
+        // Crit + stun does 50% more dmg, crit does double, else default
+        if (critical && stun) {
+            damage *= 1.5;
+        } else if (critical) {
+            damage *= 2;
+        }
+        damage = Math.round(damage);
 
         defender.actualHP -= damage;
         damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
@@ -148,10 +167,11 @@ class Fight {
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
 
-        if (stun) {
-            if (this.entitiesStunned.indexOf(defender) == -1) {
-                this.entitiesStunned.push(defender);
-            }
+        if (stun && this.entitiesStunned.indexOf(defender) == -1) {
+            this.entitiesStunned.push(defender);
+            attacker.consecutiveStuns += 1;
+        } else {
+            attacker.consecutiveStuns = 0;
         }
 
         if (defender.actualHP <= 0) {
@@ -233,3 +253,6 @@ class Fight {
 }
 
 module.exports = Fight
+
+const Monster = require("../Entities/Monster");
+

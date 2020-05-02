@@ -8,11 +8,13 @@ const PStatistics = require("../Achievement/PStatistics");
 class FightPvE extends Fight {
 
     /**
-     * @param {Character} entities1 
-     * @param {Monstre} entities2 
+     * @param {Array<Character>} entities1
+     * @param {Array<Monstre>} entities2 
+     * @param {string} lang
      */
     constructor(entities1, entities2, lang) {
         super(entities1, entities2, lang);
+        this.summary.type = "pve";
     }
 
 
@@ -49,8 +51,7 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[1].length);
     }
 
-    async endFight(lang) {
-        lang = lang || "fr"
+    async endFight() {
         if (this.winnerGroup == 0) {
             // Need this to know if level up
             let totalXp = 0;
@@ -58,10 +59,19 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
-            let areaBonuses = await this.entities[0][0].getArea().getAllBonuses();
+            /**
+             * @type {Area}
+             */
+            let area = this.entities[0][0].getArea();
+            let areaBonuses = await area.getAllBonuses();
 
             for (let i in this.entities[0]) {
                 let entity = this.entities[0][i];
+
+                if (area.areaType != "dungeon") {
+                    // [Health]
+                    entity.resetFullHp();
+                }
 
                 this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
 
@@ -162,3 +172,7 @@ class FightPvE extends Fight {
 }
 
 module.exports = FightPvE;
+
+const Character = require("../Character");
+const Monstre = require("../Entities/Monster");
+const Area = require("../Areas/Area");

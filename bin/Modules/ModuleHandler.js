@@ -3,13 +3,13 @@ const Translator = require("../Translator/Translator");
 const Globals = require("../Globals");
 const fs = require("fs");
 const conn = require("../../conf/mysql");
-const Discord = require("discord.js");
 const User = require("../User");
 const Guild = require("../Guild");
 const PStatistics = require("../Achievement/PStatistics");
 const path = require('path');
 const conf = require("../../conf/conf");
 const versions = require("../../conf/versions");
+const TournamentViewer = require("../Helper/TournamentViewer");
 const express = require("express"),
     app = express(),
     port = 8880,
@@ -43,7 +43,7 @@ class ModuleHandler extends GModule {
             extended: true
         }));
         app.use(express.json());
-        //app.use(compression());
+        app.use(compression());
         app.use("/game", async (req, res, next) => {
             let urlParam1 = req.url.split("/");
             urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;
@@ -51,7 +51,7 @@ class ModuleHandler extends GModule {
                 next();
             } else {
                 return res.json({
-                    error: "The game is under maintenance."
+                    error: "The game is under maintenance. " + (Globals.maintenance_message != null ? "Reason: " + Globals.maintenance_message : ""),
                 });
             }
         });
@@ -62,7 +62,7 @@ class ModuleHandler extends GModule {
                     next();
                 } else {
                     await this.connectUser(res.locals.id);
-                    next();
+                    await next();
                 }
             } else {
                 return res.status(403).json({
@@ -110,6 +110,11 @@ class ModuleHandler extends GModule {
         });
         helpersRouter.get("/versions", async (req, res) => {
             res.send(versions);
+        });
+        helpersRouter.get("/areas/tournaments", async (req, res) => {
+            let urlParts = url.parse(req.url, true);
+            let parameters = urlParts.query;
+            res.send(new TournamentViewer().toHtml(parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en" ));
         });
         app.use("/helpers", helpersRouter);
     }
@@ -302,7 +307,12 @@ class ModuleHandler extends GModule {
             if (Globals.connectedUsers[authorIdentifier].isNew) {
                 Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
             } else {
-                Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea));
+                // Making user moving out of dungeon when connecting
+                let area = Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea);
+                if (area.constructor === DungeonArea) {
+                    area = area.getEntrance();
+                }
+                Globals.connectedUsers[authorIdentifier].character.setArea(area);
             }
 
 
@@ -328,3 +338,5 @@ class ModuleHandler extends GModule {
 }
 
 module.exports = ModuleHandler;
+
+const DungeonArea = require("../Areas/DungeonArea");

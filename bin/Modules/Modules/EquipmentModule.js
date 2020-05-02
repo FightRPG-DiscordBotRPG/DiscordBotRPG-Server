@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
@@ -59,7 +58,8 @@ class EquipmentModule extends GModule {
                                 if (swapItem > 0) {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
-                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped");
+                                Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [tItemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
                             }
@@ -80,7 +80,8 @@ class EquipmentModule extends GModule {
                                 if (swapItem > 0) {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
-                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped");
+                                Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [itemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [itemToEquip.getLevel()]);
                             }

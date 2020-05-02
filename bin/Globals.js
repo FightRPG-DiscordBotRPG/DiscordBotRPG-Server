@@ -24,6 +24,7 @@ let collectChances = {
  * @property {Array<User>} connectedUsers - Users
  */
 var Globals = {
+    "maintenance_message": null,
     "maxLevel": null,
     "maxStatsId": null,
     "statsIds": null,
@@ -36,7 +37,7 @@ var Globals = {
     "basicWaitTimeCollectTravel": 25,
     "basicWaitTimeCraft": 40,
     "collectTriesOnce": 10,
-    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834"],
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834", "245858206021058560"],
     "activated": true,
     "mDifficulties": [{
         name: "Weak",
@@ -61,6 +62,7 @@ var Globals = {
     "areasTypes": null,
     "chanceToFightTheMonsterYouWant": 0.63,
     "resetStatsPricePerLevel": 60,
+    "maxConsecutiveStuns": 1,
     "guilds": {
         "maxLevel": 10,
         "basePriceLevel": 20000,
@@ -69,16 +71,25 @@ var Globals = {
         "membersPerLevels": 5,
         "maxApplies": 5,
     },
-    "addr": "http://azz-tech.no-ip.org:8080/",
-    "help": {
-        "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing"
+    "weather": {
+        "minBeforeChange": 10,
+        "maxBeforeChange": 110,
     },
     /**
      * @type {Array<User>}
      */
     "connectedUsers": [],
+    /**
+     * @type {Array<Guild>}
+     */
     "connectedGuilds": {},
+    /**
+     * @type {AreasManager}
+     */
     "areasManager": {},
+    /**
+     * @type {FightManager}
+     */
     "fightManager": {},
     "lockedMembers": {},
     randomInclusive: (min, max) => {
@@ -180,10 +191,56 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
+    },
+    getSearchParams: (params, withWhere = true, withAndBefore = false) => {
+        let values = [];
+        let more = "";
+
+        if (params != null) {
+            let equivalent = {
+                "rarity": { name: "idRarity", sign: "=", isString:false},
+                "type": { name: "idType", sign: "=", isString:false},
+                "level": { name: "level", sign: ">=", isString:false},
+                "power": { name: "power", sign: ">=", isString:false },
+                "name": {name: "nameItem", sign: "LIKE", isString:true}
+            };
+
+            for (let param of Object.keys(params)) {
+                if (params[param] != null && equivalent[param] != null && (params[param] > 0 || equivalent[param].isString) ) {
+                    if (more.length > 0) {
+                        more += " AND ";
+                    }
+
+                    more += `${equivalent[param].name} ${equivalent[param].sign} ?`;
+
+                    if (equivalent[param].isString) {
+                        params[param] = `%${params[param]}%`;
+                    }
+
+
+                    values.push(params[param]);
+                }
+            }
+
+            if (values.length > 0) {
+                if (withWhere) {
+                    more = "WHERE " + more;
+                } else if (withAndBefore) {
+                    more = "AND " + more;
+                }
+            }
+        }
+
+        return { sqlQuery: more, values: values };
     }
 }
 
 
 module.exports = Globals;
 
-//const User = require("./User");
+/**
+ * @typedef {import("./Areas/AreasManager")} AreasManager
+ * @typedef {import("./User")} User
+ * @typedef {import("./Guild")} Guild
+ * @typedef {import("./FightManager")} FightManager
+ **/

@@ -1,7 +1,6 @@
 'use strict';
 const conn = require("../conf/mysql.js");
 const Character = require("./Character");
-const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar.js");
 const Globals = require("./Globals.js");
 const Crypto = require("crypto");
@@ -87,6 +86,33 @@ class User {
 
     }
 
+    /**
+    * Loads a lighter version of the user (only stats, and equipements)
+    * USE WITH CAUTION ONLY FOR PVP FIGHTS (Don't use any non loaded components)
+    * ONLY IF THE USER EXIST IF NOT THROW EXCEPTION
+    */
+    async lightLoad() {
+        let res = await conn.query("SELECT * FROM users WHERE idUser = ?;", [this.id]);
+        if (res.length === 0) {
+            throw "You can't light load a non existing user";
+        } else {
+            await this.character.lightLoad(res[0]["idCharacter"]);
+            this.username = res[0]["userName"];
+            this.avatar = res[0]["avatar"];
+            this.character.name = this.username;
+
+            // Could be useful if we want to send specific dm to the user
+            // Uncomment if so
+            //res = await conn.query("SELECT * FROM userspreferences WHERE idUser = ?", [this.id]);
+
+            //this.preferences.lang = res[0]["lang"];
+            //this.preferences.groupmute = res[0]["groupmute"];
+            //this.preferences.marketplacemute = res[0]["marketplacemute"];
+            //this.preferences.fightmute = res[0]["fightmute"];
+            //this.preferences.trademute = res[0]["trademute"];
+        }
+    }
+
     static async getUserId(token) {
         let res = await conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
         if (res[0]) {
@@ -118,6 +144,11 @@ class User {
     static async getIDByIDCharacter(idCharacter) {
         let res = await conn.query("SELECT idUser FROM users WHERE idCharacter = ?;", [idCharacter]);
         return res[0] != null ? res[0].idUser : null;
+    }
+
+    static async getIDByIDCharacterAndLang(idCharacter) {
+        let res = await conn.query("SELECT idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
+        return res[0];
     }
 
     getUsername() {
@@ -246,6 +277,8 @@ class User {
             power: await this.character.getPower(),
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
+            currentHp: this.character.actualHP,
+            maxHp: this.character.maxHP,
             craft: {
                 level: this.character.getCraftLevel(),
                 xp: this.character.getCratfXP(),

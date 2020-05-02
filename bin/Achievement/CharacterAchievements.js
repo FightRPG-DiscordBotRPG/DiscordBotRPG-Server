@@ -58,6 +58,31 @@ class CharacterAchievements {
         }
 
     }
+
+    static async getSpecificAchievement(idAchievement, idCharacter, lang) {
+        let res = await conn.query("SELECT achievement.idAchievement, achievement.name_identifier, achievement.points, COALESCE(baseLocalization.lang, defaultLocalization.lang) as lang, COALESCE(baseLocalization.nameAchievement, defaultLocalization.nameAchievement) as nameAchievement, COALESCE(baseLocalization.descAchievement, defaultLocalization.descAchievement) as descAchievement, (CASE WHEN EXISTS(SELECT 1 FROM charactersachievements WHERE charactersachievements.idCharacter = ? AND charactersachievements.idAchievement = achievement.idAchievement) THEN true ELSE false END) as earned FROM achievement LEFT JOIN localizationachievements as baseLocalization ON baseLocalization.idAchievement = achievement.idAchievement AND baseLocalization.lang = ? LEFT JOIN localizationachievements as defaultLocalization ON defaultLocalization.idAchievement = achievement.idAchievement AND defaultLocalization.lang = 'en' WHERE achievement.idAchievement = ?;", [idCharacter, lang, idAchievement]);
+
+        return res.length > 0 ? res[0] : null;
+    }
+
+    static async hasAchievement(idAchiev, idCharacter) {
+        let res = await conn.query("SELECT * FROM charactersachievements WHERE idAchievement = ? AND idCharacter = ?;", [idAchiev, idCharacter]);
+        return res.length > 0;
+    }
+
+    static async unlock(idAchievement, idUser) {
+        let charAndLang = await User.getIdAndLang(idUser);
+        let idCharacter = charAndLang.idCharacter
+        if (!(await this.hasAchievement(idAchievement, idCharacter))) {
+            await conn.query("INSERT IGNORE INTO charactersachievements VALUES (?, ?);", [idCharacter, idAchievement]);
+            let lang = charAndLang.lang;
+            let achievement = await this.getSpecificAchievement(idAchievement, idCharacter, lang);
+            User.tell(idUser, Translator.getString(lang, "character", "achievement_earned", [achievement.nameAchievement]))
+        }
+    }
 }
 
 module.exports = CharacterAchievements;
+
+
+const User = require("../User");

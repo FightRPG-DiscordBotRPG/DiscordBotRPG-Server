@@ -1,7 +1,8 @@
 const conn = require("../../conf/mysql");
 const Translator = require("../Translator/Translator");
 const AreaTournamentRound = require("./AreaTournamentRound");
-
+const fs = require("fs").promises;
+const conf = require("../../conf/conf");
 
 class AreaTournament {
     /**
@@ -10,7 +11,7 @@ class AreaTournament {
      */
     constructor(idArea) {
         this.idArea = idArea;
-        this.areasGuildsIncriptions = [];
+        this.areasGuildsInscriptions = [];
         /**
          * @type {Array<AreaTournamentRound>}
          */
@@ -18,6 +19,7 @@ class AreaTournament {
         this.isStarted = false;
         this.actualRound = 0;
         this.maxRounds = 0;
+        this.date = null;
     }
 
     async init() {
@@ -45,6 +47,9 @@ class AreaTournament {
         if (res && res.nextTournament != null) {
             date.setTime(res.nextTournament);
         }
+        if (conf.env == "dev") {
+            date = new Date(Date.now() + 20000);
+        }
         return date;
     }
 
@@ -68,9 +73,11 @@ class AreaTournament {
      */
     async startTournament() {
         this.isStarted = true;
+        this.date = Date.now();
         let inscriptions = await conn.query("SELECT * FROM conquesttournamentinscriptions WHERE idArea = ?", [this.idArea]);
         if (inscriptions.length == 0) {
             console.log("Area : " + this.idArea + ", No guilds registered, mission abort ! ");
+            await this.clearJsonData();
             this.scheduleTournament();
             return;
         }
@@ -78,14 +85,17 @@ class AreaTournament {
         console.log("Starting tournament for the area : " + this.idArea);
 
         for (let inscription of inscriptions) {
-            this.areasGuildsIncriptions.push(inscription.idGuild);
+            this.areasGuildsInscriptions.push(inscription.idGuild);
         }
+        // Sort here just one time to be real tournamenet like system
+        this.areasGuildsInscriptions.sort(() => Math.random() - 0.5);
+
         this.calculMaxRounds();
         this.actualRound = 1;
 
         await conn.query("UPDATE conquesttournamentinfo SET started = ?, actualRound = ? WHERE idArea = ?;", [this.isStarted, this.actualRound, this.idArea]);
 
-        this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.areasGuildsIncriptions, this.idArea);
+        this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.areasGuildsInscriptions, this.idArea);
         await this.rounds[this.actualRound].init()
 
         // Do all the fights for this area
@@ -107,7 +117,7 @@ class AreaTournament {
         this.actualRound = 0;
         this.maxRounds = 0;
         this.rounds = {};
-        this.areasGuildsIncriptions = [];
+        this.areasGuildsInscriptions = [];
         this.isStarted = false;
     }
 
@@ -128,7 +138,7 @@ class AreaTournament {
             this.actualRound++;
             await conn.query("UPDATE conquesttournamentinfo SET actualRound = ? WHERE idArea = ?;", [this.actualRound, this.idArea]);
             this.rounds[this.actualRound] = new AreaTournamentRound(this.actualRound, this.rounds[this.actualRound - 1].winners, this.idArea);
-            this.rounds[this.actualRound].init();
+            await this.rounds[this.actualRound].init();
             await this.doFights();
         }
         //console.log("Tournament Finished for area : " + this.idArea + " Winner is : " + this.rounds[this.actualRound].winners[0].name);
@@ -138,7 +148,7 @@ class AreaTournament {
      * Update mamximum number of rounds (Basically it's the number of rounds that iwll be played)
      */
     calculMaxRounds() {
-        let n = this.areasGuildsIncriptions.length;
+        let n = this.areasGuildsInscriptions.length;
         let count = 0;
         while (n > 0) {
             n = Math.floor(n / 2);
@@ -158,7 +168,6 @@ class AreaTournament {
      * @param {number} idGuild 
      */
     static async enrollGuild(idGuild, idArea) {
-        // TODO Fix in 1.9 REPLACE INTO instead of INSERT INTO
         await conn.query("REPLACE INTO conquesttournamentinscriptions VALUES (?, ?);", [idGuild, idArea]);
     }
 
@@ -208,9 +217,32 @@ class AreaTournament {
         await Area.staticSetOwner(this.idArea, this.rounds[this.maxRounds].winners[0]);
         console.log("Winner of the area : " + this.idArea + " is " + (await conn.query("SELECT nom FROM guilds WHERE idGuild = ?", [this.rounds[this.maxRounds].winners[0]]))[0].nom);
 
+        await this.saveToFile();
         await this.resetTournament();
         await this.scheduleTournament();
         await this.resetInscriptions();
+    }
+
+    async saveToFile() {
+        let area = new Area(this.idArea);
+        await area.lightLoad();
+        this.areaName = area.getName("en");
+        this.areaImage = area.image;
+        await this.clearJsonData();
+        try {
+            await fs.writeFile(conf.tournamentFilesPath + this.idArea + ".json", JSON.stringify(this));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async clearJsonData() {
+        try {
+            await fs.unlink(conf.tournamentFilesPath + this.idArea + ".json")
+        } catch (e) {
+            //console.log(e);
+            // We do'nt care about errors, the deletion is not important
+        }
     }
 
 
@@ -218,5 +250,4 @@ class AreaTournament {
 
 module.exports = AreaTournament;
 
-// Prevent cyclic bullshit from nodejs
 const Area = require("../Areas/Area");

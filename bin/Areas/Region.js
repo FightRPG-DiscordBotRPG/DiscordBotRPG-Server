@@ -58,26 +58,30 @@ class Region {
         return this.connectedAreas.get(index) != null;
     }
 
-    toApi(lang) {
+    async toApi(lang) {
         let areas = [];
         for (let [key, value] of this.areas) {
-            areas.push({
-                id: key,
-                name: this.areas.get(key).getName(lang),
-                levels: this.areas.get(key).minMaxLevelToString(),
-                type: this.areas.get(key).areaType,
-            });
+            if (await this.areas.get(key).canTravelTo()) {
+                areas.push({
+                    id: key,
+                    name: this.areas.get(key).getName(lang),
+                    levels: this.areas.get(key).minMaxLevelToString(),
+                    type: this.areas.get(key).areaType,
+                });
+            }
         }
 
         let connectedAreas = [];
         for (let [key, value] of this.connectedAreas) {
-            connectedAreas.push({
-                id: key,
-                name: this.connectedAreas.get(key).getName(lang),
-                levels: this.connectedAreas.get(key).minMaxLevelToString(),
-                region_name: Region.staticGetName(this.connectedAreas.get(key).idRegion, lang),
-                type: this.connectedAreas.get(key).areaType
-            });
+            if (await this.connectedAreas.get(key).canTravelTo()) {
+                connectedAreas.push({
+                    id: key,
+                    name: this.connectedAreas.get(key).getName(lang),
+                    levels: this.connectedAreas.get(key).minMaxLevelToString(),
+                    region_name: Region.staticGetName(this.connectedAreas.get(key).idRegion, lang),
+                    type: this.connectedAreas.get(key).areaType
+                });
+            }
         }
 
         return {

@@ -5,6 +5,10 @@ const MonstreGroupe = require("../MonstreGroupe");
 const AreaTournament = require("../AreaTournament/AreaTournament");
 const AreaBonus = require("./AreaBonus");
 const WorldBoss = require("../WorldBosses/WorldBoss");
+const AreaClimate = require("../Climate/AreaClimate");
+const Marketplace = require("../Marketplace/Marketplace");
+const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
+const Shop = require("../Shops/Shop");
 
 class Area {
 
@@ -13,6 +17,9 @@ class Area {
         this.image = "";
         this.minLevel = 1;
         this.maxLevel = 1;
+        /**
+         * dungeon, city, wild
+         */
         this.areaType = "";
         this.idRegion = 0;
         //this.nbrPlayers = 0;
@@ -34,6 +41,17 @@ class Area {
         this.services = {};
         this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
         this.requiredAchievements = [];
+
+        // Used to know idAreas from and to
+        this.paths = {
+            to: [],
+            from: []
+        }
+
+        // Climate System
+        this.areaClimate = new AreaClimate(this.id);
+
+        this.bonusresetCooldown = 0;
     }
 
     async loadArea() {
@@ -62,17 +80,24 @@ class Area {
 
         // Load monsters
 
-        res = await conn.query("SELECT monstresgroupes.idMonstreGroupe, monstresgroupes.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN monstresgroupes ON monstres.idMonstre = monstresgroupes.idMonstre INNER JOIN areasmonsters ON areasmonsters.idMonstre = monstresgroupes.idMonstre AND areasmonsters.idMonstreGroupe = monstresgroupes.idMonstreGroupe WHERE areasmonsters.idArea = ?;", [this.id]);
+        res = await conn.query("SELECT monstresgroupesassoc.idMonstresGroupe, monstresgroupesassoc.number, monstres.idMonstre, monstres.avglevel, monstrestypes.nom FROM areasmonsters INNER JOIN monstresgroupes ON monstresgroupes.idMonstresGroupe = areasmonsters.idMonstresGroupe INNER JOIN monstresgroupesassoc ON monstresgroupesassoc.idMonstresGroupe = monstresgroupes.idMonstresGroupe INNER JOIN monstres ON monstres.idMonstre = monstresgroupesassoc.idMonstre INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType WHERE areasmonsters.idArea = ?;", [this.id]);
         let arrOfMonstersGroup = new Map();
         for (let i in res) {
+            let avgLevel = res[i]["avglevel"];
+
+            // If dungeon type we might want to add monsters with low level here but scale them to area level
+            if (this.areaType == "dungeon" && avgLevel < this.minLevel && avgLevel > 0) {
+                avgLevel = this.minLevel;
+            }
+
             let monsterLight = {
                 id: res[i]["idMonstre"],
-                avglevel: res[i]["avglevel"],
+                avglevel: avgLevel,
                 type: res[i]["nom"],
                 number: res[i]["number"]
             }
 
-            let idToString = res[i]["idMonstreGroupe"].toString();
+            let idToString = res[i]["idMonstresGroupe"].toString();
             if (arrOfMonstersGroup.get(idToString) == null) {
                 arrOfMonstersGroup.set(idToString, []);
             }
@@ -114,6 +139,18 @@ class Area {
             this.requiredAchievements.push(res[i].idAchievement);
         }
 
+        await this.areaClimate.load();
+
+    }
+
+    async lightLoad() {
+        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
+        res = res[0];
+        this.idRegion = res["idRegion"];
+        this.image = res["AreaImage"];
+        this.areaType = res["NomAreaType"];
+        this.minLevel = res["minLevel"];
+        this.maxLevel = res["maxLevel"];
     }
 
     getMonstersToApiLight(lang) {
@@ -124,6 +161,7 @@ class Area {
             monsters.push({
                 name: this.monsters[i].getName(lang),
                 type: Translator.getString(lang, "monsters_types", this.monsters[i].type),
+                type_shorthand: this.monsters[i].type,
                 level: level,
                 number: this.monsters[i].numberOfMonsters,
             });
@@ -145,6 +183,7 @@ class Area {
                 id: i + 1,
                 name: Translator.getString(lang, "itemsNames", this.resources[i].idBaseItem),
                 rarity: Translator.getString(lang, "rarities", this.resources[i]["nomRarity"]),
+                rarity_shorthand: this.resources[i]["nomRarity"],
             }
 
             switch (this.resources[i]["nomSousType"]) {
@@ -361,10 +400,47 @@ class Area {
         return this.fightPossible;
     }
 
+    //returns when area bonus can be reset
+    getResetCooldown() {
+        return this.bonusresetCooldown;
+    }
+
+    getResetCooldownString(lang="en") {
+        lang = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
+        return new Date(this.getResetCooldown()).toLocaleString(lang, { timeZone: 'UTC' }) + " GMT";
+    }
+
+    setResetCooldown(cooldown) {
+        this.bonusresetCooldown = cooldown;
+    }
+
+    setCooldownNextDay() {
+        let date = new Date();
+        date.setUTCMinutes(0);
+        date.setUTCSeconds(0);
+        date.setUTCHours(0);
+        date.setUTCDate(date.getUTCDate() + 1);
+        this.setResetCooldown(date.getTime());
+    }
+
+    canResetBonuses() {
+        return (this.getResetCooldown() <= Date.now());
+    }
+
+    //might or might not work
+    async getTotalLevel() {
+        let res = await conn.query("SELECT * FROM areasbonuses WHERE idArea = ? AND idBonusTypes;", [this.id]);
+        let totalLevel = 0;
+        for (let o of res) {
+            totalLevel += o.value;
+        }
+        return totalLevel;
+    }
+
     /**
      * 
      * @param {string} serviceName 
-     * @returns {Object} Service
+     * @returns {Marketplace | Shop | CraftingBuilding} Service
      */
     getService(serviceName) {
         return this.services[serviceName];
@@ -484,11 +560,9 @@ class Area {
         }
     }
 
-    toApiFull() {
-        return this;
-    }
-
     async toApi(lang) {
+        let minimumQuality = await this.getMinItemQuality();
+        let maximumQuality = await this.getMaxItemQuality();
         return {
             name: this.getName(lang),
             levels: this.minMaxLevelToString(),
@@ -497,9 +571,13 @@ class Area {
             haveOwner: await this.haveOwner(),
             image: this.image,
             desc: this.getDesc(lang),
-            minimum_quality: Translator.getString(lang, "rarities", await this.getMinItemQuality()),
+            minimum_quality: Translator.getString(lang, "rarities", minimumQuality),
+            minimum_quality_shorthand: minimumQuality,
+            maximum_quality: Translator.getString(lang, "rarities", maximumQuality),
+            maximum_quality_shorthand: maximumQuality,
             monsters: this.getMonstersToApiLight(lang),
             resources: this.getResourcesApiLight(lang),
+            climate: this.areaClimate
         }
     }
 
@@ -533,6 +611,18 @@ class Area {
             return wb;
         }
         return null;
+    }
+
+    async canTravelTo() {
+        return true;
+    }
+
+    async isLastFloor() {
+        return true;
+    }
+
+    async isFirstFloor() {
+        return true;
     }
 
 }

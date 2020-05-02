@@ -9,14 +9,9 @@ class LeaderboardGold extends Leaderboard {
     }
 
     async getPlayerRank() {
-        let res = await conn.query("SELECT DISTINCT * FROM(SELECT @rn:=@rn+1 as rank, characters.idCharacter, characters.money FROM characters, (select @rn:=0) row_nums GROUP BY characters.idCharacter ORDER BY characters.money DESC) user_ranks WHERE idCharacter = ?;", [this.id]);
+        let res = await conn.query("WITH ranked_orders AS (SELECT idCharacter, RANK() OVER (ORDER BY characters.money DESC) as 'rnk' FROM characters) SELECT rnk as 'rank' FROM ranked_orders WHERE idCharacter = ?", [this.id]);
 
         return res != null && res[0] ? res[0].rank : 1;
-    }
-
-    async getMaximumRank() {
-        let res = await conn.query("SELECT COUNT(*) as count FROM characters");
-        return res != null && res[0] ? res[0].count : 1;
     }
 
     async dbGetLeaderboard(offset) {

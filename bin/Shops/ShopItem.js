@@ -42,11 +42,14 @@ class ShopItem {
 
     toApi(lang = "en") {
         return {
-            name: Item.getName(lang, this.idBase),
-            desc: Item.getDesc(lang, this.idBase),
+            name: Item.getName(this.idBase, lang),
+            desc: Item.getDesc(this.idBase, lang),
             rarity: Translator.getString(lang, "rarities", this.rarity),
+            rarity_shorthand: this.rarity,
             type: Translator.getString(lang, "item_types", this.type),
+            type_shorthand: this.type,
             subType: Translator.getString(lang, "item_sous_types", this.subType),
+            subType_shorthand: this.subType,
             level: this.level,
             number: this.number,
             price: this.price,
@@ -55,7 +58,7 @@ class ShopItem {
     }
 
     getName(lang = "en") {
-        return Item.getName(lang, this.idBase);
+        return Item.getName(this.idBase, lang);
     }
 
 

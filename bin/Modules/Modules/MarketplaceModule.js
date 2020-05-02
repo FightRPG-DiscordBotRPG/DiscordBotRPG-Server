@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
@@ -44,8 +43,9 @@ class MarketplaceModule extends GModule {
     loadRoutes() {
         this.router.get("/mylist/:page?", async (req, res, next) => {
             let data = {};
+
             if (res.locals.marketplace != null) {
-                data = await res.locals.marketplace.apiCharacterOrders(Globals.connectedUsers[res.locals.id].character.id, req.params.page ? req.params.page : 1, res.locals.lang);
+                data = await res.locals.marketplace.apiCharacterOrders(Globals.connectedUsers[res.locals.id].character.id, req.params.page ? req.params.page : 1, this.getSearchParams(req), res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
@@ -201,25 +201,11 @@ class MarketplaceModule extends GModule {
 
         });
 
-        this.router.get("/search", async (req, res, next) => {
-            let data = {};
-            //itemName, level, page, lang
-            if (res.locals.marketplace != null) {
-                data = await res.locals.marketplace.apiSearchOrder(req.query.itemName ? req.query.itemName : "", req.query.level ? req.query.level : 1, req.query.page ? req.query.page : 1, res.locals.lang);
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
-            }
-
-            data.lang = res.locals.lang;
-            await next();
-            return res.json(data);
-
-        });
-
         this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
+
             if (res.locals.marketplace != null) {
-                data = await res.locals.marketplace.apiShowAll(req.params.page, res.locals.lang);
+                data = await res.locals.marketplace.apiSearchOrders(req.params.page, this.getSearchParams(req), res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "marketplace_not_exist");
             }
@@ -235,7 +221,7 @@ class MarketplaceModule extends GModule {
             if (res.locals.marketplace != null) {
                 let mkToSeeOrder = await res.locals.marketplace.getThisOrder(req.params.idItem);
                 if (mkToSeeOrder != null) {
-                    data = await res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, res.locals.lang);
+                    data = await res.locals.marketplace.apiItemOrder(req.params.idItem, Globals.connectedUsers[res.locals.id].character, mkToSeeOrder, res.locals.lang);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "marketplace_order_dont_exist");
                 }

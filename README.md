@@ -56,6 +56,10 @@ Reach out to me at one of the following places!
 
 ## Licence
 
+The licence covers exclusively the source code and the structure of the database.
+The data provided in the .sql are not affected by this license.
+These data are the exclusive property of FightRPG, any unauthorized use will lead to legal action.
+
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
 - **[MPL 2.0 license](https://github.com/FightRPG-DiscordBotRPG/DiscordBotRPG-Server/blob/master/LICENSE)**

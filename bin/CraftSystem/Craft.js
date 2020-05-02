@@ -57,23 +57,29 @@ class Craft {
 
     toApi(lang) {
         let craft = {};
-        craft.name = Item.getName(lang, this.itemInfo.idBase);
-        craft.desc = Item.getDesc(lang, this.itemInfo.idBase);
+        craft.name = Item.getName(this.itemInfo.idBase, lang);
+        craft.desc = Item.getDesc(this.itemInfo.idBase, lang);
         craft.image = this.itemInfo.image;
         craft.rarityColor = this.itemInfo.rarityColor;
         craft.rarity = Translator.getString(lang, "rarities", this.itemInfo.rarity);
+        craft.rarity_shorthand = this.itemInfo.rarity;
         craft.type = Translator.getString(lang, "item_types", this.itemInfo.typename);
+        craft.type_shorthand = this.itemInfo.typename;
         craft.subType = Translator.getString(lang, "item_sous_types", this.itemInfo.stypename);
+        craft.subType_shorthand = this.itemInfo.stypename;
         craft.minLevel = this.itemInfo.minLevel;
         craft.maxLevel = this.itemInfo.maxLevel;
         craft.requiredItems = [];
 
         for (let item of this.requiredItems) {
             craft.requiredItems.push({
-                name: Item.getName(lang, item.idBase),
+                name: Item.getName(item.idBase, lang),
                 type: Translator.getString(lang, "item_types", item.typename),
+                type_shorthand: item.typename,
                 subType: Translator.getString(lang, "item_sous_types", item.stypename),
+                subType_shorthand: item.stypename,
                 rarity: Translator.getString(lang, "rarities", item.rarity),
+                rarity_shorthand: item.rarity,
                 number: item.number,
             })
         }

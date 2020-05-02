@@ -2,6 +2,8 @@ const Globals = require("../Globals");
 const LootSystem = require("../LootSystem");
 const axios = require("axios").default;
 const Translator = require("../Translator/Translator");
+const PStatistics = require("../Achievement/PStatistics");
+const express = require("express");
 
 
 class GModule {
@@ -11,6 +13,10 @@ class GModule {
         this.isModule = true;
         this.isLoaded = false;
         this.isActive = true;
+
+        /**
+         * @type {express.Router}
+         */
         this.router = null;
         this.commands = [];
     }
@@ -98,6 +104,7 @@ class GModule {
                     next();
                 }
                 //next();
+
             } else {
                 return res.json({
                     error: "Due to an error, this module is deactivated. The following commands will be disabled : " + this.commands.toString(),
@@ -206,6 +213,171 @@ class GModule {
         }
     }
 
+    /**
+     * 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {Number} fightType (0 => Solo | 1 => Group)
+     */
+    async FightPvERoute(req, res, fightType) {
+        if (fightType === 1) {
+            // It's needed since it's only added on all fight commands, but not on group fight one
+            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
+        }
+        let group = res.locals.group;
+        let data = {}
+        let idEnemyGroup = parseInt(req.body.idMonster, 10);
+
+        if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+            if (idEnemyGroup != null && Number.isInteger(idEnemyGroup)) {
+                if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
+                    let canIFightTheMonster = false;
+                    let grpEnemies = [];
+                    /** Typing variables like this to get references in visual studio
+                    * @type {Array<Character>}
+                    */
+                    let grpCharacters = [];
+                    // Used for achievements
+                    let grpUsers = [];
+
+                    if (fightType === 0) {
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                        grpCharacters = [Globals.connectedUsers[res.locals.id].character];
+                        grpUsers = [Globals.connectedUsers[res.locals.id]];
+                    } else {
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat("perception"));
+                        grpCharacters = group.getArrayOfCharacters();
+                        grpUsers = group.getArrayOfPlayers();
+                    }
+
+
+                    if (!canIFightTheMonster) {
+                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                    } else {
+                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                    }
+
+                    // Specific to dungeon
+                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !(await res.locals.currentArea.isFirstFloor()));
+
+                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, shouldHealPlayer);
+                    if (response.error) {
+                        data.error = response.error;
+                    } else {
+                        data = response;
+                        await this.fightAchievement(grpUsers, response.summary);
+
+                        // Travel to entrance if dungeon and loose
+                        if (res.locals.currentArea.areaType === "dungeon") {
+                            /**
+                             * @type {Area}
+                             */
+                            let areaToTravel;
+
+                            // 0 means first group aka users
+                            if (response.summary.winner === 0) {
+                                areaToTravel = res.locals.currentArea.getNextFloorOrExit();
+                            } else {
+                                // They lost, so they go to entrance
+                                areaToTravel = res.locals.currentArea.getEntrance();
+                            }
+
+                            let travelAwaits = [];
+                            for (let character of grpCharacters) {
+                                travelAwaits.push(character.changeArea(areaToTravel, 0));
+                                if (areaToTravel.areaType != "dungeon") {
+                                    character.resetFullHp();
+                                }
+                            }
+
+                            await Promise.all(travelAwaits);
+                            data.playersMovedTo = areaToTravel.getName(res.locals.lang);
+
+                            // Heal players if out of dungeon
+
+                        }
+
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
+                }
+            } else {
+                // Error Message
+                data.error = Translator.getString(res.locals.lang, "errors", "fight_enter_id_monster");
+            }
+        } else {
+            data.error = Translator.getString(res.locals.lang, "errors", "fight_impossible_in_town");
+        }
+        data.lang = res.locals.lang;
+        return data;
+    }
+
+    /**
+     * 
+     * @param {Array<User>} grpOfUsers
+     */
+    async fightAchievement(grpOfUsers, fightSummary) {
+        let currentArea = Globals.areasManager.getArea(grpOfUsers[0].character.getIdArea());
+        let achievToUnlock = new AchievementUnlocker(grpOfUsers);
+
+        let toWaitBefore = [];
+
+        if (fightSummary.winner === 0) {
+
+            for (let user of grpOfUsers) {
+
+                let toDo = async () => {
+                    let numberOfVictories = await PStatistics.getStat(user.character.id, "pvefights_victories");
+                    if (numberOfVictories >= 10000) {
+                        achievToUnlock.addAchievement(user, 13);
+                    } else if (numberOfVictories >= 1000) {
+                        achievToUnlock.addAchievement(user, 12);
+                    }
+                }
+
+                toWaitBefore.push(toDo());
+            }
+
+            console.log(currentArea.getName());
+            console.log(currentArea.areaType);
+            console.log(await currentArea.isLastFloor())
+            if (currentArea.areaType == "dungeon" && await currentArea.isLastFloor()) {
+                achievToUnlock.addAchievementToAllUsers(6);
+            }
+
+            // Meaning in group
+            if (grpOfUsers.length > 1) {
+                achievToUnlock.addAchievementToAllUsers(7);
+            }
+
+            // For area related achievements
+            switch (currentArea.id) {
+                case 33:
+                    achievToUnlock.addAchievementToAllUsers(2);
+                    break;
+            }
+
+            // For drop related achievements
+            for (let userDrops of fightSummary.drops) {
+                if (userDrops.drop["4"] != null && userDrops.drop["4"].equipable > 0) {
+                    achievToUnlock.addAchievementByUserName(userDrops.name, 4);
+                }
+
+                if (userDrops.drop["5"] != null && userDrops.drop["5"].equipable > 0) {
+                    achievToUnlock.addAchievementByUserName(userDrops.name, 5);
+                }
+            }
+        }
+
+        // Waiting to get those async checks done
+        await Promise.all(toWaitBefore);
+
+        // No await since we can let this running 'in background'
+        // Unlocks all achievements added to it (if there are achievements to unlock)
+        achievToUnlock.unlockAchievementsForAll();
+
+    }
+
     helpPanel(lang, page) {
         let maxPage = 8;
         page = page && page > 0 && page <= maxPage ? page : 1;
@@ -223,6 +395,7 @@ class GModule {
 
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
                     "info": Translator.getString(lang, "help_panel", "info"),
+                    "attributes": Translator.getString(lang, "help_panel", "attributes"),
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
@@ -245,6 +418,7 @@ class GModule {
                     "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                     "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                     "sellall": Translator.getString(lang, "help_panel", "sellall"),
+                    "sellall <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "sellall_filter"),
                     "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
                 }
 
@@ -264,6 +438,8 @@ class GModule {
                     "areaupbonus <bonus_identifier> <pts_to_allocate>": Translator.getString(lang, "help_panel", "areaupbonus"),
                     "travel <areaID>": Translator.getString(lang, "help_panel", "travel"),
                     "travelregion <regionID>": Translator.getString(lang, "help_panel", "travelregion"),
+                    "traveldirect <realAreaID>": Translator.getString(lang, "help_panel", "traveldirect"),
+                    "arearesetbonuses": Translator.getString(lang, "help_panel", "arearesetbonuses"),
                 }
                 break;
             case 4:
@@ -309,8 +485,7 @@ class GModule {
                     "mkplace <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
                     "mkcancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
                     "mkbuy <idItem>": Translator.getString(lang, "help_panel", "mkbuy"),
-                    "mksearch \"<itemName>\" <level> <page>": Translator.getString(lang, "help_panel", "mksearch"),
-                    "mkshow <page>": Translator.getString(lang, "help_panel", "mkshow"),
+                    "mkshow/mksearch <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch"),
                     "mksee <idItem>": Translator.getString(lang, "help_panel", "mksee"),
                 }
                 break;
@@ -319,8 +494,8 @@ class GModule {
                 commands[Translator.getString(lang, "help_panel", "craft_title")] = {
                     "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
                     "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
-                    "craft <idCraft>": Translator.getString(lang, "help_panel", "craft"),
-                    "collect <idResource>": Translator.getString(lang, "help_panel", "collect"),
+                    "craft <idCraft> <?level>": Translator.getString(lang, "help_panel", "craft"),
+                    "collect <idResource> <number>": Translator.getString(lang, "help_panel", "collect", [Globals.collectTriesOnce]),
                 }
 
                 commands[Translator.getString(lang, "help_panel", "shop_title")] = {
@@ -364,10 +539,106 @@ class GModule {
         return data;
     }
 
+    getSearchParams(req) {
+        return {
+            rarity: parseInt(req.body.idRarity != null ? req.body.idRarity : req.query.idRarity),
+            type: parseInt(req.body.idType != null ? req.body.idType : req.query.idType),
+            level: parseInt(req.body.level != null ? req.body.level : req.query.level),
+            power: parseInt(req.body.power != null ? req.body.power : req.query.power),
+            name: req.body.name != null ? req.body.name : req.query.name,
+        }
+    }
 
 
 }
 
+class AchievementUnlocker {
+    /**
+     * 
+     * @param {Array<User>} grpOfUsers
+     */
+    constructor(grpOfUsers) {
+        /**
+         * @type {Array<AchievementUnlockStructure>}
+         */
+        this.listOfPlayerAndRelatedAchievements = {};
+        /**
+         * @type {Array<User>}
+         */
+        this.userByName = {};
+
+        for (let user of grpOfUsers) {
+            this.listOfPlayerAndRelatedAchievements[user.id] = new AchievementUnlockStructure(user);
+            this.userByName[user.getUsername()] = user;
+        }
+    }
+
+    /**
+     * 
+     * @param {User} user
+     * @param {number} idAchievement
+     */
+    addAchievement(user, idAchievement) {
+        this.listOfPlayerAndRelatedAchievements[user.id].achievements.push(idAchievement);
+    }
+
+    /**
+    * 
+    * @param {string} username
+    * @param {number} idAchievement
+    */
+    addAchievementByUserName(username, idAchievement) {
+        if (this.userByName[username] != null) {
+            this.listOfPlayerAndRelatedAchievements[this.userByName[username].id].achievements.push(idAchievement);
+        }
+        
+    }
+
+    /**
+     * 
+     * @param {number} idAchievement
+     */
+    addAchievementToAllUsers(idAchievement) {
+        for (let achievUnlockerStructure of Object.values(this.listOfPlayerAndRelatedAchievements)) {
+            achievUnlockerStructure.achievements.push(idAchievement);
+        }
+    }
+
+    async unlockAchievementsForAll() {
+        let promises = [];
+        for (let unlockStructure of Object.values(this.listOfPlayerAndRelatedAchievements)) {
+            promises.push(unlockStructure.unlockAchievements());
+        }
+        await Promise.all(promises);
+    }
+}
+
+class AchievementUnlockStructure {
+    /**
+     * 
+     * @param {User} user
+     */
+    constructor(user) {
+        this.user = user; 
+
+        /**
+         * @type {Array<Number>}
+         */
+        this.achievements = [];
+    }
+
+    async unlockAchievements() {
+        let promises = [];
+        for (let id of this.achievements) {
+            promises.push(this.user.character.getAchievements().unlock(id, this.user));
+        }
+        await Promise.all(promises);
+    }
+}
 
 
 module.exports = GModule;
+
+const User = require("../User");
+const Character = require("../Character");
+const Area = require("../Areas/Area");

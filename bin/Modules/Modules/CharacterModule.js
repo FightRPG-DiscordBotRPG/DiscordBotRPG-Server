@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
@@ -9,6 +8,8 @@ const LeaderboardPvP = require("../../Leaderboards/LeaderboardPvP");
 const LeaderboardGold = require("../../Leaderboards/LeaderboardGold");
 const LeaderboardLevel = require("../../Leaderboards/LeaderboardLevel");
 const LeaderboardCraftLevel = require("../../Leaderboards/LeaderboardCraftLevel");
+const LeaderboardPower = require("../../Leaderboards/LeaderboardPower");
+const LeaderboardAchievements = require("../../Leaderboards/LeaderboardAchievements");
 const Guild = require("../../Guild");
 const Group = require("../../Group");
 const Fight = require("../../Fight/Fight");
@@ -27,7 +28,7 @@ const express = require("express");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "up"];
+        this.commands = ["reset", "leaderboard", "info", "up", "attributes"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -49,51 +50,75 @@ class CharacterModule extends GModule {
     }
 
     loadRoutes() {
-        this.router.get("/leaderboard/arena", async (req, res, next) => {
+        this.router.get("/leaderboard/arena/:page?", async (req, res, next) => {
             let ld = new LeaderboardPvP(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
-        this.router.get("/leaderboard/gold", async (req, res, next) => {
+        this.router.get("/leaderboard/gold/:page?", async (req, res, next) => {
             let ld = new LeaderboardGold(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
-        this.router.get("/leaderboard/level", async (req, res, next) => {
+        this.router.get("/leaderboard/level/:page?", async (req, res, next) => {
             let ld = new LeaderboardLevel(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
                 data
-            )
+            );
         });
 
-        this.router.get("/leaderboard/craft/level", async (req, res, next) => {
+        this.router.get("/leaderboard/craft/level/:page?", async (req, res, next) => {
             let ld = new LeaderboardCraftLevel(Globals.connectedUsers[res.locals.id].character.id);
-            let data = await ld.getPlayerLeaderboard();
+            let data = await ld.getPlayerLeaderboard(req.params.page);
             data.lang = res.locals.lang;
             await next();
             return res.json(
                 data
-            )
+            );
+        });
+        
+        this.router.get("/leaderboard/power/:page?", async (req, res, next) => {
+            let ld = new LeaderboardPower(Globals.connectedUsers[res.locals.id].character.id);
+            let data = await ld.getPlayerLeaderboard(req.params.page);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(
+                data
+            );
+        });
+
+        this.router.get("/leaderboard/achievements/:page?", async (req, res, next) => {
+            let ld = new LeaderboardAchievements(Globals.connectedUsers[res.locals.id].character.id);
+            let data = await ld.getPlayerLeaderboard(req.params.page);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(
+                data
+            );
         });
 
         this.router.get("/reset", async (req, res, next) => {
             if (await Globals.connectedUsers[res.locals.id].character.resetStats()) {
+                let ptsLeft = await Globals.connectedUsers[res.locals.id].character.getStatPoints();
+                let statPointsPlur = ptsLeft > 1 ? "_plural" : "";
+                let ptsLeftStr = Translator.getString(res.locals.lang, "character", "attribute_x_points_available" + statPointsPlur, [ptsLeft]);
+                let output = Translator.getString(res.locals.lang, "character", "reset_done") + " " + ptsLeftStr;
                 await next();
                 return res.json({
-                    success: Translator.getString(res.locals.lang, "character", "reset_done"),
+                    success: output,
                     lang: res.locals.lang,
                 });
             } else {
@@ -121,6 +146,7 @@ class CharacterModule extends GModule {
                 err = "InvalidUsername (No username entered)";
             }
 
+            await next();
             return err != null ? res.json({ error: err }) : res.json({ done: true });
         });
 
@@ -142,9 +168,6 @@ class CharacterModule extends GModule {
             );
         });
 
-        // TODO: A fix dans la 1.9
-        // To Fix in 1.9 find why next is sending headers
-        // Seems to be linked to a bad order in middlewares
         this.router.post("/up", async (req, res, next) => {
             let err;
             if (this.authorizedAttributes.indexOf(req.body.attr) !== -1) {
@@ -174,14 +197,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/achievements/:page?", async (req, res, next) => {
-            let data = {};
-            let achPage = parseInt(req.params.page, 10);
-            if (achPage == null || achPage != null && !Number.isInteger(achPage)) {
-                achPage = 0;
-            }
-
-            data = await Globals.connectedUsers[res.locals.id].character.getAchievements().getAchievementList(data.page, res.locals.lang);
-
+            let data = await Globals.connectedUsers[res.locals.id].character.getAchievements().getAchievementList(parseInt(req.params.page, 10), res.locals.lang);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);

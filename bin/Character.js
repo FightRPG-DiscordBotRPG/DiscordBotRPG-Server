@@ -11,30 +11,42 @@ const LootSystem = require("./LootSystem.js");
 const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
+const Mount = require("./Items/Mounts/Mount");
 
 class Character extends CharacterEntity {
-
     constructor(idUser) {
         super();
         this._type = "Character";
         this.id = null;
         this.idUser = idUser != null ? idUser : null;
         this.inv = new CharacterInventory();
-        this.craftSystem = new PlayerCraft();
+        this.craftSystem = new PlayerCraft(this.idUser);
         this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
         this.canFightAt = 0;
         this.idArea = 1;
-        this.area;
+        this.area = new Area();
         this.idGuild = 0;
 
         // Party mechanics
+        /**
+        * @type {Group}
+        */
         this.pendingPartyInvite = null;
+        /**
+         * @type {Group}
+         */
         this.group = null;
 
         // Trade mechanic
+        /**
+         * @type {Trade}
+         */
         this.pendingTradeInvite = null;
+        /**
+         * @type {Trade}
+         */
         this.trade = null;
     }
 
@@ -49,7 +61,7 @@ class Character extends CharacterEntity {
 
         //Init level system
         await Promise.all([
-            this.levelSystem.init(this.id),
+            this.levelSystem.init(this.id, this.idUser),
             this.craftSystem.init(this.id),
             this.stats.init(this.id),
             this.getInv().loadInventory(this.id),
@@ -61,6 +73,9 @@ class Character extends CharacterEntity {
         this.idArea = 1;
 
         this.updateStats();
+
+        // [Health]
+        this.resetFullHp();
     }
 
     async loadCharacter(id) {
@@ -72,7 +87,7 @@ class Character extends CharacterEntity {
         this.id = id;
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id),
+            this.levelSystem.loadLevelSystem(id, this.idUser),
             this.craftSystem.load(id),
             this.getInv().loadInventory(id),
             this.equipement.loadEquipements(id),
@@ -88,21 +103,53 @@ class Character extends CharacterEntity {
 
         this.updateStats();
 
+        // [Health]
+        this.resetFullHp();
+
+    }
+
+    /**    
+     * Loads a lighter version of the character (only stats, and equipements)
+     * USE WITH CAUTION ONLY FOR PVP FIGHTS (Don't use any non loaded components)
+     * @param {number} id
+     */
+    async lightLoad(id) {
+        this.id = id;
+        await Promise.all([
+            this.stats.loadStat(id),
+            this.levelSystem.loadLevelSystem(id, this.idUser),
+            this.equipement.loadEquipements(id),
+        ]);
+
+        this.updateStats();
     }
 
     async saveArea() {
         await conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
     }
 
-    async changeArea(area, waitTime = Globals.basicWaitTimeAfterTravel) {
-        let baseTimeToWait = await this.getWaitTimeTravel(waitTime);
+    /**
+     * Time to wait as seconds
+     * @param {Area} area
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>} | number} costObject
+     */
+    async changeArea(area, costObject=0) {
+        let baseTimeToWait = costObject;
+        if (!Number.isInteger(costObject)) {
+            baseTimeToWait = await this.getWaitTimeTravel(costObject);
+        }
+
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + baseTimeToWait);
+        this.setWaitTime(Date.now() + (baseTimeToWait * 1000));
         this.area = area;
         await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
     }
 
+    /**
+     * 
+     * @param {Area} area
+     */
     setArea(area) {
         this.area = area;
     }
@@ -280,6 +327,7 @@ class Character extends CharacterEntity {
     }
 
     async addExp(exp) {
+        exp = exp >= 0 ? exp : 0;
         let startingLevel = this.levelSystem.actualLevel;
         await this.levelSystem.addThisExp(exp);
         if (startingLevel < this.levelSystem.actualLevel) {
@@ -379,10 +427,10 @@ class Character extends CharacterEntity {
         return value;
     }
 
-    async sellAllInventory(params) {
-        let value = await this.getInv().getAllInventoryValue(params);
+    async sellAllInventory(params, lang="en") {
+        let value = await (await this.getInv().getAllInventoryValue(params, lang)).value;
         await Promise.all([
-            this.getInv().deleteAllFromInventory(params),
+            this.getInv().deleteAllFromInventory(params, lang),
             this.addMoney(value)
         ]);
         PStatistics.incrStat(this.id, "gold_sell", value);
@@ -390,11 +438,15 @@ class Character extends CharacterEntity {
     }
 
     async setItemFavoriteInv(idEmplacement, fav) {
-        await (await (this.getInv()).getItem(idEmplacement)).setFavorite(fav ? fav : false);
+        let item = await this.getInv().getItem(idEmplacement);
+        await item.setFavorite(fav);
+        return item;
     }
 
     async setItemFavoriteEquip(idEquip, fav) {
-        await (await (this.equipement).getItem(idEquip)).setFavorite(fav ? fav : false);
+        let item = await this.equipement.getItem(idEquip);
+        await item.setFavorite(fav);
+        return item;
     }
 
     async getItemFromAllInventories(idItem) {
@@ -415,10 +467,38 @@ class Character extends CharacterEntity {
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
-    async craft(craft) {
+    async craft(craft, level = null) {
         let gotAllItems = true;
         if (craft.id > 0) {
-            gotAllItems = (await conn.query("CALL doesPlayerHaveEnoughMatsToCraftThisItem(?, ?);", [this.id, craft.id]))[0][0].doesPlayerHaveEnoughMats;
+            gotAllItems = (await conn.query(`SELECT 
+                                                IF((SELECT 
+                                                            COUNT(*)
+                                                        FROM
+                                                            charactersinventory
+                                                                INNER JOIN
+                                                            items ON items.idItem = charactersinventory.idItem
+                                                        WHERE
+                                                            charactersinventory.idCharacter = ?
+                                                                AND items.idBaseItem IN (SELECT 
+                                                                    craftitemsneeded.NeededItem
+                                                                FROM
+                                                                    craftitemsneeded
+                                                                WHERE
+                                                                    craftitemsneeded.IdCraftItem = ?)
+                                                                AND charactersinventory.number >= (SELECT 
+                                                                    craftitemsneeded.number
+                                                                FROM
+                                                                    craftitemsneeded
+                                                                WHERE
+                                                                    craftitemsneeded.IdCraftItem = ?
+                                                                        AND craftitemsneeded.NeededItem = items.idBaseItem)) = (SELECT 
+                                                            COUNT(*)
+                                                        FROM
+                                                            craftitemsneeded
+                                                        WHERE
+                                                            craftitemsneeded.IdCraftItem = ?),
+                                                    'true',
+                                                    'false') AS doesPlayerHaveEnoughMats;`, [this.id, craft.id, craft.id, craft.id]))[0].doesPlayerHaveEnoughMats;
             if (gotAllItems == "true") {
                 let promises = [];
                 // Since it's idItem i can promise all without worrying if the right item is deleted
@@ -428,7 +508,13 @@ class Character extends CharacterEntity {
                 await Promise.all(promises);
 
                 let ls = new LootSystem();
-                await ls.giveToPlayer(this, craft.itemInfo.idBase, this.itemCraftedLevel(craft.itemInfo.maxLevel), 1);
+                let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel)
+                await ls.giveToPlayer(this, craft.itemInfo.idBase, level != null && level > 0 && level <= maxLevel ? level : maxLevel, 1);
+
+                // Achiev ---> If other use switch case or what ever
+                // This achiev is = craft 1 object
+                this.achievements.unlock(10, Globals.connectedUsers[this.idUser]);
+
                 return true;
             }
         }
@@ -548,8 +634,8 @@ class Character extends CharacterEntity {
         return waitTime;
     }
 
-    waitForNextResource(rarity = 1) {
-        let baseTimeToWait = this.getWaitTimeResource(rarity);
+    waitForNextResource(rarity = 1, number = Globals.collectTriesOnce) {
+        let baseTimeToWait = this.getWaitTimeResource(rarity, number);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
@@ -566,9 +652,9 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
     }
 
-    getWaitTimeResource(rarity = 1) {
-        let waitTime = Globals.collectTriesOnce * Globals.basicWaitTimeCollectTravel;
-        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2);
+    getWaitTimeResource(rarity = 1, number = Globals.collectTriesOnce) {
+        let waitTime = number * Globals.basicWaitTimeCollectTravel;
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed;
     }
 
     getWaitTimeFight(more = 0) {
@@ -583,10 +669,23 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
 
-    async getWaitTimeTravel(waitTime = Globals.basicWaitTimeAfterTravel) {
+    /**
+     * 
+     * @param {{timeToWait: number, timeChangeDueToWeather: {climatesTotalTravelTime: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>}} costObject
+     */
+    async getWaitTimeTravel(costObject) {
+        let waitTime = costObject.timeToWait;
+        /**
+         *  @type {Mount}
+         */
         let mount = await this.getEquipement().getItemByTypeName("mount");
-        let multiplier = mount != null ? mount.getTravelReductionModifier() : 1;
-        let baseTimeToWait = Math.floor((waitTime * multiplier)) * 1000;
+        let baseTimeToWait = waitTime;
+        if (mount != null) {
+            for (let climate in costObject.timeChangeDueToWeather.climatesTotalTravelTime) {
+                let timeAdded = Math.round((1 - mount.getTravelReductionModifier(climate)) * costObject.timeChangeDueToWeather.climatesTotalTravelTime[climate]);
+                baseTimeToWait -= timeAdded;
+            }
+        }
         return baseTimeToWait;
     }
 
@@ -600,6 +699,24 @@ class Character extends CharacterEntity {
         await this.craftSystem.addThisExp(xp);
         nextLevel = this.getCraftLevel();
         return nextLevel - actualLevel;
+    }
+
+    async checkEquipmentAchievements() {
+        let nbrOfMythics = 0;
+        
+        for (let item of await this.equipement.getAllItems()) {
+            // test everything except mount
+            if (item.type != 8) {
+                // Use switch case for every rarity
+                if (item.idRarity == 6) {
+                    nbrOfMythics++;
+                }
+            }
+        }
+
+        if (nbrOfMythics == 4) {
+            this.achievements.unlock(3, Globals.connectedUsers[this.idUser]);
+        }
     }
 
     // GetSpecial
@@ -674,6 +791,8 @@ class Character extends CharacterEntity {
             name: this.getName(),
             level: this.getLevel(),
             power: await this.getPower(),
+            currentHp: this.actualHP,
+            maxHp: this.maxHP
         }
     }
 
@@ -705,3 +824,8 @@ class Character extends CharacterEntity {
 module.exports = Character;
 
 const Area = require("./Areas/Area");
+
+/**
+ * @typedef {import("./Trades/Trade")} Trade
+ * @typedef {import("./Group")} Group
+ **/

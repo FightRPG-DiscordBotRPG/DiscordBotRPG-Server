@@ -2,7 +2,8 @@
 const conn = require("../conf/mysql.js");
 const Globals = require("./Globals.js");
 const Item = require("./Items/Item.js");
-const Discord = require("discord.js");
+const Mount = require("./Items/Mounts/Mount");
+const Consumable = require("./Items/Consumable");
 const StatsEquipment = require("./Stats/StatsEquipment");
 const Translator = require("./Translator/Translator");
 
@@ -64,7 +65,7 @@ class CharacterEquipement {
     }
 
     /**
-     * @returns {Promise<Item>}
+     * @returns {Array<Item>}
      */
     async getAllItems() {
         let res = await conn.query("SELECT itemstypes.nomType, charactersequipements.idItem FROM charactersequipements INNER JOIN itemstypes ON itemstypes.idType = charactersequipements.idType WHERE charactersequipements.idCharacter = ?;", [this.id]);
@@ -110,6 +111,11 @@ class CharacterEquipement {
         return null;
     }
 
+    /**
+     * 
+     * @param {string} typeName
+     * @return {Item | Mount | Consumable}
+     */
     async getItemByTypeName(typeName) {
         let res = await conn.query("SELECT itemstypes.nomType, charactersequipements.idItem, itemssoustypes.nomSousType FROM charactersequipements INNER JOIN items ON items.idItem = charactersequipements.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE charactersequipements.idCharacter = ? AND itemstypes.nomType = ?;", [this.id, typeName]);
         if (res[0]) {

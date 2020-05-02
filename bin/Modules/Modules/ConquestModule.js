@@ -1,5 +1,4 @@
 const GModule = require("../GModule");
-const Discord = require("discord.js");
 const User = require("../../User");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
@@ -22,7 +21,7 @@ const express = require("express");
 class ConquestModule extends GModule {
     constructor() {
         super();
-        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest"];
+        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest", "arearesetbonuses"];
         this.startLoading("Conquest");
         this.init();
         this.endLoading("Conquest");
@@ -80,30 +79,22 @@ class ConquestModule extends GModule {
 
         this.router.post("/area/bonus/up", async (req, res, next) => {
             let data = {};
-            let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
-            if (await res.locals.currentArea.getOwnerID() === tGuildId) {
-                if (await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) === 3) {
-                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
-                        if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
-                            req.body.number = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
-                            req.body.number = req.body.number > 0 ? req.body.number : 1000;
-                            if (await res.locals.currentArea.haveThisAmountOfStatPoints(req.body.number)) {
-                                await res.locals.currentArea.upStat(req.body.bonus_identifier, req.body.number);
-                                data.success = Translator.getString(res.locals.lang, "area", "up_stat", [Translator.getString(res.locals.lang, "bonuses", req.body.bonus_identifier), req.body.number]);
-                            } else {
-                                data.error = Translator.getString(res.locals.lang, "errors", "area_dont_have_enough_stat_points");
-                            }
-                        } else {
-                            data.error = Translator.getString(res.locals.lang, "errors", "area_bonus_not_available");
-                        }
+            let err = await this.areaSharedBonusesTests(req, res);
+            if (err == null) {
+                if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
+                    let num = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
+                    num = req.body.number > 0 ? req.body.number : 1000;
+                    if (await res.locals.currentArea.haveThisAmountOfStatPoints(num)) {
+                        await res.locals.currentArea.upStat(req.body.bonus_identifier, num);
+                        data.success = Translator.getString(res.locals.lang, "area", "up_stat", [Translator.getString(res.locals.lang, "bonuses", req.body.bonus_identifier), num]);
                     } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
+                        data.error = Translator.getString(res.locals.lang, "errors", "area_dont_have_enough_stat_points");
                     }
                 } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
+                    data.error = Translator.getString(res.locals.lang, "errors", "area_bonus_not_available");
                 }
             } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
+                data.error = err;
             }
             data.lang = res.locals.lang;
             await next();
@@ -128,7 +119,52 @@ class ConquestModule extends GModule {
         });
 
 
+        this.router.post("/area/bonus/resetbonuses", async (req, res, next) => {
+            let data = {};
+            let err = await this.areaSharedBonusesTests(req, res);
+            if (err == null) {
+                if (await res.locals.currentArea.getTotalLevel() > 0) {
+                    if (res.locals.currentArea.canResetBonuses()) {
+                        await res.locals.currentArea.resetBonuses();
+                        await res.locals.currentArea.setCooldownNextDay();
+                        data.success = Translator.getString(res.locals.lang, "area", "reset_stats");
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "area_reset_wait_x", [res.locals.currentArea.getResetCooldownString(res.locals.lang)]);
+                    }
+                } else {
+                    data.error = Translator.getString(res.locals.lang, "errors", "area_already_reset");
+                }
+            } else {
+                data.error = err;
+            }
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
 
+
+
+
+    }
+
+    /**
+     * 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     */
+    async areaSharedBonusesTests(req, res) {
+        let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
+        if (!await res.locals.currentArea.getOwnerID() === tGuildId) {
+            return Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
+        }
+
+        if (!(await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) >= 2)) {
+            return Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
+        } 
+
+        if (await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+            return Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
+        }
 
     }
 }
