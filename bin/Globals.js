@@ -24,6 +24,7 @@ let collectChances = {
  * @property {Array<User>} connectedUsers - Users
  */
 var Globals = {
+    "maintenance_message": null,
     "maxLevel": null,
     "maxStatsId": null,
     "statsIds": null,

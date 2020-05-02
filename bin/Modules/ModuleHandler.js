@@ -51,7 +51,7 @@ class ModuleHandler extends GModule {
                 next();
             } else {
                 return res.json({
-                    error: "The game is under maintenance."
+                    error: "The game is under maintenance. " + (Globals.maintenance_message != null ? "Reason: " + Globals.maintenance_message : ""),
                 });
             }
         });

@@ -117,9 +117,11 @@ class AdminModule extends GModule {
             let data = {};
             if (req.body.active === "true") {
                 Globals.activated = true;
+                Globals.maintenance_message = null;
                 data.success = "Bot activated";
             } else if (req.body.active === "false") {
                 Globals.activated = false;
+                Globals.maintenance_message = req.body.reason;
                 data.success = "Bot deactivated"
             }
 
