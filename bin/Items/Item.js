@@ -199,11 +199,11 @@ class Item {
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
 
-    static getName(lang = "en", idBase) {
+    static getName(idBase, lang = "en") {
         return Translator.getString(lang, "itemsNames", idBase);
     }
 
-    static getDesc(lang = "en", idBase) {
+    static getDesc(idBase, lang = "en") {
         let desc = Translator.getString(lang, "itemsDesc", idBase, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }

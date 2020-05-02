@@ -5,12 +5,12 @@ let dt = Date.now();
 console.log("Test mysql-sync");
 syncmysql.query("SELECT * FROM users");
 
-console.log(((Date.now() - dt)) + " ms");
+console.log((Date.now() - dt) + " ms");
 
 dt = Date.now();
 console.log("Test mysql-perso");
 let va = mysqlperso.query("SELECT * FROM users");
-console.log(((Date.now() - dt)) + " ms");
+console.log((Date.now() - dt) + " ms");
 
 
 let asyncTest = async () => {
@@ -28,19 +28,15 @@ let asyncTest = async () => {
     let connMaker = {
         connection: connection,
         query: async (sql, arr = []) => {
-            try {
                 const result = await query(sql, arr);
                 return JSON.parse(JSON.stringify(result));
-            } catch (err) {
-                throw err;
-            }
         }
     }
 
-    let dt = Date.now();
+    let dt2 = Date.now();
     console.log("Test async mysql");
-    let variable = await connMaker.query("SELECT * FROM users");
-    console.log(((Date.now() - dt)) + " ms");
+    await connMaker.query("SELECT * FROM users");
+    console.log((Date.now() - dt2) + " ms");
 
 }
 

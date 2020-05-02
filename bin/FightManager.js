@@ -86,8 +86,8 @@ class FightManager {
         let user = Globals.connectedUsers[userid];
         if (user != null && user.character.group != null) {
             let plrs = user.character.group.getArrayOfPlayers();
-            for (let i of plrs) {
-                if (this.fights[plrs.id] !== undefined) {
+            for (let player of plrs) {
+                if (this.fights[player.id] !== undefined) {
                     return true;
                 }
             }

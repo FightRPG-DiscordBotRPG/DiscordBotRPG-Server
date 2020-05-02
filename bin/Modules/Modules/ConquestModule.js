@@ -84,7 +84,7 @@ class ConquestModule extends GModule {
                 if (res.locals.currentArea.isBonusAvailable(req.body.bonus_identifier)) {
                     let num = req.body.number != null ? Number.parseInt(req.body.number) : 1000;
                     num = req.body.number > 0 ? req.body.number : 1000;
-                    if (await res.locals.currentArea.haveThisAmountOfStatPoints(req.body.number)) {
+                    if (await res.locals.currentArea.haveThisAmountOfStatPoints(num)) {
                         await res.locals.currentArea.upStat(req.body.bonus_identifier, num);
                         data.success = Translator.getString(res.locals.lang, "area", "up_stat", [Translator.getString(res.locals.lang, "bonuses", req.body.bonus_identifier), num]);
                     } else {
@@ -158,7 +158,7 @@ class ConquestModule extends GModule {
             return Translator.getString(res.locals.lang, "errors", "guild_dont_own_this_area");
         }
 
-        if (!((await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) >= 2))) {
+        if (!(await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) >= 2)) {
             return Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
         } 
 

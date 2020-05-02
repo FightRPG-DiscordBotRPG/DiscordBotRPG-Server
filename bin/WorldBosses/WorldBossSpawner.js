@@ -34,7 +34,6 @@ class WorldBossSpawner {
         let randomArea = (await conn.query("SELECT idArea FROM areasregions WHERE areasregions.idRegion = ? ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
 
         // Date calcul
-        let actualDate = new Date();
         let date = await WorldBossSpawner.getNextBossDate();
         console.log("Next boss schedule for : " + date.toUTCString());
         await conn.query("INSERT INTO bossspawninfo (idBoss, idArea, spawnDate) VALUES (?, ?, ?);", [randomBossInfo.idBoss, randomArea, date.getTime()])

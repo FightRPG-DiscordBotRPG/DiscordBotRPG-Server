@@ -57,7 +57,7 @@ class CityArea extends Area {
         }
 
         isActive = false;
-        tax = 0;
+
         if (shopbuilding != null) {
             isActive = await shopbuilding.isActive();
             tax = await shopbuilding.getTax() * 100;

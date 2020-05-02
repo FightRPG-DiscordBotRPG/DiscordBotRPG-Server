@@ -269,7 +269,6 @@ class GroupModule extends GModule {
         this.router.get("/show", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
-            let pending = res.locals.pending;
 
             if (group != null) {
                 data = await group.toApi();

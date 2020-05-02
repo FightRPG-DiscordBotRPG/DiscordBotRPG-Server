@@ -348,7 +348,6 @@ class Trade {
                 if (tradeItem.number > number) {
                     tradeItem.number -= number;
                 } else {
-                    number = tradeItem.number;
                     delete rightInventoryIndexes[tradeItem.id];
                     rightInventory.splice(idEmplacement, 1);
                 }

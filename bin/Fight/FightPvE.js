@@ -51,8 +51,7 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[1].length);
     }
 
-    async endFight(lang) {
-        lang = lang || "fr"
+    async endFight() {
         if (this.winnerGroup == 0) {
             // Need this to know if level up
             let totalXp = 0;

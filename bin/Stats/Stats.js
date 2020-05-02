@@ -27,31 +27,6 @@ class Stats {
         return 0;
     }
 
-    toStr(lang) {
-        let str = "```"
-        for (let stat in Globals.statsIds) {
-            //let end = stat === "luck" ? "" : "   |   ";
-            let end = "";
-            let beforeNumber = "";
-            let statLocaleString = Translator.getString(lang, "stats", stat);
-
-            let nbrChar = statLocaleString.length + 2;
-            let lessSpaces = totalSpaces - nbrChar;
-            beforeNumber += " ".repeat(lessSpaces);
-            if (count === 2) {
-                end += "\n"
-                count = 0;
-            } else {
-
-                end += " ".repeat(3) + "|" + " ".repeat(3);
-            }
-            count++;
-            str += "" + statLocaleString + beforeNumber + end;
-        }
-        str += "```"
-        return str;
-    }
-
     toApi() {
         let r = {};
         let statsPossible = Object.keys(Globals.statsIds);
