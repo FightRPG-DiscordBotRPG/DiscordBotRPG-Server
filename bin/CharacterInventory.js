@@ -301,7 +301,7 @@ class CharacterInventory {
     }
 
     async getIdOfThisIdBase(idBaseItem, level = 1) {
-        return CharacterInventory.getIdOfThisIdBase(this.id, idBase, level);
+        return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level);
     }
 
     static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
