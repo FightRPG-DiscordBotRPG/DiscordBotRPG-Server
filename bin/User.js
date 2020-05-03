@@ -207,7 +207,7 @@ class User {
         return false;
     }
 
-    async muteWorldBosse(bool) {
+    async muteWorldBoss(bool) {
         this.preferences.worldbossmute = bool;
         await conn.query("UPDATE userspreferences SET worldbossmute = ? WHERE idUser = ?;", [bool, this.id]);
     }

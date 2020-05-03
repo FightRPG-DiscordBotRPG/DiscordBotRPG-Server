@@ -79,7 +79,9 @@ class OtherModule extends GModule {
         this.router.get("/settings", async (req, res, next) => {
             let data = {
                 isGroupMuted: Globals.connectedUsers[res.locals.id].isGroupMuted(),
-                isMarketplaceMuted: Globals.connectedUsers[res.locals.id].isMarketplaceMuted()
+                isMarketplaceMuted: Globals.connectedUsers[res.locals.id].isMarketplaceMuted(),
+                isFightMuted: Globals.connectedUsers[res.locals.id].isFightMuted(),
+                isWorldBossesMuted: Globals.connectedUsers[res.locals.id].isWorldBossesMuted(),
             }
             data.lang = res.locals.lang;
             await next();
@@ -124,6 +126,16 @@ class OtherModule extends GModule {
                 } else {
                     await Globals.connectedUsers[res.locals.id].muteTrade(true);
                     success += Translator.getString(res.locals.lang, "trade", "now_muted") + "\n";
+                }
+            }
+
+            if (req.body.mWorldBoss != null) {
+                if (Globals.connectedUsers[res.locals.id].isWorldBossesMuted()) {
+                    await Globals.connectedUsers[res.locals.id].muteWorldBoss(false);
+                    success += Translator.getString(res.locals.lang, "world_bosses", "now_unmuted") + "\n";
+                } else {
+                    await Globals.connectedUsers[res.locals.id].muteWorldBoss(true);
+                    success += Translator.getString(res.locals.lang, "world_bosses", "now_muted") + "\n";
                 }
             }
             if (success != "") {
