@@ -192,6 +192,30 @@ class CharacterInventory {
 
     /**
      * 
+     * @param {Craft} craft
+     */
+    async getMissingComponent(craft) {
+        // idBase, typename, stypename, rarity, number
+        let idArr = [];
+        let keys = {};
+        for (let i in craft.requiredItems) {
+            let item = craft.requiredItems[i];
+            let idBase = item.idBase;
+            keys[idBase] = i;
+            idArr.push(idBase);
+            item.missing = item.number;
+        }
+        let resources = await this.getNumbersOfThoseItemsByIDBase(idArr);
+
+        for (let resource of resources) {
+            craft.requiredItems[keys[resource.idBaseItem]].missing = Math.min(craft.requiredItems[keys[resource.idBaseItem]].missing - resource.number, 0);
+        }
+
+        return craft;
+    }
+
+    /**
+     * 
      * @param {*} page 
      * @param {*} lang 
      * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
@@ -267,9 +291,7 @@ class CharacterInventory {
      * Number is to also check if the item number is at least the Number argument (optional)
      */
     async isThisItemInInventory(idItem, number = 1) {
-        idItem = idItem >= 0 ? idItem : 0;
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory WHERE idCharacter = ? AND idItem = ? AND number >= ?;", [this.id, idItem, number]);
-        return res[0] != null;
+        return await CharacterInventory.isThisItemInInventory(this.id, idItem, number);
     }
 
     static async isThisItemInInventory(idCharacter, idItem, number = 1) {
@@ -279,12 +301,7 @@ class CharacterInventory {
     }
 
     async getIdOfThisIdBase(idBaseItem, level = 1) {
-        level = level >= 1 ? level : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, this.id]);
-        if (res[0]) {
-            return res[0].idItem;
-        }
-        return null;
+        return CharacterInventory.getIdOfThisIdBase(this.id, idBase, level);
     }
 
     static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
@@ -294,6 +311,20 @@ class CharacterInventory {
             return res[0].idItem;
         }
         return null;
+    }
+
+    async getNumbersOfThoseItemsByIDBase(listOfWantedItems) {
+        return await CharacterInventory.getNumbersOfThoseItemsByIDBase(this.id, listOfWantedItems);
+    }
+
+    /**
+     * Don't check level be careful
+     * @param {number} idCharacter
+     * @param {Array<number>} listOfWantedItems
+     */
+    static async getNumbersOfThoseItemsByIDBase(idCharacter, listOfWantedItems) {
+        let res = await conn.query("SELECT items.idBaseItem, number FROM charactersinventory LEFT JOIN items ON items.idItem = charactersinventory.idItem LEFT JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE items.idBaseItem IN (?) AND charactersinventory.idCharacter = ?;", [listOfWantedItems, idCharacter]);
+        return res;
     }
 
 
@@ -359,3 +390,8 @@ class CharacterInventory {
 }
 
 module.exports = CharacterInventory;
+
+
+/**
+ * @typedef {import("./CraftSystem/Craft")} Craft
+ **/
