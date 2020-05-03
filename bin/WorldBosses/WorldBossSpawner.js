@@ -151,15 +151,22 @@ class WorldBossSpawner {
     }
 
     static async giveRewardsToTopDamage(worldBossId) {
-        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
+        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId, 1);
     }
 
     static async giveRewardsToTopAttackCount(worldBossId) {
-        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId);
+        await WorldBossSpawner.giveToRewardsToPlayers(worldBossId, 2);
     }
 
-    static async giveToRewardsToPlayers(worldBossId) {
-        let res = await conn.query("SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC", [worldBossId]);
+    static async giveToRewardsToPlayers(worldBossId, type) {
+        let connQueryText;
+        if (type == 1) {
+            connQueryText = "SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC";
+        } else {
+            connQueryText = "SELECT charactersattacks.idCharacter, damage, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC";
+        }
+
+        let res = await conn.query(connQueryText, [worldBossId]);
         let rank = 1
         let lt = new LootSystem();
         for (let info of res) {
