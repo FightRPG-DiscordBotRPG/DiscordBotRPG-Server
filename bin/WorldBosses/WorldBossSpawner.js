@@ -32,7 +32,7 @@ class WorldBossSpawner {
 
     async init() {
         let randomBossInfo = (await conn.query("SELECT * FROM bosses INNER JOIN regionsbosses ON regionsbosses.idBoss = bosses.idBoss ORDER BY RAND() LIMIT 1"))[0];
-        let randomArea = (await conn.query("SELECT idArea FROM areasregions WHERE areasregions.idRegion = ? ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
+        let randomArea = (await conn.query("SELECT areasregions.idArea FROM areasregions INNER JOIN areas ON areas.idArea = areasregions.idArea WHERE areasregions.idRegion = ? AND areas.idAreaType IN (1) ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
 
         // Date calcul
         let date = await WorldBossSpawner.getNextBossDate();
