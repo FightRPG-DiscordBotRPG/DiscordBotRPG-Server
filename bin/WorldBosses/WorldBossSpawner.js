@@ -422,6 +422,7 @@ class WorldBossSpawner {
                 bossName: wb.getName(lang),
                 damageRank: await ldDamage.getPlayerRank(),
                 attackCountRank: await ldAttacks.getPlayerRank(),
+                worldboss: wb,
             }
         }
         return null;
