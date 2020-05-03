@@ -5,6 +5,7 @@ const LootSystem = require("../LootSystem");
 const axios = require("axios").default;
 const LeaderboardWBAttacks = require("../Leaderboards/LeaderboardWBAttacks");
 const LeaderboardWBDamage = require("../Leaderboards/LeaderboardWBDamage");
+const User = require("../User");
 
 class WorldBossSpawner {
     async startUp() {
@@ -145,6 +146,7 @@ class WorldBossSpawner {
     static async giveRewards(worldBossId) {
         await conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
         // Must be redone to know if players got the rewards
+        WorldBossSpawner.tellToUsers(worldBossId);
         await WorldBossSpawner.giveRewardsToTopDamage(worldBossId);
         await WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId);
         await conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
@@ -156,6 +158,15 @@ class WorldBossSpawner {
 
     static async giveRewardsToTopAttackCount(worldBossId) {
         await WorldBossSpawner.giveToRewardsToPlayers(worldBossId, 2);
+    }
+
+    static async tellToUsers(worldBossID) {
+        let idBaseBoss = (await conn.query("SELECT idBoss FROM spawnedbosses WHERE idSpawnedBoss = ?;", [worldBossID]))[0].idBoss;
+        let res = await conn.query("SELECT users.idUser, lang FROM users INNER JOIN charactersattacks ON charactersattacks.idCharacter = users.idCharacter INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idSpawnedBoss = ? AND userspreferences.worldbossmute = 0;", [worldBossID]);
+
+        for (let user of res) {
+            User.tell(user.idUser, Translator.getString(user.lang, "world_bosses", "boss_you_particpate_dead", [Translator.getString(user.lang, "bossesNames", idBaseBoss)]));
+        }
     }
 
     static async giveToRewardsToPlayers(worldBossId, type) {

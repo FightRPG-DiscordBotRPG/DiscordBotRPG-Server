@@ -199,6 +199,10 @@ class User {
         return this.preferences.worldbossmute;
     }
 
+    static async isWorldBossesMuted(idUser) {
+        return conn.query("SELECT worldbossmute FROM userspreferences WHERE idUser = ?;", [idUser]);
+    }
+
     isAchievementsMuted() {
         return false;
     }
@@ -231,6 +235,12 @@ class User {
     async worldBossTell(str) {
         if (!this.isWorldBossesMuted()) {
             this.tell(str);
+        }
+    }
+
+    static async worldBossTell(idUser, str) {
+        if (!await User.isWorldBossesMuted(idUser)) {
+            User.tell(idUser, str);
         }
     }
 
