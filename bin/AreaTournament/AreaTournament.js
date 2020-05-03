@@ -184,13 +184,21 @@ class AreaTournament {
      * @param {number} idArea 
      * @param {string} lang 
      */
-    static async toDiscordEmbed(idArea, lang) {
+    static async toApi(idArea) {
+        let apiObject = {
+            isStarted: false,
+            startDate: null,
+            numberOfGuildEnrolled: 0
+        }
         if (await AreaTournament.haveStartedByIdArea(idArea)) {
-            return Translator.getString(lang, "area", "conquest_ongoing");
+            apiObject.isStarted = true;
+            return apiObject;
         }
 
-        let langStr = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
-        return Translator.getString(lang, "area", "conquest_next", [(await AreaTournament.getNextTournament(idArea)).toLocaleString(langStr) + " UTC", await AreaTournament.getNumberOfGuildsEnrolled(idArea)]);
+        apiObject.startDate = await AreaTournament.getNextTournament(idArea);
+        apiObject.numberOfGuildEnrolled = await AreaTournament.getNumberOfGuildsEnrolled(idArea);
+
+        return apiObject;
     }
 
     /**
