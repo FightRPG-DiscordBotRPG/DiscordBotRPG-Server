@@ -16,7 +16,8 @@ class TournamentViewer {
                         <link href='https://cdn.fight-rpg.com/css/tournament.css' rel='stylesheet' type='text/css'>
                         <link rel="icon" href="https://cdn.fight-rpg.com/images/frpg_favicon.ico" />
                         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-                        <script src='https://cdn.fight-rpg.com/js/tournament.js?v=2'></script>
+                        <script src='https://cdn.fight-rpg.com/js/tournament.js?v=3'></script>
+                        <!--<script src='http://localhost/cdn//tournament.js?v=2'></script>-->
 
 
                         <title>FightRPG - Tournaments</title>

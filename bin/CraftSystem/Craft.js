@@ -81,7 +81,8 @@ class Craft {
                 rarity: Translator.getString(lang, "rarities", item.rarity),
                 rarity_shorthand: item.rarity,
                 number: item.number,
-            })
+                missing: item.missing,
+            });
         }
         return craft;
     }

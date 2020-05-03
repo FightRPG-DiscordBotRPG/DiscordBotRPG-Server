@@ -592,7 +592,7 @@ class Area {
             level: temp.level,
             statPoints: temp.statPoints,
             price: temp.price,
-            tournament_info: await AreaTournament.toDiscordEmbed(this.id, lang)
+            tournament_info: await AreaTournament.toApi(this.id)
         }
     }
 

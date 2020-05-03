@@ -22,6 +22,9 @@ class User {
             lang: "en",
             groupmute: false,
             marketplacemute: false,
+            fightmute: false,
+            trademute: false,
+            worldbossmute: false,
         };
     }
 
@@ -82,6 +85,7 @@ class User {
             this.preferences.marketplacemute = res[0]["marketplacemute"];
             this.preferences.fightmute = res[0]["fightmute"];
             this.preferences.trademute = res[0]["trademute"];
+            this.preferences.worldbossmute = res[0]["worldbossmute"];
         }
 
     }
@@ -191,8 +195,21 @@ class User {
         return this.preferences.trademute;
     }
 
+    isWorldBossesMuted() {
+        return this.preferences.worldbossmute;
+    }
+
+    static async isWorldBossesMuted(idUser) {
+        return conn.query("SELECT worldbossmute FROM userspreferences WHERE idUser = ?;", [idUser]);
+    }
+
     isAchievementsMuted() {
         return false;
+    }
+
+    async muteWorldBoss(bool) {
+        this.preferences.worldbossmute = bool;
+        await conn.query("UPDATE userspreferences SET worldbossmute = ? WHERE idUser = ?;", [bool, this.id]);
     }
 
     async muteGroup(bool) {
@@ -213,6 +230,18 @@ class User {
     async muteTrade(bool) {
         this.preferences.trademute = bool;
         await conn.query("UPDATE userspreferences SET trademute = ? WHERE idUser = ?;", [bool, this.id]);
+    }
+
+    async worldBossTell(str) {
+        if (!this.isWorldBossesMuted()) {
+            this.tell(str);
+        }
+    }
+
+    static async worldBossTell(idUser, str) {
+        if (!await User.isWorldBossesMuted(idUser)) {
+            User.tell(idUser, str);
+        }
     }
 
     async marketTell(str) {

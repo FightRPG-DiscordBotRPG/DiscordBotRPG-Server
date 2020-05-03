@@ -540,6 +540,7 @@ class GModule {
         return {
             rarity: parseInt(req.body.idRarity != null ? req.body.idRarity : req.query.idRarity),
             type: parseInt(req.body.idType != null ? req.body.idType : req.query.idType),
+            subtype: parseInt(req.body.idSousType != null ? req.body.idSousType : req.query.idSousType),
             level: parseInt(req.body.level != null ? req.body.level : req.query.level),
             power: parseInt(req.body.power != null ? req.body.power : req.query.power),
             name: req.body.name != null ? req.body.name : req.query.name,

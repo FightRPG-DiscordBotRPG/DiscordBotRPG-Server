@@ -1,6 +1,7 @@
 'use strict';
 const conn = require("../../conf/mysql.js");
 const Leaderboard = require("./Leaderboard");
+const WolrdBoss = require("../WorldBosses/WorldBoss");
 
 class LeaderboardWB extends Leaderboard {
 
@@ -25,6 +26,17 @@ class LeaderboardWB extends Leaderboard {
 
     setBossID(idSpawnedBoss) {
         this.bossID = idSpawnedBoss;
+    }
+
+    async getPlayerLeaderboard(page) {
+        let leaderboardInfos = await super.getPlayerLeaderboard(page);
+
+        let wb = new WolrdBoss(await this.getBossID());
+        await wb.load();
+        leaderboardInfos.worldBoss = wb;
+
+        return leaderboardInfos;
+
     }
 
 }
