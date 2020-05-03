@@ -208,7 +208,8 @@ class CharacterInventory {
         let resources = await this.getNumbersOfThoseItemsByIDBase(idArr);
 
         for (let resource of resources) {
-            craft.requiredItems[keys[resource.idBaseItem]].missing = Math.min(craft.requiredItems[keys[resource.idBaseItem]].missing - resource.number, 0);
+            craft.requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
+            craft.requiredItems[keys[resource.idBaseItem]].missing = craft.requiredItems[keys[resource.idBaseItem]].missing >= 0 ? craft.requiredItems[keys[resource.idBaseItem]].missing : 0
         }
 
         return craft;
