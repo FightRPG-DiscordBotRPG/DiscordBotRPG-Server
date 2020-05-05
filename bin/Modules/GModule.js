@@ -232,6 +232,9 @@ class GModule {
             if (idEnemyGroup != null && Number.isInteger(idEnemyGroup)) {
                 if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
                     let canIFightTheMonster = false;
+                    /**
+                     * @type Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>
+                     */
                     let grpEnemies = [];
                     /** Typing variables like this to get references in visual studio
                     * @type {Array<Character>}

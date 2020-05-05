@@ -210,7 +210,6 @@ class Area {
     /**
      * 
      * @param {number} idEmplacementMonstre 
-     * @returns {MonstreGroupe} Returns null if no monsters
      */
     getMonsterId(idEmplacementMonstre) {
         idEmplacementMonstre -= 1;

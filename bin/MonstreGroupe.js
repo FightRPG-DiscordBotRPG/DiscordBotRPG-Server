@@ -10,6 +10,9 @@ class MonstreGroup {
          * @type {Array<number>}
          */
         this.monstersIDs = [];
+        /**
+         * @type {Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>}
+         */
         this.enemiesObjetsToFight = [];
 
         // Maximum here so we dont have to seek every time

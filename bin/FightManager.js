@@ -66,7 +66,7 @@ class FightManager {
                 let realLevel = level;
                 if (monsters[i].needToBeMaxLevel) {
                     realLevel = area.maxLevel;
-                } else if (monsters[i].level != 0){
+                } else if (monsters[i].level != 0) {
                     realLevel = monsters[i].level;
                 }
                 let ms = new Monstre(monsters[i].id);
@@ -100,13 +100,13 @@ class FightManager {
     /**
      * 
      * @param {Array<Character>} characters
-     * @param {Array<Monstre>} monsters
+     * @param {Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>} monsters
      * @param {string} userid
      * @param {boolean} canIFightTheMonster
      * @param {string} lang
      * @param {boolean} resetFightStats
      */
-    async fightPvE(characters, monsters, userid, canIFightTheMonster, lang, resetFightStats=true) {
+    async fightPvE(characters, monsters, userid, canIFightTheMonster, lang, resetFightStats = true) {
         let toApi = {
             beingAttacked: false,
             team1_number: characters.length,
@@ -118,6 +118,7 @@ class FightManager {
         if (timeToFight < 0 && !alreadyInBattle) {
             let enemies = await this.loadMonsters(monsters, characters);
             let fight = new FightPvE(characters, enemies, lang);
+
             await fight.init(resetFightStats);
 
             this.fights[userid] = fight;
