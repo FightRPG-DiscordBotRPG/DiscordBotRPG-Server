@@ -268,8 +268,8 @@ class GModule {
                         data.error = response.error;
                     } else {
                         data = response;
-                        await this.fightAchievement(grpUsers, response.summary);
 
+                        this.fightAchievement(grpUsers, response.summary, res.locals.currentArea);
                         // Travel to entrance if dungeon and loose
                         if (res.locals.currentArea.areaType === "dungeon") {
                             /**
@@ -285,21 +285,18 @@ class GModule {
                                 areaToTravel = res.locals.currentArea.getEntrance();
                             }
 
-                            let travelAwaits = [];
                             for (let character of grpCharacters) {
-                                travelAwaits.push(character.changeArea(areaToTravel, 0));
+                                // Not wating this since players can't move because of exhaust
+                                character.changeArea(areaToTravel, character.getExhaust());
                                 if (areaToTravel.areaType != "dungeon") {
                                     character.resetFullHp();
                                 }
                             }
 
-                            await Promise.all(travelAwaits);
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);
-
-                            // Heal players if out of dungeon
+    
 
                         }
-
                     }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
@@ -319,8 +316,7 @@ class GModule {
      * 
      * @param {Array<User>} grpOfUsers
      */
-    async fightAchievement(grpOfUsers, fightSummary) {
-        let currentArea = Globals.areasManager.getArea(grpOfUsers[0].character.getIdArea());
+    async fightAchievement(grpOfUsers, fightSummary, currentArea) {
         let achievToUnlock = new AchievementUnlocker(grpOfUsers);
 
         let toWaitBefore = [];

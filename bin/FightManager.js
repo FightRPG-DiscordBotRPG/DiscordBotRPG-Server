@@ -135,7 +135,7 @@ class FightManager {
             // Make them wait even if they delete the message
             setTimeout(() => {
                 this.deleteFight(userid);
-            }, (fight.summary.rounds.length) * 4000);
+            }, conf.env == "dev" ? 2000 : (fight.summary.rounds.length) * 4000);
 
             toApi.summary = this.fights[userid].summary;
             if (!canIFightTheMonster) {

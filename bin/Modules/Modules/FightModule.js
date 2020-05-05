@@ -43,7 +43,7 @@ class FightModule extends GModule {
 
     loadRoutes() {
         this.router.post("/monster", async (req, res, next) => {
-            let data = await this.FightPvERoute(req, res, 0)
+            let data = await this.FightPvERoute(req, res, 0);
             await next();
             return res.json(data);
         });

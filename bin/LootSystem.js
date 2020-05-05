@@ -20,7 +20,7 @@ class LootSystem {
         let possibleLoots = await conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [character.getIdArea()]);
         let luckModifier = totalLuck / 1000 + 1;
         let jsonLoot = {};
-
+        let promises = [];
         for (let itemPossible of possibleLoots) {
 
             let dropRate = 0;
@@ -45,11 +45,12 @@ class LootSystem {
                     jsonLoot[itemPossible.idRarity].other += number;
                 }
 
-                await this.giveToPlayer(character, itemPossible.idBaseItem, level, number);
+                promises.push(this.giveToPlayer(character, itemPossible.idBaseItem, level, number));
                 PStatistics.incrStat(character.id, "items_" + Globals.getRarityName(itemPossible.idRarity) + "_loot", number);
 
             }
         }
+        await Promise.all(promises);
         return jsonLoot;
 
     }
@@ -95,29 +96,42 @@ class LootSystem {
         return false;
     }
 
+    /**
+     * 
+     * @param {Character} character
+     * @param {number} idBase
+     * @param {number} level
+     * @param {number} number
+     */
     async giveToPlayer(character, idBase = 0, level = 1, number = 1) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
         let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
-        let idToAdd;
 
         if (res[0]) {
             res = res[0];
             level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
             if (res.stackable == true) {
                 // C'est un objet stackable
-                idToAdd = await character.getIdOfThisIdBase(idBase, level);
+                let idToAdd = await character.getIdOfThisIdBase(idBase, level);
                 if (idToAdd == null) {
                     idToAdd = await this.newItem(idBase, level);
                 }
                 await character.inv.addToInventory(idToAdd, number);
+
             } else {
+                let promises = [];
                 // C'est autre chose
                 for (let i = 0; i < number; i++) {
-                    idToAdd = await this.newItem(idBase, level);
-                    await character.inv.addToInventory(idToAdd, 1);
+                    promises.push((async () => {
+                        let idToAdd = await this.newItem(idBase, level);
+
+                        await character.inv.addToInventory(idToAdd, 1);
+                    })());
+
                 }
 
+                await Promise.all(promises);
             }
             return true;
         }
@@ -166,19 +180,18 @@ class LootSystem {
 
             // Here stats have exactly the same architechture of a stats object
             // So we can calculate power
-
             let idInsert = await Item.lightInsert(idBase, level, Item.calculPower(stats));
-            let promises = [];
+            let statsValues = [];
+
             for (let i in Globals.statsIds) {
-                promises.push(conn.query("INSERT INTO itemsstats VALUES(" + idInsert + ", " + parseInt(Globals.statsIds[i]) + ", " + stats[i] + ")"));
+                statsValues.push([idInsert, parseInt(Globals.statsIds[i]), stats[i]])
             }
 
-            await Promise.all(promises);
+            await conn.query("INSERT INTO itemsstats VALUES ?;", [statsValues]);
 
             return idInsert;
 
         }
-
         return -1;
     }
 
@@ -260,3 +273,7 @@ class LootSystem {
 }
 
 module.exports = LootSystem;
+
+/**
+ * @typedef {import("./Character")} Character
+ **/

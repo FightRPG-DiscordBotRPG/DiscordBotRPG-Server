@@ -125,7 +125,7 @@ class Character extends CharacterEntity {
     }
 
     async saveArea() {
-        await conn.query("UPDATE characters SET idArea = " + this.getIdArea() + " WHERE idCharacter = " + this.id);
+        await conn.query("UPDATE characters SET idArea = ? WHERE idCharacter = ?;", [this.getIdArea(), this.id]);
     }
 
     /**
@@ -133,7 +133,7 @@ class Character extends CharacterEntity {
      * @param {Area} area
      * @param {{timeToWait: number, timeChangeDueToWeather: {climatesChanges: Array<number>, weathersChanges: Array<number>, totalTimeAddedDueToWeather: number}, goldPrice:number, neededAchievements: Array<number>} | number} costObject
      */
-    async changeArea(area, costObject=0) {
+    async changeArea(area, costObject = 0) {
         let baseTimeToWait = costObject;
         if (!Number.isInteger(costObject)) {
             baseTimeToWait = await this.getWaitTimeTravel(costObject);
@@ -196,6 +196,7 @@ class Character extends CharacterEntity {
     }
 
     /**
+     * Exhaust time in seconds
      * @returns {number} Exhuast time in seconds
      */
     getExhaust() {

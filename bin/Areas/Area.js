@@ -624,6 +624,14 @@ class Area {
         return true;
     }
 
+    getNextFloorOrExit() {
+        throw "Not implemented";
+    }
+
+    getEntrance() {
+        throw "Not implemented";
+    }
+
 }
 
 module.exports = Area;

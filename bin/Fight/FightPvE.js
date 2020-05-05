@@ -64,7 +64,7 @@ class FightPvE extends Fight {
              */
             let area = this.entities[0][0].getArea();
             let areaBonuses = await area.getAllBonuses();
-
+            let promises = [];
             for (let i in this.entities[0]) {
                 /**
                  * @type {Character}
@@ -94,8 +94,7 @@ class FightPvE extends Fight {
                 this.summary.goldGained[entity.name] = money;
                 totalMoney += money;
 
-
-                await entity.addMoney(money);
+                promises.push(entity.addMoney(money));
                 PStatistics.incrStat(entity.id, "gold_dropped", money);
 
 
@@ -105,7 +104,7 @@ class FightPvE extends Fight {
                     xp = Math.round(xp * (entity.getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[entity.name] = xp;
-                    await entity.addExp(xp);
+                    promises.push(entity.addExp(xp));
                 } else {
                     this.summary.xpGained[entity.name] = 0;
                 }
@@ -124,30 +123,37 @@ class FightPvE extends Fight {
                         newLevel: entity.getLevel(),
                     });
                 }
-
                 // Loot or Not
                 let lootSystem = new LootSystem();
                 let totalLuck = entity.getStat("luck") + this.getAvgLuckBonus();
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
-                let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
-                if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
-                    this.summary.drops.push({
-                        name: entity.name,
-                        drop: loot,
-                    });
-                }
+
+                promises.push((async () => {
+                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
+                    if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
+                        this.summary.drops.push({
+                            name: entity.name,
+                            drop: loot,
+                        });
+                    }
+                })());
+
                 for (let monster of this.entities[1]) {
                     PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);
                 }
             }
             this.summary.xp = totalXp;
             this.summary.money = Math.round(totalMoney * 0.95);
-            let ownerid = await this.entities[0][0].getArea().getOwnerID();
-            if (ownerid != null) {
-                await Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
-            }
 
+            // Don't need to await this
+            (async () => {
+                let ownerid = await this.entities[0][0].getArea().getOwnerID();
+                if (ownerid != null) {
+                    await Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
+                }
+            })();
 
+            await Promise.all(promises);
         } else {
             /**
              * @type {Character}
