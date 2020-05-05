@@ -76,7 +76,7 @@ class CharacterInventory {
             } else {
                 await conn.query("UPDATE `charactersinventory` SET `number` = number - ? WHERE `charactersinventory`.`idCharacter` = ? AND `charactersinventory`.`idItem` = ?;", [number, this.id, item.id])
             }
-		}
+        }
     }
 
     /**

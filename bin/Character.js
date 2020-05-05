@@ -599,13 +599,15 @@ class Character extends CharacterEntity {
                 amount = 1;
             }
             amount = amount > 100 ? 100 : amount;
-            await this.getInv().removeSomeFromInventory(idEmplacement, amount, true);
-            await itemToUse.prepareToUse();
             let promises = [];
-            for (let i = 0; i < amount; i++) {
-                promises.push(itemToUse.use(this));
-            }
+            promises.push(this.getInv().removeSomeFromInventory(idEmplacement, amount, true));
+
+            await itemToUse.prepareToUse();
+
+            promises.push(itemToUse.use(this, amount));
+
             await Promise.all(promises);
+
         }
     }
 
