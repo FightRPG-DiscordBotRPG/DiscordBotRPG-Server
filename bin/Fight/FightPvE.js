@@ -66,6 +66,9 @@ class FightPvE extends Fight {
             let areaBonuses = await area.getAllBonuses();
 
             for (let i in this.entities[0]) {
+                /**
+                 * @type {Character}
+                 */
                 let entity = this.entities[0][i];
 
                 if (area.areaType != "dungeon") {
@@ -73,12 +76,12 @@ class FightPvE extends Fight {
                     entity.resetFullHp();
                 }
 
-                this.entities[0][i].waitForNextFight(this.summary.rounds.length * 2500);
+                entity.waitForNextFight(this.summary.rounds.length * 2500);
 
                 // Stat for statistics system 
                 PStatistics.incrStat(entity.id, "pvefights_victories", 1);
 
-                let actualLevel = this.entities[0][i].getLevel();
+                let actualLevel = entity.getLevel();
 
 
 
@@ -88,23 +91,23 @@ class FightPvE extends Fight {
 
                 let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
                 money = Math.round(money * (areaBonuses["gold_drop"].getPercentageValue() + 1));
-                this.summary.goldGained[this.entities[0][i].name] = money;
+                this.summary.goldGained[entity.name] = money;
                 totalMoney += money;
 
 
-                await this.entities[0][i].addMoney(money);
+                await entity.addMoney(money);
                 PStatistics.incrStat(entity.id, "gold_dropped", money);
 
 
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.2 ? 1.2 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (this.entities[0][i].getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
+                    xp = Math.round(xp * (entity.getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
-                    this.summary.xpGained[this.entities[0][i].name] = xp;
-                    await this.entities[0][i].addExp(xp);
+                    this.summary.xpGained[entity.name] = xp;
+                    await entity.addExp(xp);
                 } else {
-                    this.summary.xpGained[this.entities[0][i].name] = 0;
+                    this.summary.xpGained[entity.name] = 0;
                 }
 
 
@@ -112,24 +115,24 @@ class FightPvE extends Fight {
                 //if level up
 
 
-                let diffLevel = this.entities[0][i].getLevel() - actualLevel;
+                let diffLevel = entity.getLevel() - actualLevel;
                 if (diffLevel > 0) {
                     // Add to sumary
                     this.summary.levelUpped.push({
-                        name: this.entities[0][i].name,
+                        name: entity.name,
                         levelGained: diffLevel,
-                        newLevel: this.entities[0][i].getLevel(),
+                        newLevel: entity.getLevel(),
                     });
                 }
 
                 // Loot or Not
                 let lootSystem = new LootSystem();
-                let totalLuck = this.entities[0][i].getStat("luck") + this.getAvgLuckBonus();
+                let totalLuck = entity.getStat("luck") + this.getAvgLuckBonus();
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
                 let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
                 if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                     this.summary.drops.push({
-                        name: this.entities[0][i].name,
+                        name: entity.name,
                         drop: loot,
                     });
                 }
@@ -146,7 +149,11 @@ class FightPvE extends Fight {
 
 
         } else {
-            for (let entity of this.entities[0]) {
+            /**
+             * @type {Character}
+             */
+            let entity;
+            for (entity of this.entities[0]) {
                 // 2.5 Seconds per round * 1000 => ms
                 entity.waitForNextFight(this.summary.rounds.length * 2500);
                 PStatistics.incrStat(entity.id, "pvefights_defeats", 1);

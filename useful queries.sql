@@ -76,10 +76,20 @@ VALUES SELECT areas.idArea, 1 as idBaseItem, 0 as percentage, 1 as min, 1 as max
 SELECT * FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem
 
 
+-- Market places
+SELECT * FROM marketplacesorders INNER JOIN items ON items.idItem = marketplacesorders.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+
+-- Witrh name and where
+SELECT * FROM marketplacesorders
+INNER JOIN items ON items.idItem = marketplacesorders.idItem
+INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem
+INNER JOIN itemspower ON itemspower.idItem = items.idItem
+WHERE items.level = 75 AND localizationitems.lang = "fr";
 
 
-
-
+-- Check user inv
+SELECt * from charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem WHERE idCharacter = 10472 AND lang = "fr"
 
 
 
