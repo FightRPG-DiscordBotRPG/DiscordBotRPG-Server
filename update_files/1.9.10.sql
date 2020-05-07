@@ -9,12 +9,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema discord_bot_rpg
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `discord_bot_rpg` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
-USE `discord_bot_rpg` ;
-
--- -----------------------------------------------------
 -- Table `discord_bot_rpg`.`StatesRestrictions`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesrestrictions` (
@@ -94,12 +88,10 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
   `idTrait` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `idTraitType` INT UNSIGNED NOT NULL,
-  `valueInt` INT NULL DEFAULT 0,
   `valueFloat` FLOAT NULL DEFAULT 0,
   `valueState` INT UNSIGNED NULL,
   `valueElementType` INT UNSIGNED NULL,
   `valueSkillType` INT UNSIGNED NULL,
-  `valueAttackType` INT UNSIGNED NULL,
   `valueStat` INT UNSIGNED NULL,
   PRIMARY KEY (`idTrait`),
   UNIQUE INDEX `idTrait_UNIQUE` (`idTrait` ASC) VISIBLE,
@@ -107,7 +99,6 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
   INDEX `fk_Traits_TraitsTypes1_idx` (`idTraitType` ASC) VISIBLE,
   INDEX `fk_Traits_ElementsTypes1_idx` (`valueElementType` ASC) VISIBLE,
   INDEX `fk_Traits_SkillsTypes1_idx` (`valueSkillType` ASC) VISIBLE,
-  INDEX `fk_Traits_AttacksTypes1_idx` (`valueAttackType` ASC) VISIBLE,
   INDEX `fk_Traits_Stats1_idx` (`valueStat` ASC) VISIBLE,
   CONSTRAINT `fk_Traits_States1`
     FOREIGN KEY (`valueState`)
@@ -129,11 +120,6 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
     REFERENCES `discord_bot_rpg`.`skillstypes` (`idSkillType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Traits_AttacksTypes1`
-    FOREIGN KEY (`valueAttackType`)
-    REFERENCES `discord_bot_rpg`.`attackstypes` (`idAttackType`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_Traits_Stats1`
     FOREIGN KEY (`valueStat`)
     REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
@@ -152,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesremovalconditions` (
   `roundMin` INT NOT NULL DEFAULT 0,
   `roundMax` INT NOT NULL DEFAULT 0,
   `afterDamage` TINYINT NOT NULL DEFAULT 0,
-  `damageProbability` INT NOT NULL DEFAULT 0,
+  `damageProbability` FLOAT NOT NULL DEFAULT 0,
   PRIMARY KEY (`idState`),
   INDEX `fk_StatesRemovalConditions_States1_idx` (`idState` ASC) VISIBLE,
   CONSTRAINT `fk_StatesRemovalConditions_States1`
@@ -227,7 +213,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`castinfo` (
   `idSkill` INT UNSIGNED NOT NULL,
   `timeToCast` INT UNSIGNED NOT NULL DEFAULT 0,
-  `successRate` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `successRate` FLOAT UNSIGNED NOT NULL DEFAULT 0,
   `repeat` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `energyGain` INT UNSIGNED NOT NULL DEFAULT 0,
   `idAttackType` INT UNSIGNED NOT NULL,
@@ -323,13 +309,16 @@ ENGINE = InnoDB;
 -- Table `discord_bot_rpg`.`EffectsSkills`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`effectsskills` (
+  `idEffectSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `idSkill` INT UNSIGNED NOT NULL,
   `idEffectType` INT NOT NULL,
-  `percentageValue` INT NULL,
+  `percentageValue` FLOAT NULL,
   `fixedValue` INT NULL,
   `stateValue` INT UNSIGNED NULL,
   `statValue` INT UNSIGNED NULL,
   `roundsValue` INT NULL,
+  PRIMARY KEY (`idEffectSkill`),
+  UNIQUE INDEX `idEffectSkill_UNIQUE` (`idEffectSkill` ASC) VISIBLE,
   INDEX `fk_EffectsSkills_Skills1_idx` (`idSkill` ASC) VISIBLE,
   INDEX `fk_EffectsSkills_EffectsTypes1_idx` (`idEffectType` ASC) VISIBLE,
   INDEX `fk_EffectsSkills_States1_idx` (`stateValue` ASC) VISIBLE,
@@ -369,7 +358,8 @@ VALUES
 (4,	"element_rate"),
 (5,	"stats_debuff"),
 (6,	"state_debuff"),
-(7,	"state_resist");
+(7,	"state_resist"),
+(8,	"quiet_skill");
 
 INSERT INTO skillstypes
 VALUES
@@ -425,11 +415,10 @@ INSERT INTO damagestypes
 VALUES
 (1, "hpDamage"),
 (2, "manaDamage"),
-(3, "energyDamage"),
-(4, "lifeSteal"),
-(5, "manaSteal"),
-(6, "healHp"),
-(7, "healMp");
+(3, "lifeSteal"),
+(4, "manaSteal"),
+(5, "healHp"),
+(6, "healMp");
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
