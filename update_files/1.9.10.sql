@@ -1,0 +1,437 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema discord_bot_rpg
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema discord_bot_rpg
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `discord_bot_rpg` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+USE `discord_bot_rpg` ;
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`StatesRestrictions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesrestrictions` (
+  `idStateRestriction` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorhand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idStateRestriction`),
+  UNIQUE INDEX `idStateRestriction_UNIQUE` (`idStateRestriction` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`States`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`states` (
+  `idState` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idStateRestriction` INT UNSIGNED NULL,
+  `shorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idState`),
+  UNIQUE INDEX `idState_UNIQUE` (`idState` ASC) VISIBLE,
+  INDEX `fk_States_StatesRestrictions1_idx` (`idStateRestriction` ASC) VISIBLE,
+  CONSTRAINT `fk_States_StatesRestrictions1`
+    FOREIGN KEY (`idStateRestriction`)
+    REFERENCES `discord_bot_rpg`.`statesrestrictions` (`idStateRestriction`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`TraitsTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traitstypes` (
+  `idTraitType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `typeShorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idTraitType`),
+  UNIQUE INDEX `typeShorthand_UNIQUE` (`typeShorthand` ASC) VISIBLE,
+  UNIQUE INDEX `idTraitType_UNIQUE` (`idTraitType` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`ElementsTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`elementstypes` (
+  `idElementType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idElementType`),
+  UNIQUE INDEX `idElementType_UNIQUE` (`idElementType` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`SkillsTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skillstypes` (
+  `idSkillType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idSkillType`),
+  UNIQUE INDEX `idSkillType_UNIQUE` (`idSkillType` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`AttacksTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`attackstypes` (
+  `idAttackType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idAttackType`),
+  UNIQUE INDEX `idAttackType_UNIQUE` (`idAttackType` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`Traits`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
+  `idTrait` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idTraitType` INT UNSIGNED NOT NULL,
+  `valueInt` INT NULL DEFAULT 0,
+  `valueFloat` FLOAT NULL DEFAULT 0,
+  `valueState` INT UNSIGNED NULL,
+  `valueElementType` INT UNSIGNED NULL,
+  `valueSkillType` INT UNSIGNED NULL,
+  `valueAttackType` INT UNSIGNED NULL,
+  `valueStat` INT UNSIGNED NULL,
+  PRIMARY KEY (`idTrait`),
+  UNIQUE INDEX `idTrait_UNIQUE` (`idTrait` ASC) VISIBLE,
+  INDEX `fk_Traits_States1_idx` (`valueState` ASC) VISIBLE,
+  INDEX `fk_Traits_TraitsTypes1_idx` (`idTraitType` ASC) VISIBLE,
+  INDEX `fk_Traits_ElementsTypes1_idx` (`valueElementType` ASC) VISIBLE,
+  INDEX `fk_Traits_SkillsTypes1_idx` (`valueSkillType` ASC) VISIBLE,
+  INDEX `fk_Traits_AttacksTypes1_idx` (`valueAttackType` ASC) VISIBLE,
+  INDEX `fk_Traits_Stats1_idx` (`valueStat` ASC) VISIBLE,
+  CONSTRAINT `fk_Traits_States1`
+    FOREIGN KEY (`valueState`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_TraitsTypes1`
+    FOREIGN KEY (`idTraitType`)
+    REFERENCES `discord_bot_rpg`.`traitstypes` (`idTraitType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_ElementsTypes1`
+    FOREIGN KEY (`valueElementType`)
+    REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_SkillsTypes1`
+    FOREIGN KEY (`valueSkillType`)
+    REFERENCES `discord_bot_rpg`.`skillstypes` (`idSkillType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_AttacksTypes1`
+    FOREIGN KEY (`valueAttackType`)
+    REFERENCES `discord_bot_rpg`.`attackstypes` (`idAttackType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_Stats1`
+    FOREIGN KEY (`valueStat`)
+    REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`StatesRemovalConditions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesremovalconditions` (
+  `idState` INT UNSIGNED NOT NULL,
+  `afterFight` TINYINT NOT NULL DEFAULT 0,
+  `afterRounds` TINYINT NOT NULL DEFAULT 0,
+  `roundMin` INT NOT NULL DEFAULT 0,
+  `roundMax` INT NOT NULL DEFAULT 0,
+  `afterDamage` TINYINT NOT NULL DEFAULT 0,
+  `damageProbability` INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idState`),
+  INDEX `fk_StatesRemovalConditions_States1_idx` (`idState` ASC) VISIBLE,
+  CONSTRAINT `fk_StatesRemovalConditions_States1`
+    FOREIGN KEY (`idState`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`StatesTraits`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statestraits` (
+  `idState` INT UNSIGNED NOT NULL,
+  `idTrait` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idState`, `idTrait`),
+  INDEX `fk_StatesTraits_Traits1_idx` (`idTrait` ASC) VISIBLE,
+  CONSTRAINT `fk_StatesTraits_States1`
+    FOREIGN KEY (`idState`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_StatesTraits_Traits1`
+    FOREIGN KEY (`idTrait`)
+    REFERENCES `discord_bot_rpg`.`traits` (`idTrait`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`TargetRange`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`targetrange` (
+  `idTargetRange` INT NOT NULL,
+  `shothand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idTargetRange`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`Skills`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skills` (
+  `idSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  `idSkillType` INT UNSIGNED NULL,
+  `energyCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `manaCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `idTargetRange` INT NOT NULL,
+  PRIMARY KEY (`idSkill`),
+  UNIQUE INDEX `idSkill_UNIQUE` (`idSkill` ASC) VISIBLE,
+  INDEX `fk_Skills_SkillsTypes1_idx` (`idSkillType` ASC) VISIBLE,
+  INDEX `fk_Skills_TargetRange1_idx` (`idTargetRange` ASC) VISIBLE,
+  CONSTRAINT `fk_Skills_SkillsTypes1`
+    FOREIGN KEY (`idSkillType`)
+    REFERENCES `discord_bot_rpg`.`skillstypes` (`idSkillType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Skills_TargetRange1`
+    FOREIGN KEY (`idTargetRange`)
+    REFERENCES `discord_bot_rpg`.`targetrange` (`idTargetRange`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`CastInfo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`castinfo` (
+  `idSkill` INT UNSIGNED NOT NULL,
+  `timeToCast` INT UNSIGNED NOT NULL DEFAULT 0,
+  `successRate` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `repeat` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `energyGain` INT UNSIGNED NOT NULL DEFAULT 0,
+  `idAttackType` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idSkill`),
+  INDEX `fk_CastInfo_AttacksTypes1_idx` (`idAttackType` ASC) VISIBLE,
+  CONSTRAINT `fk_CastInfo_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CastInfo_AttacksTypes1`
+    FOREIGN KEY (`idAttackType`)
+    REFERENCES `discord_bot_rpg`.`attackstypes` (`idAttackType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`RequiredSubtypeEquipped`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`requiredsubtypeequipped` (
+  `idSousType` INT UNSIGNED NOT NULL,
+  `idSkill` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idSousType`, `idSkill`),
+  INDEX `fk_RequiredSubtypeEquipped_Skills1_idx` (`idSkill` ASC) VISIBLE,
+  CONSTRAINT `fk_RequiredSubtypeEquipped_ItemsSousTypes1`
+    FOREIGN KEY (`idSousType`)
+    REFERENCES `discord_bot_rpg`.`itemssoustypes` (`idSousType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_RequiredSubtypeEquipped_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`DamagesTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`damagestypes` (
+  `idDamageType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idDamageType`),
+  UNIQUE INDEX `idDamageType_UNIQUE` (`idDamageType` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`DamageInfo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`damageinfo` (
+  `idSkill` INT UNSIGNED NOT NULL,
+  `idDamageType` INT UNSIGNED NOT NULL,
+  `idElementType` INT UNSIGNED NULL,
+  `formula` VARCHAR(255) NOT NULL,
+  `variance` TINYINT NOT NULL DEFAULT 0,
+  `criticalHit` TINYINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idSkill`),
+  INDEX `fk_DamageInfo_DamagesTypes1_idx` (`idDamageType` ASC) VISIBLE,
+  INDEX `fk_DamageInfo_ElementsTypes1_idx` (`idElementType` ASC) VISIBLE,
+  CONSTRAINT `fk_DamageInfo_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_DamageInfo_DamagesTypes1`
+    FOREIGN KEY (`idDamageType`)
+    REFERENCES `discord_bot_rpg`.`damagestypes` (`idDamageType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_DamageInfo_ElementsTypes1`
+    FOREIGN KEY (`idElementType`)
+    REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`EffectsTypes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`effectstypes` (
+  `idEffectType` INT NOT NULL,
+  `shortname` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idEffectType`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`EffectsSkills`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`effectsskills` (
+  `idSkill` INT UNSIGNED NOT NULL,
+  `idEffectType` INT NOT NULL,
+  `percentageValue` INT NULL,
+  `fixedValue` INT NULL,
+  `stateValue` INT UNSIGNED NULL,
+  `statValue` INT UNSIGNED NULL,
+  `roundsValue` INT NULL,
+  INDEX `fk_EffectsSkills_Skills1_idx` (`idSkill` ASC) VISIBLE,
+  INDEX `fk_EffectsSkills_EffectsTypes1_idx` (`idEffectType` ASC) VISIBLE,
+  INDEX `fk_EffectsSkills_States1_idx` (`stateValue` ASC) VISIBLE,
+  INDEX `fk_EffectsSkills_Stats1_idx` (`statValue` ASC) VISIBLE,
+  CONSTRAINT `fk_EffectsSkills_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EffectsSkills_EffectsTypes1`
+    FOREIGN KEY (`idEffectType`)
+    REFERENCES `discord_bot_rpg`.`effectstypes` (`idEffectType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EffectsSkills_States1`
+    FOREIGN KEY (`stateValue`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EffectsSkills_Stats1`
+    FOREIGN KEY (`statValue`)
+    REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+INSERT INTO statesrestrictions
+VALUES
+(1, "cant_target_enemy"),(2, "cant_target_ally"),(3, "cant_target_self"),(4, "cant_target_do_anything");
+
+
+INSERT INTO traitstypes
+VALUES
+(1,	"element_attack"),
+(2,	"state_attack"),
+(3,	"stats_param"),
+(4,	"element_rate"),
+(5,	"stats_debuff"),
+(6,	"state_debuff"),
+(7,	"state_resist");
+
+INSERT INTO skillstypes
+VALUES
+(1,	"magic"),
+(2,	"special");
+
+INSERT INTO attackstypes
+VALUES
+(1,	"sure"),
+(2,	"physical"),
+(3,	"magical");
+
+INSERT INTO elementstypes
+VALUES
+(1, "physical"),
+(2, "fire"),
+(3, "water"),
+(4, "earth"),
+(5, "air"),
+(6, "dark"),
+(7,	"light");
+
+INSERT INTO targetrange 
+VALUES
+(1,	"all_enemies"),
+(2,	"1_random_enemy"),
+(3,	"2_random_enemy"),
+(4,	"3_random_enemy"),
+(5,	"4_random_enemy"),
+(6,	"1_random_ally"),
+(7,	"2_random_ally"),
+(8,	"3_random_ally"),
+(9,	"all_allies"),
+(10, "1_random_ally_dead"),
+(11, "3_random_ally_dead"),
+(12, "3_random_ally_dead"),
+(13, "all_allies_dead"),
+(14,"caster");
+
+INSERT INTO effectstypes
+VALUES
+(1, "hpHeal"),
+(2, "manaHeal"),
+(3, "energyHeal"),
+(4, "addState"),
+(5, "removeState"),
+(6, "addBuff"),
+(7, "addDebuf"),
+(8, "removeBuff"),
+(9, "removeDebuff");
+
+INSERT INTO damagestypes
+VALUES
+(1, "hpDamage"),
+(2, "manaDamage"),
+(3, "energyDamage"),
+(4, "lifeSteal"),
+(5, "manaSteal"),
+(6, "healHp"),
+(7, "healMp");
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
