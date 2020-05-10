@@ -1,0 +1,70 @@
+const conn = require("../../conf/mysql");
+const Effect = require("./Effect");
+
+
+class Skill {
+    constructor() {
+        this.id = 0;
+        this.shorthand = "";
+        this.idSkillType = null;
+        this.energyCost = 0;
+        this.manaCost = 0;
+        this.idTargetRange = 1;
+        this.timeToCast = 0;
+        this.successRate = 0;
+        this.repeat = 1;
+        this.energyGain = 0;
+        this.idAttackType = 0;
+        this.damage = {
+            idDamageType: 0,
+            idElementType: null,
+            formula: "1",
+            variance: 0,
+            criticalHit: false,
+        }
+        /**
+         * @type {Array<Effect>}
+         */
+        this.effects = [];
+        this.requiredSubtype = [];
+
+        this.damage = null;
+    }
+
+    async loadWithID(id) {
+        this.id = id;
+        let res = await conn.query("SELECT * FROM skills INNER JOIN castinfo ON castinfo.idSkill = skills.idSkill LEFT JOIN damageinfo ON damageinfo.idSkill = skills.idSkill WHERE skills.idSkill = ?;", [this.id]);
+
+        this.shorthand = res[0].shorthand;
+        this.idSkillType = res[0].idSkillType;
+        this.energyCost = res[0].energyCost;
+        this.manaCost = res[0].manaCost;
+        this.idTargetRange = res[0].idTargetRange;
+        this.timeToCast = res[0].timeToCast;
+        this.successRate = res[0].successRate;
+        this.repeat = res[0].repeat;
+        this.energyGain = res[0].energyGain;
+        this.idAttackType = res[0].idAttackType;
+        this.damage = {
+            idDamageType: res[0].idDamageType,
+            idElementType: res[0].idElementType,
+            formula: res[0].formula,
+            variance: res[0].variance,
+            criticalHit: res[0].criticalHit,
+        }
+
+        res = await conn.query("SELECT idEffectSkill FROM effectsskills WHERE idSkill = ?;", [this.id]);
+
+        let promises = [];
+        for (let item of res) {
+            let e = new Effect();
+            this.effects.push(e);
+            promises.push(e.loadWithID(item.idEffectSkill));
+        }
+
+        await Promise.all(promises);
+    }
+}
+
+
+module.exports = Skill;

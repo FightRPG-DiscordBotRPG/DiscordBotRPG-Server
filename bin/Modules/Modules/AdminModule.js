@@ -16,6 +16,8 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
+const State = require("../../SkillsAndStatus/State");
+const Skill = require("../../SkillsAndStatus/Skill");
 
 class AdminModule extends GModule {
     constructor() {
@@ -256,6 +258,9 @@ class AdminModule extends GModule {
 
         this.router.get("/debug/", async (req, res, next) => {
             //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
+            let s = new Skill();
+            await s.loadWithID(6);
+            console.log(s);
             await next();
             return res.json({ succes: "done" });
         });
