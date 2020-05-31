@@ -1,4 +1,6 @@
 const Stats = require("../Stats/Stats");
+const Skill = require("../SkillsAndStatus/Skill");
+const State = require("../SkillsAndStatus/State");
 
 class WorldEntity {
 
@@ -8,9 +10,32 @@ class WorldEntity {
         this._type = "Entity";
         this.actualHP = 0;
         this.maxHP = 0;
+        this.actualMP = 0;
+        this.maxMP = 0;
         this.level = 0;
         this.stats = new Stats();
         this.consecutiveStuns = 0;
+        /**
+        * @type {Array<Skill>}
+        */
+        this.skills = [];
+        /**
+        * @type {Array<State>}
+        */
+        this.states = [];
+        this.skillToTestIndex = -1;
+    }
+
+    async loadSkills() {
+        // TDOO load depending on class / or monsters skills
+        let promises = [];
+        for (let item of [1, 2, 8]) {
+            let s = new Skill();
+            this.skills.push(s);
+            promises.push(s.loadWithID(item));
+        }
+        await Promise.all(promises);
+        this.skillToTestIndex = 0;
     }
 
     updateStats() {
@@ -23,6 +48,10 @@ class WorldEntity {
 
     resetFullHp() {
         this.actualHP = this.maxHP;
+    }
+
+    resetFullMp() {
+        this.actualMP = this.maxMP;
     }
 
     damageCalcul() {
@@ -60,6 +89,14 @@ class WorldEntity {
         return 0;
     }
 
+    prepareCast() {
+        if (this.skillToTestIndex > -1) {
+            let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
+            this.skills[this.skillToTestIndex].currentCastPreparation += speed;
+        }
+
+    }
+
 
 
     stun(advWill) {
@@ -76,8 +113,22 @@ class WorldEntity {
         return Math.random() <= chanceToStun ? true : false;
     }
 
+    isAlive() {
+        return this.actualHP > 0
+    }
+
     getIdUser() {
         return null;
+    }
+
+    recoverAll() {;
+        this.clearStatus();
+        this.resetFullMp();
+        this.resetFullHp();
+    }
+
+    clearStatus() {
+        this.states = [];
     }
 
 }

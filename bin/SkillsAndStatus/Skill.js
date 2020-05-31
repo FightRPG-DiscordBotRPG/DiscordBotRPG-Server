@@ -29,6 +29,8 @@ class Skill {
         this.requiredSubtype = [];
 
         this.damage = null;
+
+        this.currentCastPreparation = 0;
     }
 
     async loadWithID(id) {
@@ -63,6 +65,10 @@ class Skill {
         }
 
         await Promise.all(promises);
+    }
+
+    canBeCast() {
+        return this.currentCastPreparation >= this.timeToCast;
     }
 }
 

@@ -90,12 +90,13 @@ class Fight {
 
     async init(resetStats=true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
-        for (let i in this.initiatives) {
-            this.initiatives.sort((a, b) => {
-                return b.getStat("intellect") - a.getStat("intellect");
-            });
-            this.initiatives[i].updateStats();
+        this.initiatives.sort((a, b) => {
+            return b.getStat("intellect") - a.getStat("intellect");
+        });
 
+        for (let i in this.initiatives) {
+            this.initiatives[i].updateStats();
+            await this.initiatives[i].loadSkills();
             if (resetStats || this.initiatives[i].constructor === Monster) {
                 this.initiatives[i].resetFullHp();
             }
@@ -215,7 +216,7 @@ class Fight {
 
     isThisTeamAlive(teamIndex) {
         for (let i in this.entities[teamIndex]) {
-            if (this.entities[teamIndex][i].actualHP > 0) {
+            if (this.entities[teamIndex][i].isAlive()) {
                 return true;
             }
         }
