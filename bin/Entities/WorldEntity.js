@@ -12,17 +12,19 @@ class WorldEntity {
         this.maxHP = 0;
         this.actualMP = 0;
         this.maxMP = 0;
+        this.actualEnergy = 0;
+        this.maxEnergy = 0;
         this.level = 0;
         this.stats = new Stats();
         this.consecutiveStuns = 0;
         /**
-        * @type {Array<Skill>}
+        * @type {Object.<number, Skill>}
         */
-        this.skills = [];
+        this.skills = {};
         /**
-        * @type {Array<State>}
+        * @type {Object.<number, State>}
         */
-        this.states = [];
+        this.states = {};
         this.skillToTestIndex = -1;
     }
 
@@ -52,6 +54,14 @@ class WorldEntity {
 
     resetFullMp() {
         this.actualMP = this.maxMP;
+    }
+
+    resetFullEnergy() {
+        this.actualEnergy = this.maxEnergy;
+    }
+
+    resetEnergy() {
+        this.actualEnergy = 0;
     }
 
     damageCalcul() {
@@ -94,10 +104,7 @@ class WorldEntity {
             let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
             this.skills[this.skillToTestIndex].currentCastPreparation += speed;
         }
-
     }
-
-
 
     stun(advWill) {
         let max = this.stats.getOptimalStun(this.getLevel());
@@ -121,14 +128,115 @@ class WorldEntity {
         return null;
     }
 
-    recoverAll() {;
+    recoverAll() {
         this.clearStatus();
         this.resetFullMp();
         this.resetFullHp();
+        this.resetEnergy();
     }
 
     clearStatus() {
-        this.states = [];
+        this.states = {};
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     */
+    async addState(idState) {
+        let state = new State();
+        await state.loadWithID(idState);
+        this.states[idState] = state;
+    }
+
+    /**
+     * 
+     * @param {Skill} skill
+     */
+    getSkillMpCost(skill) {
+        // TODO: Add passives or status bonuses here
+        //for (let state of this.states) {
+        //    state.traits.forEach(t => {
+        //        // Do something here ?
+        //    });
+        //}
+        return Math.floor(skill.manaCost);
+    }
+
+    /**
+    *
+    * @param {Skill} skill
+    */
+    getSkillEnergyCost(skill) {
+        // TODO: Add passives or status bonuses here
+        //for (let state of this.states) {
+        //    state.traits.forEach(t => {
+        //        // Do something here ?
+        //    });
+        //}
+        return Math.floor(skill.energyCost);
+    }
+
+    /**
+    *
+    * @param {Skill} skill
+    */
+    canUseSkill(skill) {
+        return this.actualEnergy >= this.getSkillEnergyCost(skill) && this.actualMP >= this.getSkillEnergyCost(skill);
+    }
+
+    /**
+    *
+    * @param {Skill} skill
+    */
+    removeSkillCost(skill) {
+        this.actualMP = this.getSkillMpCost(skill);
+        this.actualEnergy = this.getSkillEnergyCost(skill);
+    }
+
+    /**
+     * 
+     * @param {State} state
+     */
+    isStateAddable(state) {
+        // TODO: Add states verifications
+        //return (this.isAlive() && !this.isStateResist(stateId) &&
+        //    !this._result.isStateRemoved(stateId) &&
+        //    !this.isStateRestrict(stateId));
+    }
+
+    removeBattleStates() {
+        this.getStatesArray().forEach((state) => {
+            if (state.afterFight) {
+                this.removeState(state.id);
+            }
+        });
+    }
+
+    /**
+     * @returns {Array<State>} removed states
+     */
+    removeStatesByDamage() {
+        let removedStates = [];
+        this.getStatesArray().forEach((state) => {
+            if (state.afterDamage && Math.random() < state.damageProbability) {
+                removedStates.push(state);
+                this.removeState(state.id);
+            }
+        });
+
+        return removedStates;
+    }
+
+    removeState(idState) {
+        delete this.states[idState];
+    }
+
+    /**
+     * @returns {Array<State>}
+     **/
+    getStatesArray() {
+        return Object.values(this.states);
     }
 
 }

@@ -106,7 +106,7 @@ class Fight {
         await this.update();
     }
 
-
+    // TODO: Add or Update to use skills and states
     log(attacker, defender, critical, stun, damage, indexEntities) {
         this.summary.rounds.push({
             roundType: attacker._type,
@@ -142,6 +142,8 @@ class Fight {
         let attacker = this.entities[this.initiative[0]][this.initiative[1]];
         let defender = this.getDefender(this.entities[this.initiative[0] == 0 ? 1 : 0]);
 
+        
+
         // Celui qui attaque
         damage = attacker.damageCalcul();
         damage = damage * defender.damageDefenceReduction();
@@ -167,6 +169,12 @@ class Fight {
         defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
 
         this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
+
+
+        // TODO: Apply states effects
+
+        //
+       
 
         if (stun && this.entitiesStunned.indexOf(defender) == -1) {
             this.entitiesStunned.push(defender);
