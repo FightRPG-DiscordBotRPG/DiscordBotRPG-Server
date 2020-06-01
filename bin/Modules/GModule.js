@@ -24,7 +24,12 @@ class GModule {
     async run() { }
 
     init() {
-
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.reactHandler();
+        this.loadRoutes();
+        this.freeLockedMembers();
+        this.crashHandler();
     }
 
     unStuck(id) {

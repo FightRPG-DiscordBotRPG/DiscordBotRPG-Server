@@ -30,18 +30,11 @@ class WorldBosses extends GModule {
         this.endLoading("WorldBosses");
     }
     init() {
-        this.router = express.Router();
-
-        // Add to router needed things
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_worldboss", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {

@@ -37,16 +37,11 @@ class CharacterModule extends GModule {
     }
 
     init() {
-        this.router = express.Router();
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_character", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {

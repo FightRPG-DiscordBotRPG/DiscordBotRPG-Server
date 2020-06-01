@@ -29,13 +29,8 @@ class AdminModule extends GModule {
     }
 
     init() {
-        this.router = express.Router();
-        this.loadNeededVariables();
+        super.init();
         this.router.use(this.isAdmin);
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
