@@ -31,9 +31,11 @@ class WorldEntity {
     async loadSkills() {
         // TDOO load depending on class / or monsters skills
         let promises = [];
-        for (let item of [1, 2, 8]) {
+        let skillsToTest = [1, 2, 8];
+        //let skillsToTest = [];
+        for (let item of skillsToTest) {
             let s = new Skill();
-            this.skills.push(s);
+            this.skills[s.id] = s;
             promises.push(s.loadWithID(item));
         }
         await Promise.all(promises);
@@ -100,10 +102,14 @@ class WorldEntity {
     }
 
     prepareCast() {
-        if (this.skillToTestIndex > -1) {
-            let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
-            this.skills[this.skillToTestIndex].currentCastPreparation += speed;
-        }
+
+        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getStat(Stats.possibleStats.Dexterity));
+
+        // To Balance ? Every skill vs only one per one
+        //if (this.skillToTestIndex > -1) {
+        //    let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
+        //    this.skills[this.skillToTestIndex].currentCastPreparation += speed;
+        //}
     }
 
     stun(advWill) {
@@ -186,6 +192,19 @@ class WorldEntity {
     }
 
     /**
+     * Skill to be cast, if the skill isn't in cooldown and entity have enought MP/Energy
+     * @returns {Skill} Skill to be cast     
+     */
+    getSkillToUse() {
+        let selectedSkill = this.skills[this.skillToTestIndex];
+        if (selectedSkill && selectedSkill.canBeCast() && this.canUseSkill(selectedSkill)) {
+            return this.skills[this.skillToTestIndex];
+        } else {
+            return this.getSkillsArray().find(skill => skill.canBeCast() && this.canUseSkill(skill));
+        }
+    }
+
+    /**
     *
     * @param {Skill} skill
     */
@@ -205,6 +224,9 @@ class WorldEntity {
         //    !this.isStateRestrict(stateId));
     }
 
+    /**
+     * States to be removed after battle 
+     */
     removeBattleStates() {
         this.getStatesArray().forEach((state) => {
             if (state.afterFight) {
@@ -228,6 +250,26 @@ class WorldEntity {
         return removedStates;
     }
 
+    /**
+     * 
+     * @returns {Array<State>}
+     */
+    removeStatesByRounds() {
+        let removedStates = [];
+        this.getStatesArray().forEach((state) => {
+            if (state.afterRounds && state.currentRound > state.roundEnd) {
+                removedStates.push(state);
+                this.removeState(state.id);
+            }
+            state.currentRound++;
+        });
+        return removedStates;
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     */
     removeState(idState) {
         delete this.states[idState];
     }
@@ -237,6 +279,13 @@ class WorldEntity {
      **/
     getStatesArray() {
         return Object.values(this.states);
+    }
+
+    /**
+     * @returns {Array<Skill>}
+     */
+    getSkillsArray() {
+        return Object.values(this.skills);
     }
 
 }

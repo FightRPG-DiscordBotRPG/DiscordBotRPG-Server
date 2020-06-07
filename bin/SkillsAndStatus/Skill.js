@@ -70,6 +70,51 @@ class Skill {
     canBeCast() {
         return this.currentCastPreparation >= this.timeToCast;
     }
+
+    resetCast() {
+        this.currentCastPreparation = 0;
+    }
+
+    isTargetingAliveEnemies() {
+        return [1, 2, 3, 4, 5].includes(this.idTargetRange);
+    }
+
+    isTargetingAliveAllies() {
+        return [6, 7, 8, 9].includes(this.idTargetRange);
+    }
+
+    isTargetingDeadAllies() {
+        return [10, 11, 12, 13].includes(this.idTargetRange);
+    }
+
+    isTargetingSelf() {
+        return this.idTargetRange === 14;
+    }
+
+    getNumberOfTarget() {
+        switch (this.idTargetRange) {
+            case 1:
+            case 9:
+            case 13:
+                return 99;
+            case 2:
+            case 6:
+            case 10:
+                return 1;
+            case 3:
+            case 7:
+            case 11:
+                return 2;
+            case 4:
+            case 8:
+            case 12:
+                return 3;
+            case 5:
+                return 4;
+            default:
+                return 0;
+        }
+    }
 }
 
 

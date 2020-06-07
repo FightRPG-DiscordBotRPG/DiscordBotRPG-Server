@@ -1,13 +1,15 @@
 const Trait = require("./Trait");
-const conn = require("../../conf/mysql");
+const Utils = require("../Utilities/Utils");
 
 
 class State {
+
     constructor() {
         this.id = 0;
         this.shorthand = "";
         this.roundMin = 1;
         this.roundMax = 1;
+        this.roundEnd = 1;
         this.afterFight = false;
         this.afterDamage = false;
         this.afterRounds = false;
@@ -17,6 +19,7 @@ class State {
          * @type {Array<Trait>}
          */
         this.traits = [];
+        this.currentRound = 1;
     }
 
     async loadWithID(id) {
@@ -42,6 +45,8 @@ class State {
         }
 
         await Promise.all(promises);
+
+        this.roundEnd = Utils.randRangeInt(this.roundMin, this.roundMax);
     }
 }
 
