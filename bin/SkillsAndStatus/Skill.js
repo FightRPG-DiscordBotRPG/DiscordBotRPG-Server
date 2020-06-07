@@ -215,9 +215,7 @@ class Skill {
      * @param {WorldEntity} defender
      */
     evaluateWithTarget(attacker, defender) {
-        if (this.isAffectingHp()) {
-            return this.calculateDamageValue(attacker, defender);
-        }
+       return this.evaluateSkill(attacker, defender);
     }
 
     /**
@@ -225,7 +223,7 @@ class Skill {
     * @param {WorldEntity} attacker
     * @param {WorldEntity} defender
     */
-    calculateDamageValue(attacker, defender) {
+    evaluateSkill(attacker, defender) {
         let baseValue = this.evalBaseDamageFormula(attacker, defender);
         let value = value * this.repeat;
         value = baseValue * this.getElementalRate(attacker, defender);

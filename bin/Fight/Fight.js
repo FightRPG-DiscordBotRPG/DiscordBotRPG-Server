@@ -154,7 +154,7 @@ class Fight {
         attacker.prepareCast();
 
         // ==> take into account mp and energy cost
-        let skillToUse = null;
+        let skillToUse = attacker.getSkillToUse();
 
         if (skillToUse) {
             skillToUse.resetCast();
@@ -175,10 +175,15 @@ class Fight {
 
             for (let target of targets) {
 
-                // Hp part
-                this.applySkillDamage(skillToUse, attacker, target);
+                // Hp
+                if (skillToUse.isAffectingHp()) {
+                    this.applySkillHpDamage(skillToUse, attacker, target);
+                }
 
-                // TODO: Mp Part
+                // Mp
+                if (skillToUse.isAffectingMp()) {
+                    this.applySKillMpDamage(skillToUse, attacker, target);
+                }
 
                 // TODO: Energy Part
 
@@ -214,10 +219,6 @@ class Fight {
             defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
 
             this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
-
-
-
-
 
             if (stun && this.entitiesStunned.indexOf(defender) == -1) {
                 this.entitiesStunned.push(defender);
@@ -258,26 +259,68 @@ class Fight {
     /**
      * 
      * @param {Skill} skill
-     * @param {WorldEntity} attacker
-     * @param {WorldEntity} defender
+     * @param {WorldEntity} caster
+     * @param {WorldEntity} target
      */
-    applySkillDamage(skill, attacker, defender) {
-        if (skill.isInflictingDamageHp()) {
-            let val = skill.evaluateWithTarget(attacker, target);
+    applySkillHpDamage(skill, caster, target) {
+        let evaluation = this.getSkillEvaluation(skill, caster, target);
 
-            if (this.isCritical(skill, attacker, defender)) {
-                // Log critical
-                val *= 2;
+        if (skill.isRecover) {
+            let recoverDone = this.applyRecoveryHp(target, evaluation.value);
+
+            // TODO: Log recovery
+        } else {
+            let damageDone = this.applyDamage(target, evaluation.value);
+            // TODO: Log damage (and critical)
+
+            if (skill.isDrain()) {
+                caster.actualHP += damageDone;
+                // TODO: Log Drain
             }
-            
-            this.applyDamage(defender, val);
-            // TODO: Log damage
         }
+
+    }
+
+    /**
+     * 
+     * @param {Skill} skill
+     * @param {WorldEntity} caster
+     * @param {WorldEntity} target
+     */
+    applySkillMpDamage(skill, caster, target) {
+        let evaluation = this.getSkillEvaluation(skill, caster, target);
+
+        if (skill.isRecover()) {
+            let recoverDone = this.applyRecoveryMp(target, evaluation.value);
+
+            // TODO: Log recovery
+        } else {
+            let damageDone = this.applyMpDamage(target, evaluation.value);
+            // TODO: Log damage (and critical)
+
+            if (skill.isDrain()) {
+                caster.actualMP += damageDone;
+                // TODO: Log Drain
+            }
+        }
+
+    }
+
+    getSkillEvaluation(skill, attacker, defender) {
+        let val = skill.evaluateSkill(attacker, defender);
+        let isCritical = this.isCritical(skill, attacker, defender);
+
+        if (isCritical) {
+            val *= 2;
+        }
+
+        return { value: val, isCritial: isCritial };
     }
 
     /**
      * Returns the real damage done (if more than hp left)
      * @param {WorldEntity} target
+     * @param {number} damage
      */
     applyDamage(target, damage) {
         damage = Math.round(damage);
@@ -286,6 +329,42 @@ class Fight {
         target.actualHP = target.actualHP < 0 ? 0 : target.actualHP;
         return damage;
     }
+
+    /**
+    * Returns the real damage done (if more than hp left)
+    * @param {WorldEntity} target
+    * @param {number} toRecover
+    */
+    applyRecoveryHp(target, toRecover) {
+        toRecover = Math.round(Math.min(toRecover, target.maxHP - target.actualHP));
+        target.actualHP += toRecover;
+        return toRecover;
+    }
+
+    /**
+    * Returns the real damage to mp done (if more than mp left)
+    * @param {WorldEntity} target
+    * @param {number} damage
+    */
+    applyMpDamage(target, damage) {
+        damage = Math.round(damage);
+        target.actualMP -= damage;
+        damage = target.actualMP < 0 ? damage + target.actualMP : damage;
+        target.actualMP = target.actualMP < 0 ? 0 : target.actualMP;
+        return damage;
+    }
+
+    /**
+    * Returns the real damage done (if more than hp left)
+    * @param {WorldEntity} target
+    * @param {number} toRecover
+    */
+    applyRecoveryMp(target, toRecover) {
+        toRecover = Math.round(Math.min(toRecover, target.maxMP - target.actualMP));
+        target.actualMP += toRecover;
+        return toRecover;
+    }
+
 
     /**
     *
