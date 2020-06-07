@@ -4,6 +4,18 @@ const Globals = require("../Globals.js");
 
 class Stats {
 
+    static possibleStats = {
+        Strength: "strength",
+        Intellect: "intellect",
+        Constitution: "constitution",
+        Armor: "armor",
+        Dexterity: "dexterity",
+        Charisma: "charisma",
+        Wisdom: "wisdom",
+        Will: "will",
+        Perception: "perception",
+        Luck: "luck"
+    }
     // Generic Stats Class
     // Used by All Player/Enemies
     constructor(id) {
