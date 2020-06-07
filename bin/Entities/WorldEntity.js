@@ -31,8 +31,8 @@ class WorldEntity {
     async loadSkills() {
         // TDOO load depending on class / or monsters skills
         let promises = [];
-        let skillsToTest = [1, 2, 8];
-        //let skillsToTest = [];
+        //let skillsToTest = [1, 2, 8];
+        let skillsToTest = [];
         for (let item of skillsToTest) {
             let s = new Skill();
             this.skills[s.id] = s;
@@ -95,7 +95,7 @@ class WorldEntity {
     }
 
     getStat(statName) {
-        this.stats.getStat(statName);
+        return this.stats.getStat(statName);
     }
 
     prepareCast() {

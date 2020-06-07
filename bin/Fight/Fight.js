@@ -79,7 +79,7 @@ class Fight {
             if (indexOf > -1) {
                 let indexOfStun = this.entitiesStunned.indexOf(this.initiatives[this.initiativeIndex]);
                 if (indexOfStun == -1) {
-                    this.initiative = [i, indexOf];
+                    this.initiative = [parseInt(i), indexOf];
                     return true;
                 } else {
                     this.entitiesStunned.splice(indexOfStun, 1);
@@ -154,7 +154,7 @@ class Fight {
         attacker.prepareCast();
 
         // ==> take into account mp and energy cost
-        let skillToUse = attacker.getSkillToUse();
+        let skillToUse = null;
 
         if (skillToUse) {
             skillToUse.resetCast();
@@ -188,6 +188,9 @@ class Fight {
 
 
         } else {
+
+            let defender = this.getAliveDefenders(1)[0];
+
             // Celui qui attaque
             damage = attacker.damageCalcul();
             damage = damage * defender.damageDefenceReduction();
