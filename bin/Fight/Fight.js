@@ -1,5 +1,6 @@
 const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
+const Utils = require("../Utilities/Utils");
 
 class Fight {
     /**
@@ -88,7 +89,7 @@ class Fight {
         return false;
     }
 
-    async init(resetStats=true) {
+    async init(resetStats = true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
         this.initiatives.sort((a, b) => {
             return b.getStat("intellect") - a.getStat("intellect");
@@ -140,54 +141,79 @@ class Fight {
         let stun = false;
 
         let attacker = this.entities[this.initiative[0]][this.initiative[1]];
-        let defender = this.getDefender(this.entities[this.initiative[0] == 0 ? 1 : 0]);
-
-        
-
-        // Celui qui attaque
-        damage = attacker.damageCalcul();
-        damage = damage * defender.damageDefenceReduction();
-        let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
-        damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
-
-        // Critical hit and stun
-        critical = attacker.isThisACriticalHit();
-        if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
-            stun = attacker.stun(defender.getStat("will"));
-        }
-        
-        // Crit + stun does 50% more dmg, crit does double, else default
-        if (critical && stun) {
-            damage *= 1.5;
-        } else if (critical) {
-            damage *= 2;
-        }
-        damage = Math.round(damage);
-
-        defender.actualHP -= damage;
-        damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
-        defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
-
-        this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
+        let defender = this.getAliveDefenders(1)[0];
 
 
-        // TODO: Apply states effects
+        // Clean Status after number of rounds
+        let removedStatesAfterRounds = attacker.removeStatesByRounds();
+        // TODO: Log removed status
+        // TODO: Apply status effects
 
-        //
-       
+        // Add skills prep
+        attacker.prepareCast();
 
-        if (stun && this.entitiesStunned.indexOf(defender) == -1) {
-            this.entitiesStunned.push(defender);
-            attacker.consecutiveStuns += 1;
+        // ==> take into account mp and energy cost
+        let skillToUse = attacker.getSkillToUse();
+
+        if (skillToUse) {
+            skillToUse.resetCast();
+            let targets = [];
+            let numberOfTarget = skillToUse.getNumberOfTarget();
+            if (skillToUse.isTargetingAliveAllies()) {
+                targets = this.getAliveAttackers(numberOfTarget);
+            } else if (skillToUse.isTargetingAliveEnemies()) {
+                targets = this.getAliveDefenders();
+            } else if (skillToUse.isTargetingDeadAllies()) {
+                targets = this.getAllDeadAttackers();
+            } else if (skillToUse.isTargetingSelf) {
+                targets.push(attacker);
+            }
+
+
+
         } else {
-            attacker.consecutiveStuns = 0;
+            // Celui qui attaque
+            damage = attacker.damageCalcul();
+            damage = damage * defender.damageDefenceReduction();
+            let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
+            damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
+
+            // Critical hit and stun
+            critical = attacker.isThisACriticalHit();
+            if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
+                stun = attacker.stun(defender.getStat("will"));
+            }
+
+            // Crit + stun does 50% more dmg, crit does double, else default
+            if (critical && stun) {
+                damage *= 1.5;
+            } else if (critical) {
+                damage *= 2;
+            }
+            damage = Math.round(damage);
+
+            defender.actualHP -= damage;
+            damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
+            defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
+
+            this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
+
+
+
+
+
+            if (stun && this.entitiesStunned.indexOf(defender) == -1) {
+                this.entitiesStunned.push(defender);
+                attacker.consecutiveStuns += 1;
+            } else {
+                attacker.consecutiveStuns = 0;
+            }
+
+            if (defender.actualHP <= 0) {
+                this.initiatives.splice(this.initiatives.indexOf(defender), 1);
+            }
+
         }
-
-        if (defender.actualHP <= 0) {
-            this.initiatives.splice(this.initiatives.indexOf(defender), 1);
-        }
-
-
 
         let isFirstTeamAlive = this.isThisTeamAlive(0);
         let isSecondTeamAlive = this.isThisTeamAlive(1);
@@ -231,16 +257,91 @@ class Fight {
         return false;
     }
 
+    // Alive
+
+    /**
+     * 
+     * @param {number} numberToFetch Number of entities to fetch >= 1
+     * @returns {Array<WorldEntity>}
+     */
+    getAliveDefenders(numberToFetch = 1) {
+        return Utils.getRandomItemsInArray(this.getAllAliveDefenders(), numberToFetch);
+    }
+
+    /**
+    *
+    * @param {number} numberToFetch Number of entities to fetch >= 1
+    * @returns {Array<WorldEntity>}
+    */
+    getAliveAttackers(numberToFetch = 1) {
+        return Utils.getRandomItemsInArray(this.getAllAliveAttackers(), numberToFetch);
+    }
+
+    getAllAliveDefenders() {
+        return this.getAliveEntities(this.getAllDefenders());
+    }
+
+    getAllAliveAttackers() {
+        return this.getAliveEntities(this.getAllAliveAttackers);
+    }
+
+    // Dead
+    /**
+    *
+    * @param {number} numberToFetch Number of entities to fetch >= 1
+    * @returns {Array<WorldEntity>}
+    */
+    getDeadDefenders(numberToFetch = 1) {
+        return Utils.getRandomItemsInArray(this.getAllDeadDefenders(), numberToFetch);
+    }
+
+    /**
+    *
+    * @param {number} numberToFetch Number of entities to fetch >= 1
+    * @returns {Array<WorldEntity>}
+    */
+    getDeadAttackers(numberToFetch = 1) {
+        return Utils.getRandomItemsInArray(this.getAllDeadAttackers(), numberToFetch);
+    }
+
+    getAllDeadDefenders() {
+        return this.getDeadEntities(this.getAllDefenders());
+    }
+
+    getAllDeadAttackers() {
+        return this.getDeadEntities(this.getAllAttackers());
+    }
 
 
-    getDefender(arrOfEntities) {
-        let possibles = [];
-        for (let i in arrOfEntities) {
-            if (arrOfEntities[i].actualHP > 0) {
-                possibles.push(i);
-            }
-        }
-        return arrOfEntities[possibles[Math.floor(Math.random() * possibles.length)]];
+    // More Global
+    getAllDefenders() {
+        return this.entities[this.initiative[0] == 0 ? 1 : 0];
+    }
+
+    getAllAttackers() {
+        return this.entities[this.initiative[0]];
+    }
+
+
+
+    /**
+     * 
+     * @param {Array<WorldEntity>} entities
+     */
+    getAliveEntities(entities) {
+        return entities.filter((entity) => {
+            return entity.isAlive();
+        });
+    }
+
+    /**
+    *
+    * @param {Array<WorldEntity>} entities
+    */
+    getDeadEntities(entities) {
+        return entities.filter((entity) => {
+            return !entity.isAlive();
+        });
     }
 
 
