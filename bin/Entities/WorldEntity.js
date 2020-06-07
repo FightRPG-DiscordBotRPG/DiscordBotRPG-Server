@@ -95,10 +95,7 @@ class WorldEntity {
     }
 
     getStat(statName) {
-        if (this.stats[statName]) {
-            return this.stats[statName];
-        }
-        return 0;
+        this.stats.getStat(statName);
     }
 
     prepareCast() {
@@ -288,6 +285,43 @@ class WorldEntity {
         return Object.values(this.skills);
     }
 
+    getPhysicalDefense() {
+        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .4) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
+        return reduction > 0.5 ? 0.5 : 1 - reduction;
+    }
+
+    getMagicalDefense() {
+        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+        return reduction > 0.5 ? 0.5 : 1 - reduction;
+    }
+
+    getPhysicalCriticalRate() {
+        let critique = (this.getStat(Stats.possibleStats.Dexterity) / this.stats.getMaximumStat(this.getLevel()) * .40) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+        return critique > .75 ? .75 : critique;
+    }
+
+    getMagicalCriticalRate() {
+        let critique = (this.getStat(Stats.possibleStats.Intellect) / this.stats.getMaximumStat(this.getLevel()) * .40) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+        return critique > .75 ? .75 : critique;
+    }
+
+    getRawCriticalRate() {
+        return (this.getPhysicalCriticalRate() + this.getMagicalCriticalRate()) / 2;
+    }
+
+    getPhysicalCriticalEvasionRate() {
+        let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel()) * .45) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.15);
+        return critique > .75 ? .75 : critique;
+    }
+
+    getMagicalCriticalEvasionRate() {
+        let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel()) * .45) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.15);
+        return critique > .75 ? .75 : critique;
+    }
+
+    getRawCriticalEvasionRate() {
+        return (this.getPhysicalCriticalEvasionRate() + this.getMagicalCriticalEvasionRate()) / 2;
+    }
 }
 
 module.exports = WorldEntity;

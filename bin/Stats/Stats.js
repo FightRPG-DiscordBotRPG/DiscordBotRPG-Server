@@ -16,6 +16,20 @@ class Stats {
         Perception: "perception",
         Luck: "luck"
     }
+
+    static possibleStatsShort = {
+        str: Stats.possibleStats.Strength,
+        int: Stats.possibleStats.Intellect,
+        con: Stats.possibleStats.Constitution,
+        armor: Stats.possibleStats.Armor,
+        dex: Stats.possibleStats.Dexterity,
+        cha: Stats.possibleStats.Charisma,
+        wis: Stats.possibleStats.Wisdom,
+        will: Stats.possibleStats.Will,
+        per: Stats.possibleStats.Perception,
+        luck: Stats.possibleStats.Luck
+    }
+    
     // Generic Stats Class
     // Used by All Player/Enemies
     constructor(id) {
@@ -33,6 +47,9 @@ class Stats {
     }
 
     getStat(statName) {
+        if (Stats.possibleStatsShort[statName]) {
+            statName = Stats.possibleStatsShort[statName];
+        }
         if (this[statName] >= 0) {
             return this[statName];
         }
@@ -57,6 +74,10 @@ class Stats {
     }
 
     getOptimalStun(level = 1) {
+        return level * 8;
+    }
+
+    getMaximumStat(level = 1) {
         return level * 8;
     }
 

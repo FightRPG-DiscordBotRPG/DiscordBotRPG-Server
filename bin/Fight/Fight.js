@@ -1,6 +1,7 @@
 const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
 const Utils = require("../Utilities/Utils");
+const Skill = require("../SkillsAndStatus/Skill");
 
 class Fight {
     /**
@@ -162,11 +163,26 @@ class Fight {
             if (skillToUse.isTargetingAliveAllies()) {
                 targets = this.getAliveAttackers(numberOfTarget);
             } else if (skillToUse.isTargetingAliveEnemies()) {
-                targets = this.getAliveDefenders();
+                targets = this.getAliveDefenders(numberOfTarget);
             } else if (skillToUse.isTargetingDeadAllies()) {
                 targets = this.getAllDeadAttackers();
-            } else if (skillToUse.isTargetingSelf) {
+            } else if (skillToUse.isTargetingSelf()) {
                 targets.push(attacker);
+            }
+
+            attacker.removeSkillCost(skill);
+            // TODO: Log costs ? Or log skill used then calculate cost ?
+
+            for (let target of targets) {
+
+                // Hp part
+                this.applySkillDamage(skillToUse, attacker, target);
+
+                // TODO: Mp Part
+
+                // TODO: Energy Part
+
+                // TODO: Status Part
             }
 
 
@@ -175,8 +191,6 @@ class Fight {
             // Celui qui attaque
             damage = attacker.damageCalcul();
             damage = damage * defender.damageDefenceReduction();
-            let redFlat = this.calMultDiffLevel(attacker.getLevel(), defender.getLevel());
-            damage = damage * (redFlat <= 0.2 ? 0.2 : redFlat);
 
             // Critical hit and stun
             critical = attacker.isThisACriticalHit();
@@ -237,6 +251,71 @@ class Fight {
 
 
     }
+
+    /**
+     * 
+     * @param {Skill} skill
+     * @param {WorldEntity} attacker
+     * @param {WorldEntity} defender
+     */
+    applySkillDamage(skill, attacker, defender) {
+        if (skill.isInflictingDamageHp()) {
+            let val = skill.evaluateWithTarget(attacker, target);
+
+            if (this.isCritical(skill, attacker, defender)) {
+                // Log critical
+                val *= 2;
+            }
+            
+            this.applyDamage(defender, val);
+            // TODO: Log damage
+        }
+    }
+
+    /**
+     * Returns the real damage done (if more than hp left)
+     * @param {WorldEntity} target
+     */
+    applyDamage(target, damage) {
+        damage = Math.round(damage);
+        target.actualHP -= damage;
+        damage = target.actualHP < 0 ? damage + target.actualHP : damage;
+        target.actualHP = target.actualHP < 0 ? 0 : target.actualHP;
+        return damage;
+    }
+
+    /**
+    *
+    * @param {Skill} skill
+    * @param {WorldEntity} attacker
+    * @param {WorldEntity} defender
+    */
+    isCritical(skill, attacker, defender) {
+        let criticalChanceAttacker = 0;
+        let criticalChanceEvadeDefender = 0;
+
+        // Based on skill type
+        if (skill.isPhysical()) {
+            criticalChanceAttacker = attacker.getPhysicalCriticalRate();
+            criticalChanceEvadeDefender = defender.getPhysicalCriticalEvasionRate();
+        } else if (skill.isMagical()) {
+            criticalChanceAttacker = attacker.getMagicalCriticalRate();
+            criticalChanceEvadeDefender = defender.getMagicalCriticalEvasionRate();
+        } else {
+            criticalChanceAttacker = attacker.getRawCriticalRate();
+            criticalChanceEvadeDefender = defender.getRawCriticalEvasionRate();
+        }
+
+        // No evade if it's recover
+        if (skill.isRecover()) {
+            criticalChanceEvadeDefender = 0;
+        }
+
+        let criticalChance = criticalChanceAttacker - criticalChanceEvadeDefender;
+
+        return Math.random() <= criticalChance;
+    }
+
 
     async endFight() { };
 
@@ -351,12 +430,11 @@ class Fight {
         // Lv 1 est plus faible que 2
         if (diff < 0) {
             mult = mult - 0.10 * -diff;
-            return mult < 0 ? 0 : mult;
         } else if (diff > 0) {
             mult = mult + 0.10 * diff;
-            return mult < 0 ? 0 : mult;
         }
-        return 1;
+
+        return mult <= 0.25 ? 0.25 : mult
     }
 
 

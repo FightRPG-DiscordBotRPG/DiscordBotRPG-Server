@@ -54,6 +54,12 @@ class Utils {
 		}
 		return this.sample(arr, n, false);
 	}
+
+	static getVariance(val, variance) {
+		var amp = Math.floor(Math.max(Math.abs(val) * variance / 100, 0));
+		var v = Math.randomInt(amp + 1) + Math.randomInt(amp + 1) - amp;
+		return val >= 0 ? val + v : val - v;
+    }
 }
 
 

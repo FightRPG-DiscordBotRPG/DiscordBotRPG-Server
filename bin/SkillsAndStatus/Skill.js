@@ -1,5 +1,8 @@
 const conn = require("../../conf/mysql");
 const Effect = require("./Effect");
+const WorldEntity = require("../Entities/WorldEntity");
+const Stats = require("../Stats/Stats");
+const Utils = require("../Utilities/Utils");
 
 
 class Skill {
@@ -67,6 +70,40 @@ class Skill {
         await Promise.all(promises);
     }
 
+    parseFormula() {
+        if(this.damage) {
+            let formula = this.damage.formula;
+
+            // Replace short stat name by getter
+            for (let key in Stats.possibleStatsShort) {
+                formula = formula.replace(`.${key}`, `.getStat(${key})`);
+            }
+
+            formula = formula.replace(".def", ".getPhysicalDefense()");
+            formula = formula.replace(".mdf", ".getMagicalDefense()");
+
+            this.actualHP = 0;
+            this.maxHP = 0;
+            this.actualMP = 0;
+            this.maxMP = 0;
+            this.actualEnergy = 0;
+            this.maxEnergy = 0;
+
+            formula = formula.replace(".hp", ".actualHP");
+            formula = formula.replace(".mhp", ".maxHP");
+
+            formula = formula.replace(".mp", ".actualMP");
+            formula = formula.replace(".mmp", ".maxMP");
+
+            formula = formula.replace(".nrg", ".actualEnergy");
+            formula = formula.replace(".mnrg", ".maxEnergy");
+
+            formula = formula.replace(".level", ".getLevel()");
+
+            this.damage.formula = formula;
+        }
+    }
+
     canBeCast() {
         return this.currentCastPreparation >= this.timeToCast;
     }
@@ -89,6 +126,18 @@ class Skill {
 
     isTargetingSelf() {
         return this.idTargetRange === 14;
+    }
+
+    isPhysical() {
+        return this.idAttackType === 2;
+    }
+
+    isMagical() {
+        return this.idAttackType === 3;
+    }
+
+    isRawDamage() {
+        return this.idAttackType === 1;
     }
 
     getNumberOfTarget() {
@@ -114,6 +163,114 @@ class Skill {
             default:
                 return 0;
         }
+    }
+
+    /**
+     * 
+     * @param {Array} arr
+     */
+    isDamageTypeIncluded(arr) {
+        return arr.includes(this.damage?.idDamageType);
+    }
+
+    isInflictingDamageHp() {
+        return this.isDamageTypeIncluded([1, 3]);
+    }
+
+    isInflictingDamageMp() {
+        return this.isDamageTypeIncluded([2, 4]);
+    }
+
+    isAffectingHp() {
+        return this.isDamageTypeIncluded([1, 3, 5]);
+    }
+
+    isAffectingMp() {
+        return this.isDamageTypeIncluded([2, 4, 6]);
+    };
+
+    isDamage() {
+        return this.isDamageTypeIncluded([1, 2]);
+    }
+
+    isDrain() {
+        return this.isDamageTypeIncluded([3, 4]);
+    }
+
+    isRecover() {
+        return this.isDamageTypeIncluded([5, 6]);
+    }
+
+    isHpRecover() {
+        return this.isDamageTypeIncluded([5]);
+    }
+
+    isMpRecover() {
+        return this.isDamageTypeIncluded([6]);
+    }
+
+    /**
+     * 
+     * @param {WorldEntity} attacker
+     * @param {WorldEntity} defender
+     */
+    evaluateWithTarget(attacker, defender) {
+        if (this.isAffectingHp()) {
+            return this.calculateDamageValue(attacker, defender);
+        }
+    }
+
+    /**
+    *
+    * @param {WorldEntity} attacker
+    * @param {WorldEntity} defender
+    */
+    calculateDamageValue(attacker, defender) {
+        let baseValue = this.evalBaseDamageFormula(attacker, defender);
+        let value = value * this.repeat;
+        value = baseValue * this.getElementalRate(attacker, defender);
+
+
+        if (this.isPhysical()) {
+            value *= defender.getPhysicalDefense();
+        }
+        if (this.isMagical()) {
+            value *= defender.getMagicalDefense();
+        }
+
+        return Math.round(Utils.getVariance(value, this.damage.variance));
+    }
+
+    /**
+    *
+    * @param {WorldEntity} attacker
+    * @param {WorldEntity} defender
+    */
+    evalBaseDamageFormula(attacker, defender) {
+        try {
+            // Thoses are used in eval
+            let a = attacker;
+            let b = defender;
+
+            return Math.max(eval(this.damage?.formula), 0) || 0;
+
+        } catch (e) {
+            console.log(e);
+            return 0;
+        }
+    }
+
+    // TODO: Integrate Elemental Type
+    // Limit the elemental reduction ?
+    getElementalRate(attacker, defender) {
+        return 1;
+    }
+
+    getRepeatNumber() {
+        if (this.isDamage() || this.isDrain()) {
+            //repeats += this.subject().attackTimesAdd();
+        }
+        return Math.floor(this.repeat);
     }
 }
 
