@@ -31,7 +31,7 @@ class WorldEntity {
     async loadSkills() {
         // TODO load depending on class / or monsters skills
         let promises = [];
-        let skillsToTest = [1, 2, 8];
+        let skillsToTest = [1, 2, 4, 8, 9, 10];
         //let skillsToTest = [];
         for (let item of skillsToTest) {
             let s = new Skill();
@@ -44,6 +44,7 @@ class WorldEntity {
 
     updateStats() {
         this.maxHP = 10 + this.getStat("constitution") * 10;
+        this.maxMP = 2 + this.getStat(Stats.possibleStats.Wisdom) * 2
         this.consecutiveStuns = 0;
         if (this.actualHP <= (this.maxHP * 0.1)) {
             this.actualHP = Math.ceil(this.maxHP * 0.1);

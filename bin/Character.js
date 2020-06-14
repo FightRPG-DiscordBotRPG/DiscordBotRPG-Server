@@ -75,7 +75,7 @@ class Character extends CharacterEntity {
         this.updateStats();
 
         // [Health]
-        this.resetFullHp();
+        this.recoverAll()
     }
 
     async loadCharacter(id) {
@@ -103,8 +103,7 @@ class Character extends CharacterEntity {
 
         this.updateStats();
 
-        // [Health]
-        this.resetFullHp();
+        this.recoverAll()
 
     }
 
@@ -122,6 +121,8 @@ class Character extends CharacterEntity {
         ]);
 
         this.updateStats();
+
+        this.recoverAll()
     }
 
     async saveArea() {

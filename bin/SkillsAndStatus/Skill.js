@@ -68,15 +68,17 @@ class Skill {
         }
 
         await Promise.all(promises);
+
+        this.parseFormula();
     }
 
     parseFormula() {
-        if(this.damage) {
+        if(this.damage.formula) {
             let formula = this.damage.formula;
 
             // Replace short stat name by getter
             for (let key in Stats.possibleStatsShort) {
-                formula = formula.replace(`.${key}`, `.getStat(${key})`);
+                formula = formula.replace(`.${key}`, `.getStat("${key}")`);
             }
 
             formula = formula.replace(".def", ".getPhysicalDefense()");
@@ -101,6 +103,7 @@ class Skill {
             formula = formula.replace(".level", ".getLevel()");
 
             this.damage.formula = formula;
+
         }
     }
 
@@ -250,7 +253,7 @@ class Skill {
             let a = attacker;
             let b = defender;
 
-            return Math.max(eval(this.damage?.formula), 0) || 0;
+            return Math.max(eval(this.damage?.formula), 0) || 1;
 
         } catch (e) {
             console.log(e);

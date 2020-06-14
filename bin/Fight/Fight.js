@@ -215,8 +215,8 @@ class Fight {
 
             // Remove from original array since it's dead
             // Should be changed so we can resurrect people
-            if (target.actualHP <= 0) {
-                this.concatEntities.splice(this.concatEntities.indexOf(defender), 1);
+            if (!target.isAlive()) {
+                this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
             }
         }
 
@@ -367,6 +367,8 @@ class Fight {
     applySkillHpDamage(skill, caster, target) {
         let evaluation = this.getSkillEvaluation(skill, caster, target);
 
+        console.log(evaluation);
+
         let defenderLogger = this.getCurrentRoundCurrentDefenderLogger();
         defenderLogger.battle.isCritical = evaluation.isCritical;
 
@@ -424,6 +426,12 @@ class Fight {
 
     }
 
+    /**
+     * 
+     * @param {Skill} skill
+     * @param {WorldEntity} attacker
+     * @param {WorldEntity} defender
+     */
     getSkillEvaluation(skill, attacker, defender) {
         let val = skill.evaluateSkill(attacker, defender);
         let isCritical = this.isCritical(skill, attacker, defender);
