@@ -48,6 +48,15 @@ class State {
 
         this.roundEnd = Utils.randRangeInt(this.roundMin, this.roundMax);
     }
+
+    /**
+     *  Returns true if state expire after rounds 
+     **/
+    isExpired() {
+        return state.afterRounds && state.currentRound > state.roundEnd;
+    }
+
+
 }
 
 

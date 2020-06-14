@@ -1,3 +1,7 @@
+Math.randomInt = function (max) {
+	return Math.floor(max * Math.random())
+}
+
 class Utils {
 
 	static randRangeInt(min, max) {

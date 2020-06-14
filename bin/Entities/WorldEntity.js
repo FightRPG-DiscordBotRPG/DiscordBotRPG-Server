@@ -29,10 +29,10 @@ class WorldEntity {
     }
 
     async loadSkills() {
-        // TDOO load depending on class / or monsters skills
+        // TODO load depending on class / or monsters skills
         let promises = [];
-        //let skillsToTest = [1, 2, 8];
-        let skillsToTest = [];
+        let skillsToTest = [1, 2, 8];
+        //let skillsToTest = [];
         for (let item of skillsToTest) {
             let s = new Skill();
             this.skills[s.id] = s;
@@ -64,6 +64,88 @@ class WorldEntity {
 
     resetEnergy() {
         this.actualEnergy = 0;
+    }
+
+    regenerateAll() {
+        let regen = {
+            hp: 0,
+            mp: 0,
+            energy: 0
+        };
+
+        if (this.isAlive()) {
+            regen.hp = this.regenerateHp();
+            regen.mp = this.regenerateMp();
+            regen.energy = this.regenerateEnergy();
+        }
+
+        return regen;
+    }
+
+    regenerateHp() {
+        return this.healHp(this.getRegenHp());
+    }
+
+    regenerateMp() {
+        return this.healMp(this.getRegenMp());
+    }
+
+    regenerateEnergy() {
+        return this.healEnergy(this.getRegenEnergy());
+    }
+
+    /**
+     * 
+     * @param {number} toRecover
+     */
+    healHp(toRecover) {
+        toRecover = Math.round(Math.min(toRecover, this.maxHP - this.actualHP));
+        this.actualHP += toRecover;
+        return toRecover;
+    }
+
+    /**
+     * 
+     * @param {number} toRecover
+     */
+    healMp(toRecover) {
+        toRecover = Math.round(Math.min(toRecover, this.maxMP - this.actualMP));
+        this.actualMP += toRecover;
+        return toRecover;
+    }
+
+    /**
+     * 
+     * @param {number} toRecover
+     */
+    healEnergy(toRecover) {
+        toRecover = Math.round(Math.min(toRecover, this.maxEnergy - this.actualEnergy));
+        this.actualEnergy += toRecover;
+        return toRecover;
+    }
+
+    /**
+     * 
+     * @param {number} damage
+     */
+    looseHp(damage) {
+        damage = Math.round(damage);
+        this.actualHP -= damage;
+        damage = this.actualHP < 0 ? damage + this.actualHP : damage;
+        this.actualHP = this.actualHP < 0 ? 0 : this.actualHP;
+        return damage;
+    }
+
+    /**
+     * 
+     * @param {number} damage
+     */
+    looseMp(damage) {
+        damage = Math.round(damage);
+        this.actualMP -= damage;
+        damage = this.actualMP < 0 ? damage + this.actualMP : damage;
+        target.actualMP = this.actualMP < 0 ? 0 : this.actualMP;
+        return damage;
     }
 
     damageCalcul() {
@@ -185,7 +267,7 @@ class WorldEntity {
     * @param {Skill} skill
     */
     canUseSkill(skill) {
-        return this.actualEnergy >= this.getSkillEnergyCost(skill) && this.actualMP >= this.getSkillEnergyCost(skill);
+        return this.actualEnergy >= this.getSkillEnergyCost(skill) && this.actualMP >= this.getSkillMpCost(skill);
     }
 
     /**
@@ -206,8 +288,15 @@ class WorldEntity {
     * @param {Skill} skill
     */
     removeSkillCost(skill) {
-        this.actualMP = this.getSkillMpCost(skill);
-        this.actualEnergy = this.getSkillEnergyCost(skill);
+        let costs = {
+            mp: this.getSkillMpCost(skill),
+            energy: this.getSkillEnergyCost(skill)
+        }
+
+        this.actualMP -= costs.mp;
+        this.actualEnergy -= costs.energy;
+
+        return costs;
     }
 
     /**
@@ -254,7 +343,7 @@ class WorldEntity {
     removeStatesByRounds() {
         let removedStates = [];
         this.getStatesArray().forEach((state) => {
-            if (state.afterRounds && state.currentRound > state.roundEnd) {
+            if (state.isExpired()) {
                 removedStates.push(state);
                 this.removeState(state.id);
             }
@@ -321,6 +410,19 @@ class WorldEntity {
 
     getRawCriticalEvasionRate() {
         return (this.getPhysicalCriticalEvasionRate() + this.getMagicalCriticalEvasionRate()) / 2;
+    }
+
+    // TODO: Make this dream come true
+    getRegenHp() {
+        return 0;
+    }
+
+    getRegenMp() {
+        return 0;
+    }
+
+    getRegenEnergy() {
+        return 0;
     }
 }
 

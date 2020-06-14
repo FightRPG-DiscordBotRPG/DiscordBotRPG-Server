@@ -2,6 +2,8 @@ const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
 const Utils = require("../Utilities/Utils");
 const Skill = require("../SkillsAndStatus/Skill");
+const RoundLogger = require("./RoundLogger");
+const EntityAffectedLogger = require("./EntityAffectedLogger");
 
 class Fight {
     /**
@@ -31,7 +33,7 @@ class Fight {
         /**
          * @type {Array<WorldEntity>}
          **/
-        this.initiatives = entities1.concat(entities2);
+        this.concatEntities = entities1.concat(entities2);
         this.initiativeIndex = -1;
 
         this.entitiesStunned = [];
@@ -40,6 +42,9 @@ class Fight {
 
         this.summary = {
             type: "generic",
+            /**
+             * @type {Array<RoundLogger>}
+             */
             rounds: [],
             drops: [],
             xp: 0,
@@ -69,15 +74,15 @@ class Fight {
     initiativeUpdate() {
         this.initiativeIndex++;
 
-        if (this.initiativeIndex >= this.initiatives.length) {
+        if (this.initiativeIndex >= this.concatEntities.length) {
             this.initiativeIndex = 0;
         }
 
 
         for (let i in this.entities) {
-            let indexOf = this.entities[i].indexOf(this.initiatives[this.initiativeIndex]);
+            let indexOf = this.entities[i].indexOf(this.concatEntities[this.initiativeIndex]);
             if (indexOf > -1) {
-                let indexOfStun = this.entitiesStunned.indexOf(this.initiatives[this.initiativeIndex]);
+                let indexOfStun = this.entitiesStunned.indexOf(this.concatEntities[this.initiativeIndex]);
                 if (indexOfStun == -1) {
                     this.initiative = [parseInt(i), indexOf];
                     return true;
@@ -92,15 +97,15 @@ class Fight {
 
     async init(resetStats = true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
-        this.initiatives.sort((a, b) => {
+        this.concatEntities.sort((a, b) => {
             return b.getStat("intellect") - a.getStat("intellect");
         });
 
-        for (let i in this.initiatives) {
-            this.initiatives[i].updateStats();
-            await this.initiatives[i].loadSkills();
-            if (resetStats || this.initiatives[i].constructor === Monster) {
-                this.initiatives[i].resetFullHp();
+        for (let i in this.concatEntities) {
+            this.concatEntities[i].updateStats();
+            await this.concatEntities[i].loadSkills();
+            if (resetStats || this.concatEntities[i].constructor === Monster) {
+                this.concatEntities[i].resetFullHp();
             }
         }
 
@@ -142,96 +147,121 @@ class Fight {
         let stun = false;
 
         let attacker = this.entities[this.initiative[0]][this.initiative[1]];
-        let defender = this.getAliveDefenders(1)[0];
 
+        let roundLog = this.initNewRoundLog(attacker);
 
         // Clean Status after number of rounds
         let removedStatesAfterRounds = attacker.removeStatesByRounds();
-        // TODO: Log removed status
+
+        // Log removed status
+        roundLog.attacker.battle.removedStates = removedStatesAfterRounds;
+
         // TODO: Apply status effects
 
         // Add skills prep
         attacker.prepareCast();
 
         // ==> take into account mp and energy cost
-        let skillToUse = attacker.getSkillToUse();
+        // TODO: Add default skill (auto attack)
+        let autoAttack = new Skill();
+        await autoAttack.loadWithID(1);
 
-        if (skillToUse) {
-            skillToUse.resetCast();
-            let targets = [];
-            let numberOfTarget = skillToUse.getNumberOfTarget();
-            if (skillToUse.isTargetingAliveAllies()) {
-                targets = this.getAliveAttackers(numberOfTarget);
-            } else if (skillToUse.isTargetingAliveEnemies()) {
-                targets = this.getAliveDefenders(numberOfTarget);
-            } else if (skillToUse.isTargetingDeadAllies()) {
-                targets = this.getAllDeadAttackers();
-            } else if (skillToUse.isTargetingSelf()) {
-                targets.push(attacker);
-            }
+        let skillToUse = attacker.getSkillToUse() || autoAttack;
 
-            attacker.removeSkillCost(skill);
-            // TODO: Log costs ? Or log skill used then calculate cost ?
+        skillToUse.resetCast();
+        roundLog.idSkillUsed = skillToUse.id;
 
-            for (let target of targets) {
+        let targets = [];
 
-                // Hp
-                if (skillToUse.isAffectingHp()) {
-                    this.applySkillHpDamage(skillToUse, attacker, target);
-                }
-
-                // Mp
-                if (skillToUse.isAffectingMp()) {
-                    this.applySKillMpDamage(skillToUse, attacker, target);
-                }
-
-                // TODO: Energy Part
-
-                // TODO: Status Part
-            }
-
-
-
-        } else {
-
-            let defender = this.getAliveDefenders(1)[0];
-
-            // Celui qui attaque
-            damage = attacker.damageCalcul();
-            damage = damage * defender.damageDefenceReduction();
-
-            // Critical hit and stun
-            critical = attacker.isThisACriticalHit();
-            if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
-                stun = attacker.stun(defender.getStat("will"));
-            }
-
-            // Crit + stun does 50% more dmg, crit does double, else default
-            if (critical && stun) {
-                damage *= 1.5;
-            } else if (critical) {
-                damage *= 2;
-            }
-            damage = Math.round(damage);
-
-            defender.actualHP -= damage;
-            damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
-            defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
-
-            this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
-
-            if (stun && this.entitiesStunned.indexOf(defender) == -1) {
-                this.entitiesStunned.push(defender);
-                attacker.consecutiveStuns += 1;
-            } else {
-                attacker.consecutiveStuns = 0;
-            }
-
-            if (defender.actualHP <= 0) {
-                this.initiatives.splice(this.initiatives.indexOf(defender), 1);
-            }
-
+        let numberOfTarget = skillToUse.getNumberOfTarget();
+        if (skillToUse.isTargetingAliveAllies()) {
+            targets = this.getAliveAttackers(numberOfTarget);
+        } else if (skillToUse.isTargetingAliveEnemies()) {
+            targets = this.getAliveDefenders(numberOfTarget);
+        } else if (skillToUse.isTargetingDeadAllies()) {
+            targets = this.getAllDeadAttackers();
+        } else if (skillToUse.isTargetingSelf()) {
+            targets.push(attacker);
         }
+
+        let skillCosts = attacker.removeSkillCost(skillToUse);
+        // TODO: Log costs ? Or log skill used then calculate cost ?
+        roundLog.attacker.logDamageEnergy(skillCosts.energy);
+        roundLog.attacker.logDamageMp(skillCosts.mp);
+
+
+        for (let target of targets) {
+
+            let defenderLogger = this.initNewEntityLogger(target);
+
+            roundLog.defenders.push(defenderLogger);
+
+            // Hp
+            if (skillToUse.isAffectingHp()) {
+                this.applySkillHpDamage(skillToUse, attacker, target);
+            }
+
+            // Mp
+            if (skillToUse.isAffectingMp()) {
+                this.applySKillMpDamage(skillToUse, attacker, target);
+            }
+
+            // TODO: Energy Part
+
+            // TODO: Status Part
+
+            // Update total entity
+            this.updateEntityLogger(defenderLogger, target);
+
+            // Remove from original array since it's dead
+            // Should be changed so we can resurrect people
+            if (target.actualHP <= 0) {
+                this.concatEntities.splice(this.concatEntities.indexOf(defender), 1);
+            }
+        }
+
+        // Update attacker
+        this.updateEntityLogger(this.getCurrentRoundCurrentAttackerLogger(), attacker);
+
+        /*
+                    let defender = this.getAliveDefenders(1)[0];
+        
+                    // Celui qui attaque
+                    damage = attacker.damageCalcul();
+                    damage = damage * defender.damageDefenceReduction();
+        
+                    // Critical hit and stun
+                    critical = attacker.isThisACriticalHit();
+                    if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
+                        stun = attacker.stun(defender.getStat("will"));
+                    }
+        
+                    // Crit + stun does 50% more dmg, crit does double, else default
+                    if (critical && stun) {
+                        damage *= 1.5;
+                    } else if (critical) {
+                        damage *= 2;
+                    }
+                    damage = Math.round(damage);
+        
+                    defender.actualHP -= damage;
+                    damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
+                    defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
+        
+                    this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
+        
+                    if (stun && this.entitiesStunned.indexOf(defender) == -1) {
+                        this.entitiesStunned.push(defender);
+                        attacker.consecutiveStuns += 1;
+                    } else {
+                        attacker.consecutiveStuns = 0;
+                    }
+        
+                    if (defender.actualHP <= 0) {
+                        this.concatEntities.splice(this.concatEntities.indexOf(defender), 1);
+                    }
+        
+                */
 
         let isFirstTeamAlive = this.isThisTeamAlive(0);
         let isSecondTeamAlive = this.isThisTeamAlive(1);
@@ -257,6 +287,78 @@ class Fight {
     }
 
     /**
+     * Create a new logger for a new round
+     * It adds it to this.summary.rounds
+     * @param {WorldEntity} attacker
+     */
+    initNewRoundLog(attacker) {
+        let roundLog = new RoundLogger();
+        roundLog.roundType = attacker._type;
+        roundLog.roundEntitiesIndex = this.initiative[0];
+        roundLog.attacker.entity.name = attacker.getName(this.lang);
+
+        this.summary.rounds.push(roundLog);
+
+        return roundLog;
+    }
+
+    /**
+     * 
+     * @param {WorldEntity} entity
+     */
+    initNewEntityLogger(entity) {
+        let entityLog = new EntityAffectedLogger();
+
+        // Current
+        this.updateEntityLogger(entityLog, entity);
+
+        // Max
+        entityLog.entity.maxEnergy = entity.maxEnergy;
+        entityLog.entity.maxHP = entity.maxHP;
+        entityLog.entity.maxMP = entity.maxMP;
+
+        // General
+        entityLog.entity.name = entity.getName(this.lang);
+        entityLog.entity.level = entity.getLevel();
+
+        return entityLog;
+
+    }
+
+    /**
+     * 
+     * @param {EntityAffectedLogger} logger
+     * @param {WorldEntity} entity
+     */
+    updateEntityLogger(logger, entity) {
+        logger.entity.actualEnergy = entity.actualEnergy;
+        logger.entity.actualHP = entity.actualHP;
+        logger.entity.actualMP = entity.actualMP;
+    }
+
+    /**
+     * Get from dictionnary 
+     **/
+    getCurrentRound() {
+        return this.summary.rounds[this.summary.rounds.length - 1];
+    }
+
+    /**
+     * Should Only be used inside the loop when applying things to targets
+     **/
+    getCurrentRoundCurrentDefenderLogger() {
+        let round = this.getCurrentRound();
+        return round.defenders[round.defenders.length - 1];
+    }
+
+    /**
+    * Should Only be used inside the loop when applying things to targets
+    **/
+    getCurrentRoundCurrentAttackerLogger() {
+        return this.getCurrentRound().attacker;
+    }
+
+    /**
      * 
      * @param {Skill} skill
      * @param {WorldEntity} caster
@@ -265,17 +367,25 @@ class Fight {
     applySkillHpDamage(skill, caster, target) {
         let evaluation = this.getSkillEvaluation(skill, caster, target);
 
-        if (skill.isRecover) {
+        let defenderLogger = this.getCurrentRoundCurrentDefenderLogger();
+        defenderLogger.battle.isCritical = evaluation.isCritical;
+
+        if (skill.isRecover()) {
             let recoverDone = this.applyRecoveryHp(target, evaluation.value);
 
-            // TODO: Log recovery
+            // Log recovery
+            defenderLogger.logRecoverHp(recoverDone);
         } else {
             let damageDone = this.applyDamage(target, evaluation.value);
-            // TODO: Log damage (and critical)
+
+            // Log damage
+            defenderLogger.logDamageHp(damageDone);
 
             if (skill.isDrain()) {
                 caster.actualHP += damageDone;
-                // TODO: Log Drain
+
+                // Log Drain
+                this.getCurrentRoundCurrentAttackerLogger().logRecoverHp(damageDone);
             }
         }
 
@@ -290,17 +400,25 @@ class Fight {
     applySkillMpDamage(skill, caster, target) {
         let evaluation = this.getSkillEvaluation(skill, caster, target);
 
+        let defenderLogger = this.getCurrentRoundCurrentDefenderLogger();
+        defenderLogger.battle.isCritical = evaluation.isCritical;
+
         if (skill.isRecover()) {
             let recoverDone = this.applyRecoveryMp(target, evaluation.value);
 
-            // TODO: Log recovery
+            // Log recovery
+            defenderLogger.logRecoverMp(recoverDone);
         } else {
             let damageDone = this.applyMpDamage(target, evaluation.value);
-            // TODO: Log damage (and critical)
+
+            // Log damage
+            defenderLogger.logDamageMp(damageDone);
 
             if (skill.isDrain()) {
                 caster.actualMP += damageDone;
-                // TODO: Log Drain
+
+                // Log Drain
+                this.getCurrentRoundCurrentAttackerLogger().logRecoverMp(damageDone);
             }
         }
 
@@ -314,7 +432,7 @@ class Fight {
             val *= 2;
         }
 
-        return { value: val, isCritial: isCritial };
+        return { value: val, isCritical: isCritical };
     }
 
     /**
@@ -323,11 +441,7 @@ class Fight {
      * @param {number} damage
      */
     applyDamage(target, damage) {
-        damage = Math.round(damage);
-        target.actualHP -= damage;
-        damage = target.actualHP < 0 ? damage + target.actualHP : damage;
-        target.actualHP = target.actualHP < 0 ? 0 : target.actualHP;
-        return damage;
+        return target.looseHp(damage);
     }
 
     /**
@@ -336,9 +450,7 @@ class Fight {
     * @param {number} toRecover
     */
     applyRecoveryHp(target, toRecover) {
-        toRecover = Math.round(Math.min(toRecover, target.maxHP - target.actualHP));
-        target.actualHP += toRecover;
-        return toRecover;
+        return target.healHp(toRecover);
     }
 
     /**
@@ -347,11 +459,7 @@ class Fight {
     * @param {number} damage
     */
     applyMpDamage(target, damage) {
-        damage = Math.round(damage);
-        target.actualMP -= damage;
-        damage = target.actualMP < 0 ? damage + target.actualMP : damage;
-        target.actualMP = target.actualMP < 0 ? 0 : target.actualMP;
-        return damage;
+        return target.looseMp(damage);
     }
 
     /**
@@ -360,9 +468,7 @@ class Fight {
     * @param {number} toRecover
     */
     applyRecoveryMp(target, toRecover) {
-        toRecover = Math.round(Math.min(toRecover, target.maxMP - target.actualMP));
-        target.actualMP += toRecover;
-        return toRecover;
+        return target.healMp(toRecover);
     }
 
 
@@ -443,7 +549,7 @@ class Fight {
     }
 
     getAllAliveAttackers() {
-        return this.getAliveEntities(this.getAllAliveAttackers);
+        return this.getAliveEntities(this.getAllAttackers());
     }
 
     // Dead

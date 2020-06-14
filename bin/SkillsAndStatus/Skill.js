@@ -225,8 +225,8 @@ class Skill {
     */
     evaluateSkill(attacker, defender) {
         let baseValue = this.evalBaseDamageFormula(attacker, defender);
-        let value = value * this.repeat;
-        value = baseValue * this.getElementalRate(attacker, defender);
+        let value = baseValue * this.repeat;
+        value *= this.getElementalRate(attacker, defender);
 
 
         if (this.isPhysical()) {
