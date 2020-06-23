@@ -69,7 +69,7 @@ class CharacterInventory {
     async removeSomeFromInventory(idEmplacement, number, deleteObject) {
         number = number ? number : 1;
         let item = await this.getItem(idEmplacement);
-        if(item != null) {
+        if (item != null) {
             item.number -= number;
             if (item.number <= 0) {
                 await this.deleteFromInventory(item, deleteObject);
@@ -110,7 +110,7 @@ class CharacterInventory {
     /**
      * Delete all objects from inventory
      */
-    async deleteAllFromInventory(params, lang="en") {
+    async deleteAllFromInventory(params, lang = "en") {
 
         let more = "";
         let sqlParams = [this.id, lang];
@@ -136,7 +136,7 @@ class CharacterInventory {
         await Item.deleteItems(ids);
     }
 
-    async getAllInventoryValue(params, lang="en") {
+    async getAllInventoryValue(params, lang = "en") {
         let more = "";
         let sqlParams = [this.id, lang];
 
@@ -159,7 +159,7 @@ class CharacterInventory {
      * @param {*} page 
      * @param {{rarity: Number,type: Number,level: Number, power: Number}} params
      */
-    async getAllItemsAtThisPage(page, params, lang="en") {
+    async getAllItemsAtThisPage(page, params, lang = "en") {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
         let maxPage = Math.ceil(await this.getNumberOfItem(params, lang) / perPage);
@@ -177,11 +177,21 @@ class CharacterInventory {
 
         let res = await conn.query("SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, localizationitems.nameItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered " + more + " LIMIT ? OFFSET ?;", sqlParams);
 
+        let promises = [];
+
         for (let i in res) {
-            let item = await Item.newItem(res[i].idItem, res[i].nomSousType);
-            item.number = res[i].number;
-            items[res[i].idEmplacement] = item;
+            promises.push((async () => {
+                try {
+                    let item = await Item.newItem(res[i].idItem, res[i].nomSousType);
+                    item.number = res[i].number;
+                    items[res[i].idEmplacement] = item;
+                } catch (ex) {
+                    console.log(ex);
+                }
+            })());
         }
+
+        await Promise.all(promises);
 
         return {
             items: items,
@@ -236,7 +246,7 @@ class CharacterInventory {
         return await this.getNumberOfItem() == 0;
     }
 
-    async getNumberOfItem(params, lang="en") {
+    async getNumberOfItem(params, lang = "en") {
         let sqlParams = [this.id, lang];
         let more = "";
 
@@ -341,12 +351,12 @@ class CharacterInventory {
     async getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
         let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
-        if(res[0] != null) {
+        if (res[0] != null) {
             let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
             return item;
-		}
-        return null;  
+        }
+        return null;
 
     }
 
