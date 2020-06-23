@@ -81,6 +81,41 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`attackstypes` (
   UNIQUE INDEX `idAttackType_UNIQUE` (`idAttackType` ASC) VISIBLE)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`TargetRange`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`targetrange` (
+  `idTargetRange` INT NOT NULL,
+  `shothand` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`idTargetRange`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`Skills`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skills` (
+  `idSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `shorthand` VARCHAR(255) NOT NULL,
+  `idSkillType` INT UNSIGNED NULL,
+  `energyCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `manaCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `idTargetRange` INT NOT NULL,
+  PRIMARY KEY (`idSkill`),
+  UNIQUE INDEX `idSkill_UNIQUE` (`idSkill` ASC) VISIBLE,
+  INDEX `fk_Skills_SkillsTypes1_idx` (`idSkillType` ASC) VISIBLE,
+  INDEX `fk_Skills_TargetRange1_idx` (`idTargetRange` ASC) VISIBLE,
+  CONSTRAINT `fk_Skills_SkillsTypes1`
+    FOREIGN KEY (`idSkillType`)
+    REFERENCES `discord_bot_rpg`.`skillstypes` (`idSkillType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Skills_TargetRange1`
+    FOREIGN KEY (`idTargetRange`)
+    REFERENCES `discord_bot_rpg`.`targetrange` (`idTargetRange`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `discord_bot_rpg`.`Traits`
@@ -93,6 +128,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
   `valueElementType` INT UNSIGNED NULL,
   `valueSkillType` INT UNSIGNED NULL,
   `valueStat` INT UNSIGNED NULL,
+  `valueSkill` INT UNSIGNED NULL,
   PRIMARY KEY (`idTrait`),
   UNIQUE INDEX `idTrait_UNIQUE` (`idTrait` ASC) VISIBLE,
   INDEX `fk_Traits_States1_idx` (`valueState` ASC) VISIBLE,
@@ -100,6 +136,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
   INDEX `fk_Traits_ElementsTypes1_idx` (`valueElementType` ASC) VISIBLE,
   INDEX `fk_Traits_SkillsTypes1_idx` (`valueSkillType` ASC) VISIBLE,
   INDEX `fk_Traits_Stats1_idx` (`valueStat` ASC) VISIBLE,
+  INDEX `fk_Traits_Skills1_idx` (`valueSkill` ASC) VISIBLE,
   CONSTRAINT `fk_Traits_States1`
     FOREIGN KEY (`valueState`)
     REFERENCES `discord_bot_rpg`.`states` (`idState`)
@@ -123,6 +160,11 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
   CONSTRAINT `fk_Traits_Stats1`
     FOREIGN KEY (`valueStat`)
     REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Traits_Skills1`
+    FOREIGN KEY (`valueSkill`)
+    REFERENCES `discord_bot_rpg`.`Skills` (`idSkill`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -170,41 +212,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statestraits` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `discord_bot_rpg`.`TargetRange`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`targetrange` (
-  `idTargetRange` INT NOT NULL,
-  `shothand` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`idTargetRange`))
-ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `discord_bot_rpg`.`Skills`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skills` (
-  `idSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `shorthand` VARCHAR(255) NOT NULL,
-  `idSkillType` INT UNSIGNED NULL,
-  `energyCost` INT UNSIGNED NOT NULL DEFAULT 0,
-  `manaCost` INT UNSIGNED NOT NULL DEFAULT 0,
-  `idTargetRange` INT NOT NULL,
-  PRIMARY KEY (`idSkill`),
-  UNIQUE INDEX `idSkill_UNIQUE` (`idSkill` ASC) VISIBLE,
-  INDEX `fk_Skills_SkillsTypes1_idx` (`idSkillType` ASC) VISIBLE,
-  INDEX `fk_Skills_TargetRange1_idx` (`idTargetRange` ASC) VISIBLE,
-  CONSTRAINT `fk_Skills_SkillsTypes1`
-    FOREIGN KEY (`idSkillType`)
-    REFERENCES `discord_bot_rpg`.`skillstypes` (`idSkillType`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Skills_TargetRange1`
-    FOREIGN KEY (`idTargetRange`)
-    REFERENCES `discord_bot_rpg`.`targetrange` (`idTargetRange`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -350,7 +358,7 @@ VALUES
 (1, "cant_target_enemy"),(2, "cant_target_ally"),(3, "cant_target_self"),(4, "cant_target_do_anything");
 
 
-INSERT INTO traitstypes
+REPLACE INTO traitstypes
 VALUES
 (1,	"element_attack"),
 (2,	"state_attack"),
@@ -359,7 +367,9 @@ VALUES
 (5,	"stats_debuff"),
 (6,	"state_debuff"),
 (7,	"state_resist"),
-(8,	"quiet_skill");
+(8,	"quiet_skill"),
+(9, "secondary_stats_debuff"),
+(10, "quiet__specific_skill");
 
 INSERT INTO skillstypes
 VALUES

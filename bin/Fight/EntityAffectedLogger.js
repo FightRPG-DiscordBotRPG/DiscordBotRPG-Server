@@ -39,7 +39,17 @@ class EntityAffectedLogger {
      * @param {Array<State>} value
      */
     logRemovedStates(value) {
-        this.battle.removedStates = value
+        // TODO: Change don't use
+        throw "Dont use";
+        //this.battle.removedStates = value
+    }
+
+    /**
+     * 
+     * @param {State} value
+     */
+    logRemoveState(value) {
+        this.battle.removedStates.push(value);
     }
 
     /**
@@ -47,7 +57,17 @@ class EntityAffectedLogger {
     * @param {Array<State>} value
     */
     logAddeddStates(value) {
-        this.battle.addedStates = value
+        // TODO: Change don't use
+        throw "Dont use";
+        //this.battle.addedStates = value
+    }
+
+    /**
+    *
+    * @param {State} value
+    */
+    logAddState(value) {
+        this.battle.addedStates.push(value);
     }
 
     logRecoverHp(value) {

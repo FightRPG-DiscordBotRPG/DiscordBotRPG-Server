@@ -206,9 +206,12 @@ class Fight {
                 this.applySKillMpDamage(skillToUse, attacker, target);
             }
 
-            // TODO: Energy Part
+            // TODO: Energy Part *
 
-            // TODO: Status Part
+            // TODO: Effects apply
+            skillToUse.effects.forEach(effect => {
+                effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker}, skillToUse);
+            });
 
             // Update total entity
             this.updateEntityLogger(defenderLogger, target);
@@ -326,7 +329,7 @@ class Fight {
     }
 
     /**
-     * 
+     * Update hp and energy
      * @param {EntityAffectedLogger} logger
      * @param {WorldEntity} entity
      */

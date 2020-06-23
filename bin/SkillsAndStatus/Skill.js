@@ -190,7 +190,7 @@ class Skill {
 
     isAffectingMp() {
         return this.isDamageTypeIncluded([2, 4, 6]);
-    };
+    }
 
     isDamage() {
         return this.isDamageTypeIncluded([1, 2]);

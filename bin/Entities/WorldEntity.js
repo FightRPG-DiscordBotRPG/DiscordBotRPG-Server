@@ -1,6 +1,7 @@
 const Stats = require("../Stats/Stats");
 const Skill = require("../SkillsAndStatus/Skill");
 const State = require("../SkillsAndStatus/State");
+const Trait = require("../SkillsAndStatus/Trait");
 
 class WorldEntity {
 
@@ -230,9 +231,37 @@ class WorldEntity {
      * @param {number} idState
      */
     async addState(idState) {
+        let state = null;
+        if (this.isStateAddable(idState)) {
+            if (!this.isAffectedByState()) {
+                await this.addNewState(idState);
+            }
+
+            this.states[idState].resetCounts();
+            state = this.states[idState];
+        }
+
+        return state;
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     */
+    async addNewState(idState) {
+
+        var restricted = this.isRestricted();
+
         let state = new State();
         await state.loadWithID(idState);
         this.states[idState] = state;
+
+        if (!restricted && this.isRestricted()) {
+            // TODO: Event?!
+            //this.onRestrict();
+        }
+
+        return state;
     }
 
     /**
@@ -302,13 +331,45 @@ class WorldEntity {
 
     /**
      * 
-     * @param {State} state
+     * @param {number} idState
      */
-    isStateAddable(state) {
+    isStateAddable(idState) {
         // TODO: Add states verifications
-        //return (this.isAlive() && !this.isStateResist(stateId) &&
-        //    !this._result.isStateRemoved(stateId) &&
-        //    !this.isStateRestrict(stateId));
+        return (this.isAlive() && !this.isStateResist(idState) &&
+            !this.isAffectedByState(idState) &&
+            !this.isStateRestrict(idState));
+    }
+
+    isStateRestrict(idState) {
+        // TODO: Do this please
+        return false;
+        //return this.states[idState]?.isRemovedByRestriction() && false;
+    }
+
+    isRestricted() {
+        return this.getRestrictions() > 0
+    }
+
+    getRestrictions() {
+        return Math.max.apply(null, this.getStatesArray().map(function (state) {
+            return state.isRemovedByRestriction();
+        }).concat(0));
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     */
+    isAffectedByState(idState) {
+        return this.states[idState] != null;
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     */
+    isStateResist(idState) {
+        return this.getStateResists().includes(idState);
     }
 
     /**
@@ -358,7 +419,9 @@ class WorldEntity {
      * @param {number} idState
      */
     removeState(idState) {
+        let stateRemoved = this.states[idState];
         delete this.states[idState];
+        return stateRemoved;
     }
 
     /**
@@ -413,6 +476,14 @@ class WorldEntity {
         return (this.getPhysicalCriticalEvasionRate() + this.getMagicalCriticalEvasionRate()) / 2;
     }
 
+    /**
+     * BALANCING
+     * @param {WorldEntity} target
+     */
+    getLuckEffectRate(target) {
+        return Math.max(1.0 + (this.getStat(Stats.possibleStats.Luck) - target.getStat(Stats.possibleStats.Luck)) * 0.001, 0.0);
+    }
+
     // TODO: Make this dream come true
     getRegenHp() {
         return 0;
@@ -425,6 +496,159 @@ class WorldEntity {
     getRegenEnergy() {
         return 0;
     }
+
+    /**
+     * @returns {Array<Trait>}
+     **/
+    getAllTraits() {
+        return this.getStatesArray().reduce((r, obj) => {
+            return r.concat(obj.traits);
+        }, []);
+    };
+
+    getTraits(idType) {
+        return this.getAllTraits().filter((trait) => {
+            return trait.idTraitType === idType;
+        });
+    };
+
+    /*
+     * FIND BY Type And Value Type
+     */
+
+    /**
+    *
+    * @callback conditionCallback
+    * @param {Trait} trait
+    * @returns {boolean}
+    */
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {conditionCallback} condition
+     */
+    filterByCondition(idType, condition) {
+        return this.getAllTraits().filter((trait) => {
+            return trait.idTraitType === idType && condition(trait);
+        });
+    }
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} idElementType
+     */
+    getTraitsWithElementType(idType, idElementType) {
+        return this.filterByCondition(idType, (trait) => trait.valueElementType === idElementType);
+    };
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} idStateType
+     */
+    getTraitsWithStateType(idType, idStateType) {
+        return this.filterByCondition(idType, (trait) => trait.valueState === idStateType);
+    };
+
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} idStat
+     */
+    getTraitsWithIdStat(idType, idStat) {
+        return this.filterByCondition(idType, (trait) => trait.valueStat === idStat);
+    };
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} idSkill
+     */
+    getTraitsWithIdSkill(idType, idSkill) {
+        return this.filterByCondition(idType, (trait) => trait.valueSkill === idSkill);
+    };
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} idSkillType
+     */
+    getTraitsWithSkillType(idType, idSkillType) {
+        return this.filterByCondition(idType, (trait) => trait.valueSkillType === idSkillType);
+    };
+
+    getTraitsWithCode(idType, value) {
+        switch (idType) {
+            case Trait.TraitTypesNames.ElementAttack:
+            case Trait.TraitTypesNames.ElementRate:
+                return this.getTraitsWithElementType(idType, value);
+            case Trait.TraitTypesNames.StatusCertain:
+            case Trait.TraitTypesNames.StatusDebuff:
+            case Trait.TraitTypesNames.StatusResist:
+                return this.getTraitsWithStateType(idType, value);
+            case Trait.TraitTypesNames.StatsParam:
+            case Trait.TraitTypesNames.StatsDebuff:
+                return this.getTraitsWithIdStat(idType, value);
+            case Trait.TraitTypesNames.QuietSkills:
+                return this.getTraitsWithSkillType(idType, value);
+            case Trait.TraitTypesNames.QuietSpecificSkill:
+                return this.getTraitsWithIdSkill(idType, value);
+            case Trait.TraitTypesNames.SecondaryStatsDebuff:
+                // TODO
+                return [];
+        }
+
+        return [];
+    }
+
+
+    getTraitsValueMult(idType, value) {
+        return this.getTraitsWithCode(idType, value).reduce((r, trait) => {
+            return r * trait.getNumericValue();
+        }, 1);
+    };
+
+    getTraitValueSum(idType, value) {
+        return this.getTraitsWithCode(idType, value).reduce((r, trait) => {
+            return r + trait.getNumericValue();
+        }, 0);
+    };
+
+    getTraitValueSumAll(idType) {
+        return this.getTraits(idType).reduce((r, trait) => {
+            return r + trait.getNumericValue();
+        }, 0);
+    };
+
+    /**
+     * 
+     * @param {number} idType
+     * @param {number} value
+     * @returns {Array}
+     */
+    getTraitValueSet(idType, value) {
+        return this.getTraitsWithCode(idType, value).reduce(function (r, trait) {
+            return r.concat(trait.getSingleValue());
+        }, []);
+    };
+
+    getStateRate(idState) {
+        return this.getTraitsValueMult(Trait.TraitTypesNames.StatusDebuff, idState);
+    }
+
+    /**
+     * 
+     * @param {number} idState
+     * @returns {Array<number>} IDs of resisted states
+     */
+    getStateResists(idState) {
+        return this.getTraitValueSet(Trait.TraitTypesNames.StatusResist, idState);
+    }
+
+
 }
 
 module.exports = WorldEntity;

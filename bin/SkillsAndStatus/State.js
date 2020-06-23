@@ -1,5 +1,6 @@
 const Trait = require("./Trait");
 const Utils = require("../Utilities/Utils");
+const conn = require("../../conf/mysql");
 
 
 class State {
@@ -38,6 +39,7 @@ class State {
 
         res = await conn.query("SELECT * FROM statestraits WHERE idState = ?;", [this.id]);
         let promises = [];
+
         for (let item of res) {
             let t = new Trait();
             this.traits.push(t);
@@ -46,7 +48,12 @@ class State {
 
         await Promise.all(promises);
 
+        this.resetCounts();
+    }
+
+    resetCounts() {
         this.roundEnd = Utils.randRangeInt(this.roundMin, this.roundMax);
+        this.currentRound = 1;
     }
 
     /**
@@ -54,6 +61,10 @@ class State {
      **/
     isExpired() {
         return state.afterRounds && state.currentRound > state.roundEnd;
+    }
+
+    isRemovedByRestriction() {
+        return this.idStateRestriction != null;
     }
 
 

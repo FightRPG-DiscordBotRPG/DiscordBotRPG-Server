@@ -1,4 +1,8 @@
 const conn = require("../../conf/mysql");
+const WorldEntity = require("../Entities/WorldEntity");
+const EntityAffectedLogger = require("../Fight/EntityAffectedLogger");
+const Skill = require("./Skill");
+
 
 class Effect {
     constructor() {
@@ -21,6 +25,25 @@ class Effect {
         this.stateValue = res[0].stateValue;
         this.statValue = res[0].statValue;
         this.roundsValue = res[0].roundsValue;
+    }
+
+    /**
+	 * 
+	 * @param {Array<{entity: WorldEntity, logger: EntityAffectedLogger}>} targets
+     * @param {Skill} skillUsed
+	 */
+    applyToAll(targets, skillUsed) {
+        for (let target of targets) {
+            this.applyToOne(target, skillUsed);
+        }
+    }
+
+	/**
+     * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
+	 * @param {Skill} skillUsed
+	 */
+    applyToOne(target, skillUsed) {
+        throw "Not implemented";
     }
 }
 

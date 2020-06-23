@@ -22,7 +22,7 @@ const Skill = require("../../SkillsAndStatus/Skill");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "debug"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -253,9 +253,11 @@ class AdminModule extends GModule {
 
         this.router.get("/debug/", async (req, res, next) => {
             //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
-            let s = new Skill();
-            await s.loadWithID(6);
-            console.log(s);
+            //let s = new Skill();
+            //await s.loadWithID(6);
+            //console.log(s);
+            let st = new State();
+            await st.loadWithID(4);
             await next();
             return res.json({ succes: "done" });
         });
