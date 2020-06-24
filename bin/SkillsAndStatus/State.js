@@ -27,7 +27,6 @@ class State {
         this.id = id;
 
         let res = await conn.query("SELECT * FROM states INNER JOIN statesremovalconditions ON statesremovalconditions.idState = states.idState WHERE states.idState = ?;", [this.id]);
-
         this.shorthand = res[0].shorthand;
         this.roundMin = res[0].roundMin;
         this.roundMax = res[0].roundMax;
@@ -60,7 +59,7 @@ class State {
      *  Returns true if state expire after rounds 
      **/
     isExpired() {
-        return state.afterRounds && state.currentRound > state.roundEnd;
+        return this.afterRounds && this.currentRound > this.roundEnd;
     }
 
     isRemovedByRestriction() {

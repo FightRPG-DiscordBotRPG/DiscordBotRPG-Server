@@ -1,7 +1,8 @@
-const Effect = require("../Effect");
 const WorldEntity = require("../../Entities/WorldEntity");
 const EntityAffectedLogger = require("../../Fight/EntityAffectedLogger");
 const Skill = require("../Skill");
+const Effect = require("../Effect");
+
 
 class EffectAddState extends Effect {
 
@@ -9,7 +10,12 @@ class EffectAddState extends Effect {
      * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
      * @param {Skill} skillUsed
      */
-    applyToOne(target, skillUsed) {
+    async applyToOne(target, skillUsed) {
+
+        if (this.stateValue <= 0) {
+            return;
+        }
+
         let chance = this.percentageValue;
 
         if (!skillUsed.isRawDamage()) {

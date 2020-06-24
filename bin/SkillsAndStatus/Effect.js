@@ -4,6 +4,7 @@ const EntityAffectedLogger = require("../Fight/EntityAffectedLogger");
 const Skill = require("./Skill");
 
 
+
 class Effect {
     constructor() {
         this.id = 0;
@@ -32,9 +33,9 @@ class Effect {
 	 * @param {Array<{entity: WorldEntity, logger: EntityAffectedLogger}>} targets
      * @param {Skill} skillUsed
 	 */
-    applyToAll(targets, skillUsed) {
+    async applyToAll(targets, skillUsed) {
         for (let target of targets) {
-            this.applyToOne(target, skillUsed);
+            await this.applyToOne(target, skillUsed);
         }
     }
 
@@ -42,9 +43,41 @@ class Effect {
      * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
 	 * @param {Skill} skillUsed
 	 */
-    applyToOne(target, skillUsed) {
+    async applyToOne(target, skillUsed) {
         throw "Not implemented";
+    }
+
+    static async newEffect(id) {
+        let effect = new Effect();
+        await effect.loadWithID(id);
+
+        let factorizedEffect = EffectFactory.factoryEffectList[effect.idEffectType]();
+
+        for (let key in effect) {
+            factorizedEffect[key] = effect[key];
+        }
+
+        return factorizedEffect;
+
+    }
+
+
+}
+
+class EffectFactory {
+    static factoryEffectList = {
+        "1": () => { return new EffectRecoverHp(); },
+        "2": () => { return new EffectRecoverMp(); },
+        "3": () => { return new EffectRecoverEnergy(); },
+        "4": () => { return new EffectAddState(); },
+        "5": () => { return new EffectRemoveState(); },
     }
 }
 
 module.exports = Effect;
+
+const EffectAddState = require("./Effetcs/EffectAddState");
+const EffectRecoverEnergy = require("./Effetcs/EffectRecoverEnergy");
+const EffectRecoverHp = require("./Effetcs/EffectRecoverHp");
+const EffectRecoverMp = require("./Effetcs/EffectRecoverMp");
+const EffectRemoveState = require("./Effetcs/EffectRemoveState");

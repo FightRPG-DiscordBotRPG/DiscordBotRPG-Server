@@ -83,11 +83,12 @@ class Fight {
             let indexOf = this.entities[i].indexOf(this.concatEntities[this.initiativeIndex]);
             if (indexOf > -1) {
                 let indexOfStun = this.entitiesStunned.indexOf(this.concatEntities[this.initiativeIndex]);
-                if (indexOfStun == -1) {
+                let isStunned = this.concatEntities[this.initiativeIndex].isAffectedByState(1);
+                if (!isStunned) {
                     this.initiative = [parseInt(i), indexOf];
                     return true;
                 } else {
-                    this.entitiesStunned.splice(indexOfStun, 1);
+                    //this.entitiesStunned.splice(indexOfStun, 1);
                     this.initiativeUpdate();
                 }
             }
@@ -209,8 +210,8 @@ class Fight {
             // TODO: Energy Part *
 
             // TODO: Effects apply
-            skillToUse.effects.forEach(effect => {
-                effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker}, skillToUse);
+            skillToUse.effects.forEach(async (effect) => {
+                await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker}, skillToUse);
             });
 
             // Update total entity
@@ -299,6 +300,14 @@ class Fight {
         roundLog.roundType = attacker._type;
         roundLog.roundEntitiesIndex = this.initiative[0];
         roundLog.attacker.entity.name = attacker.getName(this.lang);
+        roundLog.attacker.entity.level = attacker.getLevel();
+
+
+        // Max
+        roundLog.attacker.entity.maxEnergy = attacker.maxEnergy;
+        roundLog.attacker.entity.maxHP = attacker.maxHP;
+        roundLog.attacker.entity.maxMP = attacker.maxMP;
+
 
         this.summary.rounds.push(roundLog);
 

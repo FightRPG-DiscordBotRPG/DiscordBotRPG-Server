@@ -8,7 +8,7 @@ class EffectRecoverMp extends Effect {
 	/**
      * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
 	 */
-    applyToOne(target) {
+    async applyToOne(target) {
         // TODO: Add recovery resistance
         let value = Math.floor(target.entity.maxMP * this.percentageValue + this.fixedValue);
 

@@ -6,6 +6,7 @@ const Utils = require("../Utilities/Utils");
 
 
 class Skill {
+
     constructor() {
         this.id = 0;
         this.shorthand = "";
@@ -60,20 +61,16 @@ class Skill {
 
         res = await conn.query("SELECT idEffectSkill FROM effectsskills WHERE idSkill = ?;", [this.id]);
 
-        let promises = [];
         for (let item of res) {
-            let e = new Effect();
+            let e = await Effect.newEffect(item.idEffectSkill);
             this.effects.push(e);
-            promises.push(e.loadWithID(item.idEffectSkill));
         }
-
-        await Promise.all(promises);
 
         this.parseFormula();
     }
 
     parseFormula() {
-        if(this.damage.formula) {
+        if (this.damage.formula) {
             let formula = this.damage.formula;
 
             // Replace short stat name by getter
@@ -218,7 +215,7 @@ class Skill {
      * @param {WorldEntity} defender
      */
     evaluateWithTarget(attacker, defender) {
-       return this.evaluateSkill(attacker, defender);
+        return this.evaluateSkill(attacker, defender);
     }
 
     /**

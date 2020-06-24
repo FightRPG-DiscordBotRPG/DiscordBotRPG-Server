@@ -2,6 +2,7 @@ const Stats = require("../Stats/Stats");
 const Skill = require("../SkillsAndStatus/Skill");
 const State = require("../SkillsAndStatus/State");
 const Trait = require("../SkillsAndStatus/Trait");
+const Effect = require("../SkillsAndStatus/Effect");
 
 class WorldEntity {
 
@@ -18,6 +19,7 @@ class WorldEntity {
         this.level = 0;
         this.stats = new Stats();
         this.consecutiveStuns = 0;
+
         /**
         * @type {Object.<number, Skill>}
         */
@@ -250,7 +252,7 @@ class WorldEntity {
      */
     async addNewState(idState) {
 
-        var restricted = this.isRestricted();
+        let restricted = this.isRestricted();
 
         let state = new State();
         await state.loadWithID(idState);

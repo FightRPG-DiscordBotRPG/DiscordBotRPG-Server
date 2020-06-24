@@ -18,6 +18,7 @@ const Emojis = require("../../Emojis");
 const express = require("express");
 const State = require("../../SkillsAndStatus/State");
 const Skill = require("../../SkillsAndStatus/Skill");
+const Effect = require("../../SkillsAndStatus/Effect");
 
 class AdminModule extends GModule {
     constructor() {
@@ -256,8 +257,9 @@ class AdminModule extends GModule {
             //let s = new Skill();
             //await s.loadWithID(6);
             //console.log(s);
-            let st = new State();
-            await st.loadWithID(4);
+            //let st = new State();
+            //await st.loadWithID(4);
+            //console.log(await Effect.newEffect(1));
             await next();
             return res.json({ succes: "done" });
         });

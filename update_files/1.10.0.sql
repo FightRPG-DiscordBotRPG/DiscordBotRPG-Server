@@ -415,11 +415,7 @@ VALUES
 (2, "manaHeal"),
 (3, "energyHeal"),
 (4, "addState"),
-(5, "removeState"),
-(6, "addBuff"),
-(7, "addDebuf"),
-(8, "removeBuff"),
-(9, "removeDebuff");
+(5, "removeState");
 
 INSERT INTO damagestypes
 VALUES
