@@ -20,6 +20,11 @@ class WorldEntity {
         this.stats = new Stats();
         this.consecutiveStuns = 0;
 
+        // Stats modifiers key => statname, value => traits modifier
+        // Reseted each round on fight
+        // Only used in fight
+        this.tempStatsModifiers = {};
+
         /**
         * @type {Object.<number, Skill>}
         */
@@ -34,7 +39,7 @@ class WorldEntity {
     async loadSkills() {
         // TODO load depending on class / or monsters skills
         let promises = [];
-        let skillsToTest = [1, 2, 4, 8, 9, 10];
+        let skillsToTest = [1];
         //let skillsToTest = [];
         for (let item of skillsToTest) {
             let s = new Skill();
@@ -181,7 +186,24 @@ class WorldEntity {
     }
 
     getStat(statName) {
-        return this.stats.getStat(statName);
+        let statValue = this.stats.getStat(statName);
+
+        if (!this.tempStatsModifiers[statName]) {
+            this.tempStatsModifiers[statName] = 1;
+            this.getStatesArray().forEach((state) => {
+                state.traits.forEach((trait) => {
+                    if (trait.valueStat != null && trait.valueStat === Globals.statsIdsByName[statName]) {
+                        this.tempStatsModifiers[statName] += trait.getFloatValue();
+                    }
+                });
+            });
+        }
+
+        return this.tempStatsModifiers[statName] * statValue;
+    }
+
+    resetStatsModifiers() {
+        this.tempStatsModifiers = {};
     }
 
     prepareCast() {
@@ -349,14 +371,64 @@ class WorldEntity {
     }
 
     isRestricted() {
-        return this.getRestrictions() > 0
+        return this.getRestrictionsMax() > 0
+    }
+
+    getRestrictionsMax() {
+        return Math.max.apply(null, this.getStatesArray().map((state) => {
+            return state.idStateRestriction;
+        }).concat(0));
     }
 
     getRestrictions() {
-        return Math.max.apply(null, this.getStatesArray().map(function (state) {
-            return state.isRemovedByRestriction();
-        }).concat(0));
+        let restrictions = {
+            targetEnemy: true,
+            targetSelf: true,
+            targetAlly: true
+        };
+
+        for (let state of this.getStatesArray()) {
+            if (state.idStateRestriction === 4) {
+                restrictions.targetAlly = false;
+                restrictions.targetEnemy = false;
+                restrictions.targetSelf = false;
+
+                // Exiting the for loop
+                break;
+            } else {
+                switch (state.idStateRestriction) {
+                    case 1:
+                        restrictions.targetEnemy = false;
+                        break;
+                    case 2:
+                        restrictions.targetAlly = false;
+                        break;
+                    case 3:
+                        restrictions.targetSelf = false;
+                        break;
+                }
+            }
+
+        }
+
+        return restrictions;
     }
+
+    
+
+    /**
+     * 
+     * @param {number} value
+     */
+    filterRestriction(value) {
+        return this.getStatesArray().find((state) => {
+            return state.idStateRestriction === value;
+        });
+    }
+
+
+
+
 
     /**
      * 
@@ -654,3 +726,5 @@ class WorldEntity {
 }
 
 module.exports = WorldEntity;
+
+const Globals = require("../Globals");

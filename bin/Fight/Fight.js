@@ -78,21 +78,28 @@ class Fight {
             this.initiativeIndex = 0;
         }
 
-
         for (let i in this.entities) {
             let indexOf = this.entities[i].indexOf(this.concatEntities[this.initiativeIndex]);
             if (indexOf > -1) {
-                let indexOfStun = this.entitiesStunned.indexOf(this.concatEntities[this.initiativeIndex]);
-                let isStunned = this.concatEntities[this.initiativeIndex].isAffectedByState(1);
-                if (!isStunned) {
-                    this.initiative = [parseInt(i), indexOf];
-                    return true;
-                } else {
-                    //this.entitiesStunned.splice(indexOfStun, 1);
-                    this.initiativeUpdate();
-                }
+                // Even if stunned the turn must be calculated
+                this.initiative = [parseInt(i), indexOf];
+                return true;
             }
         }
+
+        //for (let i in this.entities) {
+        //    let indexOf = this.entities[i].indexOf(this.concatEntities[this.initiativeIndex]);
+        //    if (indexOf > -1) {
+        //        let isStunned = this.concatEntities[this.initiativeIndex].isRestricted(1);
+        //        if (!isStunned) {
+        //            this.initiative = [parseInt(i), indexOf];
+        //            return true;
+        //        } else {
+        //            //this.entitiesStunned.splice(indexOfStun, 1);
+        //            this.initiativeUpdate();
+        //        }
+        //    }
+        //}
         return false;
     }
 
@@ -142,13 +149,10 @@ class Fight {
 
 
     async update() {
-        let damage = 0;
         let done = 0;
-        let critical = false;
-        let stun = false;
 
-        let attacker = this.entities[this.initiative[0]][this.initiative[1]];
-
+        let attacker = this.concatEntities[this.initiativeIndex];
+        
         let roundLog = this.initNewRoundLog(attacker);
 
         // Clean Status after number of rounds
@@ -158,114 +162,83 @@ class Fight {
         roundLog.attacker.battle.removedStates = removedStatesAfterRounds;
 
         // TODO: Apply status effects
+        attacker.resetStatsModifiers();
+
+        // ==> take into account mp and energy cost
+        // Default skill based on what restriction the character have
+        let attackerRestrictions = attacker.getRestrictions();
+
+        // Log Restrictions
+        roundLog.restrictions = attackerRestrictions;
 
         // Add skills prep
         attacker.prepareCast();
 
-        // ==> take into account mp and energy cost
-        // TODO: Add default skill (auto attack)
-        let autoAttack = new Skill();
-        await autoAttack.loadWithID(1);
+        if (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf) {
+            let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
-        let skillToUse = attacker.getSkillToUse() || autoAttack;
+            skillToUse.resetCast();
+            roundLog.idSkillUsed = skillToUse.id;
 
-        skillToUse.resetCast();
-        roundLog.idSkillUsed = skillToUse.id;
+            let targets = [];
 
-        let targets = [];
+            let numberOfTarget = skillToUse.getNumberOfTarget();
+            if (skillToUse.isTargetingAliveAllies()) {
+                targets = this.getAliveAttackers(numberOfTarget);
+            } else if (skillToUse.isTargetingAliveEnemies()) {
+                targets = this.getAliveDefenders(numberOfTarget);
+            } else if (skillToUse.isTargetingDeadAllies()) {
+                targets = this.getAllDeadAttackers();
+            } else if (skillToUse.isTargetingSelf()) {
+                targets.push(attacker);
+            }
 
-        let numberOfTarget = skillToUse.getNumberOfTarget();
-        if (skillToUse.isTargetingAliveAllies()) {
-            targets = this.getAliveAttackers(numberOfTarget);
-        } else if (skillToUse.isTargetingAliveEnemies()) {
-            targets = this.getAliveDefenders(numberOfTarget);
-        } else if (skillToUse.isTargetingDeadAllies()) {
-            targets = this.getAllDeadAttackers();
-        } else if (skillToUse.isTargetingSelf()) {
-            targets.push(attacker);
+            let skillCosts = attacker.removeSkillCost(skillToUse);
+            roundLog.attacker.logDamageEnergy(skillCosts.energy);
+            roundLog.attacker.logDamageMp(skillCosts.mp);
+
+
+            for (let target of targets) {
+
+                let defenderLogger = this.initNewEntityLogger(target);
+
+                roundLog.defenders.push(defenderLogger);
+
+                // States stats modifiers reset
+                target.resetStatsModifiers();
+
+                // Hp
+                if (skillToUse.isAffectingHp()) {
+                    this.applySkillHpDamage(skillToUse, attacker, target);
+                }
+
+                // Mp
+                if (skillToUse.isAffectingMp()) {
+                    this.applySKillMpDamage(skillToUse, attacker, target);
+                }
+
+                // TODO: Energy Part *??
+
+                // Effects apply
+                for (let effect of skillToUse.effects) {
+                    await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker }, skillToUse);
+                }
+
+                // Update total entity
+                this.updateEntityLogger(defenderLogger, target);
+
+                // Remove from original array since it's dead
+                // Should be changed so we can resurrect people
+                if (!target.isAlive()) {
+                    this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
+                }
+            }
         }
 
-        let skillCosts = attacker.removeSkillCost(skillToUse);
-        // TODO: Log costs ? Or log skill used then calculate cost ?
-        roundLog.attacker.logDamageEnergy(skillCosts.energy);
-        roundLog.attacker.logDamageMp(skillCosts.mp);
-
-
-        for (let target of targets) {
-
-            let defenderLogger = this.initNewEntityLogger(target);
-
-            roundLog.defenders.push(defenderLogger);
-
-            // Hp
-            if (skillToUse.isAffectingHp()) {
-                this.applySkillHpDamage(skillToUse, attacker, target);
-            }
-
-            // Mp
-            if (skillToUse.isAffectingMp()) {
-                this.applySKillMpDamage(skillToUse, attacker, target);
-            }
-
-            // TODO: Energy Part *
-
-            // TODO: Effects apply
-            skillToUse.effects.forEach(async (effect) => {
-                await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker}, skillToUse);
-            });
-
-            // Update total entity
-            this.updateEntityLogger(defenderLogger, target);
-
-            // Remove from original array since it's dead
-            // Should be changed so we can resurrect people
-            if (!target.isAlive()) {
-                this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
-            }
-        }
+        
 
         // Update attacker
         this.updateEntityLogger(this.getCurrentRoundCurrentAttackerLogger(), attacker);
-
-        /*
-                    let defender = this.getAliveDefenders(1)[0];
-        
-                    // Celui qui attaque
-                    damage = attacker.damageCalcul();
-                    damage = damage * defender.damageDefenceReduction();
-        
-                    // Critical hit and stun
-                    critical = attacker.isThisACriticalHit();
-                    if (attacker.consecutiveStuns < Globals.maxConsecutiveStuns) {
-                        stun = attacker.stun(defender.getStat("will"));
-                    }
-        
-                    // Crit + stun does 50% more dmg, crit does double, else default
-                    if (critical && stun) {
-                        damage *= 1.5;
-                    } else if (critical) {
-                        damage *= 2;
-                    }
-                    damage = Math.round(damage);
-        
-                    defender.actualHP -= damage;
-                    damage = defender.actualHP < 0 ? damage + defender.actualHP : damage;
-                    defender.actualHP = defender.actualHP < 0 ? 0 : defender.actualHP;
-        
-                    this.log(attacker, defender, critical, stun, damage, this.initiative[0]);
-        
-                    if (stun && this.entitiesStunned.indexOf(defender) == -1) {
-                        this.entitiesStunned.push(defender);
-                        attacker.consecutiveStuns += 1;
-                    } else {
-                        attacker.consecutiveStuns = 0;
-                    }
-        
-                    if (defender.actualHP <= 0) {
-                        this.concatEntities.splice(this.concatEntities.indexOf(defender), 1);
-                    }
-        
-                */
 
         let isFirstTeamAlive = this.isThisTeamAlive(0);
         let isSecondTeamAlive = this.isThisTeamAlive(1);
@@ -307,6 +280,8 @@ class Fight {
         roundLog.attacker.entity.maxEnergy = attacker.maxEnergy;
         roundLog.attacker.entity.maxHP = attacker.maxHP;
         roundLog.attacker.entity.maxMP = attacker.maxMP;
+
+        roundLog.attacker.entity.states = attacker.states;
 
 
         this.summary.rounds.push(roundLog);
@@ -378,8 +353,6 @@ class Fight {
      */
     applySkillHpDamage(skill, caster, target) {
         let evaluation = this.getSkillEvaluation(skill, caster, target);
-
-        console.log(evaluation);
 
         let defenderLogger = this.getCurrentRoundCurrentDefenderLogger();
         defenderLogger.battle.isCritical = evaluation.isCritical;
@@ -645,6 +618,21 @@ class Fight {
         return mult <= 0.25 ? 0.25 : mult
     }
 
+    /**
+     * *
+     * @param {{targetEnemy: boolean, targetSelf: boolean, targetAlly: boolean}} restrictions
+     */
+    async getDefaultSkill(restrictions) {
+        let defaultSkill = new Skill();
+        if (restrictions.targetEnemy === true) {
+            // Auto attack
+            await defaultSkill.loadWithID(1);
+        } else {
+            await defaultSkill.loadWithID(2);
+        }
+
+        return defaultSkill;
+    }
 
 }
 

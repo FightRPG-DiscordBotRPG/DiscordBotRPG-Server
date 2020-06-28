@@ -110,7 +110,7 @@ class Item {
      * @param {Stats} stats 
      */
     static calculPower(stats) {
-        let statsPossible = Object.keys(Globals.statsIds);
+        let statsPossible = Object.keys(Globals.statsIdsByName);
         let power = 0;
         for (let i of statsPossible) {
             let statPower = 0;

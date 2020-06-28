@@ -58,7 +58,7 @@ class Stats {
 
     toApi() {
         let r = {};
-        let statsPossible = Object.keys(Globals.statsIds);
+        let statsPossible = Object.keys(Globals.statsIdsByName);
         for (let i in statsPossible) {
             r[statsPossible[i]] = this[statsPossible[i]];
         }

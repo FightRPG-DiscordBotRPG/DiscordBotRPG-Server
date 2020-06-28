@@ -14,21 +14,21 @@ class StatsPlayer extends Stats {
 
     // Reset
     async reset() {
-        for (let stat in Globals.statsIds) {
+        for (let stat in Globals.statsIdsByName) {
             this[stat] = 0;
-            await conn.query("UPDATE statscharacters SET value = ? WHERE idStat = ? AND idCharacter = ?;", [this[stat], Globals.statsIds[stat], this.id]);
+            await conn.query("UPDATE statscharacters SET value = ? WHERE idStat = ? AND idCharacter = ?;", [this[stat], Globals.statsIdsByName[stat], this.id]);
         }
     }
 
     // Save to DB
     async saveStat() {
-        for (let stat in Globals.statsIds) {
-            await conn.query("UPDATE statscharacters SET value = " + this[stat] + " WHERE idStat = " + Globals.statsIds[stat] + " AND idCharacter = " + this.id);
+        for (let stat in Globals.statsIdsByName) {
+            await conn.query("UPDATE statscharacters SET value = " + this[stat] + " WHERE idStat = " + Globals.statsIdsByName[stat] + " AND idCharacter = " + this.id);
         }
     }
 
     async saveThisStat(stat) {
-        await conn.query("UPDATE statscharacters SET value = " + this[stat] + " WHERE idStat = " + Globals.statsIds[stat] + " AND idCharacter = " + this.id);
+        await conn.query("UPDATE statscharacters SET value = " + this[stat] + " WHERE idStat = " + Globals.statsIdsByName[stat] + " AND idCharacter = " + this.id);
     }
 
     // Load from DB

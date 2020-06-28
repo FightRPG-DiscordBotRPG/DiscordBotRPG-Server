@@ -144,7 +144,7 @@ class LootSystem {
         if (res[0]) {
             let rarity = res[0].idRarity;
             let stats = new Stats(0);;
-            let statsPossible = Object.keys(Globals.statsIds);
+            let statsPossible = Object.keys(Globals.statsIdsByName);
             let alreadyDone = this.getStatsNumber(rarity);
             let objectType = res[0]["nomType"];
             let equipable = res[0]["equipable"];
@@ -183,8 +183,8 @@ class LootSystem {
             let idInsert = await Item.lightInsert(idBase, level, Item.calculPower(stats));
             let statsValues = [];
 
-            for (let i in Globals.statsIds) {
-                statsValues.push([idInsert, parseInt(Globals.statsIds[i]), stats[i]])
+            for (let i in Globals.statsIdsByName) {
+                statsValues.push([idInsert, parseInt(Globals.statsIdsByName[i]), stats[i]])
             }
 
             await conn.query("INSERT INTO itemsstats VALUES ?;", [statsValues]);
@@ -225,7 +225,7 @@ class LootSystem {
         if (rarity < 6) {
             return rarity - 1 + this.numberOfStatsBonus(rarity);
         } else {
-            return Object.keys(Globals.statsIds).length;
+            return Object.keys(Globals.statsIdsByName).length;
         }
     }
 

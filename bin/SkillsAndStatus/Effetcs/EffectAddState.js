@@ -11,7 +11,7 @@ class EffectAddState extends Effect {
      * @param {Skill} skillUsed
      */
     async applyToOne(target, skillUsed) {
-
+        console.log("apply");
         if (this.stateValue <= 0) {
             return;
         }

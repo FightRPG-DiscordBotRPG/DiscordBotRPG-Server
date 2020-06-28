@@ -24,7 +24,6 @@ class Trait {
         this.valueSkillType = res[0].valueSkillType;
         this.valueStat = res[0].valueStat;
         this.valueSkill = res[0].valueSkill;
-        console.log(this);
     }
 
     static TraitTypesNames = {
@@ -55,6 +54,10 @@ class Trait {
 
     getSingleValue() {
         return this.valueElementType || this.valueFloat || this.valueInt || this.valueSkill || this.valueSkillType || this.valueStat || this.valueState;
+    }
+
+    getStatName() {
+        return 
     }
 }
 
