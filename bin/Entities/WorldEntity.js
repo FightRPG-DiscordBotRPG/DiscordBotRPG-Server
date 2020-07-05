@@ -188,18 +188,23 @@ class WorldEntity {
     getStat(statName) {
         let statValue = this.stats.getStat(statName);
 
+        // TODO: Maybe don't implement this on primary stats, but do this on secondary one
         if (!this.tempStatsModifiers[statName]) {
-            this.tempStatsModifiers[statName] = 1;
-            this.getStatesArray().forEach((state) => {
-                state.traits.forEach((trait) => {
-                    if (trait.valueStat != null && trait.valueStat === Globals.statsIdsByName[statName]) {
-                        this.tempStatsModifiers[statName] += trait.getFloatValue();
-                    }
-                });
-            });
+            let modifier = this.getTraitValueSum(Trait.TraitTypesNames.StatsParam, Globals.statsIdsByName[statName], null);
+
+            if (modifier === null) {
+                modifier = 1;
+            } else {
+                // Calcul with debuff
+                modifier -= this.getTraitValueSum(Trait.TraitTypesNames.StatsDebuff, Globals.statsIdsByName[statName]);
+                modifier = modifier < 1 ? 0 : modifier;
+            }
+
+            this.tempStatsModifiers[statName] = modifier;
+            
         }
 
-        return this.tempStatsModifiers[statName] * statValue;
+        return statValue * this.tempStatsModifiers[statName];
     }
 
     resetStatsModifiers() {
@@ -685,10 +690,10 @@ class WorldEntity {
         }, 1);
     };
 
-    getTraitValueSum(idType, value) {
+    getTraitValueSum(idType, value, defaultValue = 0) {
         return this.getTraitsWithCode(idType, value).reduce((r, trait) => {
             return r + trait.getNumericValue();
-        }, 0);
+        }, defaultValue);
     };
 
     getTraitValueSumAll(idType) {
@@ -711,6 +716,10 @@ class WorldEntity {
 
     getStateRate(idState) {
         return this.getTraitsValueMult(Trait.TraitTypesNames.StatusDebuff, idState);
+    }
+
+    getStatRate(idStat) {
+        return this.getTraitsValueMult(Trait.TraitTypesNames.StatsDebuff, idStat);
     }
 
     /**
