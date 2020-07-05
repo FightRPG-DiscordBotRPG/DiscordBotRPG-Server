@@ -416,6 +416,14 @@ VALUES
 (5, "healHp"),
 (6, "healMp");
 
+REPLACE INTO secondarystats
+VALUES 
+(1, "hit_rate", ""),
+(2, "evade_rate", ""),
+(3, "critical_rate", ""),
+(4, "regen_hp", ""),
+(5, "regen_mp", ""),
+(6, "regen_energy", "");
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

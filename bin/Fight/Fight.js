@@ -161,10 +161,11 @@ class Fight {
         // Log removed status
         roundLog.attacker.battle.removedStates = removedStatesAfterRounds;
 
-        // TODO: Apply status effects
+        // Reset stat get modifier
         attacker.resetStatsModifiers();
 
-        // ==> take into account mp and energy cost
+        // TODO: Apply status effects on MP/HP/Energy
+
         // Default skill based on what restriction the character have
         let attackerRestrictions = attacker.getRestrictions();
 

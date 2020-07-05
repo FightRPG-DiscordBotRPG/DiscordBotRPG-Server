@@ -188,7 +188,6 @@ class WorldEntity {
     getStat(statName) {
         let statValue = this.stats.getStat(statName);
 
-        // TODO: Maybe don't implement this on primary stats, but do this on secondary one
         if (!this.tempStatsModifiers[statName]) {
             let modifier = this.getTraitValueSum(Trait.TraitTypesNames.StatsParam, Globals.statsIdsByName[statName], null);
 
