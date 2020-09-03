@@ -202,12 +202,21 @@ var Globals = {
 
         if (params != null) {
             let equivalent = {
+                "name": { name: "nameItem", sign: "LIKE", isString: true },
                 "rarity": { name: "idRarity", sign: "=", isString: false },
                 "type": { name: "idType", sign: "=", isString: false },
-                "level": { name: "level", sign: ">=", isString: false },
-                "power": { name: "power", sign: ">=", isString: false },
-                "name": { name: "nameItem", sign: "LIKE", isString: true },
                 "subtype": { name: "idSousType", sign: "=", isString: false },
+
+                "level_up": { name: "level", sign: ">=", isString: false },
+                "level": { name: "level", sign: ">=", isString: false },
+                "level_down": { name: "level", sign: "<=", isString: false },
+
+                "power": { name: "power", sign: ">=", isString: false },
+                "power_up": { name: "power", sign: ">=", isString: false },
+                "power_down": { name: "power", sign: "<=", isString: false },
+
+                "fav": { name: "favorite", sign: "=", isString: true },
+
             };
 
             for (let param of Object.keys(params)) {

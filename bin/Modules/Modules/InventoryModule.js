@@ -98,7 +98,6 @@ class InventoryModule extends GModule {
         this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
             let params = this.getSearchParams(req);
-
             let invPage = parseInt(req.params.page, 10);
             if (invPage == null || invPage != null && !Number.isInteger(invPage)) {
                 invPage = 0;

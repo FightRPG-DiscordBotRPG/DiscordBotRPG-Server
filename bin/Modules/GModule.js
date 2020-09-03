@@ -546,8 +546,13 @@ class GModule {
             type: parseInt(req.body.idType != null ? req.body.idType : req.query.idType),
             subtype: parseInt(req.body.idSousType != null ? req.body.idSousType : req.query.idSousType),
             level: parseInt(req.body.level != null ? req.body.level : req.query.level),
+            level_up: parseInt(req.body.level != null ? req.body.level : req.query.level),
+            level_down: parseInt(req.body.level_down != null ? req.body.level_down : req.query.level_down),
             power: parseInt(req.body.power != null ? req.body.power : req.query.power),
+            power_up: parseInt(req.body.power != null ? req.body.power : req.query.power),
+            power_down: parseInt(req.body.power_down != null ? req.body.power_down : req.query.power_down),
             name: req.body.name != null ? req.body.name : req.query.name,
+            fav: (req.body.fav != null ? req.body.fav : req.query.fav) == "true",
         }
     }
 
