@@ -423,7 +423,10 @@ VALUES
 (3, "critical_rate", ""),
 (4, "regen_hp", ""),
 (5, "regen_mp", ""),
-(6, "regen_energy", "");
+(6, "regen_energy", ""),
+(8, "skill_mana_cost", ""),
+(9, "skill_energy_cost", "");
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

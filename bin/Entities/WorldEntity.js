@@ -51,12 +51,31 @@ class WorldEntity {
     }
 
     updateStats() {
-        this.maxHP = 10 + this.getStat("constitution") * 10;
-        this.maxMP = 2 + this.getStat(Stats.possibleStats.Wisdom) * 2
+        this.updateMaxStats();
         this.consecutiveStuns = 0;
         if (this.actualHP <= (this.maxHP * 0.1)) {
             this.actualHP = Math.ceil(this.maxHP * 0.1);
         }
+    }
+
+    updateMaxStats() {
+        this.maxHP = 10 + this.getStat(Stats.possibleStats.Constitution) * 10;
+        this.maxMP = 2 + this.getStat(Stats.possibleStats.Wisdom) * 2;
+        this.maxEnergy = 100;
+
+        // Recap to max hp current hp if >
+        if (this.actualHP > this.maxHP) {
+            this.actualHP = this.maxHP;
+        }
+
+        if (this.actualMP > this.maxMP) {
+            this.actualMP = this.maxMP;
+        }
+
+        if (this.actualEnergy > this.maxEnergy) {
+            this.actualEnergy = this.maxEnergy;
+        }
+
     }
 
     resetFullHp() {
@@ -206,6 +225,11 @@ class WorldEntity {
         return statValue * this.tempStatsModifiers[statName];
     }
 
+    getSecondaryStat(statName) {
+        // TODO: Implement new secondary stat system
+        return 0;
+    }
+
     resetStatsModifiers() {
         this.tempStatsModifiers = {};
     }
@@ -303,7 +327,8 @@ class WorldEntity {
         //        // Do something here ?
         //    });
         //}
-        return Math.floor(skill.manaCost);
+        // TODO: With new System do secondary stat with name list like stats
+        return Math.floor(this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, 8, 1) * skill.manaCost);
     }
 
     /**
@@ -317,7 +342,8 @@ class WorldEntity {
         //        // Do something here ?
         //    });
         //}
-        return Math.floor(skill.energyCost);
+        // TODO: With new System do secondary stat with name list like stats
+        return Math.floor(this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, 9, 1) * skill.energyCost);
     }
 
     /**

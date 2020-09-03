@@ -65,6 +65,14 @@ class Effect {
 }
 
 class EffectFactory {
+    /**
+    * @callback factoryEffectFunction
+    * @returns {Effect} x - ...
+    */
+
+    /**
+     * @type {Object.<string, factoryEffectFunction>}
+     */
     static factoryEffectList = {
         "1": () => { return new EffectRecoverHp(); },
         "2": () => { return new EffectRecoverMp(); },

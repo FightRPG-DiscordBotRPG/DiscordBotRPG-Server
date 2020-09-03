@@ -7,6 +7,7 @@ const Crypto = require("crypto");
 const DatabaseInitializer = require("./DatabaseInitializer");
 const Translator = require("./Translator/Translator");
 const axios = require("axios").default;
+const conf = require("../conf/conf");
 
 class User {
     // Discord User Info
@@ -270,7 +271,7 @@ class User {
 
     async tell(str) {
         try {
-            await axios.post("http://127.0.0.1:48921/usr", {
+            await axios.post(`http://${conf.discordBotAddresses[0]}/usr`, {
                 id: this.id,
                 message: str,
             });
@@ -281,7 +282,7 @@ class User {
 
     static async tell(id, str) {
         try {
-            await axios.post("http://127.0.0.1:48921/usr", {
+            await axios.post(`http://${conf.discordBotAddresses[0]}/usr`, {
                 id: id,
                 message: str,
             });

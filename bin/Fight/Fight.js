@@ -164,6 +164,9 @@ class Fight {
         // Reset stat get modifier
         attacker.resetStatsModifiers();
 
+        // Reload Max HP/MP/Energy (due to states effects)
+        attacker.updateMaxStats();
+
         // TODO: Apply status effects on MP/HP/Energy
 
         // Default skill based on what restriction the character have

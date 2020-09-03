@@ -37,6 +37,10 @@ class Skill {
         this.currentCastPreparation = 0;
     }
 
+    /**
+     * 
+     * @param {number} id
+     */
     async loadWithID(id) {
         this.id = id;
         let res = await conn.query("SELECT * FROM skills INNER JOIN castinfo ON castinfo.idSkill = skills.idSkill LEFT JOIN damageinfo ON damageinfo.idSkill = skills.idSkill WHERE skills.idSkill = ?;", [this.id]);
