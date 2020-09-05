@@ -99,10 +99,11 @@ class SecondaryStats {
             if (this[elementalResist] >= 0) {
                 this[elementalResist] = -this[elementalResist];
             }
-            if (this[elementalResist] >= 0) {
-                return 1 + this[elementalResist] / 100;
+            if (this[elementalResist] < 0) {
+                return 1 + (-this[elementalResist]) / 100;
             } else {
-                return 100/(-this[elementalResist]+100);
+                // max 50%
+                return 1 - (Math.min(this[elementalResist], 50)/100);
             }
         }
 
