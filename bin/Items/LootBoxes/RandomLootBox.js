@@ -1,5 +1,6 @@
 const Globals = require("../../Globals");
 const LootBox = require("./LootBox");
+const Character = require("../../Character");
 
 
 class RandomLootBox extends LootBox {
@@ -20,6 +21,11 @@ class RandomLootBox extends LootBox {
 
     }
 
+    /**
+     * 
+     * @param {Character} character
+     * @param {number} numberOfUse
+     */
     async use(character, numberOfUse=1) {
         this.numberOfUse += numberOfUse;
 
@@ -36,9 +42,8 @@ class RandomLootBox extends LootBox {
                 } else {
                     dropRate = Globals.getDropChances(item.rarityDrop);
                 }
-                // TODO : Luck of player + drop rate
                 let luck = Math.random();
-                if (luck <= dropRate) {
+                if (luck <= dropRate * character.getLuckEffectRate()) {
                     //Drop
                     if (await ls.giveToPlayer(character, item.id, this.getLevel(), item.amount)) {
                         this.addItem(item.id, item.amount);
@@ -51,7 +56,6 @@ class RandomLootBox extends LootBox {
             }
 
             if (totalDrop == 0) {
-                // DODO: Calcul right amount of money
                 let money = Math.ceil(Math.random() * this.getLevel());
                 this.addGold(money);
             }
