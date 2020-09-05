@@ -1,6 +1,5 @@
 const Globals = require("../../Globals");
 const LootBox = require("./LootBox");
-const Character = require("../../Character");
 
 
 class RandomLootBox extends LootBox {
@@ -70,3 +69,8 @@ class RandomLootBox extends LootBox {
 }
 
 module.exports = RandomLootBox;
+
+// Dev only => auto completion
+if (false) {
+    const Character = require("../../Character");
+}
