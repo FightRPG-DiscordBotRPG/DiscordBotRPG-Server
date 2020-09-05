@@ -129,7 +129,7 @@ class WorldEntity {
      * @param {number} toRecover
      */
     healHp(toRecover) {
-        toRecover = Math.round(Math.min(toRecover, this.maxHP - this.actualHP));
+        toRecover = this.getRecoverValue(toRecover, this.maxHP, this.actualHP);
         this.actualHP += toRecover;
         return toRecover;
     }
@@ -139,7 +139,7 @@ class WorldEntity {
      * @param {number} toRecover
      */
     healMp(toRecover) {
-        toRecover = Math.round(Math.min(toRecover, this.maxMP - this.actualMP));
+        toRecover = this.getRecoverValue(toRecover, this.maxMP, this.actualMP);
         this.actualMP += toRecover;
         return toRecover;
     }
@@ -149,9 +149,17 @@ class WorldEntity {
      * @param {number} toRecover
      */
     healEnergy(toRecover) {
-        toRecover = Math.round(Math.min(toRecover, this.maxEnergy - this.actualEnergy));
+        toRecover = this.getRecoverValue(toRecover, this.maxEnergy, this.actualEnergy);
         this.actualEnergy += toRecover;
         return toRecover;
+    }
+
+    getRecoverValue(toRecover, max, current) {
+        if (toRecover > 0) {
+            return Math.round(Math.min(toRecover, max - current))
+        } else {
+            return Math.round(Math.max(toRecover, current - max))
+        }
     }
 
     /**

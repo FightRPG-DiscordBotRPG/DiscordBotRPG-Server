@@ -49,9 +49,11 @@ class SecondaryStats {
         if (SecondaryStats.possibleStatsShort[statName]) {
             statName = SecondaryStats.possibleStatsShort[statName];
         }
-        if (this[statName] >= 0) {
+
+        if (this[statName] !== null) {
             return this[statName];
         }
+
         return 0;
     }
 

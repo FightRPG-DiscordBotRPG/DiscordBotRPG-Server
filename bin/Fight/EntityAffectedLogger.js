@@ -102,6 +102,34 @@ class EntityAffectedLogger {
         this.logRecoverMp(value);
     }
 
+    /**
+     * 
+     * @param {{
+            hp: number,
+            mp: number,
+            energy: number
+        }} recoverObject
+     */
+    logRecovers(recoverObject) {
+        this.logGenericForRecover((x) => this.logRecoverHp(x), (x) => this.logDamageHp(x), recoverObject.hp);
+        this.logGenericForRecover((x) => this.logRecoverMp(x), (x) => this.logDamageMp(x), recoverObject.mp);
+        this.logGenericForRecover((x) => this.logRecoverEnergy(x), (x) => this.logDamageEnergy(x), recoverObject.energy);
+    }
+
+    /**
+     * Should Only Be Called by logRecovers function
+     * @param {Function} funcRecover
+     * @param {Function} funcDamage
+     * @param {number} value
+     */
+    logGenericForRecover(funcRecover, funcDamage, value) {
+        if (value >= 0) {
+            funcRecover(value);
+        } else {
+            funcDamage(value);
+        }
+    }
+
 }
 
 module.exports = EntityAffectedLogger;

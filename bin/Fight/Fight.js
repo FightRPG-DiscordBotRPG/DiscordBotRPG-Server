@@ -142,7 +142,8 @@ class Fight {
         // Reload Max HP/MP/Energy (due to states effects)
         attacker.updateMaxStats();
 
-        // TODO: Apply status effects on MP/HP/Energy
+        // Apply status effects on MP/HP/Energy
+        roundLog.attacker.logRecovers(attacker.regenerateAll());
 
         // Default skill based on what restriction the character have
         let attackerRestrictions = attacker.getRestrictions();

@@ -136,8 +136,6 @@ class CharacterEquipement {
     }
 
     getSecondaryStat(statName) {
-        if (this.secondaryStats.getStat(statName) > 0)
-            console.log(statName);
         return this.secondaryStats.getStat(statName);
     }
 

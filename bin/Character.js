@@ -833,8 +833,6 @@ class Character extends CharacterEntity {
             let res = await conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
             if (res != null && res[0] != null) {
                 return true;
-            } else {
-                return false;
             }
         }
         return false;
