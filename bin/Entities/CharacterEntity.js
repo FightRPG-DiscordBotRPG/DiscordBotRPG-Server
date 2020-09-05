@@ -44,7 +44,16 @@ class CharacterEntity extends WorldEntity {
      * @returns {number} Stat value
      */
     getStat(statName) {
-        return this.stats.getStat(statName) + this.equipement.getStat(statName);
+        return super.getStat(statName) + (this.equipement.getStat(statName) * this.tempStatsModifiers[statName]);
+    }
+
+    /**
+    *
+    * @param {string} secondaryStatName
+    * @returns {number} Secondary stat value
+    */
+    getSecondaryStat(secondaryStatName) {
+        return super.getSecondaryStat(secondaryStatName) + this.equipement.getSecondaryStat(secondaryStatName);
     }
 
     /**

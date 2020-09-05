@@ -234,10 +234,10 @@ class Skill {
 
 
         if (this.isPhysical()) {
-            value *= defender.getPhysicalDefense();
+            value *= defender.getPhysicalDefense(attacker.getLevel());
         }
         if (this.isMagical()) {
-            value *= defender.getMagicalDefense();
+            value *= defender.getMagicalDefense(attacker.getLevel());
         }
 
         return Math.round(Utils.getVariance(value, this.damage.variance));

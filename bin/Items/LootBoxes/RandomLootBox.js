@@ -51,8 +51,8 @@ class RandomLootBox extends LootBox {
             }
 
             if (totalDrop == 0) {
-                // TODO: Calcul right amount of money
-                let money = Math.ceil(Math.random() * this.getLevel());;
+                // DODO: Calcul right amount of money
+                let money = Math.ceil(Math.random() * this.getLevel());
                 this.addGold(money);
             }
         }

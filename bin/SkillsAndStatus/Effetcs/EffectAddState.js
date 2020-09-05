@@ -21,7 +21,7 @@ class EffectAddState extends Effect {
         if (!skillUsed.isRawDamage()) {
 
             if (skillUsed.id === 1) {
-                // TODO: Hardcoded for stun on auto attack
+                // PENDING : Hardcoded for stun on auto attack
                 chance = target.attacker.stun(target.entity.getStat("will")) ? 1 : 0;
             } else {
                 chance *= target.entity.getStateRate(this.stateValue);
@@ -30,7 +30,6 @@ class EffectAddState extends Effect {
 
             // is stun
             if (this.stateValue === 1) {
-                console.log(target.entity.consecutiveStuns);
                 if (target.entity.consecutiveStuns < Globals.maxConsecutiveStuns) {
                     target.entity.consecutiveStuns++;
                 } else {

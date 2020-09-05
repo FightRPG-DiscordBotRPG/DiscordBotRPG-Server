@@ -11,6 +11,7 @@ class Trait {
         this.valueSkillType = null;
         this.valueStat = null;
         this.valueSkill = null;
+        this.valueSecondaryStat = null;
     }
 
     async loadWithID(id) {
@@ -24,6 +25,7 @@ class Trait {
         this.valueSkillType = res[0].valueSkillType;
         this.valueStat = res[0].valueStat;
         this.valueSkill = res[0].valueSkill;
+        this.valueSecondaryStat = res[0].valueSecondaryStat;
     }
 
     static TraitTypesNames = {

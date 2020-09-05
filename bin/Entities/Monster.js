@@ -1,6 +1,7 @@
 'use strict';
 const conn = require("../../conf/mysql.js");
-const StatsMonstres = require("../Stats/StatsMonstres");
+const StatsMonsters = require("../Stats/StatsMonsters");
+const SecondaryStatsMonsters = require("../Stats/Secondary/SecondaryStatsMonsters");
 const Globals = require("../Globals.js");
 const WorldEntity = require("./WorldEntity.js");
 const Translator = require("../Translator/Translator");
@@ -20,7 +21,8 @@ class Monstre extends WorldEntity {
         this.xp = 0;
         this.money = 0;
         this.luckBonus = 0;
-        this.stats = new StatsMonstres();
+        this.stats = new StatsMonsters();
+        this.secondaryStats = new SecondaryStatsMonsters();
         this.difficulty = {};
         this.type = "";
     }
@@ -48,11 +50,12 @@ class Monstre extends WorldEntity {
             this.luckBonus = 1024;
         }
 
-        await this.stats.loadStat(this.id, multiplier, this.getLevel());
+        await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel())]);
 
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 6 * bonus);
         this.money = Math.round((Math.random() * (this.getLevel() * 2 - this.getLevel()) + this.getLevel()) * bonus);
+
     }
 
     getName(lang = "en") {

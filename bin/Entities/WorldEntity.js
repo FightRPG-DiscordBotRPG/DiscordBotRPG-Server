@@ -3,6 +3,7 @@ const Skill = require("../SkillsAndStatus/Skill");
 const State = require("../SkillsAndStatus/State");
 const Trait = require("../SkillsAndStatus/Trait");
 const Effect = require("../SkillsAndStatus/Effect");
+const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
 
 class WorldEntity {
 
@@ -18,6 +19,7 @@ class WorldEntity {
         this.maxEnergy = 0;
         this.level = 0;
         this.stats = new Stats();
+        this.secondaryStats = new SecondaryStats();
         this.consecutiveStuns = 0;
 
         // Stats modifiers key => statname, value => traits modifier
@@ -205,8 +207,11 @@ class WorldEntity {
     }
 
     getStat(statName) {
-        let statValue = this.stats.getStat(statName);
+        this.updateStatModifier(statName);
+        return this.stats.getStat(statName) * this.tempStatsModifiers[statName];
+    }
 
+    updateStatModifier(statName) {
         if (!this.tempStatsModifiers[statName]) {
             let modifier = this.getTraitValueSum(Trait.TraitTypesNames.StatsParam, Globals.statsIdsByName[statName], null);
 
@@ -219,15 +224,20 @@ class WorldEntity {
             }
 
             this.tempStatsModifiers[statName] = modifier;
-            
-        }
 
-        return statValue * this.tempStatsModifiers[statName];
+        }
     }
 
     getSecondaryStat(statName) {
-        // TODO: Implement new secondary stat system
-        return 0;
+        this.updateSecondaryStatModifier(statName);
+        return this.secondaryStats.getStat(statName) + this.tempStatsModifiers[statName];
+    }
+
+    updateSecondaryStatModifier(statName) {
+        if (!this.tempStatsModifiers[statName]) {
+            // Calcul with debuff
+            this.tempStatsModifiers[statName] = this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, Globals.secondaryStatsIdsByName[statName]);
+        }
     }
 
     resetStatsModifiers() {
@@ -321,14 +331,7 @@ class WorldEntity {
      * @param {Skill} skill
      */
     getSkillMpCost(skill) {
-        // TODO: Add passives or status bonuses here
-        //for (let state of this.states) {
-        //    state.traits.forEach(t => {
-        //        // Do something here ?
-        //    });
-        //}
-        // TODO: With new System do secondary stat with name list like stats
-        return Math.floor(this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, 8, 1) * skill.manaCost);
+        return Math.floor(1 + (this.getSecondaryStat(SecondaryStats.possibleStats.SkillManaCost) / 100)) * skill.manaCost;
     }
 
     /**
@@ -336,14 +339,7 @@ class WorldEntity {
     * @param {Skill} skill
     */
     getSkillEnergyCost(skill) {
-        // TODO: Add passives or status bonuses here
-        //for (let state of this.states) {
-        //    state.traits.forEach(t => {
-        //        // Do something here ?
-        //    });
-        //}
-        // TODO: With new System do secondary stat with name list like stats
-        return Math.floor(this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, 9, 1) * skill.energyCost);
+        return Math.floor(1 + (this.getSecondaryStat(SecondaryStats.possibleStats.SkillEnergyCost) / 100)) * skill.energyCost;
     }
 
     /**
@@ -388,7 +384,7 @@ class WorldEntity {
      * @param {number} idState
      */
     isStateAddable(idState) {
-        // TODO: Add states verifications
+        // DODO: Add states verifications
         return (this.isAlive() && !this.isStateResist(idState) &&
             !this.isAffectedByState(idState) &&
             !this.isStateRestrict(idState));
@@ -444,7 +440,7 @@ class WorldEntity {
         return restrictions;
     }
 
-    
+
 
     /**
      * 
@@ -455,10 +451,6 @@ class WorldEntity {
             return state.idStateRestriction === value;
         });
     }
-
-
-
-
 
     /**
      * 
@@ -542,42 +534,99 @@ class WorldEntity {
         return Object.values(this.skills);
     }
 
-    getPhysicalDefense() {
+    /**
+     * Give multiplier to apply based on your level vs enemy level
+     * @param {number} enemyLevel
+     */
+    getDiffLevelModifier(enemyLevel) {
+        let mult = 1;
+        let diff = this.getLevel() - enemyLevel;
+
+        // me < enemy
+        if (diff < 0) {
+            mult = mult - 0.05 * -diff;
+        } else if (diff > 0) {
+            mult = mult + 0.05 * diff;
+        }
+
+        // cap 20%
+        return mult <= 0.20 ? 0.20 : mult
+    }
+
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getPhysicalDefense(enemyLevel = 1) {
         let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .4) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
+        reduction *= this.getDiffLevelModifier(enemyLevel);
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
-    getMagicalDefense() {
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getMagicalDefense(enemyLevel = 1) {
         let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+        reduction *= this.getDiffLevelModifier(enemyLevel);
         return reduction > 0.5 ? 0.5 : 1 - reduction;
     }
 
-    getPhysicalCriticalRate() {
-        let critique = (this.getStat(Stats.possibleStats.Dexterity) / this.stats.getMaximumStat(this.getLevel()) * .40) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getPhysicalCriticalRate(enemyLevel = 1) {
+        let critique = (this.getStat(Stats.possibleStats.Dexterity) / this.stats.getMaximumStat(this.getLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.035);
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getRawCriticalRate(enemyLevel);
         return critique > .75 ? .75 : critique;
     }
 
-    getMagicalCriticalRate() {
-        let critique = (this.getStat(Stats.possibleStats.Intellect) / this.stats.getMaximumStat(this.getLevel()) * .40) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+    /**
+    *
+    * @param {number} enemyLevel
+    */
+    getMagicalCriticalRate(enemyLevel = 1) {
+        let critique = (this.getStat(Stats.possibleStats.Intellect) / this.stats.getMaximumStat(this.getLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.035);
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getRawCriticalRate(enemyLevel);
         return critique > .75 ? .75 : critique;
     }
 
-    getRawCriticalRate() {
-        return (this.getPhysicalCriticalRate() + this.getMagicalCriticalRate()) / 2;
+    /**
+    *
+    * @param {number} enemyLevel
+    */
+    getRawCriticalRate(enemyLevel = 1) {
+        return this.getSecondaryStat(SecondaryStats.possibleStats.CriticalRate) / 100 * this.getDiffLevelModifier(enemyLevel);
     }
 
-    getPhysicalCriticalEvasionRate() {
-        let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel()) * .45) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.15);
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getPhysicalCriticalEvasionRate(enemyLevel = 1) {
+        let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.015);
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.PhysicalCritcalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }
 
-    getMagicalCriticalEvasionRate() {
-        let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel()) * .45) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.15);
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getMagicalCriticalEvasionRate(enemyLevel = 1) {
+        let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * .015);
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.MagicalCriticalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }
 
-    getRawCriticalEvasionRate() {
-        return (this.getPhysicalCriticalEvasionRate() + this.getMagicalCriticalEvasionRate()) / 2;
+    /**
+     * 
+     * @param {number} enemyLevel
+     */
+    getRawCriticalEvasionRate(enemyLevel = 1) {
+        return this.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate) / 100 * this.getDiffLevelModifier(enemyLevel);
     }
 
     /**
@@ -588,17 +637,16 @@ class WorldEntity {
         return Math.max(1.0 + (this.getStat(Stats.possibleStats.Luck) - target.getStat(Stats.possibleStats.Luck)) * 0.001, 0.0);
     }
 
-    // TODO: Make this dream come true
     getRegenHp() {
-        return 0;
+        return this.getSecondaryStat(SecondaryStats.possibleStats.RegenHp);
     }
 
     getRegenMp() {
-        return 0;
+        return this.getSecondaryStat(SecondaryStats.possibleStats.RegenMp);
     }
 
     getRegenEnergy() {
-        return 0;
+        return this.getSecondaryStat(SecondaryStats.possibleStats.RegenEnergy);
     }
 
     /**
@@ -666,6 +714,12 @@ class WorldEntity {
         return this.filterByCondition(idType, (trait) => trait.valueStat === idStat);
     };
 
+    getTraitsWithIdSecondaryStats(idType, idSecondaryStat) {
+        if (idSecondaryStat < 7)
+            console.log(idSecondaryStat);
+        return this.filterByCondition(idType, (trait) => trait.valueSecondaryStat === idSecondaryStat);
+    }
+
     /**
      * 
      * @param {number} idType
@@ -701,8 +755,7 @@ class WorldEntity {
             case Trait.TraitTypesNames.QuietSpecificSkill:
                 return this.getTraitsWithIdSkill(idType, value);
             case Trait.TraitTypesNames.SecondaryStatsDebuff:
-                // TODO
-                return [];
+                return this.getTraitsWithIdSecondaryStats(idType, value);
         }
 
         return [];

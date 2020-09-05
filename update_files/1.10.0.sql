@@ -12,15 +12,15 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 ALTER SCHEMA `discord_bot_rpg`  DEFAULT COLLATE utf8mb4_unicode_ci ;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traits` (
-  `idTrait` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idTraitType` INT(10) UNSIGNED NOT NULL,
+  `idTrait` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idTraitType` INT UNSIGNED NOT NULL,
   `valueFloat` FLOAT(11) NULL DEFAULT 0,
-  `valueState` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `valueElementType` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `valueSkillType` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `valueStat` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `valueSkill` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `valueSecondaryStat` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `valueState` INT UNSIGNED NULL DEFAULT NULL,
+  `valueElementType` INT UNSIGNED NULL DEFAULT NULL,
+  `valueSkillType` INT UNSIGNED NULL DEFAULT NULL,
+  `valueStat` INT UNSIGNED NULL DEFAULT NULL,
+  `valueSkill` INT UNSIGNED NULL DEFAULT NULL,
+  `valueSecondaryStat` INT UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`idTrait`),
   UNIQUE INDEX `idTrait_UNIQUE` (`idTrait` ASC) VISIBLE,
   INDEX `fk_Traits_States1_idx` (`valueState` ASC) VISIBLE,
@@ -70,7 +70,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`traitstypes` (
-  `idTraitType` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idTraitType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `typeShorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idTraitType`),
   UNIQUE INDEX `typeShorthand_UNIQUE` (`typeShorthand` ASC) VISIBLE,
@@ -80,8 +80,8 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`states` (
-  `idState` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idStateRestriction` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `idState` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idStateRestriction` INT UNSIGNED NULL DEFAULT NULL,
   `shorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idState`),
   UNIQUE INDEX `idState_UNIQUE` (`idState` ASC) VISIBLE,
@@ -96,7 +96,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesrestrictions` (
-  `idStateRestriction` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idStateRestriction` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorhand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idStateRestriction`),
   UNIQUE INDEX `idStateRestriction_UNIQUE` (`idStateRestriction` ASC) VISIBLE)
@@ -105,11 +105,11 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesremovalconditions` (
-  `idState` INT(10) UNSIGNED NOT NULL,
+  `idState` INT UNSIGNED NOT NULL,
   `afterFight` TINYINT(4) NOT NULL DEFAULT 0,
   `afterRounds` TINYINT(4) NOT NULL DEFAULT 0,
-  `roundMin` INT(11) NOT NULL DEFAULT 0,
-  `roundMax` INT(11) NOT NULL DEFAULT 0,
+  `roundMin` INT NOT NULL DEFAULT 0,
+  `roundMax` INT NOT NULL DEFAULT 0,
   `afterDamage` TINYINT(4) NOT NULL DEFAULT 0,
   `damageProbability` FLOAT(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`idState`),
@@ -124,8 +124,8 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statestraits` (
-  `idState` INT(10) UNSIGNED NOT NULL,
-  `idTrait` INT(10) UNSIGNED NOT NULL,
+  `idState` INT UNSIGNED NOT NULL,
+  `idTrait` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idState`, `idTrait`),
   INDEX `fk_StatesTraits_Traits1_idx` (`idTrait` ASC) VISIBLE,
   CONSTRAINT `fk_StatesTraits_States1`
@@ -143,7 +143,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`elementstypes` (
-  `idElementType` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idElementType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idElementType`),
   UNIQUE INDEX `idElementType_UNIQUE` (`idElementType` ASC) VISIBLE)
@@ -152,7 +152,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skillstypes` (
-  `idSkillType` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idSkillType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idSkillType`),
   UNIQUE INDEX `idSkillType_UNIQUE` (`idSkillType` ASC) VISIBLE)
@@ -161,12 +161,12 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`skills` (
-  `idSkill` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(255) NOT NULL,
-  `idSkillType` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `energyCost` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-  `manaCost` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-  `idTargetRange` INT(11) NOT NULL,
+  `idSkillType` INT UNSIGNED NULL DEFAULT NULL,
+  `energyCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `manaCost` INT UNSIGNED NOT NULL DEFAULT 0,
+  `idTargetRange` INT NOT NULL,
   PRIMARY KEY (`idSkill`),
   UNIQUE INDEX `idSkill_UNIQUE` (`idSkill` ASC) VISIBLE,
   INDEX `fk_Skills_SkillsTypes1_idx` (`idSkillType` ASC) VISIBLE,
@@ -186,7 +186,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`targetrange` (
-  `idTargetRange` INT(11) NOT NULL,
+  `idTargetRange` INT NOT NULL,
   `shothand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idTargetRange`))
 ENGINE = InnoDB
@@ -194,12 +194,12 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`castinfo` (
-  `idSkill` INT(10) UNSIGNED NOT NULL,
-  `timeToCast` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `idSkill` INT UNSIGNED NOT NULL,
+  `timeToCast` INT UNSIGNED NOT NULL DEFAULT 0,
   `successRate` FLOAT(10) UNSIGNED NOT NULL DEFAULT 0,
   `repeat` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
-  `energyGain` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-  `idAttackType` INT(10) UNSIGNED NOT NULL,
+  `energyGain` INT UNSIGNED NOT NULL DEFAULT 0,
+  `idAttackType` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idSkill`),
   INDEX `fk_CastInfo_AttacksTypes1_idx` (`idAttackType` ASC) VISIBLE,
   CONSTRAINT `fk_CastInfo_Skills1`
@@ -217,7 +217,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`attackstypes` (
-  `idAttackType` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idAttackType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idAttackType`),
   UNIQUE INDEX `idAttackType_UNIQUE` (`idAttackType` ASC) VISIBLE)
@@ -226,8 +226,8 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`requiredsubtypeequipped` (
-  `idSousType` INT(10) UNSIGNED NOT NULL,
-  `idSkill` INT(10) UNSIGNED NOT NULL,
+  `idSousType` INT UNSIGNED NOT NULL,
+  `idSkill` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idSousType`, `idSkill`),
   INDEX `fk_RequiredSubtypeEquipped_Skills1_idx` (`idSkill` ASC) VISIBLE,
   CONSTRAINT `fk_RequiredSubtypeEquipped_ItemsSousTypes1`
@@ -245,7 +245,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`damagestypes` (
-  `idDamageType` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idDamageType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idDamageType`),
   UNIQUE INDEX `idDamageType_UNIQUE` (`idDamageType` ASC) VISIBLE)
@@ -254,9 +254,9 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`damageinfo` (
-  `idSkill` INT(10) UNSIGNED NOT NULL,
-  `idDamageType` INT(10) UNSIGNED NOT NULL,
-  `idElementType` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `idSkill` INT UNSIGNED NOT NULL,
+  `idDamageType` INT UNSIGNED NOT NULL,
+  `idElementType` INT UNSIGNED NULL DEFAULT NULL,
   `formula` VARCHAR(255) NOT NULL,
   `variance` TINYINT(4) NOT NULL DEFAULT 0,
   `criticalHit` TINYINT(4) NOT NULL DEFAULT 0,
@@ -283,7 +283,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`effectstypes` (
-  `idEffectType` INT(11) NOT NULL,
+  `idEffectType` INT NOT NULL,
   `shortname` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idEffectType`))
 ENGINE = InnoDB
@@ -291,14 +291,14 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`effectsskills` (
-  `idEffectSkill` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idSkill` INT(10) UNSIGNED NOT NULL,
-  `idEffectType` INT(11) NOT NULL,
+  `idEffectSkill` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idSkill` INT UNSIGNED NOT NULL,
+  `idEffectType` INT NOT NULL,
   `percentageValue` FLOAT(11) NULL DEFAULT NULL,
-  `fixedValue` INT(11) NULL DEFAULT NULL,
-  `stateValue` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `statValue` INT(10) UNSIGNED NULL DEFAULT NULL,
-  `roundsValue` INT(11) NULL DEFAULT NULL,
+  `fixedValue` INT NULL DEFAULT NULL,
+  `stateValue` INT UNSIGNED NULL DEFAULT NULL,
+  `statValue` INT UNSIGNED NULL DEFAULT NULL,
+  `roundsValue` INT NULL DEFAULT NULL,
   INDEX `fk_EffectsSkills_Skills1_idx` (`idSkill` ASC) VISIBLE,
   INDEX `fk_EffectsSkills_EffectsTypes1_idx` (`idEffectType` ASC) VISIBLE,
   INDEX `fk_EffectsSkills_States1_idx` (`stateValue` ASC) VISIBLE,
@@ -330,7 +330,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`secondarystats` (
-  `idSecondaryStat` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idSecondaryStat` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(60) NOT NULL,
   `desc` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`idSecondaryStat`),
@@ -339,6 +339,46 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`secondarystats` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemssecondarystats` (
+  `idItem` INT UNSIGNED NOT NULL,
+  `idSecondaryStat` INT UNSIGNED NOT NULL,
+  `value` INT NOT NULL,
+  PRIMARY KEY (`idItem`, `idSecondaryStat`),
+  INDEX `fk_ItemsSecondaryStats_SecondaryStats1_idx` (`idSecondaryStat` ASC) VISIBLE,
+  CONSTRAINT `fk_ItemsSecondaryStats_Items1`
+    FOREIGN KEY (`idItem`)
+    REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ItemsSecondaryStats_SecondaryStats1`
+    FOREIGN KEY (`idSecondaryStat`)
+    REFERENCES `discord_bot_rpg`.`secondarystats` (`idSecondaryStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`secondarystatsrepartition` (
+  `idStatsProfil` INT UNSIGNED NOT NULL,
+  `idSecondaryStat` INT UNSIGNED NOT NULL,
+  `baseValue` INT NOT NULL,
+  `multPerLevel` FLOAT NOT NULL DEFAULT 1.01,
+  PRIMARY KEY (`idStatsProfil`, `idSecondaryStat`),
+  INDEX `fk_SecondaryStatsRepartition_SecondaryStats1_idx` (`idSecondaryStat` ASC) VISIBLE,
+  CONSTRAINT `fk_SecondaryStatsRepartition_StatsProfil1`
+    FOREIGN KEY (`idStatsProfil`)
+    REFERENCES `discord_bot_rpg`.`statsprofil` (`idStatsProfil`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_SecondaryStatsRepartition_SecondaryStats1`
+    FOREIGN KEY (`idSecondaryStat`)
+    REFERENCES `discord_bot_rpg`.`secondarystats` (`idSecondaryStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+ALTER TABLE `discord_bot_rpg`.`ItemsStats` 
+CHANGE COLUMN `value` `value` INT NOT NULL ;
 
 
 INSERT INTO statesrestrictions
@@ -418,14 +458,17 @@ VALUES
 
 REPLACE INTO secondarystats
 VALUES 
-(1, "hit_rate", ""),
-(2, "evade_rate", ""),
-(3, "critical_rate", ""),
-(4, "regen_hp", ""),
-(5, "regen_mp", ""),
-(6, "regen_energy", ""),
-(8, "skill_mana_cost", ""),
-(9, "skill_energy_cost", "");
+(1, "hitRate", ""),
+(2, "evadeRate", ""),
+(3, "criticalRate", ""),
+(4, "regenHp", ""),
+(5, "regenMp", ""),
+(6, "regenEnergy", ""),
+(7, "skillManaCost", ""),
+(8, "skillEnergyCost", ""),
+(9, "physicalCriticalEvadeRate", ""),
+(10, "magicalCriticalEvadeRate", "");
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

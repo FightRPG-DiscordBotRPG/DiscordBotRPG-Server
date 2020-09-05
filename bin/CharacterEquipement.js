@@ -5,6 +5,7 @@ const Item = require("./Items/Item.js");
 const Mount = require("./Items/Mounts/Mount");
 const Consumable = require("./Items/Consumable");
 const StatsEquipment = require("./Stats/StatsEquipment");
+const SecondaryStatsEquipment = require("./Stats/Secondary/SecondaryStatsEquipment");
 const Translator = require("./Translator/Translator");
 
 class CharacterEquipement {
@@ -13,6 +14,7 @@ class CharacterEquipement {
         this.id = id;
         this.objects = {};
         this.stats = new StatsEquipment();
+        this.secondaryStats = new SecondaryStatsEquipment();
     }
 
     // Load equipement from DB
@@ -20,7 +22,8 @@ class CharacterEquipement {
     async loadEquipements(id) {
         this.id = id;
         this.stats.id = id;
-        await this.stats.update();
+        this.secondaryStats.id = id;
+        await this.updateStats();
     }
 
     async getPower() {
@@ -30,6 +33,10 @@ class CharacterEquipement {
             avgPower += await items[i].getPower();
         }
         return Math.floor(avgPower / 4);
+    }
+
+    async updateStats() {
+        await Promise.all([this.stats.update(), this.secondaryStats.update()]);
     }
 
     // -1 Pas Swap
@@ -42,12 +49,12 @@ class CharacterEquipement {
             if (equipedItem.id !== idItem) {
                 let toReturn = equipedItem.id;
                 await conn.query("UPDATE charactersequipements SET idItem = ? WHERE idCharacter = ? AND idType = ?;", [idItem, this.id, item.getEquipTypeID()]);
-                await this.stats.update();
+                await this.updateStats();
                 return toReturn;
             }
         } else {
             await conn.query("INSERT INTO charactersequipements VALUES(?, ?, ?);", [this.id, idItem, item.getEquipTypeID()]);
-            await this.stats.update()
+            await this.updateStats();
             return -1;
         }
 
@@ -58,7 +65,7 @@ class CharacterEquipement {
             let idItem = await this.getItem(type);
             idItem = idItem.id;
             await conn.query("DELETE FROM charactersequipements WHERE idCharacter = ? AND idType = ?;", [this.id, type]);
-            await this.stats.update();
+            await this.updateStats();
             return idItem;
         }
         return -1;
@@ -126,6 +133,12 @@ class CharacterEquipement {
 
     getStat(statName) {
         return this.stats.getStat(statName);
+    }
+
+    getSecondaryStat(statName) {
+        if (this.secondaryStats.getStat(statName) > 0)
+            console.log(statName);
+        return this.secondaryStats.getStat(statName);
     }
 
 }

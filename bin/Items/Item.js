@@ -1,6 +1,7 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
 const StatsItems = require("../Stats/StatsItems.js");
+const SecondaryStatsItems = require("../Stats/Secondary/SecondaryStatsItems");
 const Globals = require("../Globals.js");
 const Translator = require("../Translator/Translator.js");
 
@@ -22,6 +23,7 @@ class Item {
         this.equipable = true;
         this.stackable = false;
         this.stats = new StatsItems(id);
+        this.secondaryStats = new SecondaryStatsItems(id);
         this.power = 0;
         this.number = 1;
         this.isFavorite = false;
@@ -52,18 +54,17 @@ class Item {
         this.isFavorite = res["favorite"];
 
         this.power = res["power"];
-
-        await this.stats.loadStats();
+        await Promise.all([this.stats.loadStats(), this.secondaryStats.loadStats()]);
     }
 
     async deleteItem() {
-        await this.stats.deleteStats();
+        await Promise.all([this.stats.deleteStats(), this.secondaryStats.deleteStats()]);
         await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [this.id])
         await conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
     }
 
     static async deleteItem(idItem) {
-        await StatsItems.deleteStats(idItem);
+        await Promise.all([StatsItems.deleteStats(idItem), SecondaryStatsItems.deleteStats(idItem)]);
         await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [idItem]);
         await conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
     }
@@ -141,7 +142,7 @@ class Item {
     }
 
     async calculPower() {
-        return Item.calculPower(this.stats);
+        return Item.calculPower(this.stats, this.secondaryStats);
     }
 
     async getPower() {
@@ -217,6 +218,7 @@ class Item {
         let toApiObject = await this.toApiLight();
         toApiObject.desc = this.getDesc(lang);
         toApiObject.stats = this.stats.toApi();
+        toApiObject.secondaryStats = this.secondaryStats.toApi();
 
         return toApiObject;
     }
@@ -244,7 +246,11 @@ class Item {
             /**
              * @type {StatsItems}
              */
-            stats: {}
+            stats: {},
+            /**
+            * @type {SecondaryStatsItems}
+            */
+            secondaryStats: {},
         };
         return toApiObject;
     }

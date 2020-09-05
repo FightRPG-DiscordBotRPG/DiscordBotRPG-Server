@@ -121,31 +121,6 @@ class Fight {
         await this.update();
     }
 
-    // TODO: Add or Update to use skills and states
-    log(attacker, defender, critical, stun, damage, indexEntities) {
-        this.summary.rounds.push({
-            roundType: attacker._type,
-            roundEntitiesIndex: indexEntities,
-            attackerName: attacker.getName(this.lang),
-            defenderName: defender.getName(this.lang),
-            attackerId: attacker.id,
-            defenderId: defender.id,
-            critical: critical,
-            stun: stun,
-            damage: damage,
-            attackerMaxHP: attacker.maxHP,
-            attackerHP: attacker.actualHP,
-            defenderMaxHP: defender.maxHP,
-            defenderHP: defender.actualHP,
-            attackerLevel: attacker.getLevel(),
-            defenderLevel: defender.getLevel()
-        });
-        if (attacker._type == "Monster" || defender._type == "Monster") {
-            this.summary.rounds[this.summary.rounds.length - 1].monsterType = indexEntities == 1 ? attacker.type : defender.type;
-            this.summary.rounds[this.summary.rounds.length - 1].monsterDifficultyName = indexEntities == 1 ? attacker.difficulty.name : defender.difficulty.name;
-        }
-    }
-
 
 
     async update() {
@@ -220,8 +195,6 @@ class Fight {
                 if (skillToUse.isAffectingMp()) {
                     this.applySKillMpDamage(skillToUse, attacker, target);
                 }
-
-                // TODO: Energy Part *??
 
                 // Effects apply
                 for (let effect of skillToUse.effects) {
@@ -481,14 +454,14 @@ class Fight {
 
         // Based on skill type
         if (skill.isPhysical()) {
-            criticalChanceAttacker = attacker.getPhysicalCriticalRate();
-            criticalChanceEvadeDefender = defender.getPhysicalCriticalEvasionRate();
+            criticalChanceAttacker = attacker.getPhysicalCriticalRate(defender.getLevel());
+            criticalChanceEvadeDefender = defender.getPhysicalCriticalEvasionRate(attacker.getLevel());
         } else if (skill.isMagical()) {
-            criticalChanceAttacker = attacker.getMagicalCriticalRate();
-            criticalChanceEvadeDefender = defender.getMagicalCriticalEvasionRate();
+            criticalChanceAttacker = attacker.getMagicalCriticalRate(defender.getLevel());
+            criticalChanceEvadeDefender = defender.getMagicalCriticalEvasionRate(attacker.getLevel());
         } else {
-            criticalChanceAttacker = attacker.getRawCriticalRate();
-            criticalChanceEvadeDefender = defender.getRawCriticalEvasionRate();
+            criticalChanceAttacker = attacker.getRawCriticalRate(defender.getLevel());
+            criticalChanceEvadeDefender = defender.getRawCriticalEvasionRate(attacker.getLevel());
         }
 
         // No evade if it's recover

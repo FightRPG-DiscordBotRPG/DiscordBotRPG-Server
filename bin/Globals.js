@@ -28,7 +28,9 @@ var Globals = {
     "maxLevel": null,
     "maxStatsId": null,
     "statsIdsByName": null,
+    "secondaryStatsIdsByName": null,
     "statsNameById": null,
+    "secondaryStatsNameById": null,
     "monstersIds": null,
     "itemsrarities": null,
     "equipableCorresponds": null,
@@ -149,6 +151,8 @@ var Globals = {
     loadGlobals: async () => {
         let statsIds = {};
         let statsNames = {};
+        let secondaryStatsIds = {};
+        let secondaryStatsNames = {};
         let equipsPossible = [];
         let areasTypes = [];
         let monstersTypes = {};
@@ -165,6 +169,14 @@ var Globals = {
         }
         Globals.statsIdsByName = statsIds;
         Globals.statsNameById = statsNames;
+
+        res = await conn.query("SELECT * FROM secondarystats");
+        for (let i = 0; i < res.length; ++i) {
+            secondaryStatsIds[res[i].nom] = res[i].idSecondaryStat;
+            secondaryStatsNames[res[i].idStat] = res[i].name;
+        }
+        Globals.secondaryStatsIdsByName = secondaryStatsIds;
+        Globals.secondaryStatsNameById = secondaryStatsNames;
 
         res = await conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
         for (let i = 0; i < res.length; i++) {
