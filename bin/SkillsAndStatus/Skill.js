@@ -3,7 +3,8 @@ const Effect = require("./Effect");
 const WorldEntity = require("../Entities/WorldEntity");
 const Stats = require("../Stats/Stats");
 const Utils = require("../Utilities/Utils");
-
+const Trait = require("./Trait");
+const Globals = require("../Globals");
 
 class Skill {
 
@@ -230,8 +231,8 @@ class Skill {
     evaluateSkill(attacker, defender) {
         let baseValue = this.evalBaseDamageFormula(attacker, defender);
         let value = baseValue * this.repeat;
-        value *= this.getElementalRate(attacker, defender);
-
+        value *= this.getElementalRate(attacker);
+        value *= defender.getElementalResist(Globals.elementsTypesNameById[this.damage.idElementType] + "Resist");
 
         if (this.isPhysical()) {
             value *= defender.getPhysicalDefense(attacker.getLevel());
@@ -263,9 +264,12 @@ class Skill {
     }
 
     // TODO: Integrate Elemental Type
-    // Limit the elemental reduction ?
-    getElementalRate(attacker, defender) {
-        return 1;
+    /**
+     * 
+     * @param {WorldEntity} attacker
+     */
+    getElementalRate(attacker) {
+        return attacker.getTraitsValueMult(Trait.TraitTypesNames.ElementRate, this.damage.idElementType);
     }
 
     getRepeatNumber() {

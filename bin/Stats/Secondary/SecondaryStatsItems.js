@@ -14,16 +14,27 @@ class SecondaryStatsItems extends SecondaryStats {
         // load from database
         let res = await conn.query("SELECT DISTINCT value, name FROM itemssecondarystats INNER JOIN secondarystats ON itemssecondarystats.idSecondaryStat = secondarystats.idSecondaryStat WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].nom] = res[stat].value;
+            this[res[stat].name] = res[stat].value;
+        }
+
+        res = await conn.query("SELECT DISTINCT shorthand, value FROM itemssecondarystatselementalresists INNER JOIN elementstypes ON itemssecondarystatselementalresists.idElementType = elementstypes.idElementType WHERE idItem = ?;", [this.id]);
+        for (let stat in res) {
+            this[res[stat].shorthand] = res[stat].value;
         }
     }
 
     async deleteStats() {
-        await conn.query("DELETE FROM itemssecondarystats WHERE idItem = ?;", [this.id]);
+        await Promise.all([
+            conn.query("DELETE FROM itemssecondarystats WHERE idItem = ?;", [this.id]),
+            conn.query("DELETE FROM itemssecondarystatselementalresists WHERE idItem = ?;", [this.id]
+            )]);
     }
 
     static async deleteStats(idItem) {
-        await conn.query("DELETE FROM itemssecondarystats WHERE idItem = ?", [idItem]);
+        await Promise.all([
+            conn.query("DELETE FROM itemssecondarystats WHERE idItem = ?", [idItem]),
+            conn.query("DELETE FROM itemssecondarystatselementalresists WHERE idItem = ?", [idItem])
+        ]);
     }
 
     /**
@@ -33,7 +44,10 @@ class SecondaryStatsItems extends SecondaryStats {
     static async deleteStatsMultiple(idItems) {
         if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
-            await conn.query("DELETE FROM itemssecondarystats WHERE idItem IN " + itemsToDelete + ";");
+            await Promise.all([
+                conn.query("DELETE FROM itemssecondarystats WHERE idItem IN " + itemsToDelete + ";"),
+                conn.query("DELETE FROM itemssecondarystatselementalresists WHERE idItem IN " + itemsToDelete + ";")
+            ]);
         }
     }
 

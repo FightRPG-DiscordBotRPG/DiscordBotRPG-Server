@@ -362,7 +362,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`secondarystatsrepartition` (
   `idStatsProfil` INT UNSIGNED NOT NULL,
   `idSecondaryStat` INT UNSIGNED NOT NULL,
   `baseValue` INT NOT NULL,
-  `multPerLevel` FLOAT NOT NULL DEFAULT 1.01,
+  `multPerLevel` FLOAT NOT NULL DEFAULT 0.01,
   PRIMARY KEY (`idStatsProfil`, `idSecondaryStat`),
   INDEX `fk_SecondaryStatsRepartition_SecondaryStats1_idx` (`idSecondaryStat` ASC) VISIBLE,
   CONSTRAINT `fk_SecondaryStatsRepartition_StatsProfil1`
@@ -379,6 +379,47 @@ ENGINE = InnoDB;
 
 ALTER TABLE `discord_bot_rpg`.`ItemsStats` 
 CHANGE COLUMN `value` `value` INT NOT NULL ;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemssecondarystatselementalresists` (
+  `idItem` INT UNSIGNED NOT NULL,
+  `idElementType` INT UNSIGNED NOT NULL,
+  `value` FLOAT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idItem`, `idElementType`),
+  INDEX `fk_ItemsSecondaryStatsElementalResists_ElementsTypes1_idx` (`idElementType` ASC) VISIBLE,
+  CONSTRAINT `fk_ItemsSecondaryStatsElementalResists_Items1`
+    FOREIGN KEY (`idItem`)
+    REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ItemsSecondaryStatsElementalResists_ElementsTypes1`
+    FOREIGN KEY (`idElementType`)
+    REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`secondarystatselementalresistsrepartition` (
+  `idStatsProfil` INT UNSIGNED NOT NULL,
+  `idElementType` INT UNSIGNED NOT NULL,
+  `baseValue` INT NOT NULL DEFAULT 0,
+  `multPerLevel` FLOAT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idStatsProfil`, `idElementType`),
+  INDEX `fk_SecondaryStatsElementalResistsRepartition_StatsProfil1_idx` (`idStatsProfil` ASC) VISIBLE,
+  CONSTRAINT `fk_SecondaryStatsElementalResistsRepartition_ElementsTypes1`
+    FOREIGN KEY (`idElementType`)
+    REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_SecondaryStatsElementalResistsRepartition_StatsProfil1`
+    FOREIGN KEY (`idStatsProfil`)
+    REFERENCES `discord_bot_rpg`.`statsprofil` (`idStatsProfil`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
 
 
 INSERT INTO statesrestrictions
@@ -398,8 +439,7 @@ VALUES
 (8,	"quiet_skill"),
 (9, "secondary_stats_debuff"),
 (10, "quiet_specific_skill"),
-(11, "secondary_stats"),
-;
+(11, "secondary_stats");
 
 INSERT INTO skillstypes
 VALUES

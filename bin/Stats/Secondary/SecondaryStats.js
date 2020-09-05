@@ -1,5 +1,6 @@
 'use strict';
 const conn = require("../../../conf/mysql");
+const { elementsTypesNameById } = require("../../Globals");
 
 class SecondaryStats {
 
@@ -16,6 +17,16 @@ class SecondaryStats {
         MagicalCriticalEvadeRate: "magicalCriticalEvadeRate",
     }
 
+    static possibleElementalResists = {
+        Physical: "physicalResist",
+        Fire: "fireResist",
+        Water: "waterResist",
+        Earth: "earthResist",
+        Air: "airResist",
+        Dark: "darkResist",
+        Light: "lightResist"
+    }
+
     static possibleStatsShort = {
         hr: SecondaryStats.possibleStats.HitRate,
         evr: SecondaryStats.possibleStats.EvadeRate,
@@ -27,6 +38,16 @@ class SecondaryStats {
         senrjc: SecondaryStats.possibleStats.SkillEnergyCost,
         physcevr: SecondaryStats.possibleStats.PhysicalCritcalEvadeRate,
         magcevr: SecondaryStats.possibleStats.MagicalCriticalEvadeRate,
+    }
+
+    static possibleElementalResistsShort = {
+        pr: SecondaryStats.possibleElementalResists.Physical,
+        fr: SecondaryStats.possibleElementalResists.Fire,
+        wr: SecondaryStats.possibleElementalResists.Water,
+        er: SecondaryStats.possibleElementalResists.Earth,
+        ar: SecondaryStats.possibleElementalResists.Air,
+        dr: SecondaryStats.possibleElementalResists.Dark,
+        lr: SecondaryStats.possibleElementalResists.Light
     }
 
     // Generic Stats Class
@@ -43,9 +64,21 @@ class SecondaryStats {
         this.skillEnergyCost = 0;
         this.physicalCriticalEvadeRate = 0;
         this.magicalCriticalEvadeRate = 0;
+
+        this.physicalResist = 0;
+        this.fireResist = 0;
+        this.waterResist = 0;
+        this.earthResist = 0;
+        this.airResist = 0;
+        this.darkResist = 0;
+        this.lightResist = 0;
     }
 
+    /**
+     * @param {string} statName
+     */
     getStat(statName) {
+
         if (SecondaryStats.possibleStatsShort[statName]) {
             statName = SecondaryStats.possibleStatsShort[statName];
         }
@@ -57,6 +90,25 @@ class SecondaryStats {
         return 0;
     }
 
+    getElementalResist(elementalResist) {
+        if (SecondaryStats.possibleElementalResistsShort[elementalResist]) {
+            elementalResist = SecondaryStats.possibleElementalResistsShort[elementalResist];
+        }
+
+        if (this[elementalResist] !== null) {
+            if (this[elementalResist] >= 0) {
+                this[elementalResist] = -this[elementalResist];
+            }
+            if (this[elementalResist] >= 0) {
+                return 1 + this[elementalResist] / 100;
+            } else {
+                return 100/(-this[elementalResist]+100);
+            }
+        }
+
+        return 1;
+    }
+
     toApi() {
         return this;
     }
@@ -64,10 +116,17 @@ class SecondaryStats {
 }
 
 async function loadPossibleStats() {
+    // Used to reset stats on runtime
+
     let res = await conn.query("SELECT * FROM secondarystats;");
     SecondaryStats.prototype.possibleStats = [];
     for (let stat of res) {
         SecondaryStats.prototype.possibleStats.push(stat.name);
+    }
+
+    res = await conn.query("SELECT * FROM elementstypes;");
+    for (let stat of res) {
+        SecondaryStats.prototype.possibleStats.push(`${stat.shorthand}Resist`);
     }
 }
 

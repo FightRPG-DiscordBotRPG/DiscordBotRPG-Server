@@ -9,7 +9,7 @@ class EffectRecoverHp extends Effect {
      * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
 	 */
     async applyToOne(target) {
-        // TODO: Add recovery resistance
+        // IDEA: Add recovery resistance
         let value = Math.floor(target.entity.maxHP * this.percentageValue + this.fixedValue);
 
         if (value !== 0) {

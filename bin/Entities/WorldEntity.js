@@ -241,6 +241,11 @@ class WorldEntity {
         return this.secondaryStats.getStat(statName) + this.tempStatsModifiers[statName];
     }
 
+    getElementalResist(elementalName) {
+        this.updateSecondaryStatModifier(elementalName);
+        return this.secondaryStats.getElementalResist(elementalName) + this.tempStatsModifiers[elementalName];
+    }
+
     updateSecondaryStatModifier(statName) {
         if (!this.tempStatsModifiers[statName]) {
             // Calcul with debuff
@@ -723,8 +728,6 @@ class WorldEntity {
     };
 
     getTraitsWithIdSecondaryStats(idType, idSecondaryStat) {
-        if (idSecondaryStat < 7)
-            console.log(idSecondaryStat);
         return this.filterByCondition(idType, (trait) => trait.valueSecondaryStat === idSecondaryStat);
     }
 

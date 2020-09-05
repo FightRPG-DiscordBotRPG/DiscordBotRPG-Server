@@ -31,6 +31,8 @@ var Globals = {
     "secondaryStatsIdsByName": null,
     "statsNameById": null,
     "secondaryStatsNameById": null,
+    "elementsTypesByName": null,
+    "elementsTypesNameById": null,
     "monstersIds": null,
     "itemsrarities": null,
     "equipableCorresponds": null,
@@ -153,6 +155,8 @@ var Globals = {
         let statsNames = {};
         let secondaryStatsIds = {};
         let secondaryStatsNames = {};
+        let elementsTypesIds = {};
+        let elementsTypesNames = {};
         let equipsPossible = [];
         let areasTypes = [];
         let monstersTypes = {};
@@ -172,11 +176,22 @@ var Globals = {
 
         res = await conn.query("SELECT * FROM secondarystats");
         for (let i = 0; i < res.length; ++i) {
-            secondaryStatsIds[res[i].nom] = res[i].idSecondaryStat;
+            secondaryStatsIds[res[i].name] = res[i].idSecondaryStat;
             secondaryStatsNames[res[i].idStat] = res[i].name;
         }
         Globals.secondaryStatsIdsByName = secondaryStatsIds;
         Globals.secondaryStatsNameById = secondaryStatsNames;
+
+
+        res = await conn.query("SELECT * FROM elementstypes");
+        for (let i = 0; i < res.length; ++i) {
+            elementsTypesIds[res[i].shorthand] = res[i].idElementType;
+            elementsTypesNames[res[i].idElementType] = res[i].shorthand;
+        }
+
+        Globals.elementsTypesByName = elementsTypesIds;
+        Globals.elementsTypesNameById = elementsTypesNames;
+
 
         res = await conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
         for (let i = 0; i < res.length; i++) {

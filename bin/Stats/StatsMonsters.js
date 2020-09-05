@@ -2,7 +2,7 @@
 const conn = require("../../conf/mysql.js");
 const Stats = require("./Stats.js");
 
-class StatsMonsters extends Stats {
+class StatsMonstres extends Stats {
 
     // Generic Stats Class
     // Used by All Player/Enemies
@@ -40,4 +40,4 @@ class StatsMonsters extends Stats {
 
 }
 
-module.exports = StatsMonsters;
+module.exports = StatsMonstres;

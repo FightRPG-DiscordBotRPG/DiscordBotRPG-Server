@@ -42,7 +42,7 @@ class State {
         for (let item of res) {
             let t = new Trait();
             this.traits.push(t);
-            promises.push(t.loadWithID(item.idState));
+            promises.push(t.loadWithID(item.idTrait));
         }
 
         await Promise.all(promises);

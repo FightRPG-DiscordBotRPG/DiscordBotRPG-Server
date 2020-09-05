@@ -1,7 +1,6 @@
 const Effect = require("../Effect");
 const WorldEntity = require("../../Entities/WorldEntity");
 const EntityAffectedLogger = require("../../Fight/EntityAffectedLogger");
-const Skill = require("../Skill");
 
 class EffectRecoverEnergy extends Effect {
 
@@ -9,7 +8,7 @@ class EffectRecoverEnergy extends Effect {
      * @param {{entity: WorldEntity, logger: EntityAffectedLogger, attacker: WorldEntity}} target
 	 */
     async applyToOne(target) {
-        // TODO: Add recovery resistance
+        // IDEA: Add recovery resistance
         let value = Math.floor(this.fixedValue);
 
         if (value !== 0) {
