@@ -259,7 +259,7 @@ class WorldEntity {
 
     prepareCast() {
 
-        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getStat(Stats.possibleStats.Dexterity));
+        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getStat(skill.isPhysical() || skill.isRawDamage() ? Stats.possibleStats.Dexterity : Stats.possibleStats.Wisdom));
 
         // To Balance ? Every skill vs only one per one
         //if (this.skillToTestIndex > -1) {
@@ -571,9 +571,9 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getPhysicalDefense(enemyLevel = 1) {
-        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .4) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
+        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .3) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
         reduction *= this.getDiffLevelModifier(enemyLevel);
-        return reduction > 0.5 ? 0.5 : 1 - reduction;
+        return reduction > 0.4 ? 0.4 : 1 - reduction;
     }
 
     /**
@@ -583,7 +583,7 @@ class WorldEntity {
     getMagicalDefense(enemyLevel = 1) {
         let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
         reduction *= this.getDiffLevelModifier(enemyLevel);
-        return reduction > 0.5 ? 0.5 : 1 - reduction;
+        return reduction < 0.4 ? 0.4 : 1 - reduction;
     }
 
     /**
