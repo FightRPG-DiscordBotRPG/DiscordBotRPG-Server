@@ -263,7 +263,6 @@ class Skill {
         }
     }
 
-    // TODO: Integrate Elemental Type
     /**
      * 
      * @param {WorldEntity} attacker
