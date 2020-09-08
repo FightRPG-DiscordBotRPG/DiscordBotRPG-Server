@@ -68,8 +68,8 @@ class FightModule extends GModule {
                         let userToAttack = new User(mId);
                         await userToAttack.lightLoad();
 
-                        let userWhoAttack = new User(res.locals.id);
-                        await userWhoAttack.lightLoad();
+                        // FIX Bug Arena Spam
+                        let userWhoAttack = Globals.connectedUsers[res.locals.id];
 
                         response = await Globals.fightManager.fightPvP([userWhoAttack.character], [userToAttack.character], res.locals.id, res.locals.lang);
 
