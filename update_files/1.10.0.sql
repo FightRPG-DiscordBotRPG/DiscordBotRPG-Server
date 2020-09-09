@@ -426,6 +426,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationskills` (
   `lang` VARCHAR(5) NOT NULL,
   `nameSkill` VARCHAR(255) NOT NULL,
   `descSkill` VARCHAR(255) NULL DEFAULT NULL,
+  `messageSkill` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idSkill`, `lang`),
   INDEX `fk_LocalizationSkills_Languages1_idx` (`lang` ASC) VISIBLE,
   CONSTRAINT `fk_LocalizationSkills_Skills1`
