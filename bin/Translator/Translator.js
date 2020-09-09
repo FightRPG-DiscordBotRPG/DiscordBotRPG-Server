@@ -224,6 +224,37 @@ class Translator {
         }
     }
 
+    static async loadSkillBases() {
+        let res = await conn.query("SELECT * FROM localizationskills");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["skillNames"] = {};
+            this.translations[language.lang]["skillDesc"] = {};
+            this.translations[language.lang]["skillMessage"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["skillNames"][trad.idSkill] = trad.nameSkill;
+            this.translations[trad.lang]["skillDesc"][trad.idSkill] = trad.nameSkill;
+            this.translations[trad.lang]["skillMessage"][trad.idSkill] = trad.messageSkill.trimLeft();
+        }
+    }
+
+    static async loadStatesBases() {
+        let res = await conn.query("SELECT * FROM localizationstates");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["statesNames"] = {};
+            this.translations[language.lang]["stateDesc"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["statesNames"][trad.idState] = trad.nameState;
+            this.translations[trad.lang]["stateDesc"][trad.idState] = trad.descState;
+        }
+    }
+
+    // IDEA: Use Promise.all ?
     static async load() {
         this.translations = {};
         this.formaters = {};
@@ -235,6 +266,8 @@ class Translator {
         await this.loadRegionsBases();
         await this.loadMonstersBases();
         await this.loadBosses();
+        await this.loadSkillBases();
+        await this.loadStatesBases();
     }
 }
 

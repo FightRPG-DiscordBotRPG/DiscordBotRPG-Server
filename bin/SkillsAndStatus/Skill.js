@@ -5,6 +5,7 @@ const Stats = require("../Stats/Stats");
 const Utils = require("../Utilities/Utils");
 const Trait = require("./Trait");
 const Globals = require("../Globals");
+const Translator = require("../Translator/Translator");
 
 class Skill {
 
@@ -276,6 +277,23 @@ class Skill {
             //repeats += this.subject().attackTimesAdd();
         }
         return Math.floor(this.repeat);
+    }
+
+    getDesc(lang="en") {
+        return Translator.getString(lang, "skillDesc", this.id);
+    }
+
+    getName(lang = "en") {
+        return Translator.getString(lang, "skillName", this.id);
+    }
+
+    /**
+     * 
+     * @param {string} casterName
+     * @param {string} lang
+     */
+    getMessage(casterName, lang = "en") {
+        return `${casterName} ${Translator.getString(lang, "skillMessage", this.id, [this.getName()])}`;
     }
 }
 

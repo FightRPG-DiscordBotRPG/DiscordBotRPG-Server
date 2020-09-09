@@ -1,6 +1,7 @@
 const Trait = require("./Trait");
 const Utils = require("../Utilities/Utils");
 const conn = require("../../conf/mysql");
+const Translator = require("../Translator/Translator");
 
 
 class State {
@@ -64,6 +65,10 @@ class State {
 
     isRemovedByRestriction() {
         return this.idStateRestriction != null;
+    }
+
+    getName(lang="en") {
+        return Translator.getString(lang, "statesNames", this.id);
     }
 
 

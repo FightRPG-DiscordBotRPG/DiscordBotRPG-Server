@@ -45,10 +45,11 @@ class WorldEntity {
         //let skillsToTest = [];
         for (let item of skillsToTest) {
             let s = new Skill();
-            this.skills[s.id] = s;
+            this.skills[item] = s;
             promises.push(s.loadWithID(item));
         }
         await Promise.all(promises);
+        console.log(this.skills[1].getMessage(this.getName(), "en"));
         this.skillToTestIndex = 0;
     }
 
