@@ -421,6 +421,49 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationskills` (
+  `idSkill` INT UNSIGNED NOT NULL,
+  `lang` VARCHAR(5) NOT NULL,
+  `nameSkill` VARCHAR(255) NOT NULL,
+  `descSkill` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idSkill`, `lang`),
+  INDEX `fk_LocalizationSkills_Languages1_idx` (`lang` ASC) VISIBLE,
+  CONSTRAINT `fk_LocalizationSkills_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_LocalizationSkills_Languages1`
+    FOREIGN KEY (`lang`)
+    REFERENCES `discord_bot_rpg`.`languages` (`lang`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationstates` (
+  `idState` INT UNSIGNED NOT NULL,
+  `lang` VARCHAR(5) NOT NULL,
+  `nameState` VARCHAR(255) NOT NULL,
+  `descState` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idState`, `lang`),
+  INDEX `fk_LocalizationStates_Languages1_idx` (`lang` ASC) VISIBLE,
+  CONSTRAINT `fk_LocalizationStates_States1`
+    FOREIGN KEY (`idState`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_LocalizationStates_Languages1`
+    FOREIGN KEY (`lang`)
+    REFERENCES `discord_bot_rpg`.`languages` (`lang`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
 
 INSERT INTO statesrestrictions
 VALUES
