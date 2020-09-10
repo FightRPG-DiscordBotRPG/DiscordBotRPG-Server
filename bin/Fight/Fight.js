@@ -2,8 +2,8 @@ const WorldEntity = require("../Entities/WorldEntity");
 const Globals = require("../Globals");
 const Utils = require("../Utilities/Utils");
 const Skill = require("../SkillsAndStatus/Skill");
-const RoundLogger = require("./RoundLogger");
-const EntityAffectedLogger = require("./EntityAffectedLogger");
+const RoundLogger = require("./Logger/RoundLogger");
+const EntityAffectedLogger = require("./Logger/EntityAffectedLogger");
 
 class Fight {
     /**
@@ -174,8 +174,8 @@ class Fight {
             }
 
             let skillCosts = attacker.removeSkillCost(skillToUse);
-            roundLog.attacker.logDamageEnergy(skillCosts.energy);
-            roundLog.attacker.logDamageMp(skillCosts.mp);
+            roundLog.attacker.logSkillDamageEnergy(skillCosts.energy);
+            roundLog.attacker.logSkillDamageMp(skillCosts.mp);
 
 
             for (let target of targets) {
@@ -339,18 +339,18 @@ class Fight {
             let recoverDone = this.applyRecoveryHp(target, evaluation.value);
 
             // Log recovery
-            defenderLogger.logRecoverHp(recoverDone);
+            defenderLogger.logSkillRecoverHp(recoverDone);
         } else {
             let damageDone = this.applyDamage(target, evaluation.value);
 
             // Log damage
-            defenderLogger.logDamageHp(damageDone);
+            defenderLogger.logSkillDamageHp(damageDone);
 
             if (skill.isDrain()) {
                 caster.actualHP += damageDone;
 
                 // Log Drain
-                this.getCurrentRoundCurrentAttackerLogger().logRecoverHp(damageDone);
+                this.getCurrentRoundCurrentAttackerLogger().logDrainHp(damageDone);
             }
         }
 
@@ -372,18 +372,18 @@ class Fight {
             let recoverDone = this.applyRecoveryMp(target, evaluation.value);
 
             // Log recovery
-            defenderLogger.logRecoverMp(recoverDone);
+            defenderLogger.logSkillRecoverMp(recoverDone);
         } else {
             let damageDone = this.applyMpDamage(target, evaluation.value);
 
             // Log damage
-            defenderLogger.logDamageMp(damageDone);
+            defenderLogger.logSkillDamageMp(damageDone);
 
             if (skill.isDrain()) {
                 caster.actualMP += damageDone;
 
                 // Log Drain
-                this.getCurrentRoundCurrentAttackerLogger().logRecoverMp(damageDone);
+                this.getCurrentRoundCurrentAttackerLogger().logDrainMp(damageDone);
             }
         }
 

@@ -1,6 +1,6 @@
 const Effect = require("../Effect");
 const WorldEntity = require("../../Entities/WorldEntity");
-const EntityAffectedLogger = require("../../Fight/EntityAffectedLogger");
+const EntityAffectedLogger = require("../../Fight/Logger/EntityAffectedLogger");
 const Skill = require("../Skill");
 
 class EffectRecoverMp extends Effect {
@@ -15,7 +15,7 @@ class EffectRecoverMp extends Effect {
         if (value !== 0) {
             //value = Math.floor(value);
             target.entity.healMp(value);
-            target.logger.logRecoverMp(value);
+            target.logger.logSkillRecoverMp(value);
         }
     }
 

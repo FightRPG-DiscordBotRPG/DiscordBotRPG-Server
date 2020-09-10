@@ -1,6 +1,6 @@
 const conn = require("../../conf/mysql");
 const WorldEntity = require("../Entities/WorldEntity");
-const EntityAffectedLogger = require("../Fight/EntityAffectedLogger");
+const EntityAffectedLogger = require("../Fight/Logger/EntityAffectedLogger");
 const Skill = require("./Skill");
 
 
