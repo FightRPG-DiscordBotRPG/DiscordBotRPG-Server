@@ -260,6 +260,7 @@ class AdminModule extends GModule {
             //let st = new State();
             //await st.loadWithID(4);
             //console.log(await Effect.newEffect(1));
+            //await Globals.connectedUsers[res.locals.id].tell("Test");
             await next();
             return res.json({ succes: "done" });
         });

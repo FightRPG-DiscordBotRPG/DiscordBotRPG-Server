@@ -270,22 +270,22 @@ class User {
     }
 
     async tell(str) {
-        try {
-            await axios.post(`http://${conf.discordBotAddresses[0]}/usr`, {
-                id: this.id,
-                message: str,
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        User.tell(this.id, str);
     }
 
     static async tell(id, str) {
         try {
-            await axios.post(`http://${conf.discordBotAddresses[0]}/usr`, {
-                id: id,
-                message: str,
-            });
+            for (let addr of conf.discordBotAddresses) {
+                let res = await axios.post(`http://${addr}/usr`, {
+                    id: id,
+                    message: str,
+                });
+
+                // Well sended user found
+                if (res.data.sended === true) {
+                    break;
+                }
+            }
         } catch (e) {
             console.log(e);
         }
