@@ -29,7 +29,6 @@ class SecondaryStatsMonsters extends SecondaryStats {
             this[res[stat].name] = Math.ceil(mult * res[stat].baseValue);
         }
 
-        console.log(this);
     }
 
 }

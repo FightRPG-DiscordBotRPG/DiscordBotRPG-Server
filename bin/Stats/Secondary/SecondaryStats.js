@@ -59,7 +59,7 @@ class SecondaryStats {
         this.criticalRate = 0;
         this.regenHp = 0;
         this.regenMp = 0;
-        this.regenEnergy = 0;
+        this.regenEnergy = 10;
         this.skillManaCost = 0;
         this.skillEnergyCost = 0;
         this.physicalCriticalEvadeRate = 0;
