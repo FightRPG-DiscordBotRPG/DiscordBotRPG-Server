@@ -6,7 +6,10 @@ class RoundLogger {
 
         this.roundType = "";
         this.roundEntitiesIndex = 0;
-        this.idSkillUsed = 0;
+        this.skillInfo = {
+            id: 0,
+            message: ""
+        }
 
         this.drain = false;
         this.heal = false;

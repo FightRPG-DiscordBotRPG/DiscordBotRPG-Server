@@ -36,6 +36,8 @@ class WorldEntity {
         */
         this.states = {};
         this.skillToTestIndex = -1;
+
+        this.buildSkills = [1];
     }
 
     async loadSkills() {
@@ -43,13 +45,12 @@ class WorldEntity {
         let promises = [];
         let skillsToTest = [1];
         //let skillsToTest = [];
-        for (let item of skillsToTest) {
+        for (let item of this.buildSkills) {
             let s = new Skill();
             this.skills[item] = s;
             promises.push(s.loadWithID(item));
         }
         await Promise.all(promises);
-        console.log(this.skills[1].getMessage(this.getName(), "en"));
         this.skillToTestIndex = 0;
     }
 
@@ -196,8 +197,15 @@ class WorldEntity {
         return this.level;
     }
 
-    getName() {
+    getName(_lang = "en") {
         return this.name;
+    }
+
+    getIdentity(lang="en") {
+        return {
+            name: this.getName(lang),
+            type: this._type,
+        }
     }
 
     // Critical hit
@@ -369,12 +377,22 @@ class WorldEntity {
      * @returns {Skill} Skill to be cast     
      */
     getSkillToUse() {
-        let selectedSkill = this.skills[this.skillToTestIndex];
+        let indexSKillToUse = this.buildSkills[this.skillToTestIndex];
+        let selectedSkill = this.skills[indexSKillToUse];
+
+        // Updating next spell to use
+        this.skillToTestIndex++;
+        if (this.skillToTestIndex >= this.buildSkills.length) {
+            this.skillToTestIndex = 0;
+        }
+
         if (selectedSkill && selectedSkill.canBeCast() && this.canUseSkill(selectedSkill)) {
-            return this.skills[this.skillToTestIndex];
+            return selectedSkill;
         } else {
             return this.getSkillsArray().find(skill => skill.canBeCast() && this.canUseSkill(skill));
         }
+
+
     }
 
     /**

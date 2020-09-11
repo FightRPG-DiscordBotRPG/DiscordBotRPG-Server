@@ -158,7 +158,8 @@ class Fight {
             let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
             skillToUse.resetCast();
-            roundLog.idSkillUsed = skillToUse.id;
+            roundLog.skillInfo.id = skillToUse.id;
+            roundLog.skillInfo.message = skillToUse.getMessage(attacker.getName(), this.lang);
 
             let targets = [];
 
@@ -194,7 +195,7 @@ class Fight {
 
                 // Mp
                 if (skillToUse.isAffectingMp()) {
-                    this.applySKillMpDamage(skillToUse, attacker, target);
+                    this.applySkillMpDamage(skillToUse, attacker, target);
                 }
 
                 // Effects apply
@@ -250,17 +251,8 @@ class Fight {
         let roundLog = new RoundLogger();
         roundLog.roundType = attacker._type;
         roundLog.roundEntitiesIndex = this.initiative[0];
-        roundLog.attacker.entity.name = attacker.getName(this.lang);
-        roundLog.attacker.entity.level = attacker.getLevel();
 
-
-        // Max
-        roundLog.attacker.entity.maxEnergy = attacker.maxEnergy;
-        roundLog.attacker.entity.maxHP = attacker.maxHP;
-        roundLog.attacker.entity.maxMP = attacker.maxMP;
-
-        roundLog.attacker.entity.states = attacker.states;
-
+        roundLog.attacker = this.initNewEntityLogger(attacker);
 
         this.summary.rounds.push(roundLog);
 
@@ -283,8 +275,11 @@ class Fight {
         entityLog.entity.maxMP = entity.maxMP;
 
         // General
-        entityLog.entity.name = entity.getName(this.lang);
+        entityLog.setEntityIdentity(entity, this.lang);
         entityLog.entity.level = entity.getLevel();
+
+        // States
+        entityLog.entity.states = entity.states;
 
         return entityLog;
 

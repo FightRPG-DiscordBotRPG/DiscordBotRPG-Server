@@ -1,11 +1,18 @@
 const State = require("../../SkillsAndStatus/State");
 const DamageAndHealLogger = require("./DamageAndHealLogger");
+const Monster = require("../../Entities/Monster");
+const WorldEntity = require("../../Entities/WorldEntity");
 
 class EntityAffectedLogger {
     constructor() {
 
         this.entity = {
-            name: "",
+            identity: {
+                name: "",
+                type: "",
+                monsterType: null,
+                monsterDifficultyName: null,
+            },
             actualHP: 0,
             maxHP: 0,
             actualMP: 0,
@@ -13,6 +20,7 @@ class EntityAffectedLogger {
             actualEnergy: 0,
             maxEnergy: 0,
             level: 0,
+            states: {}
         };
 
         this.battle = {
@@ -30,6 +38,15 @@ class EntityAffectedLogger {
             isCritical: false,
         };
 
+    }
+
+    /**
+     * 
+     * @param {WorldEntity} entity
+     * @param {string} lang
+     */
+    setEntityIdentity(entity, lang = "en") {
+        this.entity.identity = entity.getIdentity(lang);
     }
 
     /**

@@ -6,7 +6,7 @@ const Globals = require("../Globals.js");
 const WorldEntity = require("./WorldEntity.js");
 const Translator = require("../Translator/Translator");
 
-class Monstre extends WorldEntity {
+class Monster extends WorldEntity {
 
     constructor(id) {
         super();
@@ -25,6 +25,8 @@ class Monstre extends WorldEntity {
         this.secondaryStats = new SecondaryStatsMonsters();
         this.difficulty = {};
         this.type = "";
+
+        this.buildSkills = [1, 17, 23, 25, 28, 37, 39, 40, 41];
     }
 
 
@@ -73,6 +75,13 @@ class Monstre extends WorldEntity {
         return true;
     }
 
+    getIdentity() {
+        let identity = super.getIdentity();
+        identity.monsterType = this.type;
+        identity.monsterDifficultyName = this.difficulty.name;
+        return identity;
+    }
+
 }
 
-module.exports = Monstre;
+module.exports = Monster;
