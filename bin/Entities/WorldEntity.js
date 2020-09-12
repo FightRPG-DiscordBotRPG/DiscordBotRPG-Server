@@ -20,6 +20,11 @@ class WorldEntity {
         this.level = 0;
         this.stats = new Stats();
         this.secondaryStats = new SecondaryStats();
+
+        // Adding default values to some secondaryStats
+        this.secondaryStats.hitRate = 100;
+        this.secondaryStats.regenEnergy = 10;
+
         this.consecutiveStuns = 0;
 
         // Stats modifiers key => statname, value => traits modifier
@@ -678,6 +683,10 @@ class WorldEntity {
      */
     getLuckEffectRate(target) {
         return Math.max(1.0 + (this.getStat(Stats.possibleStats.Luck) - target.getStat(Stats.possibleStats.Luck)) * 0.001, 0.0);
+    }
+
+    getLuckEffectRateRaw() {
+        return Math.max(1.0 + this.getStat(Stats.possibleStats.Luck) * 0.001, 0.0);
     }
 
     getRegenHp() {

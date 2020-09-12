@@ -57,6 +57,10 @@ class CharacterEntity extends WorldEntity {
         return super.getSecondaryStat(secondaryStatName) + (this.equipement.getSecondaryStat(secondaryStatName) * this.tempStatsModifiers[secondaryStatName]);
     }
 
+    /**
+     * 
+     * @param {string} elementName
+     */
     getElementalResist(elementName) {
         // super always returns 1 since user is a world entity having empty secondary stats
         return super.getElementalResist(elementName) + (this.equipement.secondaryStats.getElementalResist(elementName) + this.tempStatsModifiers[elementName]) - 1;
