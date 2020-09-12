@@ -56,7 +56,7 @@ class SecondaryStats {
     // Used by All Player/Enemies
     constructor(id) {
         this.id = id;
-        this.hitRate = 0;
+        this.hitRate = 100;
         this.evadeRate = 0;
         this.criticalRate = 0;
         this.regenHp = 0;

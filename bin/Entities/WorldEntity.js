@@ -288,7 +288,18 @@ class WorldEntity {
         otherResist = otherResist > .5 ? .5 : otherResist;
         let chanceToStun = stun >= otherResist ? stun : 0;
 
-        return Math.random() <= chanceToStun ? true : false;
+        return Math.random() <= chanceToStun;
+    }
+
+    /**
+     * Return if you have hit the enemy
+     * Minimum chance = 20%
+     * @param {WorldEntity} enemy
+     */
+    haveHit(enemy) {
+        let chance = (this.getSecondaryStat(SecondaryStats.possibleStats.HitRate) - enemy.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100;
+        chance = chance < 0.2 ? 0.2 : chance;
+        return Math.random() <= chance;
     }
 
     isAlive() {

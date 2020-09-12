@@ -188,19 +188,27 @@ class Fight {
                 // States stats modifiers reset
                 target.resetStatsModifiers();
 
-                // Hp
-                if (skillToUse.isAffectingHp()) {
-                    this.applySkillHpDamage(skillToUse, attacker, target);
-                }
+                // Apply damage if not evaded by enemy
+                if (target === attacker || attacker.haveHit(target)) {
+                    // Hp
+                    if (skillToUse.isAffectingHp()) {
+                        this.applySkillHpDamage(skillToUse, attacker, target);
+                    }
 
-                // Mp
-                if (skillToUse.isAffectingMp()) {
-                    this.applySkillMpDamage(skillToUse, attacker, target);
-                }
+                    // Mp
+                    if (skillToUse.isAffectingMp()) {
+                        this.applySkillMpDamage(skillToUse, attacker, target);
+                    }
 
-                // Effects apply
-                for (let effect of skillToUse.effects) {
-                    await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker }, skillToUse);
+                    // Effects apply
+                    for (let effect of skillToUse.effects) {
+                        await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker }, skillToUse);
+                    }
+
+                    roundLog.success = true;
+                } else {
+                    // meaning attack is not successful due to evade
+                    roundLog.success = false;
                 }
 
                 // Update total entity
