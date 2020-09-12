@@ -36,6 +36,7 @@ var Globals = {
     "monstersIds": null,
     "itemsrarities": null,
     "equipableCorresponds": null,
+    "allSecondaryStatsNames": [],
     "basicWaitTimeBeforeFight": 60,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
@@ -191,6 +192,8 @@ var Globals = {
 
         Globals.elementsTypesIdsByName = elementsTypesIds;
         Globals.elementsTypesNameById = elementsTypesNames;
+
+        Globals.allSecondaryStatsNames = [...Object.keys(Globals.secondaryStatsIdsByName), ...Object.keys(Globals.elementsTypesIdsByName).map(x => x + "Resist")];
 
 
         res = await conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");

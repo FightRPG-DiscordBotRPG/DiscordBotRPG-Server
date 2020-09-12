@@ -1,6 +1,7 @@
 'use strict';
 const conn = require("../../../conf/mysql");
 const { elementsTypesNameById } = require("../../Globals");
+const Globals = require("../../Globals");
 
 class SecondaryStats {
 
@@ -114,7 +115,12 @@ class SecondaryStats {
     }
 
     toApi() {
-        return this;
+        let r = {};
+        let statsPossible = Globals.allSecondaryStatsNames;
+        for (let i in statsPossible) {
+            r[statsPossible[i]] = this[statsPossible[i]];
+        }
+        return r;
     }
 
 }

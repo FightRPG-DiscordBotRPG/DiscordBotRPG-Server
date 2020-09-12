@@ -115,7 +115,7 @@ class Item {
      */
     static calculPower(stats, secondaryStats) {
         let statsPossible = Object.keys(Globals.statsIdsByName);
-        let secondaryStatsPossible = [...Object.keys(Globals.secondaryStatsIdsByName), ...Object.keys(Globals.elementsTypesIdsByName).map(x => x + "Resist")];
+        let secondaryStatsPossible = [...Globals.allSecondaryStatsNames];
         let power = 0;
         for (let i of statsPossible) {
             let statPower = 0;

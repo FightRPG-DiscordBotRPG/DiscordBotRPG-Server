@@ -227,7 +227,7 @@ class LootSystem {
             let secondaryStats = new SecondaryStats(0);
 
             let statsPossible = Object.keys(Globals.statsIdsByName);
-            let secondaryStatsPossible = [...Object.keys(Globals.secondaryStatsIdsByName), ...Object.keys(Globals.elementsTypesIdsByName).map(x => x + "Resist")];
+            let secondaryStatsPossible = [...Globals.allSecondaryStatsNames];
             let numberOfStats = this.getStatsNumber(rarity);
             let numberOfSecondaryStats = this.getStatsNumber(rarity);
             let objectType = res[0]["nomType"];

@@ -52,13 +52,19 @@ class InventoryModule extends GModule {
                 doIHaveThisItem = await Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
                 if (doIHaveThisItem) {
                     itemToSee = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(idItemToSee);
-                    let equippedStats = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
-                    if (equippedStats != null)
-                        equippedStats = equippedStats.stats;
-                    else
-                        equippedStats = {};
+                    let equippedItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
+
+                    let equippedStats = {};
+                    let equippedSecondaryStats = {};
+
+                    if (equippedItem != null) {
+                        equippedStats = equippedItem.stats.toApi();
+                        equippedSecondaryStats = equippedItem.secondaryStats.toApi();
+                    }
+
                     data.item = await itemToSee.toApi(res.locals.lang);;
                     data.equippedStats = equippedStats;
+                    data.equippedSecondaryStats = equippedSecondaryStats;
                     data.idInInventory = idItemToSee;
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");

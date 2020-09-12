@@ -19,7 +19,7 @@ class SecondaryStatsItems extends SecondaryStats {
 
         res = await conn.query("SELECT DISTINCT shorthand, value FROM itemssecondarystatselementalresists INNER JOIN elementstypes ON itemssecondarystatselementalresists.idElementType = elementstypes.idElementType WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].shorthand] = res[stat].value;
+            this[res[stat].shorthand + "Resist"] = res[stat].value;
         }
     }
 
