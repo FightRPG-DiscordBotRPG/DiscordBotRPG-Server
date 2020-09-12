@@ -29,7 +29,123 @@ class Stats {
         per: Stats.possibleStats.Perception,
         luck: Stats.possibleStats.Luck
     }
-    
+
+    static ratiosBasedOnSubtype = {
+        armor: {
+            "armor": 1.2,
+            "cloth": 0.8,
+            "leather": 1,
+            "bow": 0.15,
+            "dagger": 0.15,
+            "sword": 0.15,
+            "wand": 0.15,
+            "whip": 0.15,
+            "staff": 0.15,
+        },
+        strength: {
+            "armor": 0.8,
+            "cloth": 0.8,
+            "leather": 0.8,
+            "bow": 0.8,
+            "dagger": 0.8,
+            "sword": 1.2,
+            "wand": 0.8,
+            "whip": 1,
+            "staff": 0.6,
+        },
+        intellect: {
+            "armor": 0.8,
+            "cloth": 1.2,
+            "leather": 0.8,
+            "bow": 0.8,
+            "dagger": 0.8,
+            "sword": 0.8,
+            "wand": 1.2,
+            "whip": 0.8,
+            "staff": 1.4,
+        },
+        constitution: {
+            "armor": 1.4,
+            "cloth": 1,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1,
+            "staff": 1,
+        },
+        wisdom: {
+            "armor": 1,
+            "cloth": 1.2,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1,
+            "staff": 1,
+        },
+        dexterity: {
+            "armor": 0.8,
+            "cloth": 1,
+            "leather": 1.2,
+            "bow": 1.4,
+            "dagger": 1.2,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1.4,
+            "staff": 1,
+        },
+        charisma: {
+            "armor": 1,
+            "cloth": 1,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 0.6,
+            "staff": 1,
+        },
+        will: {
+            "armor": 1,
+            "cloth": 1,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1.2,
+            "staff": 1,
+        },
+        perception: {
+            "armor": 1,
+            "cloth": 1,
+            "leather": 1.2,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1,
+            "staff": 1,
+        },
+        luck: {
+            "armor": 1,
+            "cloth": 1,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1.2,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1,
+            "staff": 1,
+        }
+
+
+    }
+
+
     // Generic Stats Class
     // Used by All Player/Enemies
     constructor(id) {

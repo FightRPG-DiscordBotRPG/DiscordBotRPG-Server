@@ -58,14 +58,12 @@ class Item {
     }
 
     async deleteItem() {
-        await Promise.all([this.stats.deleteStats(), this.secondaryStats.deleteStats()]);
-        await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [this.id])
+        await Promise.all([this.stats.deleteStats(), this.secondaryStats.deleteStats(), conn.query("DELETE FROM itemspower WHERE idItem = ?;", [this.id])]);
         await conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
     }
 
     static async deleteItem(idItem) {
-        await Promise.all([StatsItems.deleteStats(idItem), SecondaryStatsItems.deleteStats(idItem)]);
-        await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [idItem]);
+        await Promise.all([StatsItems.deleteStats(idItem), SecondaryStatsItems.deleteStats(idItem), conn.query("DELETE FROM itemspower WHERE idItem = ?;", [idItem])]);
         await conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
     }
 
@@ -92,8 +90,12 @@ class Item {
     static async deleteItems(idItems) {
         if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
-            await StatsItems.deleteStatsMultiple(idItems);
-            await conn.query("DELETE FROM itemspower WHERE idItem IN " + itemsToDelete + ";");
+            await Promise.all([
+                StatsItems.deleteStatsMultiple(idItems),
+                SecondaryStatsItems.deleteStatsMultiple(idItems),
+                conn.query("DELETE FROM itemspower WHERE idItem IN " + itemsToDelete + ";"),
+            ]);
+
             await conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
         }
     }
@@ -109,32 +111,78 @@ class Item {
     /**
      * This will be a general static function to get power based on stats
      * @param {Stats} stats 
+     * @param {SecondaryStats} secondaryStats
      */
-    static calculPower(stats) {
+    static calculPower(stats, secondaryStats) {
         let statsPossible = Object.keys(Globals.statsIdsByName);
+        let secondaryStatsPossible = [...Object.keys(Globals.secondaryStatsIdsByName), ...Object.keys(Globals.elementsTypesIdsByName).map(x => x + "Resist")];
         let power = 0;
         for (let i of statsPossible) {
             let statPower = 0;
             if (i != "armor") {
-                statPower = stats[i] / (50 * 2);
+                statPower = stats[i] / 100;
             } else {
                 statPower = stats[i] / Math.ceil((8 * (Math.pow(50, 2)) / 7) / 4.5);
             }
             let mult = 1;
             switch (i) {
-                case "intellect":
-                case "wisdom":
-                case "luck":
-                case "perception":
+                case Stats.possibleStats.Strength:
+                case Stats.possibleStats.Intellect:
+                case Stats.possibleStats.Dexterity:
+                    mult = 1;
+                    break;
+                case Stats.possibleStats.Constitution:
+                case Stats.possibleStats.Wisdom:
+                    mult = 0.9;
+                    break;
+                case Stats.possibleStats.Perception:
+                case Stats.possibleStats.Luck:
                     mult = 0.25;
                     break;
-                case "dexterity":
-                    mult = 0.8;
+                case Stats.possibleStats.Will:
+                case Stats.possibleStats.Charisma:
+                case Stats.possibleStats.Armor:
+                    mult = 0.65;
+            }
+            power += statPower * mult;
+        }
+
+        let totalPowerSecondary = 0;
+        for (let i of secondaryStatsPossible) {
+            let statPower = secondaryStats[i] / 3;
+
+            let mult = 1;
+            switch (i) {
+                case SecondaryStats.possibleStats.CriticalRate:
+                case SecondaryStats.possibleStats.EvadeRate:
+                case SecondaryStats.possibleStats.HitRate:
+                case SecondaryStats.possibleStats.MagicalCriticalEvadeRate:
+                case SecondaryStats.possibleStats.PhysicalCritcalEvadeRate:
+                    mult = 0.7;
                     break;
-                case "will":
-                case "charisma":
-                case "armor":
+                case SecondaryStats.possibleStats.RegenEnergy:
+                    mult = 0.5;
+                    break;
+                case SecondaryStats.possibleStats.SkillEnergyCost:
+                case SecondaryStats.possibleStats.SkillManaCost:
                     mult = 0.6;
+                    break;
+                case SecondaryStats.possibleStats.RegenHp:
+                case SecondaryStats.possibleStats.RegenMp:
+                    mult = 0.6 / 100;
+                    break;
+                case SecondaryStats.possibleStats.Threat:
+                    mult = 0.6 / 100;
+                    break;
+                case SecondaryStats.possibleElementalResists.Air:
+                case SecondaryStats.possibleElementalResists.Dark:
+                case SecondaryStats.possibleElementalResists.Earth:
+                case SecondaryStats.possibleElementalResists.Fire:
+                case SecondaryStats.possibleElementalResists.Water:
+                case SecondaryStats.possibleElementalResists.Light:
+                    mult = 1;
+                    break;
+
             }
             power += statPower * mult;
         }
@@ -215,7 +263,7 @@ class Item {
      */
 
     async toApi(lang) {
-        let toApiObject = await this.toApiLight();
+        let toApiObject = await this.toApiLight(lang);
         toApiObject.desc = this.getDesc(lang);
         toApiObject.stats = this.stats.toApi();
         toApiObject.secondaryStats = this.secondaryStats.toApi();
@@ -311,4 +359,5 @@ const Salamander = require("./Mounts/Salamander");
 const Camel = require("./Mounts/Camel");
 const PolarBear = require("./Mounts/PolarBear");
 const EnergyPotion = require("./Potions/EnergyPotion");
-const Stats = require("../Stats/Stats")
+const Stats = require("../Stats/Stats");
+const SecondaryStats = require("../Stats/Secondary/SecondaryStats");

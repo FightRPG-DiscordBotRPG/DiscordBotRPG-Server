@@ -1,0 +1,1 @@
+E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < discord_bot_rpg.sql

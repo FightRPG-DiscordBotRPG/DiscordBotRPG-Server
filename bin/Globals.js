@@ -31,7 +31,7 @@ var Globals = {
     "secondaryStatsIdsByName": null,
     "statsNameById": null,
     "secondaryStatsNameById": null,
-    "elementsTypesByName": null,
+    "elementsTypesIdsByName": null,
     "elementsTypesNameById": null,
     "monstersIds": null,
     "itemsrarities": null,
@@ -189,7 +189,7 @@ var Globals = {
             elementsTypesNames[res[i].idElementType] = res[i].shorthand;
         }
 
-        Globals.elementsTypesByName = elementsTypesIds;
+        Globals.elementsTypesIdsByName = elementsTypesIds;
         Globals.elementsTypesNameById = elementsTypesNames;
 
 
