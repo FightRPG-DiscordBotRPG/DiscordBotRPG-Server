@@ -66,6 +66,8 @@ class Utils {
 
         let itemsToReturn = [];
 
+        n = this.getProtectedNValue(items, n);
+
         for (let i = 0; i < n; i++) {
             let weightTotal = 0;
             let distrib = [];
