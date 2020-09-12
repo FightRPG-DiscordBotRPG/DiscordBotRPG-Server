@@ -42,7 +42,7 @@ class RandomLootBox extends LootBox {
                     dropRate = Globals.getDropChances(item.rarityDrop);
                 }
                 let luck = Math.random();
-                if (luck <= dropRate * character.getLuckEffectRate()) {
+                if (luck <= dropRate * character.getLuckEffectRateRaw()) {
                     //Drop
                     if (await ls.giveToPlayer(character, item.id, this.getLevel(), item.amount)) {
                         this.addItem(item.id, item.amount);
