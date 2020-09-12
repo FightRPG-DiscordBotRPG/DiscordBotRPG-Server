@@ -551,7 +551,8 @@ VALUES
 (7, "skillManaCost", ""),
 (8, "skillEnergyCost", ""),
 (9, "physicalCriticalEvadeRate", ""),
-(10, "magicalCriticalEvadeRate", "");
+(10, "magicalCriticalEvadeRate", ""),
+(11, "threat", "");
 
 
 

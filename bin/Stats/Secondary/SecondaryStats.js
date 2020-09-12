@@ -15,6 +15,7 @@ class SecondaryStats {
         SkillEnergyCost: "skillEnergyCost",
         PhysicalCritcalEvadeRate: "physicalCriticalEvadeRate",
         MagicalCriticalEvadeRate: "magicalCriticalEvadeRate",
+        Threat: "threat",
     }
 
     static possibleElementalResists = {
@@ -38,6 +39,7 @@ class SecondaryStats {
         senrjc: SecondaryStats.possibleStats.SkillEnergyCost,
         physcevr: SecondaryStats.possibleStats.PhysicalCritcalEvadeRate,
         magcevr: SecondaryStats.possibleStats.MagicalCriticalEvadeRate,
+        threat: SecondaryStats.possibleStats.Threat,
     }
 
     static possibleElementalResistsShort = {
@@ -64,6 +66,7 @@ class SecondaryStats {
         this.skillEnergyCost = 0;
         this.physicalCriticalEvadeRate = 0;
         this.magicalCriticalEvadeRate = 0;
+        this.threat = 0;
 
         this.physicalResist = 0;
         this.fireResist = 0;

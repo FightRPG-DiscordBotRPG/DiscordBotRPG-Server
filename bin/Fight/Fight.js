@@ -127,7 +127,7 @@ class Fight {
         let done = 0;
 
         let attacker = this.concatEntities[this.initiativeIndex];
-        
+
         let roundLog = this.initNewRoundLog(attacker);
 
         // Clean Status after number of rounds
@@ -214,7 +214,7 @@ class Fight {
             }
         }
 
-        
+
 
         // Update attacker
         this.updateEntityLogger(this.getCurrentRoundCurrentAttackerLogger(), attacker);
@@ -493,12 +493,22 @@ class Fight {
     // Alive
 
     /**
-     * 
+     * Have an higher chance to return those with highest thread value
      * @param {number} numberToFetch Number of entities to fetch >= 1
      * @returns {Array<WorldEntity>}
      */
     getAliveDefenders(numberToFetch = 1) {
-        return Utils.getRandomItemsInArray(this.getAllAliveDefenders(), numberToFetch);
+        let defenders = this.getAllAliveDefenders();
+
+        return Utils.getWeightedRandomItemsInArray(
+            defenders,
+            defenders.map(x => {
+                let threat = x.getSecondaryStat(SecondaryStats.possibleStats.Threat);
+                return threat > 0 ? threat : 1;
+            }),
+            numberToFetch
+        );
+
     }
 
     /**
@@ -612,4 +622,4 @@ class Fight {
 module.exports = Fight
 
 const Monster = require("../Entities/Monster");
-
+const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
