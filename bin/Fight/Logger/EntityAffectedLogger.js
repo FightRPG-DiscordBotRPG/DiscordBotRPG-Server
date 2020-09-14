@@ -4,12 +4,15 @@ const Monster = require("../../Entities/Monster");
 const WorldEntity = require("../../Entities/WorldEntity");
 
 class EntityAffectedLogger {
-    constructor() {
+    constructor(lang="en") {
+
+        this.lang = lang;
 
         this.entity = {
             identity: {
                 name: "",
                 type: "",
+                uuid: "",
                 monsterType: null,
                 monsterDifficultyName: null,
             },
@@ -43,26 +46,27 @@ class EntityAffectedLogger {
     /**
      * 
      * @param {WorldEntity} entity
-     * @param {string} lang
      */
-    setEntityIdentity(entity, lang = "en") {
-        this.entity.identity = entity.getIdentity(lang);
+    setEntityIdentity(entity) {
+        this.entity.identity = entity.getIdentity(this.lang);
     }
 
     /**
      * 
      * @param {State} value
+     * @param {string} lang
      */
     logRemoveState(value) {
-        this.battle.removedStates.push(value);
+        this.battle.removedStates.push(value.toApi(this.lang));
     }
 
     /**
     *
     * @param {State} value
+    * @param {string} lang
     */
     logAddState(value) {
-        this.battle.addedStates.push(value);
+        this.battle.addedStates.push(value.toApi(this.lang));
     }
 
     // Log for skill result

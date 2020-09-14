@@ -70,6 +70,7 @@ class FightManager {
                     realLevel = monsters[i].level;
                 }
                 let ms = new Monstre(monsters[i].id);
+                ms.uuid = i + j + ms.id + "";
                 await ms.loadMonster(realLevel);
                 arr.push(ms);
             }

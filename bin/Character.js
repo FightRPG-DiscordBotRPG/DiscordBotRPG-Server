@@ -58,7 +58,7 @@ class Character extends CharacterEntity {
 
         var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1);");
         this.id = res["insertId"];
-
+        this.uuid = this.id.toString();
         //Init level system
         await Promise.all([
             this.levelSystem.init(this.id, this.idUser),
@@ -85,6 +85,7 @@ class Character extends CharacterEntity {
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
             "WHERE characters.idCharacter = ?", [id]))[0];
         this.id = id;
+        this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id, this.idUser),
@@ -114,6 +115,7 @@ class Character extends CharacterEntity {
      */
     async lightLoad(id) {
         this.id = id;
+        this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id, this.idUser),

@@ -262,6 +262,9 @@ class AdminModule extends GModule {
             //await st.loadWithID(4);
             //console.log(await Effect.newEffect(1));
             //await Globals.connectedUsers[res.locals.id].tell("Test");
+            await Globals.connectedUsers[res.locals.id].character.loadSkills()
+            //console.log(Globals.connectedUsers[res.locals.id].character.skills);
+            console.log(Globals.connectedUsers[res.locals.id].character.getElementalResist(Globals.elementsTypesNameById[0] + "Resist"));
             await next();
             return res.json({ succes: "done" });
         });

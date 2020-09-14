@@ -71,6 +71,17 @@ class State {
         return Translator.getString(lang, "statesNames", this.id);
     }
 
+    toApi(lang="en") {
+        return {
+            id: this.id,
+            name: this.getName(lang),
+            traits: this.traits,
+            afterDamage: this.afterDamage,
+            afterFight: this.afterFight,
+            afterRounds: this.afterRounds,
+            roundsLeft: this.roundEnd - this.currentRound
+        }
+    }
 
 }
 

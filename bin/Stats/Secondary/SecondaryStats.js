@@ -99,7 +99,7 @@ class SecondaryStats {
             elementalResist = SecondaryStats.possibleElementalResistsShort[elementalResist];
         }
 
-        if (this[elementalResist] !== null) {
+        if (!isNaN(this[elementalResist])) {
             if (this[elementalResist] >= 0) {
                 this[elementalResist] = -this[elementalResist];
             }

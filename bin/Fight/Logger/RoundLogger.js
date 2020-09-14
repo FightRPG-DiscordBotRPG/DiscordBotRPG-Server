@@ -16,7 +16,10 @@ class RoundLogger {
         this.success = false;
         this.addingState = false;
         this.restrictions = {};
-        this.attacker = new EntityAffectedLogger();
+        /**
+         * @type {EntityAffectedLogger}
+         **/
+        this.attacker = {};
         /**
          * @type {Array<EntityAffectedLogger>}
          **/

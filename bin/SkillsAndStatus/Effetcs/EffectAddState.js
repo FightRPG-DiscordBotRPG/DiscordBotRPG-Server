@@ -41,7 +41,11 @@ class EffectAddState extends Effect {
 
         }
         if (Math.random() < chance) {
-            target.logger.logAddState(await target.entity.addState(this.stateValue))
+            let addedState = await target.entity.addState(this.stateValue);
+            //Can be null if state is already here
+            if (addedState) {
+                target.logger.logAddState(addedState);
+            }
         }
     }
 

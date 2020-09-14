@@ -180,11 +180,11 @@ class Skill {
     }
 
     isInflictingDamageHp() {
-        return this.isDamageTypeIncluded([1, 3]);
+        return this.isDamageTypeIncluded([1, 5]);
     }
 
     isInflictingDamageMp() {
-        return this.isDamageTypeIncluded([2, 4]);
+        return this.isDamageTypeIncluded([2, 6]);
     }
 
     isAffectingHp() {
@@ -199,20 +199,20 @@ class Skill {
         return this.isDamageTypeIncluded([1, 2]);
     }
 
-    isDrain() {
+    isRecover() {
         return this.isDamageTypeIncluded([3, 4]);
     }
-
-    isRecover() {
+    
+    isDrain() {
         return this.isDamageTypeIncluded([5, 6]);
     }
 
     isHpRecover() {
-        return this.isDamageTypeIncluded([5]);
+        return this.isDamageTypeIncluded([3]);
     }
 
     isMpRecover() {
-        return this.isDamageTypeIncluded([6]);
+        return this.isDamageTypeIncluded([4]);
     }
 
     /**

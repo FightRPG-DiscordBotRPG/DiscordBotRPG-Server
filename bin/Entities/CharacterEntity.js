@@ -25,6 +25,7 @@ class CharacterEntity extends WorldEntity {
      */
     async loadCharacter(id) {
         this.id = id;
+        this.uuid = id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id),

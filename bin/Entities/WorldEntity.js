@@ -9,6 +9,7 @@ class WorldEntity {
 
     constructor() {
         this.id = 0;
+        this.uuid = "";
         this.name = "";
         this._type = "Entity";
         this.actualHP = 0;
@@ -189,7 +190,7 @@ class WorldEntity {
         damage = Math.round(damage);
         this.actualMP -= damage;
         damage = this.actualMP < 0 ? damage + this.actualMP : damage;
-        target.actualMP = this.actualMP < 0 ? 0 : this.actualMP;
+        this.actualMP = this.actualMP < 0 ? 0 : this.actualMP;
         return damage;
     }
 
@@ -206,10 +207,11 @@ class WorldEntity {
         return this.name;
     }
 
-    getIdentity(lang="en") {
+    getIdentity(lang = "en") {
         return {
             name: this.getName(lang),
             type: this._type,
+            uuid: this.uuid,
         }
     }
 

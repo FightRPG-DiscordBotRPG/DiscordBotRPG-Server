@@ -12,6 +12,7 @@ class GuildEntity extends WorldEntity {
         super();
         this._type = "Guild";
         this.id = id;
+        this.uuid = id.toString();
         this.name = "";
         this.actualHP = 0;
         this.maxHP = 0;

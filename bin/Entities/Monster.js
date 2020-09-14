@@ -11,8 +11,7 @@ class Monster extends WorldEntity {
     constructor(id) {
         super();
         this._type = "Monster";
-
-
+        this.uuid = id;
         this.id = id;
         this.name = "g_monster";
         this.actualHP = 0;

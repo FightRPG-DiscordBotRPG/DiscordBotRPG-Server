@@ -29,6 +29,10 @@ class SecondaryStatsMonsters extends SecondaryStats {
             this[res[stat].name] = Math.ceil(mult * res[stat].baseValue);
         }
 
+        this.hitRate = 100;
+        this.regenMp = 5;
+        this.regenEnergy = 5;
+
     }
 
 }

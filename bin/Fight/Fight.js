@@ -272,7 +272,7 @@ class Fight {
      * @param {WorldEntity} entity
      */
     initNewEntityLogger(entity) {
-        let entityLog = new EntityAffectedLogger();
+        let entityLog = new EntityAffectedLogger(this.lang);
 
         // Current
         this.updateEntityLogger(entityLog, entity);
@@ -283,7 +283,7 @@ class Fight {
         entityLog.entity.maxMP = entity.maxMP;
 
         // General
-        entityLog.setEntityIdentity(entity, this.lang);
+        entityLog.setEntityIdentity(entity);
         entityLog.entity.level = entity.getLevel();
 
         // States
@@ -399,6 +399,7 @@ class Fight {
      * @param {WorldEntity} defender
      */
     getSkillEvaluation(skill, attacker, defender) {
+
         let val = skill.evaluateSkill(attacker, defender);
         let isCritical = this.isCritical(skill, attacker, defender);
 
