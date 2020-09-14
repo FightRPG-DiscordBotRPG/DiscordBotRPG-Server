@@ -230,13 +230,13 @@ class Translator {
         for (let language of languages) {
             this.translations[language.lang]["skillNames"] = {};
             this.translations[language.lang]["skillDesc"] = {};
-            this.translations[language.lang]["skillMessage"] = {};
+            this.translations[language.lang]["skillMessages"] = {};
         }
 
         for (let trad of res) {
             this.translations[trad.lang]["skillNames"][trad.idSkill] = trad.nameSkill;
             this.translations[trad.lang]["skillDesc"][trad.idSkill] = trad.nameSkill;
-            this.translations[trad.lang]["skillMessage"][trad.idSkill] = trad.messageSkill.trimLeft();
+            this.translations[trad.lang]["skillMessages"][trad.idSkill] = trad.messageSkill.trimLeft();
         }
     }
 

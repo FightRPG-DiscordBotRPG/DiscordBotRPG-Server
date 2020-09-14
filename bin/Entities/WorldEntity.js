@@ -300,9 +300,16 @@ class WorldEntity {
      * Return if you have hit the enemy
      * Minimum chance = 20%
      * @param {WorldEntity} enemy
+     * @param {Skill} skill
      */
-    haveHit(enemy) {
-        let chance = (this.getSecondaryStat(SecondaryStats.possibleStats.HitRate) - enemy.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100;
+    haveHit(enemy, skill) {
+        let chance;
+
+        if (skill.isPhysical()) {
+            chance = (this.getSecondaryStat(SecondaryStats.possibleStats.HitRate) - enemy.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100;
+        } else {
+            chance = (1 - enemy.getSecondaryStat(SecondaryStats.possibleStats.MagicalEvadeRate)) / 100;
+        }
         chance = chance < 0.2 ? 0.2 : chance;
         return Math.random() <= chance;
     }
@@ -655,7 +662,7 @@ class WorldEntity {
      */
     getPhysicalCriticalEvasionRate(enemyLevel = 1) {
         let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.015);
-        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.PhysicalCritcalEvadeRate) / 100;
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.CritcalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }
 
@@ -665,7 +672,7 @@ class WorldEntity {
      */
     getMagicalCriticalEvasionRate(enemyLevel = 1) {
         let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * .015);
-        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.MagicalCriticalEvadeRate) / 100;
+        critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.CritcalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }
 

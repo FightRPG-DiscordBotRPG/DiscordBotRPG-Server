@@ -156,8 +156,8 @@ class Item {
                 case SecondaryStats.possibleStats.CriticalRate:
                 case SecondaryStats.possibleStats.EvadeRate:
                 case SecondaryStats.possibleStats.HitRate:
-                case SecondaryStats.possibleStats.MagicalCriticalEvadeRate:
-                case SecondaryStats.possibleStats.PhysicalCritcalEvadeRate:
+                case SecondaryStats.possibleStats.MagicalEvadeRate:
+                case SecondaryStats.possibleStats.CritcalEvadeRate:
                     mult = 0.7;
                     break;
                 case SecondaryStats.possibleStats.RegenEnergy:

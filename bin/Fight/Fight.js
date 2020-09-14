@@ -189,7 +189,7 @@ class Fight {
                 target.resetStatsModifiers();
 
                 // Apply damage if not evaded by enemy
-                if (target === attacker || attacker.haveHit(target)) {
+                if (target === attacker || skillToUse.isRawDamage() || attacker.haveHit(target, skillToUse)) {
                     // Hp
                     if (skillToUse.isAffectingHp()) {
                         this.applySkillHpDamage(skillToUse, attacker, target);

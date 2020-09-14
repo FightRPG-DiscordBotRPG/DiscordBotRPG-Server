@@ -232,8 +232,12 @@ class Skill {
     evaluateSkill(attacker, defender) {
         let baseValue = this.evalBaseDamageFormula(attacker, defender);
         let value = baseValue * this.repeat;
-        value *= this.getElementalRate(attacker);
-        value *= defender.getElementalResist(Globals.elementsTypesNameById[this.damage.idElementType] + "Resist");
+
+        if (!this.isRawDamage()) {
+            value *= this.getElementalRate(attacker);
+            value *= defender.getElementalResist(Globals.elementsTypesNameById[this.damage.idElementType] + "Resist");
+        }
+
 
         if (this.isPhysical()) {
             value *= defender.getPhysicalDefense(attacker.getLevel());
@@ -284,7 +288,7 @@ class Skill {
     }
 
     getName(lang = "en") {
-        return Translator.getString(lang, "skillName", this.id);
+        return Translator.getString(lang, "skillNames", this.id);
     }
 
     /**
@@ -293,7 +297,7 @@ class Skill {
      * @param {string} lang
      */
     getMessage(casterName, lang = "en") {
-        return `${casterName} ${Translator.getString(lang, "skillMessage", this.id, [this.getName()])}`;
+        return `${casterName} ${Translator.getString(lang, "skillMessages", this.id, [this.getName()])}`;
     }
 }
 

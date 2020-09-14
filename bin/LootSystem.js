@@ -181,8 +181,8 @@ class LootSystem {
             case SecondaryStats.possibleStats.CriticalRate:
             case SecondaryStats.possibleStats.EvadeRate:
             case SecondaryStats.possibleStats.HitRate:
-            case SecondaryStats.possibleStats.MagicalCriticalEvadeRate:
-            case SecondaryStats.possibleStats.PhysicalCritcalEvadeRate:
+            case SecondaryStats.possibleStats.MagicalEvadeRate:
+            case SecondaryStats.possibleStats.CritcalEvadeRate:
                 baseValue = Utils.randRangeInt(3, 5) * ratio;
                 break;
             case SecondaryStats.possibleStats.RegenEnergy:

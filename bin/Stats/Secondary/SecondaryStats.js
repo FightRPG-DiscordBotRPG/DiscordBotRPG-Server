@@ -14,8 +14,8 @@ class SecondaryStats {
         RegenEnergy: "regenEnergy",
         SkillManaCost: "skillManaCost",
         SkillEnergyCost: "skillEnergyCost",
-        PhysicalCritcalEvadeRate: "physicalCriticalEvadeRate",
-        MagicalCriticalEvadeRate: "magicalCriticalEvadeRate",
+        CritcalEvadeRate: "criticalEvadeRate",
+        MagicalEvadeRate: "magicalEvadeRate",
         Threat: "threat",
     }
 
@@ -38,8 +38,8 @@ class SecondaryStats {
         rnrj: SecondaryStats.possibleStats.RegenEnergy,
         smc: SecondaryStats.possibleStats.SkillManaCost,
         senrjc: SecondaryStats.possibleStats.SkillEnergyCost,
-        physcevr: SecondaryStats.possibleStats.PhysicalCritcalEvadeRate,
-        magcevr: SecondaryStats.possibleStats.MagicalCriticalEvadeRate,
+        cevr: SecondaryStats.possibleStats.CritcalEvadeRate,
+        magevr: SecondaryStats.possibleStats.MagicalEvadeRate,
         threat: SecondaryStats.possibleStats.Threat,
     }
 
@@ -65,8 +65,8 @@ class SecondaryStats {
         this.regenEnergy = 0;
         this.skillManaCost = 0;
         this.skillEnergyCost = 0;
-        this.physicalCriticalEvadeRate = 0;
-        this.magicalCriticalEvadeRate = 0;
+        this.criticalEvadeRate = 0;
+        this.magicalEvadeRate = 0;
         this.threat = 0;
 
         this.physicalResist = 0;

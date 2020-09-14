@@ -550,8 +550,8 @@ VALUES
 (6, "regenEnergy", ""),
 (7, "skillManaCost", ""),
 (8, "skillEnergyCost", ""),
-(9, "physicalCriticalEvadeRate", ""),
-(10, "magicalCriticalEvadeRate", ""),
+(9, "criticalEvadeRate", ""),
+(10, "magicalEvadeRate", ""),
 (11, "threat", "");
 
 
