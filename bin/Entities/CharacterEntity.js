@@ -16,7 +16,7 @@ class CharacterEntity extends WorldEntity {
         this.equipement = new CharacterEquipement();
         this.levelSystem = new LevelSystem();
         this._type = "Character";
-        this.buildSkills = [1, 2, 52, 91, 101, 172];
+        this.buildSkills = [1, 2, 37, 52, 91, 101, 172];
     }
 
     /**
