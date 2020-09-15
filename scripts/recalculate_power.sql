@@ -1,198 +1,130 @@
 -- Should be Updated For 1.10
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemspower` (
-  `idItem` INT(10) UNSIGNED NOT NULL,
-  `power` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`idItem`),
-  CONSTRAINT `fk_ItemsPower_Items1`
-    FOREIGN KEY (`idItem`)
-    REFERENCES `discord_bot_rpg`.`items` (`idItem`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
-
-INSERT INTO itemspower SELECT idItem,
+REPLACE INTO itemspower SELECT idItem, 
 ROUND(COALESCE((SELECT DISTINCT
+(
+    SELECT
+    COALESCE((SELECT DISTINCT
+        (
+        SELECT
+            COALESCE(SUM(itemsstats.value) / 100, 0) AS powerValue
+        FROM
+            itemsstats
+        WHERE
+            idItem = subItems.idItem AND itemsstats.idStat IN(1, 2, 5)
+    )+
     (
-    SELECT
-        COALESCE(SUM(itemsstats.value) / 100, 0) AS powerValue
+        SELECT
+            COALESCE(
+                SUM(itemsstats.value) / 100 * 0.25
+            , 0) AS powerValue
+        FROM
+            itemsstats
+        WHERE
+            idItem = subItems.idItem AND itemsstats.idStat IN(8, 10)
+    )+
+    (
+        SELECT
+            COALESCE(
+                SUM(itemsstats.value) / 100 * 0.9
+            , 0) AS powerValue
+        FROM
+            itemsstats
+        WHERE
+            idItem = subItems.idItem AND itemsstats.idStat IN(3, 6)
+    )+
+    (
+        SELECT
+            COALESCE(
+                SUM(itemsstats.value) / 100 * 0.65
+            , 0) AS powerValue
+        FROM
+            itemsstats
+        WHERE
+            idItem = subItems.idItem AND itemsstats.idStat IN(7, 9)
+    )+
+    (
+        SELECT
+            COALESCE(
+                SUM(itemsstats.value) / CEIL((8 *(POW(50, 2)) / 7) / 4.5) * 0.65
+            , 0) AS powerValue
+        FROM
+            itemsstats
+        WHERE
+            idItem = subItems.idItem AND itemsstats.idStat = 4
+    )
     FROM
-        itemsstats
+        items
     WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(1, 3)
-)+
+        items.idItem = subItems.idItem), 0)
+    as power FROM items subItems3 WHERE idItem = subItems.idItem
+)
++
+(
+    SELECT  
+    COALESCE((SELECT DISTINCT
+    (
+        SELECT
+            COALESCE(
+                SUM(itemssecondarystats.value) / 3 * 0.7
+            , 0) AS powerValue
+        FROM
+            itemssecondarystats
+        WHERE
+            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (1, 2, 3, 9, 10)
+    )
+    +
+    (
+        SELECT
+            COALESCE(
+                SUM(itemssecondarystats.value) / 3 * 0.5
+            , 0) AS powerValue
+        FROM
+            itemssecondarystats
+        WHERE
+            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (6)
+    )
+    +
+    (
+        SELECT
+            COALESCE(
+                SUM(itemssecondarystats.value) / 3 * 0.6
+            , 0) AS powerValue
+        FROM
+            itemssecondarystats
+        WHERE
+            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (7, 8)
+    )
+    +
+    (
+        SELECT
+            COALESCE(
+                SUM(itemssecondarystats.value) / 3 * 0.6 / 100
+            , 0) AS powerValue
+        FROM
+            itemssecondarystats
+        WHERE
+            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (4, 5)
+    )
+    FROM
+        itemssecondarystats
+    WHERE
+        itemssecondarystats.idItem = subItems.idItem), 0)
+    as power FROM items subItems2 WHERE idItem = subItems.idItem
+)
++
 (
     SELECT
         COALESCE(
-            SUM(itemsstats.value) / 100 * 0.25
+            SUM(itemssecondarystatselementalresists.value) / 3
         , 0) AS powerValue
     FROM
-        itemsstats
+        itemssecondarystatselementalresists
     WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(2, 6, 8, 10)
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / 100 * 0.8
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat = 5
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / 100 * 0.6
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(7, 9)
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / CEIL((8 *(POW(50, 2)) / 7) / 4.5) * 0.6
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat = 4
-) AS power
+        idItem = subItems.idItem AND itemssecondarystatselementalresists.idElementType IN (1, 2, 3, 4, 5, 6, 7)
+)
 FROM
-    itemsstats
+    items
 WHERE
-    itemsstats.idItem = subItems.idItem), 0) / 5 * 100)
+    items.idItem = subItems.idItem), 0)/5 *100)
 as power FROM items subItems
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-INSERT INTO itemspower SELECT idItem,
-ROUND(COALESCE((SELECT DISTINCT
-    (
-    SELECT
-        COALESCE(SUM(itemsstats.value) / 100, 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(1, 3)
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / 100 * 0.25
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(2, 6, 8, 10)
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / 100 * 0.8
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat = 5
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / 100 * 0.6
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat IN(7, 9)
-)+
-(
-    SELECT
-        COALESCE(
-            SUM(itemsstats.value) / CEIL((8 *(POW(50, 2)) / 7) / 4.5) * 0.6
-        , 0) AS powerValue
-    FROM
-        itemsstats
-    WHERE
-        idItem = subItems.idItem AND itemsstats.idStat = 4
-) AS power
-FROM
-    itemsstats
-WHERE
-    itemsstats.idItem = subItems.idItem), 0) / 5 * 100)
-as power FROM items subItems WHERE idItem NOT IN (SELECT idItem FROM itemspower)
-
-
-
-
-
-
-
-
-
-
-
-
-
