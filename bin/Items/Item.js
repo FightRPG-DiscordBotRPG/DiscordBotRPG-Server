@@ -147,7 +147,6 @@ class Item {
             power += statPower * mult;
         }
 
-        let totalPowerSecondary = 0;
         for (let i of secondaryStatsPossible) {
             let statPower = secondaryStats[i] / 3;
 
@@ -168,10 +167,8 @@ class Item {
                     mult = 0.6;
                     break;
                 case SecondaryStats.possibleStats.RegenHp:
-                case SecondaryStats.possibleStats.RegenMp:
-                    mult = 0.6 / 100;
-                    break;
                 case SecondaryStats.possibleStats.Threat:
+                case SecondaryStats.possibleStats.RegenMp:
                     mult = 0.6 / 100;
                     break;
                 case SecondaryStats.possibleElementalResists.Air:
