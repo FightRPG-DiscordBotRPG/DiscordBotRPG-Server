@@ -171,15 +171,19 @@ class Marketplace {
         let item = new Item(idItem);
         await item.loadItem();
         item.number = order.number;
-        let compareStats = await character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
-        if (compareStats != null) {
-            compareStats = compareStats.stats;
-        } else {
-            compareStats = {};
-        }
+        let itemToCompare = await character.getEquipement().getItem(this.getEquipableIDType(item.typeName));
+        let equippedStats = {};
+        let equippedSecondaryStats = {};
+
+        if (itemToCompare != null) {
+            equippedStats = itemToCompare.stats.toApi();
+            equippedSecondaryStats = itemToCompare.secondaryStats.toApi();
+        } 
+
         return {
             item: await item.toApi(lang),
-            equippedStats: compareStats,
+            equippedStats: equippedStats,
+            equippedSecondaryStats: equippedSecondaryStats
         };
     }
 
