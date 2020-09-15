@@ -820,13 +820,18 @@ class Character extends CharacterEntity {
         return res[0] != null ? res[0].idGuild : 0;
     }
 
-    async toApiSimple() {
+    /**
+     * 
+     * @param {string} lang
+     */
+    async toApiSimple(lang="en") {
         return {
             name: this.getName(),
             level: this.getLevel(),
             power: await this.getPower(),
             currentHp: this.actualHP,
-            maxHp: this.maxHP
+            maxHp: this.maxHP,
+            areaName: this.getArea().getName(lang)
         }
     }
 

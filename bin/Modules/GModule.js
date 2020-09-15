@@ -144,7 +144,7 @@ class GModule {
                         req.query[i] = decodeURIComponent(req.query[i]);
                     }
                 }
-
+               
                 res.locals.trade = Globals.connectedUsers[res.locals.id].character.trade;
                 res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
                 res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();

@@ -1,0 +1,15 @@
+E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < discord_bot_rpg.sql
+
+Express ? =>
+    locals: {
+        lang: string,
+        trade: Trade,
+        group: Group,
+        pending: Group,
+        pendingTrade: Trade,
+        marketplace: Marketplace,
+        craftingbuilding: CraftingBuilding,
+        shop: Shop,
+        currentArea: Area,
+        tLootSystem: LootSystem
+    };

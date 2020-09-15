@@ -266,7 +266,7 @@ class GroupModule extends GModule {
             let group = res.locals.group;
 
             if (group != null) {
-                data = await group.toApi();
+                data = await group.toApi(res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
             }
