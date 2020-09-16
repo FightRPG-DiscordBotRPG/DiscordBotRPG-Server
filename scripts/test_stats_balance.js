@@ -11,7 +11,7 @@ for (let stat of Object.values(Stats.possibleStats)) {
             totalStatsPerSubtypes[subtype] = 0;
         }
 
-        if (stat === "armor" && !["armor", "cloth", "leather"].includes(subtype)) {
+        if (stat === "armor" && !["metal", "cloth", "leather"].includes(subtype)) {
             totalStatsPerSubtypes[subtype] += 1;
         } else {
             totalStatsPerSubtypes[subtype] += Stats.ratiosBasedOnSubtype[stat][subtype];

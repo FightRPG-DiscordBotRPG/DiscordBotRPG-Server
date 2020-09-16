@@ -32,7 +32,7 @@ class Stats {
 
     static ratiosBasedOnSubtype = {
         armor: {
-            "armor": 1.2,
+            "metal": 1.2,
             "cloth": 0.8,
             "leather": 1,
             "bow": 0.15,
@@ -43,7 +43,7 @@ class Stats {
             "staff": 0.15,
         },
         strength: {
-            "armor": 0.8,
+            "metal": 0.8,
             "cloth": 0.8,
             "leather": 0.8,
             "bow": 0.8,
@@ -54,7 +54,7 @@ class Stats {
             "staff": 0.6,
         },
         intellect: {
-            "armor": 0.8,
+            "metal": 0.8,
             "cloth": 1.2,
             "leather": 0.8,
             "bow": 0.8,
@@ -65,7 +65,7 @@ class Stats {
             "staff": 1.4,
         },
         constitution: {
-            "armor": 1.4,
+            "metal": 1.4,
             "cloth": 1,
             "leather": 1,
             "bow": 1,
@@ -76,7 +76,7 @@ class Stats {
             "staff": 1,
         },
         wisdom: {
-            "armor": 1,
+            "metal": 1,
             "cloth": 1.2,
             "leather": 1,
             "bow": 1,
@@ -87,7 +87,7 @@ class Stats {
             "staff": 1,
         },
         dexterity: {
-            "armor": 0.8,
+            "metal": 0.8,
             "cloth": 1,
             "leather": 1.2,
             "bow": 1.4,
@@ -98,7 +98,7 @@ class Stats {
             "staff": 1,
         },
         charisma: {
-            "armor": 1,
+            "metal": 1,
             "cloth": 1,
             "leather": 1,
             "bow": 1,
@@ -109,7 +109,7 @@ class Stats {
             "staff": 1,
         },
         will: {
-            "armor": 1,
+            "metal": 1,
             "cloth": 1,
             "leather": 1,
             "bow": 1,
@@ -120,7 +120,7 @@ class Stats {
             "staff": 1,
         },
         perception: {
-            "armor": 1,
+            "metal": 1,
             "cloth": 1,
             "leather": 1.2,
             "bow": 1,
@@ -131,7 +131,7 @@ class Stats {
             "staff": 1,
         },
         luck: {
-            "armor": 1,
+            "metal": 1,
             "cloth": 1,
             "leather": 1,
             "bow": 1,

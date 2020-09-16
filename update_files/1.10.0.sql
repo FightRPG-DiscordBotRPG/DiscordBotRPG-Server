@@ -554,6 +554,18 @@ VALUES
 (10, "magicalEvadeRate", ""),
 (11, "threat", "");
 
+REPLACE INTO itemssoustypes 
+VALUES
+(6, "metal"),
+(18, "cloth"),
+(19, "leather"),
+(20, "bow"),
+(21, "dagger"),
+(22, "wand"),
+(23, "staff");
+
+
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
