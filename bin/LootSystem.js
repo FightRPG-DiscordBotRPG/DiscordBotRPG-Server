@@ -163,7 +163,7 @@ class LootSystem {
 
         let multiplier = Stats.ratiosBasedOnSubtype[statName] && Stats.ratiosBasedOnSubtype[statName][objectSubtype] ? Stats.ratiosBasedOnSubtype[statName][objectSubtype] : 1;
 
-        return baseValue * multiplier;
+        return Math.ceil(baseValue * multiplier);
 
     }
 
@@ -173,7 +173,7 @@ class LootSystem {
      * @param {number} level
      * @param {number} ratio
      */
-    getSecondaryStatValue(secondaryStatName, level, ratio) {
+    getSecondaryStatValue(objectSubtype, secondaryStatName, level, ratio) {
 
         let baseValue;
 
@@ -213,8 +213,9 @@ class LootSystem {
 
         }
 
+        let multiplier = SecondaryStats.ratiosBasedOnSubtype[secondaryStatName] && SecondaryStats.ratiosBasedOnSubtype[secondaryStatName][objectSubtype] ? SecondaryStats.ratiosBasedOnSubtype[secondaryStatName][objectSubtype] : 1;
 
-        return Math.ceil(baseValue);
+        return Math.ceil(baseValue * multiplier);
 
     }
 
@@ -262,7 +263,7 @@ class LootSystem {
 
                     let r = secondaryStatsPossible[Math.floor(Math.random() * secondaryStatsPossible.length)];
 
-                    secondaryStats[r] = this.getSecondaryStatValue(r, level, ratio);
+                    secondaryStats[r] = this.getSecondaryStatValue(objectSubtype, r, level, ratio);
 
                     // Not a bonus then
                     if (Math.random() <= 0.2) {
