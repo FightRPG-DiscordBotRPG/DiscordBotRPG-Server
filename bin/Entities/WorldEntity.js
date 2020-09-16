@@ -163,10 +163,10 @@ class WorldEntity {
     }
 
     getRecoverValue(toRecover, max, current) {
-        if (toRecover > 0) {
+        if (toRecover >= 0) {
             return Math.round(Math.min(toRecover, max - current))
         } else {
-            return Math.round(Math.max(toRecover, current - max))
+            return Math.round(Math.max(toRecover, -current))
         }
     }
 
