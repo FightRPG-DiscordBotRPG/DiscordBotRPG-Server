@@ -40,7 +40,7 @@ class Translator {
                     case 115:
                         tempStr = String(args[argsAlreadyPassed]);
                         break;
-                    case 100:
+                    case 100: {
                         let num = args[argsAlreadyPassed];
                         if (!isNaN(num)) {
                             tempStr = this.getFormater(lang).format(num);
@@ -48,6 +48,7 @@ class Translator {
                             tempStr = "NaN";
                         }
                         break;
+                    }
                     default:
                         continue;
                 }
