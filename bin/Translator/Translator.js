@@ -129,6 +129,9 @@ class Translator {
             try {
                 let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json', { timeout: 2000 });
                 if (res.status == 200) {
+                    if (typeof res.data === "string") {
+                        res.data = JSON.parse(res.data.trimLeft());
+                    }
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
                     try {
