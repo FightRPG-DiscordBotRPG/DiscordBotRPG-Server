@@ -564,6 +564,9 @@ VALUES
 (22, "wand"),
 (23, "staff");
 
+INSERT INTO languages 
+VALUES
+("vi")
 
 
 
