@@ -464,6 +464,170 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreepossiblesnodesvisuals` (
+  `idNode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `icon` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`idNode`),
+  UNIQUE INDEX `idNode_UNIQUE` (`idNode` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationnodespstree` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `lang` VARCHAR(5) NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
+  PRIMARY KEY (`idNode`, `lang`),
+  INDEX `fk_LocalizationNodesPSTree_Languages1_idx` (`lang` ASC) VISIBLE,
+  CONSTRAINT `fk_LocalizationNodesPSTree_PSTreePossiblesNodesVisuals1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreepossiblesnodesvisuals` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_LocalizationNodesPSTree_Languages1`
+    FOREIGN KEY (`lang`)
+    REFERENCES `discord_bot_rpg`.`languages` (`lang`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodes` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idNodeVisual` INT UNSIGNED NOT NULL,
+  `x` FLOAT(11) NOT NULL,
+  `y` FLOAT(11) NOT NULL,
+  `cost` INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idNode`),
+  INDEX `fk_PSTreeNodes_PSTreePossiblesNodesVisuals1_idx` (`idNodeVisual` ASC) VISIBLE,
+  UNIQUE INDEX `idNode_UNIQUE` (`idNode` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodes_PSTreePossiblesNodesVisuals1`
+    FOREIGN KEY (`idNodeVisual`)
+    REFERENCES `discord_bot_rpg`.`pstreepossiblesnodesvisuals` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodesstatsdata` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idStat` INT UNSIGNED NOT NULL,
+  `value` INT(11) NOT NULL,
+  PRIMARY KEY (`idNode`, `idStat`),
+  INDEX `fk_PSTreeNodesStatsData_Stats1_idx` (`idStat` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesStatsData_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesStatsData_Stats1`
+    FOREIGN KEY (`idStat`)
+    REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodessecondarystatsdata` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idSecondaryStat` INT UNSIGNED NOT NULL,
+  `value` INT(11) NOT NULL,
+  PRIMARY KEY (`idNode`, `idSecondaryStat`),
+  INDEX `fk_PSTreeNodesSecondaryStatsData_SecondaryStats1_idx` (`idSecondaryStat` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesSecondaryStatsData_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesSecondaryStatsData_SecondaryStats1`
+    FOREIGN KEY (`idSecondaryStat`)
+    REFERENCES `discord_bot_rpg`.`secondarystats` (`idSecondaryStat`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodessecondarystatselementalresistsdata` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idElementType` INT UNSIGNED NOT NULL,
+  `value` INT(11) NOT NULL,
+  PRIMARY KEY (`idNode`, `idElementType`),
+  INDEX `fk_PSTreeNodesSecondaryStatsElementalResistsData_ElementsTy_idx` (`idElementType` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesSecondaryStatsElementalResistsData_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesSecondaryStatsElementalResistsData_ElementsTypes1`
+    FOREIGN KEY (`idElementType`)
+    REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodesskillsunlockdata` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idSkill` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idNode`, `idSkill`),
+  INDEX `fk_PSTreeNodesSkillsUnlockData_Skills1_idx` (`idSkill` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesSkillsUnlockData_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesSkillsUnlockData_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodesstatesdata` (
+  `idNode` INT UNSIGNED NOT NULL,
+  `idState` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idNode`, `idState`),
+  INDEX `fk_PSTreeNodesStatesData_States1_idx` (`idState` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesStatesData_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesStatesData_States1`
+    FOREIGN KEY (`idState`)
+    REFERENCES `discord_bot_rpg`.`states` (`idState`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodeslinks` (
+  `idNodeParent` INT UNSIGNED NOT NULL,
+  `PSTreeNodesChild` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idNodeParent`, `PSTreeNodesChild`),
+  INDEX `fk_PSTreeNodesLinks_PSTreeNodes2_idx` (`PSTreeNodesChild` ASC) VISIBLE,
+  CONSTRAINT `fk_PSTreeNodesLinks_PSTreeNodes1`
+    FOREIGN KEY (`idNodeParent`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PSTreeNodesLinks_PSTreeNodes2`
+    FOREIGN KEY (`PSTreeNodesChild`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
 
 
 INSERT INTO statesrestrictions
