@@ -106,11 +106,11 @@ COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`statesremovalconditions` (
   `idState` INT UNSIGNED NOT NULL,
-  `afterFight` TINYINT(4) NOT NULL DEFAULT 0,
-  `afterRounds` TINYINT(4) NOT NULL DEFAULT 0,
+  `afterFight` TINYINT NOT NULL DEFAULT 0,
+  `afterRounds` TINYINT NOT NULL DEFAULT 0,
   `roundMin` INT NOT NULL DEFAULT 0,
   `roundMax` INT NOT NULL DEFAULT 0,
-  `afterDamage` TINYINT(4) NOT NULL DEFAULT 0,
+  `afterDamage` TINYINT NOT NULL DEFAULT 0,
   `damageProbability` FLOAT(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`idState`),
   INDEX `fk_StatesRemovalConditions_States1_idx` (`idState` ASC) VISIBLE,
@@ -258,8 +258,8 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`damageinfo` (
   `idDamageType` INT UNSIGNED NOT NULL,
   `idElementType` INT UNSIGNED NULL DEFAULT NULL,
   `formula` VARCHAR(255) NOT NULL,
-  `variance` TINYINT(4) NOT NULL DEFAULT 0,
-  `criticalHit` TINYINT(4) NOT NULL DEFAULT 0,
+  `variance` TINYINT NOT NULL DEFAULT 0,
+  `criticalHit` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`idSkill`),
   INDEX `fk_DamageInfo_DamagesTypes1_idx` (`idDamageType` ASC) VISIBLE,
   INDEX `fk_DamageInfo_ElementsTypes1_idx` (`idElementType` ASC) VISIBLE,
@@ -592,7 +592,9 @@ COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodesstatesdata` (
   `idNode` INT UNSIGNED NOT NULL,
-  `idState` INT UNSIGNED NOT NULL,
+  `idState` INT UNSIGNED NOT NULL,  
+  `isProtectedFrom` TINYINT NOT NULL DEFAULT 0,
+  `isAdded` TINYINT NOT NULL DEFAULT 1,
   PRIMARY KEY (`idNode`, `idState`),
   INDEX `fk_PSTreeNodesStatesData_States1_idx` (`idState` ASC) VISIBLE,
   CONSTRAINT `fk_PSTreeNodesStatesData_PSTreeNodes1`
@@ -635,7 +637,7 @@ VALUES
 (1, "cant_target_enemy"),(2, "cant_target_ally"),(3, "cant_target_self"),(4, "cant_target_do_anything");
 
 
-REPLACE INTO traitstypes
+INSERT INTO traitstypes
 VALUES
 (1,	"element_attack"),
 (2,	"state_attack"),
