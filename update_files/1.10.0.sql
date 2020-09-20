@@ -494,7 +494,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodes` (
-  `idNode` INT UNSIGNED NOT NULL,
+  `idNode` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `idNodeVisual` INT UNSIGNED NOT NULL,
   `x` FLOAT(11) NOT NULL,
   `y` FLOAT(11) NOT NULL,
@@ -733,7 +733,15 @@ VALUES
 
 INSERT INTO languages 
 VALUES
-("vi")
+("vi");
+
+REPLACE INTO pstreepossiblesnodesvisuals
+VALUES
+(1, "https://www.iconfinder.com/data/icons/ui-ux-essentials-solid/24/help-solid-512.png");
+
+REPLACE INTO localizationnodespstree
+VALUES
+(1, "en", "Unknown Node");
 
 
 
