@@ -499,6 +499,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodes` (
   `x` FLOAT(11) NOT NULL,
   `y` FLOAT(11) NOT NULL,
   `cost` INT UNSIGNED NOT NULL DEFAULT 1,
+  `isInitial` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`idNode`),
   INDEX `fk_PSTreeNodes_PSTreePossiblesNodesVisuals1_idx` (`idNodeVisual` ASC) VISIBLE,
   UNIQUE INDEX `idNode_UNIQUE` (`idNode` ASC) VISIBLE,
@@ -554,7 +555,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`pstreenodessecondarystatselementalresistsdata` (
   `idNode` INT UNSIGNED NOT NULL,
   `idElementType` INT UNSIGNED NOT NULL,
-  `value` INT(11) NOT NULL,
+  `value` INT NOT NULL,
   PRIMARY KEY (`idNode`, `idElementType`),
   INDEX `fk_PSTreeNodesSecondaryStatsElementalResistsData_ElementsTy_idx` (`idElementType` ASC) VISIBLE,
   CONSTRAINT `fk_PSTreeNodesSecondaryStatsElementalResistsData_PSTreeNodes1`
