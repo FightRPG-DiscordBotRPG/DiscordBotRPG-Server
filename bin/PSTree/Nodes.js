@@ -1,11 +1,11 @@
 const conn = require("../../conf/mysql");
 const NodeVisuals = require("./NodeVisuals");
-const Node = require("./Node");
+const PSTreeNode = require("./Node");
 
 class Nodes {
     constructor() {
         /**
-         * @type {Object<number, Node>}
+         * @type {Object<number, PSTreeNode>}
          */
         this.allNodes = {};
 
@@ -45,7 +45,7 @@ class Nodes {
             let id = item.idNode;
             let nodeRes = item;
             promises.push((async () => {
-                let node = new Node();
+                let node = new PSTreeNode();
                 await node.load(id);
                 node.visuals = this.possibleNodesVisuals.find((x) => x.id === nodeRes.idNodeVisual)
                 return node;
@@ -55,9 +55,16 @@ class Nodes {
         await Promise.all(promises);
 
         for (let node of promises) {
-            // TODO : Add links
             node = await node;
             this.allNodes[node.id] = node;
+        }
+
+        // Do links
+        res = await conn.query("SELECT * FROM pstreenodeslinks");
+
+        for (let item of res) {
+            this.allNodes[item.idNodeParent].addChild(this.allNodes[item.PSTreeNodesChild]);
+            this.allNodes[item.PSTreeNodesChild].addParent(this.allNodes[item.idNodeParent]);
         }
 
     }
