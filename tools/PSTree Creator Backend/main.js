@@ -44,13 +44,12 @@ async function Start() {
             skills.push(skill);
             promises.push((async (skillFunc) => {
                 await skillFunc.loadWithID(data.idSkill);
-                skillFunc.name = skillFunc.getName();
             })(skill));
         }
 
         await Promise.all(promises);
 
-        res.json({ skills: skills });
+        res.json({ skills: skills.map(s => s.toApiSimple()) });
     });
 
     app.get("/states", async (req, res) => {

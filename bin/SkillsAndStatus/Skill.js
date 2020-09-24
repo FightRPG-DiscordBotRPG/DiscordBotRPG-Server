@@ -202,7 +202,7 @@ class Skill {
     isRecover() {
         return this.isDamageTypeIncluded([3, 4]);
     }
-    
+
     isDrain() {
         return this.isDamageTypeIncluded([5, 6]);
     }
@@ -283,7 +283,7 @@ class Skill {
         return Math.floor(this.repeat);
     }
 
-    getDesc(lang="en") {
+    getDesc(lang = "en") {
         return Translator.getString(lang, "skillDesc", this.id);
     }
 
@@ -298,6 +298,13 @@ class Skill {
      */
     getMessage(casterName, lang = "en") {
         return `${casterName} ${Translator.getString(lang, "skillMessages", this.id, [this.getName()])}`;
+    }
+
+    toApiSimple(lang = "en") {
+        return {
+            id: this.id,
+            name: this.getName(lang)
+        }
     }
 }
 
