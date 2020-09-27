@@ -83,14 +83,11 @@ class Nodes {
 
     async visualsToApi(lang = "en") {
         let values = [];
-        let promises = [];
+
         for (let i in this.possibleNodesVisuals) {
             let visual = this.possibleNodesVisuals[i];
-            values.push(visual);
-            promises.push(visual.toApi(lang));
+            values.push(await visual.toApi());
         }
-
-        await Promise.all(promises);
 
         return { visuals: values };
     }
