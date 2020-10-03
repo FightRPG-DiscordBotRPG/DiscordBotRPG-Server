@@ -111,7 +111,7 @@ class Node {
             statesProtectedFromIds: Object.keys(this.statesProtectedFromIds),
             statesAddedIds: Object.keys(this.statesAddedIds),
             x: this.x,
-            y: this.x,
+            y: this.y,
             cost: this.cost,
             isInitial: this.isInitial,
             linkedNodes: Object.keys(this.children)

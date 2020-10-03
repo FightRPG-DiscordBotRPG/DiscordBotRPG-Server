@@ -76,8 +76,6 @@ async function Start() {
 
         await ClearAllNodes();
 
-        //await ClearAllNodes();
-
         let allNodesObject = [];
         let promisesToWait = [];
 
