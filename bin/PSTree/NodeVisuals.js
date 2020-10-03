@@ -16,7 +16,19 @@ class NodeVisuals {
             this.id = id;
             this.icon = res.icon;
         }
+    }
 
+    async save() {
+        await conn.query("REPLACE INTO pstreepossiblesnodesvisuals VALUES (?, ?)", [this.id, this.icon]);
+        if (this.localizedNames != null) {
+            for (let lang in this.localizedNames) {
+                await conn.query("REPLACE INTO localizationnodespstree VALUES (?, ?, ?)", [this.id, lang, this.localizedNames[lang]]);
+            }
+        }
+
+        if (this.name != null) {
+            await conn.query("REPLACE INTO localizationnodespstree VALUES (?, ?, ?)", [this.id, "en", this.name]);
+        }
     }
 
     /**

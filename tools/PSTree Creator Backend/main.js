@@ -7,6 +7,7 @@ const Skill = require("../../bin/SkillsAndStatus/Skill");
 const Translator = require("../../bin/Translator/Translator");
 const State = require("../../bin/SkillsAndStatus/State");
 const { promises } = require("dns");
+const NodeVisuals = require("../../bin/PSTree/NodeVisuals");
 
 const express = require("express"),
     app = express(),
@@ -71,6 +72,27 @@ async function Start() {
         res.json({ skills: states.map(s => s.toApi()) });
     });
 
+    app.post("/visuals_update", async (req, res) => {
+        let json = JSON.parse(req.body.visuals);
+
+        await ClearAllVisuals();
+
+        let allVisuals = [];
+        let promisesToWait = [];
+
+        for (let nodeVisual of json.visuals) {
+            allVisuals.push(nodeVisual);
+            nodeVisual = JSON.parse(nodeVisual);
+
+            let visual = Object.assign(new NodeVisuals(), nodeVisual);
+            promisesToWait.push(visual.save());
+        }
+
+        await Promise.all(promisesToWait);
+
+        res.json({ done: true });
+    });
+
     app.post("/nodes_update", async (req, res) => {
         let json = JSON.parse(req.body.dataNodes);
 
@@ -115,6 +137,12 @@ async function ClearAllNodes() {
     await conn.query("DELETE FROM pstreenodesstatsdata");
     await conn.query("DELETE FROM pstreenodessecondarystatsdata");
     await conn.query("DELETE FROM pstreenodes");
+}
+
+async function ClearAllVisuals() {
+    await conn.query("UPDATE pstreenodes SET idNodeVisual = ?", [null]);
+    await conn.query("DELETE FROM localizationnodespstree");
+    await conn.query("DELETE FROM pstreepossiblesnodesvisuals");
 }
 
 Start();

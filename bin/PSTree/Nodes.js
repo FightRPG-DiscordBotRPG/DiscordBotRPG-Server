@@ -1,6 +1,7 @@
 const conn = require("../../conf/mysql");
 const NodeVisuals = require("./NodeVisuals");
 const PSTreeNode = require("./Node");
+const Translator = require("../Translator/Translator");
 
 class Nodes {
     constructor() {
@@ -84,12 +85,17 @@ class Nodes {
         };
     }
 
-    async visualsToApi(lang = "en") {
+    async visualsToApi() {
         let values = [];
 
         for (let i in this.possibleNodesVisuals) {
             let visual = this.possibleNodesVisuals[i];
-            values.push(await visual.toApi());
+            let visualToApi = await visual.toApi();
+            visualToApi.localizedNames = {};
+            for (let lang in Translator.translations) {
+                visualToApi.localizedNames[lang] = await visual.getName(lang);
+            }
+            values.push(visualToApi);
         }
 
         return { visuals: values };
