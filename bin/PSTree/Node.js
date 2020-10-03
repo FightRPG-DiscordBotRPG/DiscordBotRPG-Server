@@ -113,7 +113,7 @@ class Node {
             x: this.x,
             y: this.x,
             cost: this.cost,
-            initial: this.isInitial,
+            isInitial: this.isInitial,
             linkedNodes: Object.keys(this.children)
         }
     }
@@ -192,8 +192,6 @@ class Node {
 
     async saveLinks() {
         let promises = [];
-        console.log(this.id);
-        console.log(this.linkedNodes);
         for (let item of this.linkedNodes) {
             promises.push(conn.query("REPLACE INTO pstreenodeslinks VALUES (?, ?)", [this.id, item]));
         }
