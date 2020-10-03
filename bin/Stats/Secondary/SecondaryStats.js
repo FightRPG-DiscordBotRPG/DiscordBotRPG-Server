@@ -325,6 +325,10 @@ class SecondaryStats {
         return r;
     }
 
+    getFlatElementalResist(elementName) {
+        return this[elementName + "Resist"];
+    }
+
 }
 
 async function loadPossibleStats() {

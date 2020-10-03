@@ -1,6 +1,7 @@
 'use strict';
 const conn = require("../../../conf/mysql.js");
 const SecondaryStats = require("./SecondaryStats");
+const Globals = require("../../Globals.js");
 
 class SecondaryStatsPSTreeNode extends SecondaryStats {
 
@@ -21,6 +22,22 @@ class SecondaryStatsPSTreeNode extends SecondaryStats {
         for (let stat in res) {
             this[res[stat].shorthand + "Resist"] = res[stat].value;
         }
+    }
+
+    async save() {
+        let promisesToWait = [];
+
+        for (let secondaryStat in Globals.secondaryStatsIdsByName) {
+            let idStat = Globals.secondaryStatsIdsByName[secondaryStat];
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodessecondarystatsdata VALUES (?, ?, ?)", [this.id, idStat, this[secondaryStat]]));
+        }
+
+        for (let elementalResist in Globals.elementsTypesIdsByName) {
+            let idStat = Globals.elementsTypesIdsByName[elementalResist];
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodessecondarystatselementalresistsdata VALUES (?, ?, ?)", [this.id, idStat, this.getFlatElementalResist(elementalResist)]));
+        }
+
+        await Promise.all(promisesToWait);
     }
 
     async deleteStats() {

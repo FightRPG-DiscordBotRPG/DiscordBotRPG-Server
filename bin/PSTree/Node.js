@@ -50,6 +50,8 @@ class Node {
         this.children = {};
         this.parents = {};
 
+        this.linkedNodes = [];
+
     }
 
 	/**
@@ -122,6 +124,7 @@ class Node {
 	 */
     addChild(node) {
         this.children[node.id] = node;
+        this.updateLinkedNodes();
     }
 
     /**
@@ -130,6 +133,72 @@ class Node {
      */
     addParent(node) {
         this.parents[node.id] = node;
+        this.updateLinkedNodes();
+    }
+
+    updateLinkedNodes() {
+        this.linkedNodes = Object.keys(this.children);
+    }
+
+    updateFromAssign() {
+        this.stats = Object.assign(new StatsPSTreeNode(), this.stats);
+        this.secondaryStats = Object.assign(new SecondaryStatsPSTreeNode(), this.secondaryStats);
+        this.visuals = Object.assign(new NodeVisuals(), this.visuals);
+
+        this.stats.id = this.id;
+        this.secondaryStats.id = this.id;
+
+        this.updatePropertyAfterAssign("skillsUnlocked", "skillsUnlockedIds");
+        this.updatePropertyAfterAssign("statesProtectedFrom", "statesProtectedFromIds");
+        this.updatePropertyAfterAssign("statesAdded", "statesAddedIds");
+    }
+
+    /**
+     * Only used from api with unity tool
+     **/
+    updatePropertyAfterAssign(unusedProperty, usedProperty) {
+        if (this[unusedProperty]) {
+            this[usedProperty] = [];
+            for (let item of this[unusedProperty]) {
+                this[usedProperty].push(item.id);
+            }
+        }
+    }
+
+
+
+    async save() {
+        await conn.query("REPLACE INTO pstreenodes VALUES (?, ?, ?, ?, ?, ?)", [this.id, this.visuals.id, this.x, this.y, this.cost, this.isInitial]);
+
+        let promisesToWait = [];
+        promisesToWait.push(this.secondaryStats.save());
+        promisesToWait.push(this.stats.save());
+
+        //console.log(this);
+        for (let idSkill of this.skillsUnlockedIds) {
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodesskillsunlockdata VALUES (?, ?)", [this.id, idSkill]));
+        }
+
+        for (let idState of this.statesAddedIds) {
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodesstatesdata VALUES (?, ?, ?, ?)", [this.id, idState, false, true]));
+        }
+
+        for (let idState of this.statesProtectedFromIds) {
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodesstatesdata VALUES (?, ?, ?, ?)", [this.id, idState, true, false]));
+        }
+
+        await Promise.all(promisesToWait);
+    }
+
+    async saveLinks() {
+        let promises = [];
+        console.log(this.id);
+        console.log(this.linkedNodes);
+        for (let item of this.linkedNodes) {
+            promises.push(conn.query("REPLACE INTO pstreenodeslinks VALUES (?, ?)", [this.id, item]));
+        }
+
+        await Promise.all(promises);
     }
 
 }

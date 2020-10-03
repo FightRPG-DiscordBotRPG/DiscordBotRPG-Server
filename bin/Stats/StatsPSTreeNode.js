@@ -20,6 +20,17 @@ class StatsPSTreeNode extends Stats {
         }
     }
 
+    async save() {
+        let promisesToWait = [];
+
+        for (let statName in Globals.statsIdsByName) {
+            let idStat = Globals.statsIdsByName[statName];
+            promisesToWait.push(conn.query("REPLACE INTO pstreenodesstatsdata VALUES (?, ?, ?)", [this.id, idStat, this[statName]]));
+        }
+
+        await Promise.all(promisesToWait);
+    }
+
     async deleteStats() {
         await conn.query("DELETE FROM pstreenodesstatsdata WHERE idNode = ?;", [this.id]);
     }

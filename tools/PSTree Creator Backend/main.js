@@ -1,10 +1,12 @@
 const conf = require("../../conf/conf");
 const conn = require("../../conf/mysql");
 const Nodes = require("../../bin/PSTree/Nodes");
+const PSTreeNode = require("../../bin/PSTree/Node");
 const Globals = require("../../bin/Globals");
 const Skill = require("../../bin/SkillsAndStatus/Skill");
 const Translator = require("../../bin/Translator/Translator");
 const State = require("../../bin/SkillsAndStatus/State");
+const { promises } = require("dns");
 
 const express = require("express"),
     app = express(),
@@ -68,6 +70,53 @@ async function Start() {
 
         res.json({ skills: states.map(s => s.toApi()) });
     });
+
+    app.post("/nodes_update", async (req, res) => {
+        let json = JSON.parse(req.body.dataNodes);
+
+        await ClearAllNodes();
+
+        //await ClearAllNodes();
+
+        let allNodesObject = [];
+        let promisesToWait = [];
+
+        for (let nodeJson of json.nodes) {
+
+            nodeJson = JSON.parse(nodeJson.trim());
+
+            /**
+             * @type {PSTreeNode}
+             */
+            let node = Object.assign(new PSTreeNode(), nodeJson);
+            allNodesObject.push(node);
+            node.updateFromAssign();
+
+            promisesToWait.push(node.save());
+
+        }
+
+        await Promise.all(promisesToWait);
+
+        promisesToWait = [];
+        for (let node of allNodesObject) {
+            promisesToWait.push(node.saveLinks());
+        }
+
+        await Promise.all(promisesToWait);
+        await nodesObject.load();
+        res.json({ done: true });
+    });
+}
+
+async function ClearAllNodes() {
+    await conn.query("DELETE FROM pstreenodessecondarystatselementalresistsdata");
+    await conn.query("DELETE FROM pstreenodesstatesdata");
+    await conn.query("DELETE FROM pstreenodeslinks");
+    await conn.query("DELETE FROM pstreenodesskillsunlockdata");
+    await conn.query("DELETE FROM pstreenodesstatsdata");
+    await conn.query("DELETE FROM pstreenodessecondarystatsdata");
+    await conn.query("DELETE FROM pstreenodes");
 }
 
 Start();

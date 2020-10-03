@@ -20,6 +20,9 @@ class Nodes {
         let promises;
         let res = null;
 
+        this.allNodes = {};
+        this.possibleNodesVisuals = [];
+
         res = await conn.query("SELECT * FROM pstreepossiblesnodesvisuals");
         promises = [];
         for (let item of res) {
