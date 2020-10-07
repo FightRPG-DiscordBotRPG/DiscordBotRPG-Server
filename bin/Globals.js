@@ -36,6 +36,10 @@ var Globals = {
     "monstersIds": null,
     "itemsrarities": null,
     "equipableCorresponds": null,
+    /**
+     * @type Nodes
+     **/
+    "pstreenodes": null,
     "allSecondaryStatsNames": [],
     "basicWaitTimeBeforeFight": 60,
     "basicWaitTimeAfterTravel": 120,
@@ -225,6 +229,10 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
+
+        const Nodes = require("./PSTree/Nodes.js");
+        this.pstreenodes = new Nodes();
+        await this.pstreenodes.load();
     },
     getSearchParams: (params, withWhere = true, withAndBefore = false) => {
         let values = [];
