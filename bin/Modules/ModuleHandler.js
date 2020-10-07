@@ -12,7 +12,7 @@ const versions = require("../../conf/versions");
 const TournamentViewer = require("../Helper/TournamentViewer");
 const express = require("express"),
     app = express(),
-    port = 8880,
+    port = conf.port,
     url = require('url'),
     compression = require('compression');
 require('express-async-errors');
