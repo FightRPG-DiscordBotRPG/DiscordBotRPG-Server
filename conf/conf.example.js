@@ -3,6 +3,7 @@ const conf = {
     discordbotskey: "",
     webhookkey: "",
     registerkey: "DEFAULT_KEY",
+    port: 8880,
     database: {
         host: "localhost",
         user: "root", password: "",
