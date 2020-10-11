@@ -1,9 +1,9 @@
 const conn = require("../../conf/mysql");
-const NodeVisuals = require("./NodeVisuals");
-const PSTreeNode = require("./Node");
+const NodeVisuals = require("./PSTreeNodeVisuals");
+const PSTreeNode = require("./PSTreeNode");
 const Translator = require("../Translator/Translator");
 
-class Nodes {
+class PSTreeNodes {
     constructor() {
         /**
          * @type {Object<number, PSTreeNode>}
@@ -100,6 +100,14 @@ class Nodes {
 
         return { visuals: values };
     }
+
+    /**
+     * 
+     * @param {number} idNode
+     */
+    getNode(idNode) {
+        return this.allNodes[idNode];
+    }
 }
 
-module.exports = Nodes;
+module.exports = PSTreeNodes;

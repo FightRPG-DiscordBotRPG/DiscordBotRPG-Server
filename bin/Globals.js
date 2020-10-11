@@ -37,7 +37,7 @@ var Globals = {
     "itemsrarities": null,
     "equipableCorresponds": null,
     /**
-     * @type Nodes
+     * @type PSTreeNodes
      **/
     "pstreenodes": null,
     "allSecondaryStatsNames": [],
@@ -229,10 +229,6 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
-
-        const Nodes = require("./PSTree/Nodes.js");
-        this.pstreenodes = new Nodes();
-        await this.pstreenodes.load();
     },
     getSearchParams: (params, withWhere = true, withAndBefore = false) => {
         let values = [];
@@ -295,4 +291,5 @@ module.exports = Globals;
  * @typedef {import("./User")} User
  * @typedef {import("./Guild")} Guild
  * @typedef {import("./FightManager")} FightManager
+ * @typedef {import("./PSTree/PSTreeNodes")} PSTreeNodes
  **/

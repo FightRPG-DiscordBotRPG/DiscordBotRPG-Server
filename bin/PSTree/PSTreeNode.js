@@ -1,11 +1,11 @@
-const NodeVisuals = require("./NodeVisuals");
+const NodeVisuals = require("./PSTreeNodeVisuals");
 const SecondaryStatsPSTreeNode = require("../Stats/Secondary/SecondaryStatsPSTreeNode");
 const StatsPSTreeNode = require("../Stats/StatsPSTreeNode");
 const Skill = require("../SkillsAndStatus/Skill");
 const State = require("../SkillsAndStatus/State");
 const conn = require("../../conf/mysql");
 
-class Node {
+class PSTreeNode {
     constructor() {
 
 		/**
@@ -45,11 +45,15 @@ class Node {
         this.isInitial = false;
 
 		/**
-		 * @type {Object<number,Node>}
+		 * @type {Object<number,PSTreeNode>}
 		 */
         this.children = {};
         this.parents = {};
 
+        /**
+         * Array of linked nodes ids
+         * @type Array<number>
+         **/
         this.linkedNodes = [];
 
     }
@@ -120,7 +124,7 @@ class Node {
 
 	/**
 	 * 
-	 * @param {Node} node
+	 * @param {PSTreeNode} node
 	 */
     addChild(node) {
         this.children[node.id] = node;
@@ -129,7 +133,7 @@ class Node {
 
     /**
      *
-     * @param {Node} node
+     * @param {PSTreeNode} node
      */
     addParent(node) {
         this.parents[node.id] = node;
@@ -201,4 +205,4 @@ class Node {
 
 }
 
-module.exports = Node;
+module.exports = PSTreeNode;

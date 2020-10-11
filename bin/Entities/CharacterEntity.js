@@ -2,6 +2,8 @@ const WorldEntity = require("./WorldEntity");
 const StatsPlayer = require("../Stats/StatsPlayer");
 const LevelSystem = require("../LevelSystem");
 const CharacterEquipement = require("../CharacterEquipement");
+const CharacterTalents = require("../CharacterTalents");
+const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
 
 class CharacterEntity extends WorldEntity {
 
@@ -15,6 +17,7 @@ class CharacterEntity extends WorldEntity {
         this.stats = new StatsPlayer();
         this.equipement = new CharacterEquipement();
         this.levelSystem = new LevelSystem();
+        this.talents = new CharacterTalents();
         this._type = "Character";
         this.buildSkills = [1, 2, 37, 52, 91, 101, 172];
     }
@@ -29,7 +32,8 @@ class CharacterEntity extends WorldEntity {
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id),
-            this.equipement.loadEquipements(id)
+            this.equipement.loadEquipements(id),
+            this.talents.load(id),
         ]);
     }
 
@@ -46,7 +50,7 @@ class CharacterEntity extends WorldEntity {
      * @returns {number} Stat value
      */
     getStat(statName) {
-        return super.getStat(statName) + (this.equipement.getStat(statName) * this.tempStatsModifiers[statName]);
+        return super.getStat(statName) + ((this.equipement.getStat(statName) + this.talents.stats.getStat(statName)) * this.tempStatsModifiers[statName]);
     }
 
     /**
@@ -55,7 +59,7 @@ class CharacterEntity extends WorldEntity {
     * @returns {number} Secondary stat value
     */
     getSecondaryStat(secondaryStatName) {
-        return super.getSecondaryStat(secondaryStatName) + (this.equipement.getSecondaryStat(secondaryStatName) * this.tempStatsModifiers[secondaryStatName]);
+        return super.getSecondaryStat(secondaryStatName) + ((this.equipement.getSecondaryStat(secondaryStatName) + this.talents.secondaryStats.getStat(statName)) * this.tempStatsModifiers[secondaryStatName]);
     }
 
     /**
@@ -64,7 +68,7 @@ class CharacterEntity extends WorldEntity {
      */
     getElementalResist(elementName) {
         // super always returns 1 since user is a world entity having empty secondary stats
-        return super.getElementalResist(elementName) + (this.equipement.secondaryStats.getElementalResist(elementName) + this.tempStatsModifiers[elementName]) - 1;
+        return super.getElementalResist(elementName) + (this.equipement.secondaryStats.getElementalResist(elementName) + this.talents.secondaryStats.getFlatElementalResist(elementName) + this.tempStatsModifiers[elementName]) - 2;
     }
 
     /**

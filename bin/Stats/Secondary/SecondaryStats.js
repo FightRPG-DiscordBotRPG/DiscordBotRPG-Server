@@ -329,6 +329,28 @@ class SecondaryStats {
         return this[elementName + "Resist"];
     }
 
+    /**
+ * 
+ * @param {Stats} otherStats
+ */
+    add(otherStats) {
+        let statsPossible = Globals.allSecondaryStatsNames;
+        for (let i in statsPossible) {
+            this[statsPossible[i]] += otherStats[statsPossible[i]];
+        }
+    }
+
+    /**
+     * 
+     * @param {Stats} otherStats
+     */
+    subtract(otherStats) {
+        let statsPossible = Globals.allSecondaryStatsNames;
+        for (let i in statsPossible) {
+            this[statsPossible[i]] -= otherStats[statsPossible[i]];
+        }
+    }
+
 }
 
 async function loadPossibleStats() {

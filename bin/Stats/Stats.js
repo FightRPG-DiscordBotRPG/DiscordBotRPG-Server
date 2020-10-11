@@ -197,6 +197,28 @@ class Stats {
         return level * 8;
     }
 
+    /**
+     * 
+     * @param {Stats} otherStats
+     */
+    add(otherStats) {
+        let statsPossible = Object.keys(Globals.statsIdsByName);
+        for (let i in statsPossible) {
+            this[statsPossible[i]] += otherStats[statsPossible[i]];
+        }
+    }
+
+    /**
+     * 
+     * @param {Stats} otherStats
+     */
+    subtract(otherStats) {
+        let statsPossible = Object.keys(Globals.statsIdsByName);
+        for (let i in statsPossible) {
+            this[statsPossible[i]] -= otherStats[statsPossible[i]];
+        }
+    }
+
 
 }
 

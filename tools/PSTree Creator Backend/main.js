@@ -1,13 +1,12 @@
 const conf = require("../../conf/conf");
 const conn = require("../../conf/mysql");
-const Nodes = require("../../bin/PSTree/Nodes");
-const PSTreeNode = require("../../bin/PSTree/Node");
+const PSTreeNodes = require("../../bin/PSTree/PSTreeNodes");
+const PSTreeNode = require("../../bin/PSTree/PSTreeNode");
 const Globals = require("../../bin/Globals");
 const Skill = require("../../bin/SkillsAndStatus/Skill");
 const Translator = require("../../bin/Translator/Translator");
 const State = require("../../bin/SkillsAndStatus/State");
-const { promises } = require("dns");
-const NodeVisuals = require("../../bin/PSTree/NodeVisuals");
+const NodeVisuals = require("../../bin/PSTree/PSTreeNodeVisuals");
 
 const express = require("express"),
     app = express(),
@@ -22,7 +21,7 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(compression());
 
-const nodesObject = new Nodes();
+const nodesObject = new PSTreeNodes();
 
 
 async function Start() {

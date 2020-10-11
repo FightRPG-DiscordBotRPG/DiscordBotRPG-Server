@@ -10,6 +10,7 @@ const User = require("./bin/User");
 const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
 const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
+const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
 const axios = require("axios").default;
 const options = {
     webhookPort: 5000,
@@ -74,6 +75,11 @@ let startUp = async () => {
     console.log("Loading Fight Manager...");
     Globals.fightManager = new FightManager();
     console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+    syncStartWith = Date.now();
+    Globals.pstreenodes = new PSTreeNodes();
+    await Globals.pstreenodes.load();
+    console.log("Passives/Skills Tree Nodes loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     let wbs = new WorldBossSpawner();
     await wbs.startUp();

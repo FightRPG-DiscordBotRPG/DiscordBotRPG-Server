@@ -129,7 +129,8 @@ class CharacterModule extends GModule {
         this.router.post("/update", async (req, res, next) => {
             let err = null;
             if (req.body.username != null) {
-                if (req.body.username.length <= 37) {
+                // Utf8 encoding length can be more than 37...
+                if ([...req.body.username].length <= 37) {
                     await conn.query("UPDATE users SET userName = ? WHERE idUser = ?;", [req.body.username, res.locals.id]);
                     if (Globals.connectedUsers[res.locals.id]) {
                         Globals.connectedUsers[res.locals.id].updateInMemmoryUsername(req.body.username);
@@ -196,6 +197,36 @@ class CharacterModule extends GModule {
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
+        });
+
+        this.router.get("/talents", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].character.talents.toApi(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/talents/show/:idNode", async (req, res, next) => {
+            let idNodeToSee = parseInt(req.params.idNode, 10);
+            let err = null;
+            let data = {};
+            if (idNodeToSee != null) {
+                let node = Globals.pstreenodes.getNode(idNode);
+                if (node != null) {
+                    data.node = node.toApi(res.locals.lang);
+                    data.isAquired = Globals.connectedUsers[res.locals.id].character.talents.talents[idNode] != null;
+                    data.unlockable = Globals.connectedUsers[res.locals.id].character.talents.canUnlock(idNode);
+                } else {
+                    err = Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist");
+                }
+            } else {
+                err = Translator.getString(res.locals.lang, "errors", "talents_show_missing_id");
+            }
+            data.lang = res.locals.lang;
+
+
+            await next();
+            return err != null ? res.json({ error: err }) : res.json(data);
         });
 
 

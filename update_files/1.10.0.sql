@@ -631,6 +631,46 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`characterstalents` (
+  `idCharacter` INT UNSIGNED NOT NULL,
+  `idNode` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idCharacter`, `idNode`),
+  INDEX `fk_CharactersTalents_PSTreeNodes1_idx` (`idNode` ASC) VISIBLE,
+  CONSTRAINT `fk_CharactersTalents_Characters1`
+    FOREIGN KEY (`idCharacter`)
+    REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CharactersTalents_PSTreeNodes1`
+    FOREIGN KEY (`idNode`)
+    REFERENCES `discord_bot_rpg`.`pstreenodes` (`idNode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersbuilds` (
+  `idCharacter` INT UNSIGNED NOT NULL,
+  `idSkill` INT UNSIGNED NOT NULL,
+  `priority` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`idCharacter`, `idSkill`),
+  INDEX `fk_CharactersBuilds_Skills1_idx` (`idSkill` ASC) VISIBLE,
+  CONSTRAINT `fk_CharactersBuilds_Characters1`
+    FOREIGN KEY (`idCharacter`)
+    REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CharactersBuilds_Skills1`
+    FOREIGN KEY (`idSkill`)
+    REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
 
 
 INSERT INTO statesrestrictions
