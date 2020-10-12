@@ -211,11 +211,15 @@ class CharacterModule extends GModule {
             let err = null;
             let data = {};
             if (idNodeToSee != null) {
-                let node = Globals.pstreenodes.getNode(idNode);
+                let node = Globals.pstreenodes.getNode(idNodeToSee);
                 if (node != null) {
-                    data.node = node.toApi(res.locals.lang);
-                    data.isAquired = Globals.connectedUsers[res.locals.id].character.talents.talents[idNode] != null;
-                    data.unlockable = Globals.connectedUsers[res.locals.id].character.talents.canUnlock(idNode);
+                    data.node = await node.toApi(res.locals.lang);
+                    data.isAquired = Globals.connectedUsers[res.locals.id].character.talents.talents[idNodeToSee] != null;
+                    if (data.isAquired) {
+                        data.unlockable = false;
+                    } else {
+                        data.unlockable = Globals.connectedUsers[res.locals.id].character.talents.canUnlock(idNodeToSee);
+                    }
                 } else {
                     err = Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist");
                 }

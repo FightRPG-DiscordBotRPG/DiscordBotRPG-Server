@@ -530,6 +530,11 @@ class GModule {
                     "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
                     "settings": Translator.getString(lang, "help_panel", "settings"),
                 }
+
+                commands[Translator.getString(lang, "help_panel", "talents_title")] = {
+                    "talents" : "",
+                    "talentshow": "",
+                }
                 break;
 
         }
