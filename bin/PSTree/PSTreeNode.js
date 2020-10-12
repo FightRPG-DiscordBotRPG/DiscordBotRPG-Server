@@ -118,7 +118,7 @@ class PSTreeNode {
             y: this.y,
             cost: this.cost,
             isInitial: this.isInitial,
-            linkedNodes: Object.keys(this.children)
+            linkedNodes: this.linkedNodes
         }
     }
 
@@ -141,7 +141,7 @@ class PSTreeNode {
     }
 
     updateLinkedNodes() {
-        this.linkedNodes = Object.keys(this.children);
+        this.linkedNodes = [...Object.keys(this.children), ...Object.keys(this.parents)];
     }
 
     updateFromAssign() {
