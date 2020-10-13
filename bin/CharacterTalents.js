@@ -71,6 +71,12 @@ class CharacterTalents {
         return (await this.character.getStatPoints()) >= Globals.pstreenodes.getNode(idNode).getRealCost();
     }
 
+    async reset() {
+        await conn.query("DELETE FROM characterstalents WHERE idCharacter = ?;", [this.id]);
+        this.talents = {};
+        this.reloadStats();
+    }
+
     /**
      * 
      * @param {number} idNode
@@ -82,7 +88,12 @@ class CharacterTalents {
                 return true;
             }
         }
-        return false;
+
+        // If after search not ok
+        // Return if node is initial
+        // Since search only look through unlocked talents
+        // And initial are always available
+        return node.isInitial;
     }
 
     /**
@@ -112,6 +123,7 @@ class CharacterTalents {
             unlockedSkills: Object.keys(this.unlockedSkillsIds).map(e => Translator.getString(lang, "skillNames", e) + ` (${e})`),
             stats: this.stats.toApi(),
             secondaryStats: this.secondaryStats.toApi(),
+            initialTalents: Globals.pstreenodes.initialTalents,
         }
     }
 

@@ -256,11 +256,11 @@ class CharacterModule extends GModule {
             return this.asError(Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist"));
         }
 
-        if (character.talents.isReachable(idNode) === false) {
+        if (character.talents.isReachable(idNode) == false) {
             return this.asError(Translator.getString(res.locals.lang, "errors", "talents_node_not_reachable"));
         }
 
-        if (await character.talents.haveEnoughPoints(idNode) === false) {
+        if (await character.talents.haveEnoughPoints(idNode) == false) {
             return this.asError(Translator.getString(res.locals.lang, "errors", "talents_not_enough_points"));
         }
 
@@ -275,7 +275,7 @@ class CharacterModule extends GModule {
         }
 
         return {
-            unlockedNode: await node.toApi(res.locals.lang),
+            node: await node.toApi(res.locals.lang),
             pointsLeft: await Globals.connectedUsers[res.locals.id].character.getStatPoints(),
         };
 

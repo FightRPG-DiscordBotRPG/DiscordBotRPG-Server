@@ -323,6 +323,7 @@ class Character extends CharacterEntity {
             await this.removeMoney(resetValue);
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
+            await this.talents.reset();
             return true;
         }
         return false;
