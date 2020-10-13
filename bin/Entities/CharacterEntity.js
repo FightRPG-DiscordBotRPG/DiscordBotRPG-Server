@@ -33,7 +33,7 @@ class CharacterEntity extends WorldEntity {
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id),
             this.equipement.loadEquipements(id),
-            this.talents.load(id),
+            this.talents.load(null, id),
         ]);
     }
 

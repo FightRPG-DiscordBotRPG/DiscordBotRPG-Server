@@ -103,7 +103,6 @@ async function Start() {
         for (let nodeJson of json.nodes) {
 
             nodeJson = JSON.parse(nodeJson.trim());
-
             /**
              * @type {PSTreeNode}
              */
@@ -129,13 +128,17 @@ async function Start() {
 }
 
 async function ClearAllNodes() {
-    await conn.query("DELETE FROM pstreenodessecondarystatselementalresistsdata");
-    await conn.query("DELETE FROM pstreenodesstatesdata");
-    await conn.query("DELETE FROM pstreenodeslinks");
-    await conn.query("DELETE FROM pstreenodesskillsunlockdata");
-    await conn.query("DELETE FROM pstreenodesstatsdata");
-    await conn.query("DELETE FROM pstreenodessecondarystatsdata");
-    await conn.query("DELETE FROM pstreenodes");
+    await conn.query(`
+            SET FOREIGN_KEY_CHECKS = 0;
+            DELETE FROM pstreenodessecondarystatselementalresistsdata;
+            DELETE FROM pstreenodesstatesdata;
+            DELETE FROM pstreenodeslinks;
+            DELETE FROM pstreenodesskillsunlockdata;
+            DELETE FROM pstreenodesstatsdata;
+            DELETE FROM pstreenodessecondarystatsdata;
+            DELETE FROM pstreenodes;
+            SET FOREIGN_KEY_CHECKS = 1;
+    `);
 }
 
 async function ClearAllVisuals() {

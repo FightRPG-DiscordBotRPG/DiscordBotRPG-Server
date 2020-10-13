@@ -218,7 +218,7 @@ class CharacterModule extends GModule {
                     if (data.isAquired) {
                         data.unlockable = false;
                     } else {
-                        data.unlockable = Globals.connectedUsers[res.locals.id].character.talents.canUnlock(idNodeToSee);
+                        data.unlockable = await Globals.connectedUsers[res.locals.id].character.talents.canUnlock(idNodeToSee);
                     }
                 } else {
                     err = Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist");

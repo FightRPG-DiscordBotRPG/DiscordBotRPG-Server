@@ -4,6 +4,8 @@ const StatsPSTreeNode = require("../Stats/StatsPSTreeNode");
 const Skill = require("../SkillsAndStatus/Skill");
 const State = require("../SkillsAndStatus/State");
 const conn = require("../../conf/mysql");
+const Translator = require("../Translator/Translator");
+const Globals = require("../Globals");
 
 class PSTreeNode {
     constructor() {
@@ -27,7 +29,6 @@ class PSTreeNode {
 		 * @type {Object<number, boolean>}
 		 */
         this.skillsUnlockedIds = {};
-
 
 		/**
 		 * @type {Object<number, boolean>}
@@ -106,20 +107,27 @@ class PSTreeNode {
     }
 
     async toApi(lang = "en") {
+        let skillsIds = Object.keys(this.skillsUnlockedIds);
         return {
             id: this.id,
             visuals: this.visuals ? await this.visuals.toApi(lang) : null,
             stats: this.stats.toApi(),
             secondaryStats: this.secondaryStats.toApi(),
-            skillsUnlockedIds: Object.keys(this.skillsUnlockedIds),
+            skillsUnlockedIds: skillsIds,
+            skillsUnlockedNames: skillsIds.map(e => Translator.getString(lang, "skillNames", e) + ` (${e})`),
             statesProtectedFromIds: Object.keys(this.statesProtectedFromIds),
             statesAddedIds: Object.keys(this.statesAddedIds),
             x: this.x,
             y: this.y,
             cost: this.cost,
+            realCost: this.getRealCost(),
             isInitial: this.isInitial,
-            linkedNodes: this.linkedNodes
+            linkedNodes: this.linkedNodes,
         }
+    }
+
+    getRealCost() {
+        return this.cost * Globals.baseTalentPointCost;
     }
 
 	/**
@@ -141,7 +149,7 @@ class PSTreeNode {
     }
 
     updateLinkedNodes() {
-        this.linkedNodes = [...Object.keys(this.children), ...Object.keys(this.parents)];
+        this.linkedNodes = [...Object.keys(this.children), ...Object.keys(this.parents)].map(e => Number.parseInt(e));
     }
 
     updateFromAssign() {

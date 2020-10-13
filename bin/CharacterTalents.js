@@ -15,13 +15,22 @@ class CharacterTalents {
         this.unlockedSkillsIds = {};
         this.stats = new Stats();
         this.secondaryStats = new SecondaryStats();
+        /**
+         * @type {Character}
+         **/
+        this.character = null;
     }
 
-    async load(id = null) {
+    /**
+     * 
+     * @param {Character} character
+     * @param {string|number} id
+     */
+    async load(character, id = null) {
         if (id !== null) {
             this.id = id;
         }
-
+        this.character = character;
         let res = await conn.query("SELECT * FROM characterstalents WHERE idCharacter = ?;", [this.id]);
 
         for (let item of res) {
@@ -29,7 +38,7 @@ class CharacterTalents {
         }
 
         this.reloadStats();
-	}
+    }
 
     reloadStats() {
         this.stats = new Stats();
@@ -42,7 +51,7 @@ class CharacterTalents {
 
             for (let id of Object.keys(item.skillsUnlockedIds)) {
                 this.unlockedSkillsIds[id] = true;
-			}
+            }
         }
     }
 
@@ -50,7 +59,19 @@ class CharacterTalents {
         this.unlockedSkillsIds[idSkill] === true;
     }
 
-    canUnlock(idNode) {
+    async canUnlock(idNode) {
+        return (await this.haveEnoughPoints(idNode)) && this.isReachable(idNode);
+    }
+
+    async haveEnoughPoints(idNode) {
+        return (await this.character.getStatPoints()) >= Globals.pstreenodes.getNode(idNode).getRealCost();
+    }
+
+    /**
+     * 
+     * @param {number} idNode
+     */
+    isReachable(idNode) {
         let node = Globals.pstreenodes.getNode(idNode);
         for (let unlockedNode of Object.values(this.talents)) {
             if (unlockedNode.id !== idNode && (unlockedNode.linkedNodes.includes(idNode) || node.isInitial)) {
@@ -67,9 +88,10 @@ class CharacterTalents {
      * ignoreCheck to not check if the node can be unlocked
      * Reload everything after unlock
      */
-    unlock(idNode, ignoreCheck=true) {
-        if (ignoreCheck || this.canUnlock(idNode)) {
+    async unlock(idNode, ignoreCheck = true) {
+        if (ignoreCheck || await this.canUnlock(idNode)) {
             this.talents[idNode] = Globals.pstreenodes.getNode(idNode);
+            await conn.query("INSERT INTO characterstalents VALUES ();", [this.id, idNode]);
             this.reloadStats();
         }
     }
@@ -83,7 +105,7 @@ class CharacterTalents {
         }
     }
 
-    async getTalentsToApi(lang="en") {
+    async getTalentsToApi(lang = "en") {
         let allPromises = [];
         let toReturn = [];
         for (let talent of Object.values(this.talents)) {
@@ -102,3 +124,8 @@ class CharacterTalents {
 }
 
 module.exports = CharacterTalents;
+
+/**
+ * @typedef {import("./Character")} Character
+ * @typedef {import("./Group")} Group
+ **/
