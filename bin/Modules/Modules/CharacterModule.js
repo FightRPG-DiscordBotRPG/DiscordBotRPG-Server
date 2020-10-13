@@ -22,6 +22,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
+const { Number } = require("core-js");
 
 
 
@@ -84,7 +85,7 @@ class CharacterModule extends GModule {
                 data
             );
         });
-        
+
         this.router.get("/leaderboard/power/:page?", async (req, res, next) => {
             let ld = new LeaderboardPower(Globals.connectedUsers[res.locals.id].character.id);
             let data = await ld.getPlayerLeaderboard(req.params.page);
@@ -233,6 +234,50 @@ class CharacterModule extends GModule {
             return err != null ? res.json({ error: err }) : res.json(data);
         });
 
+        this.router.post("/talents/up", async (req, res, next) => {
+            await next();
+            return res.json(await this.tryUnlockTalent(req, res));
+        });
+
+
+    }
+
+
+    async tryUnlockTalent(req, res) {
+        let character = Globals.connectedUsers[res.locals.id].character;
+        let idNode = parseInt(req.body.idNode);
+
+        if (isNaN(idNode)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_show_missing_id"));
+        }
+
+        let node = Globals.pstreenodes.getNode(idNode);
+        if (node == null) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist"));
+        }
+
+        if (character.talents.isReachable(idNode) === false) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_node_not_reachable"));
+        }
+
+        if (await character.talents.haveEnoughPoints(idNode) === false) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_not_enough_points"));
+        }
+
+        if (character.talents.isTalentUnlocked(idNode)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_already_unlocked"));
+        }
+
+
+        if (!character.talents.unlock(idNode)) {
+            // Unknown error or not implemented check maybe
+            return this.asError(Translator.getString(res.locals.lang, "errors", "generic_cant_do_that"));
+        }
+
+        return {
+            unlockedNode: await node.toApi(res.locals.lang),
+            pointsLeft: await Globals.connectedUsers[res.locals.id].character.getStatPoints(),
+        };
 
     }
 

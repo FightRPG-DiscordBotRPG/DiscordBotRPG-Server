@@ -55,12 +55,16 @@ class CharacterTalents {
         }
     }
 
+    isTalentUnlocked(idNode) {
+        return this.talents[idNode] != null;
+    }
+
     isSKillUnlocked(idSkill) {
         this.unlockedSkillsIds[idSkill] === true;
     }
 
     async canUnlock(idNode) {
-        return (await this.haveEnoughPoints(idNode)) && this.isReachable(idNode);
+        return (await this.haveEnoughPoints(idNode)) && this.isReachable(idNode) && !this.isTalentUnlocked(idNode);
     }
 
     async haveEnoughPoints(idNode) {
@@ -84,6 +88,7 @@ class CharacterTalents {
     /**
      * 
      * @param {number} idNode
+     * @param {boolean} ingoreCheck true by default
      * Unlock the node for character. 
      * ignoreCheck to not check if the node can be unlocked
      * Reload everything after unlock
@@ -91,9 +96,14 @@ class CharacterTalents {
     async unlock(idNode, ignoreCheck = true) {
         if (ignoreCheck || await this.canUnlock(idNode)) {
             this.talents[idNode] = Globals.pstreenodes.getNode(idNode);
-            await conn.query("INSERT INTO characterstalents VALUES ();", [this.id, idNode]);
+            await Promise.all([
+                conn.query("INSERT INTO characterstalents VALUES (?, ?);", [this.id, idNode]),
+                this.character.removeStatPoints(this.talents[idNode].getRealCost()),
+            ]);
             this.reloadStats();
+            return true;
         }
+        return false;
     }
 
     async toApi(lang = "en") {

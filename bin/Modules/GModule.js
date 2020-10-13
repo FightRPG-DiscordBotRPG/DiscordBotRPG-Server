@@ -533,7 +533,8 @@ class GModule {
 
                 commands[Translator.getString(lang, "help_panel", "talents_title")] = {
                     "talents" : "",
-                    "talentshow": "",
+                    "talentshow <idTalent>": "",
+                    "talentup <idTalent>":""
                 }
                 break;
 
@@ -562,6 +563,10 @@ class GModule {
             name: req.body.name != null ? req.body.name : req.query.name,
             fav: fav,
         }
+    }
+
+    asError(val) {
+        return { error: val };
     }
 
 
@@ -626,6 +631,7 @@ class AchievementUnlocker {
         }
         await Promise.all(promises);
     }
+
 }
 
 class AchievementUnlockStructure {
