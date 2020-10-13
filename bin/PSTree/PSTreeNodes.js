@@ -14,6 +14,11 @@ class PSTreeNodes {
         * @type {Array<NodeVisuals>}
         */
         this.possibleNodesVisuals = [];
+
+        /**
+         * @type {Array<Number>}
+         **/
+        this.initialTalents = [];
     }
 
     async load() {
@@ -23,6 +28,7 @@ class PSTreeNodes {
 
         this.allNodes = {};
         this.possibleNodesVisuals = [];
+        this.initialTalents = [];
 
         res = await conn.query("SELECT * FROM pstreepossiblesnodesvisuals");
         promises = [];
@@ -51,7 +57,7 @@ class PSTreeNodes {
             promises.push((async () => {
                 let node = new PSTreeNode();
                 await node.load(id);
-                node.visuals = this.possibleNodesVisuals.find((x) => x.id === nodeRes.idNodeVisual)
+                node.visuals = this.possibleNodesVisuals.find((x) => x.id === nodeRes.idNodeVisual);
                 return node;
             })());
         }
@@ -61,6 +67,9 @@ class PSTreeNodes {
         for (let node of promises) {
             node = await node;
             this.allNodes[node.id] = node;
+            if (node.isInitial) {
+                this.initialTalents.push(node.id);
+            }
         }
 
         // Do links
