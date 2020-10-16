@@ -286,16 +286,21 @@ class WorldEntity {
 
     stun(advWill) {
         let max = this.stats.getOptimalStun(this.getLevel());
-        // Calcul of chance
-        let stun = this.getStat("charisma") / max;
         let otherResist = (advWill) / max;
-
         // Cap to 50%;
-        stun = stun > .5 ? .5 : stun;
+        let stun = this.getRawStunChance();
         otherResist = otherResist > .5 ? .5 : otherResist;
         let chanceToStun = stun >= otherResist ? stun : 0;
 
         return Math.random() <= chanceToStun;
+    }
+
+    getRawStunChance() {
+        let max = this.stats.getOptimalStun(this.getLevel());
+        // Calcul of chance
+        let stun = this.getStat("charisma") / max;
+        // Cap to 50%;
+        return stun > .5 ? .5 : stun;
     }
 
     /**
