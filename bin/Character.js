@@ -236,22 +236,6 @@ class Character extends CharacterEntity {
         return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
     }
 
-    // Critical hit
-    isThisACriticalHit() {
-        // LAST NUMBER = NBR MAX ITEM
-        // LIMIT 50%
-        // Maximum Stat for this level
-        let max = this.getLevel() * 2 * 4;
-        // Calcul of chance
-        let critique = (this.stats.dexterity + this.equipement.stats.dexterity) / max;
-
-        // Cap to 50%;
-        critique = critique > .75 ? .75 : critique;
-
-        return Math.random() <= critique ? true : false;
-
-    }
-
     /**
      * 
      * @param {string} stat 

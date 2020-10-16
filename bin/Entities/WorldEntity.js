@@ -215,21 +215,6 @@ class WorldEntity {
         }
     }
 
-    // Critical hit
-    isThisACriticalHit() {
-        return Math.random() <= this.getCriticalHitChance() ? true : false;
-    }
-
-    getCriticalHitChance() {
-        let critique = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel());
-        return critique > .75 ? .75 : critique;
-    }
-
-    damageDefenceReduction() {
-        let reduction = this.getStat("armor") / this.stats.getOptimalArmor(this.getLevel()) * .5;
-        return reduction > 0.5 ? 0.5 : 1 - reduction;
-    }
-
     getStat(statName) {
         this.updateStatModifier(statName);
         return this.stats.getStat(statName) * this.tempStatsModifiers[statName];
