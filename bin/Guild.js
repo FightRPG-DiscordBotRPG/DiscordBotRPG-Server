@@ -5,6 +5,7 @@ const Translator = require("./Translator/Translator");
 const AreaTournament = require("./AreaTournament/AreaTournament");
 const CharacterAchievements = require("./Achievement/CharacterAchievements");
 const User = require("./User");
+const CharacterEntity = require("./Entities/CharacterEntity.js");
 
 class Guild {
     // Discord User Info
@@ -513,6 +514,23 @@ class Guild {
         await conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
     }
 
+    async getCharacters() {
+        // Get all characters from guild
+        let res = await conn.query("SELECT guildsmembers.idCharacter FROM guildsmembers WHERE guildsmembers.idGuild = ?", [this.id]);
+
+        let promises = [];
+
+        for (let r of res) {
+            promises.push((async () => {
+                let character = new CharacterEntity(r.idCharacter);
+                await character.loadCharacter(r.idCharacter);
+                return character;
+            })());
+        }
+
+        return Promise.all((await Promise.all(promises)).map(async p => await p));
+    }
+
     /*
      * Static Methods
      * 
@@ -635,6 +653,8 @@ class Guild {
             maxPage: maxPage,
         }
     }
+
+
 
 
 }

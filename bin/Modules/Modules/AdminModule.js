@@ -266,6 +266,22 @@ class AdminModule extends GModule {
             //console.log(Globals.connectedUsers[res.locals.id].character.skills);
             //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResist(Globals.elementsTypesNameById[0] + "Resist"));
             //console.log(Globals);
+            //let guild = new Guild();
+            //await guild.loadGuild(33);
+
+            //let guild2 = new Guild();
+            //await guild2.loadGuild(55);
+            //console.time("Test");
+            //await guild.getCharacters();
+            //await guild2.getCharacters();
+            //console.timeEnd("Test");
+
+            //console.time("Test Promise All");
+            //await Promise.all([
+            //    guild.getCharacters(),
+            //    guild2.getCharacters()
+            //]);
+            //console.timeEnd("Test Promise All");
             await next();
             return res.json({ succes: "done" });
         });

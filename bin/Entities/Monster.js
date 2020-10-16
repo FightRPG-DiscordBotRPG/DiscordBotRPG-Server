@@ -1,9 +1,9 @@
 'use strict';
 const conn = require("../../conf/mysql.js");
+const WorldEntity = require("./WorldEntity.js");
 const StatsMonsters = require("../Stats/StatsMonsters");
 const SecondaryStatsMonsters = require("../Stats/Secondary/SecondaryStatsMonsters");
 const Globals = require("../Globals.js");
-const WorldEntity = require("./WorldEntity.js");
 const Translator = require("../Translator/Translator");
 
 class Monster extends WorldEntity {

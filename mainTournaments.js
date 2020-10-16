@@ -1,9 +1,20 @@
 const conf = require("./conf/conf");
 const conn = require("./conf/mysql");
+const Globals = require("./bin/Globals.js");
+const FightManager = require("./bin/FightManager");
+const crypto = require("crypto");
+const AreasManager = require("./bin/Areas/AreasManager.js");
+const DatabaseInitializer = require("./bin/DatabaseInitializer");
+const ModuleHandler = require("./bin/Modules/ModuleHandler");
+const User = require("./bin/User");
+const LootSystem = require("./bin/LootSystem");
+const DBL = require("dblapi.js");
+const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
+const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
 const AreaTournament = require("./bin/AreaTournament/AreaTournament");
 const Translator = require("./bin/Translator/Translator");
 
-
+// All imports are useful if you want to avoid circular hell ;)
 
 /**
  * @type {Array<AreaTournament>}
@@ -23,6 +34,15 @@ async function startUp() {
     await Translator.load();
     console.timeEnd("Translator loading");
 
+    console.time("Global loading");
+    await Globals.loadGlobals();
+    console.timeEnd("Global loading");
+
+    console.time("PSTree loading");
+    Globals.pstreenodes = new PSTreeNodes();
+    await Globals.pstreenodes.load();
+    console.timeEnd("PSTree loading");
+
 
     let res = await conn.query("SELECT idArea FROM areas");
     for (let area of res) {
@@ -35,6 +55,8 @@ async function startUp() {
 async function setupDummy() {
     let guilds = await conn.query("SELECT idGuild FROM guilds");
     let areas = await conn.query("SELECT idArea FROM areas");
+
+    await conn.query("DELETE FROM conquesttournamentrounds");
 
     for (let guild of guilds) {
         await conn.query("REPLACE INTO conquesttournamentinscriptions VALUES (?,?);", [guild.idGuild, areas[Math.floor(Math.random() * areas.length)].idArea]);
