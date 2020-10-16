@@ -601,23 +601,23 @@ class WorldEntity {
     }
 
     /**
-     * 
+     * Return modifer 1 => 100% 0.5 => 50%
      * @param {number} enemyLevel
      */
     getPhysicalDefense(enemyLevel = 1) {
         let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .3) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
         reduction *= this.getDiffLevelModifier(enemyLevel);
-        return reduction > 0.4 ? 0.4 : 1 - reduction;
+        return reduction > 0.8 ? 0.8 : 1 - reduction;
     }
 
     /**
-     * 
+     * Return modifer 1 => 100% 0.5 => 50%
      * @param {number} enemyLevel
      */
     getMagicalDefense(enemyLevel = 1) {
         let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
         reduction *= this.getDiffLevelModifier(enemyLevel);
-        return reduction < 0.4 ? 0.4 : 1 - reduction;
+        return reduction > 0.8 ? 0.8 : 1 - reduction;
     }
 
     /**
