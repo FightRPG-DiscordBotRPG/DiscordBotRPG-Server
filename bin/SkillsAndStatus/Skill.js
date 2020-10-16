@@ -235,7 +235,7 @@ class Skill {
 
         if (!this.isRawDamage()) {
             value *= this.getElementalRate(attacker);
-            value *= defender.getElementalResist(Globals.elementsTypesNameById[this.damage.idElementType] + "Resist");
+            value *= defender.getElementalResistMultiplier(Globals.elementsTypesNameById[this.damage.idElementType] + "Resist");
         }
 
 

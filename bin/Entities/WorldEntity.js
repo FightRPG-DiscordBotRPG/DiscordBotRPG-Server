@@ -242,7 +242,7 @@ class WorldEntity {
         return this.secondaryStats.getStat(statName) + this.tempStatsModifiers[statName];
     }
 
-    getElementalResist(elementalName) {
+    getElementalResistMultiplier(elementalName) {
         this.updateSecondaryStatModifier(elementalName);
         return this.secondaryStats.getElementalResist(elementalName) + this.tempStatsModifiers[elementalName];
     }

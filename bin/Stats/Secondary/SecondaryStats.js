@@ -302,9 +302,6 @@ class SecondaryStats {
         }
 
         if (!isNaN(this[elementalResist])) {
-            if (this[elementalResist] >= 0) {
-                this[elementalResist] = -this[elementalResist];
-            }
             if (this[elementalResist] < 0) {
                 return 1 + (-this[elementalResist]) / 100;
             } else {

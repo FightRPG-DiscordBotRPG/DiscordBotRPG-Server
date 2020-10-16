@@ -282,6 +282,18 @@ class AdminModule extends GModule {
             //    guild2.getCharacters()
             //]);
             //console.timeEnd("Test Promise All");
+
+            let mst = new Monster(1);
+            mst.loadMonster(100);
+            mst.secondaryStats.airResist = -10;
+            console.log(mst.getElementalResistMultiplier("airResist"));
+            mst.secondaryStats.airResist = 10;
+            console.log(mst.getElementalResistMultiplier("airResist"));
+
+            console.log("user");
+            console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("darkResist"));
+            console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("fireResist"));
+
             await next();
             return res.json({ succes: "done" });
         });
