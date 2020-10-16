@@ -252,7 +252,7 @@ class SecondaryStats {
             "whip": 1,
             "staff": 1,
         },
-        
+
     }
 
     // Generic Stats Class
@@ -309,7 +309,7 @@ class SecondaryStats {
                 return 1 + (-this[elementalResist]) / 100;
             } else {
                 // max 50%
-                return 1 - (Math.min(this[elementalResist], 50)/100);
+                return 1 - (Math.min(this[elementalResist], 50) / 100);
             }
         }
 
@@ -330,26 +330,40 @@ class SecondaryStats {
     }
 
     /**
- * 
- * @param {Stats} otherStats
- */
-    add(otherStats) {
+     * 
+     * @param {...SecondaryStats} otherStats
+     */
+    add(...otherStats) {
         let statsPossible = Globals.allSecondaryStatsNames;
         for (let i in statsPossible) {
-            this[statsPossible[i]] += otherStats[statsPossible[i]];
+            this[statsPossible[i]] += otherStats.reduce((acc, val) => acc + val[statsPossible[i]], 0);
         }
     }
 
     /**
      * 
-     * @param {Stats} otherStats
+     * @param {...SecondaryStats} otherStats
      */
-    subtract(otherStats) {
+    subtract(...otherStats) {
         let statsPossible = Globals.allSecondaryStatsNames;
         for (let i in statsPossible) {
-            this[statsPossible[i]] -= otherStats[statsPossible[i]];
+            this[statsPossible[i]] -= otherStats.reduce((acc, val) => acc + val[statsPossible[i]], 0);
         }
     }
+
+
+    /**
+     * 
+     * @param {number} num
+     */
+    divide(num) {
+        let statsPossible = Globals.allSecondaryStatsNames;
+        for (let i in statsPossible) {
+            this[statsPossible[i]] /= num;
+        }
+    }
+
+
 
 }
 

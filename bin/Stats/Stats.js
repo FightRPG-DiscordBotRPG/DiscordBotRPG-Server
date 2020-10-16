@@ -199,23 +199,23 @@ class Stats {
 
     /**
      * 
-     * @param {Stats} otherStats
+     * @param {...Stats} otherStats
      */
-    add(otherStats) {
+    add(...otherStats) {
         let statsPossible = Object.keys(Globals.statsIdsByName);
         for (let i in statsPossible) {
-            this[statsPossible[i]] += otherStats[statsPossible[i]];
+            this[statsPossible[i]] += otherStats.reduce((acc, val) => acc + val[statsPossible[i]], 0);
         }
     }
 
     /**
      * 
-     * @param {Stats} otherStats
+     * @param {...Stats} otherStats
      */
-    subtract(otherStats) {
+    subtract(...otherStats) {
         let statsPossible = Object.keys(Globals.statsIdsByName);
         for (let i in statsPossible) {
-            this[statsPossible[i]] -= otherStats[statsPossible[i]];
+            this[statsPossible[i]] -= otherStats.reduce((acc, val) => acc + val[statsPossible[i]], 0);
         }
     }
 
