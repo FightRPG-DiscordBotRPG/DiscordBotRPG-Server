@@ -219,6 +219,19 @@ class Stats {
         }
     }
 
+    /**
+     * 
+     * @param {number} num
+     */
+    divide(num) {
+        let statsPossible = Object.keys(Globals.statsIdsByName);
+        for (let i in statsPossible) {
+            this[statsPossible[i]] /= num;
+        }
+    }
+
+
+
 
 }
 
