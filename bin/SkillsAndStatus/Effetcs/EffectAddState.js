@@ -3,6 +3,7 @@ const EntityAffectedLogger = require("../../Fight/Logger/EntityAffectedLogger");
 const Skill = require("../Skill");
 const Effect = require("../Effect");
 const Globals = require("../../Globals");
+const Translator = require("../../Translator/Translator");
 
 
 class EffectAddState extends Effect {
@@ -47,6 +48,14 @@ class EffectAddState extends Effect {
                 target.logger.logAddState(addedState);
             }
         }
+    }
+
+    toApi(lang = "en") {
+        return {
+            type: "addState",
+            chance: this.percentageValue,
+            stateAdded: Translator.getString(lang, "statesNames", this.stateValue)
+        };
     }
 
 }

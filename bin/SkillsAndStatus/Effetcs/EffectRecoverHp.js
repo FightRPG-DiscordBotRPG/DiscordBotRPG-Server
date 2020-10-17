@@ -10,14 +10,34 @@ class EffectRecoverHp extends Effect {
 	 */
     async applyToOne(target) {
         // IDEA: Add recovery resistance
-        let value = Math.floor(target.entity.maxHP * this.percentageValue + this.fixedValue);
+        let value = this.getValue(target.entity);
 
         if (value !== 0) {
         //value = Math.floor(value);
             target.entity.healHp(value);
             target.logger.logSkillRecoverHp(value);
         }
-	}
+    }
+
+    /**
+     * 
+     * @param {WorldEntity} entity
+     */
+    getValue(entity) {
+        return Math.floor(entity.maxHP * this.percentageValue + this.fixedValue);;
+    }
+
+    /**
+     * 
+     * @param {string} lang
+     */
+    toApi(lang="en") {
+        return {
+            type: "recoverHp",
+            percentageValue: this.percentageValue,
+            fixedValue: this.fixedValue,
+        };
+    }
 
 }
 

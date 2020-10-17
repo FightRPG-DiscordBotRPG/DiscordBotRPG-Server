@@ -18,6 +18,13 @@ class EffectRecoverEnergy extends Effect {
         }
     }
 
+    toApi(lang = "en") {
+        return {
+            type: "recoverEnergy",
+            value: this.fixedValue
+        };
+    }
+
 }
 
 module.exports = EffectRecoverEnergy;

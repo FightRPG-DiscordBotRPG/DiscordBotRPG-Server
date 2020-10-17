@@ -19,6 +19,14 @@ class EffectRecoverMp extends Effect {
         }
     }
 
+    toApi(lang = "en") {
+        return {
+            type: "recoverMp",
+            percentageValue: this.percentageValue,
+            fixedValue: this.fixedValue,
+        };
+    }
+
 }
 
 module.exports = EffectRecoverMp;

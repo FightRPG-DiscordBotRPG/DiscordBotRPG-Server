@@ -61,6 +61,14 @@ class Effect {
 
     }
 
+    /**
+     * 
+     * @param {string} lang
+     */
+    toApi(lang = "en") {
+        throw "Not implemented";
+    }
+
 
 }
 
