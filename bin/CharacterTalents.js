@@ -59,7 +59,7 @@ class CharacterTalents {
         return this.talents[idNode] != null;
     }
 
-    isSKillUnlocked(idSkill) {
+    isSkillUnlocked(idSkill) {
         this.unlockedSkillsIds[idSkill] === true;
     }
 
