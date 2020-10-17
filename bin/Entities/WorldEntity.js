@@ -259,14 +259,21 @@ class WorldEntity {
     }
 
     prepareCast() {
-
-        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getStat(skill.isPhysical() || skill.isRawDamage() ? Stats.possibleStats.Dexterity : Stats.possibleStats.Wisdom));
+        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += 1 + this.getCastSkillBonus(skill));
 
         // To Balance ? Every skill vs only one per one
         //if (this.skillToTestIndex > -1) {
         //    let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
         //    this.skills[this.skillToTestIndex].currentCastPreparation += speed;
         //}
+    }
+
+    /**
+     * 
+     * @param {Skill} skill
+     */
+    getCastSkillBonus(skill) {
+        return this.getStat(skill.isPhysical() || skill.isRawDamage() ? Stats.possibleStats.Dexterity : Stats.possibleStats.Wisdom) / this.stats.getMaximumStat() * 2
     }
 
     stun(advWill) {
