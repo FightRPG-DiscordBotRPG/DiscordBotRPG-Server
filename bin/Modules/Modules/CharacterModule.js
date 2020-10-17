@@ -22,7 +22,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
-const { Number } = require("core-js");
+const Skill = require("../../SkillsAndStatus/Skill");
 
 
 
@@ -237,6 +237,18 @@ class CharacterModule extends GModule {
         this.router.post("/talents/up", async (req, res, next) => {
             await next();
             return res.json(await this.tryUnlockTalent(req, res));
+        });
+
+        this.router.get("/skills/show/:idSkill", async (req, res, next) => {
+            // Temp
+            let err;
+            let skill = new Skill();
+            if (!await skill.loadWithID(parseInt(req.params.idSkill, 10))) {
+                err = Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist");
+            }
+            
+            await next();
+            return err != null ? res.json({ error: err }) : res.json({ skill: skill.toApi(Globals.connectedUsers[res.locals.id].character, res.locals.lang), lang: res.locals.lang});
         });
 
 
