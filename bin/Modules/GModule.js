@@ -144,17 +144,23 @@ class GModule {
                         req.query[i] = decodeURIComponent(req.query[i]);
                     }
                 }
-               
-                res.locals.trade = Globals.connectedUsers[res.locals.id].character.trade;
-                res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
-                res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
-                res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
-                res.locals.pendingTrade = Globals.connectedUsers[res.locals.id].character.pendingTradeInvite;
-                res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
-                res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
-                res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
-                res.locals.currentArea = Globals.connectedUsers[res.locals.id].character.getArea();
+
+                let user = Globals.connectedUsers[res.locals.id];
+                let character = user.character;
+
+
+                res.locals.trade = character.trade;
+                res.locals.group = character.group;
+                res.locals.lang = user.getLang();
+                res.locals.pending = character.pendingPartyInvite;
+                res.locals.pendingTrade = character.pendingTradeInvite;
+                res.locals.marketplace = Globals.areasManager.getService(character.getIdArea(), "marketplace");
+                res.locals.craftingbuilding = Globals.areasManager.getService(character.getIdArea(), "craftingbuilding");
+                res.locals.shop = Globals.areasManager.getService(character.getIdArea(), "shop");
+                res.locals.currentArea = character.getArea();
                 res.locals.tLootSystem = new LootSystem();
+                res.locals.user = user;
+                res.locals.character = character;
                 next();
             } else {
                 res.json({

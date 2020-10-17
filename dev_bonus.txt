@@ -6,4 +6,6 @@ import * as Shop from "D:/discordbotrpg-server/bin/Shops/Shop";
 import * as Area from "D:/discordbotrpg-server/bin/Areas/Area";
 import * as LootSystem from "D:/discordbotrpg-server/bin/LootSystem";
 
-    locals: { trade: Trade, group: Group, lang: string, pending: Group, pendingTrade: Trade, marketplace: Marketplace, craftingbuilding: CraftingBuilding, shop: Shop, currentArea: Area, tLootSystem: LootSystem };
+    locals: { trade: Trade, group: Group, lang: string, pending: Group, pendingTrade: Trade, marketplace: Marketplace, craftingbuilding: CraftingBuilding, shop: Shop, currentArea: Area, tLootSystem: LootSystem,
+        character: Character,
+        user: User };
