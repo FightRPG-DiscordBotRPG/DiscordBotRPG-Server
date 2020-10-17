@@ -6,7 +6,6 @@ const Utils = require("../Utilities/Utils");
 const Trait = require("./Trait");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
-const Character = require("../Character");
 
 class Skill {
 
@@ -329,3 +328,8 @@ class Skill {
 
 
 module.exports = Skill;
+
+/**
+ * @typedef {import("../Character")} Character;
+ * 
+ */
