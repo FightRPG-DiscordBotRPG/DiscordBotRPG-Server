@@ -239,7 +239,7 @@ class Translator {
 
         for (let trad of res) {
             this.translations[trad.lang]["skillNames"][trad.idSkill] = trad.nameSkill;
-            this.translations[trad.lang]["skillDesc"][trad.idSkill] = trad.nameSkill;
+            this.translations[trad.lang]["skillDesc"][trad.idSkill] = trad.descSkill;
             this.translations[trad.lang]["skillMessages"][trad.idSkill] = trad.messageSkill.trimLeft();
         }
     }
