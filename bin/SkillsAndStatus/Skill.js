@@ -12,14 +12,14 @@ class Skill {
     constructor() {
         this.id = 0;
         this.shorthand = "";
-        this.idSkillType = null;
+        this.idSkillType = null; // Unused
         this.energyCost = 0;
         this.manaCost = 0;
         this.idTargetRange = 1;
         this.timeToCast = 0;
         this.successRate = 0;
         this.repeat = 1;
-        this.energyGain = 0;
+        this.energyGain = 0; // Unused
         this.idAttackType = 0;
         this.damage = {
             idDamageType: 0,
@@ -47,32 +47,38 @@ class Skill {
         this.id = id;
         let res = await conn.query("SELECT * FROM skills INNER JOIN castinfo ON castinfo.idSkill = skills.idSkill LEFT JOIN damageinfo ON damageinfo.idSkill = skills.idSkill WHERE skills.idSkill = ?;", [this.id]);
 
-        this.shorthand = res[0].shorthand;
-        this.idSkillType = res[0].idSkillType;
-        this.energyCost = res[0].energyCost;
-        this.manaCost = res[0].manaCost;
-        this.idTargetRange = res[0].idTargetRange;
-        this.timeToCast = res[0].timeToCast;
-        this.successRate = res[0].successRate;
-        this.repeat = res[0].repeat;
-        this.energyGain = res[0].energyGain;
-        this.idAttackType = res[0].idAttackType;
-        this.damage = {
-            idDamageType: res[0].idDamageType,
-            idElementType: res[0].idElementType,
-            formula: res[0].formula,
-            variance: res[0].variance,
-            criticalHit: res[0].criticalHit,
+        if (res[0]) {
+            this.shorthand = res[0].shorthand;
+            this.idSkillType = res[0].idSkillType;
+            this.energyCost = res[0].energyCost;
+            this.manaCost = res[0].manaCost;
+            this.idTargetRange = res[0].idTargetRange;
+            this.timeToCast = res[0].timeToCast;
+            this.successRate = res[0].successRate;
+            this.repeat = res[0].repeat;
+            this.energyGain = res[0].energyGain;
+            this.idAttackType = res[0].idAttackType;
+            this.damage = {
+                idDamageType: res[0].idDamageType,
+                idElementType: res[0].idElementType,
+                formula: res[0].formula,
+                variance: res[0].variance,
+                criticalHit: res[0].criticalHit,
+            }
+
+            res = await conn.query("SELECT idEffectSkill FROM effectsskills WHERE idSkill = ?;", [this.id]);
+
+            for (let item of res) {
+                let e = await Effect.newEffect(item.idEffectSkill);
+                this.effects.push(e);
+            }
+
+            this.parseFormula();
+            return true;
         }
 
-        res = await conn.query("SELECT idEffectSkill FROM effectsskills WHERE idSkill = ?;", [this.id]);
+        return false;
 
-        for (let item of res) {
-            let e = await Effect.newEffect(item.idEffectSkill);
-            this.effects.push(e);
-        }
-
-        this.parseFormula();
     }
 
     parseFormula() {
@@ -86,13 +92,6 @@ class Skill {
 
             formula = formula.replace(".def", ".getPhysicalDefense()");
             formula = formula.replace(".mdf", ".getMagicalDefense()");
-
-            this.actualHP = 0;
-            this.maxHP = 0;
-            this.actualMP = 0;
-            this.maxMP = 0;
-            this.actualEnergy = 0;
-            this.maxEnergy = 0;
 
             formula = formula.replace(".hp", ".actualHP");
             formula = formula.replace(".mhp", ".maxHP");
@@ -277,9 +276,9 @@ class Skill {
     }
 
     getRepeatNumber() {
-        if (this.isDamage() || this.isDrain()) {
-            //repeats += this.subject().attackTimesAdd();
-        }
+        //if (this.isDamage() || this.isDrain()) {
+        //    //repeats += this.subject().attackTimesAdd();
+        //}
         return Math.floor(this.repeat);
     }
 
@@ -304,6 +303,28 @@ class Skill {
         return {
             id: this.id,
             name: this.getName(lang)
+        }
+    }
+
+    /**
+     * 
+     * @param {WorldEntity} entity Required to get true mana/energy cost
+     * @param {string} lang
+     */
+    toApi(entity, lang = "en") {
+        return {
+            name: this.getName(lang),
+            desc: this.getDesc(lang),
+            numberOfTargets: this.getNumberOfTarget(),
+            idTargetRange: this.idTargetRange,
+            damage: this.damage,
+            mpCost: entity.getSkillMpCost(this),
+            energyCost: entity.getSkillEnergyCost(this),
+            repeat: this.repeat,
+            successRate: this.successRate,
+            timeToCast: this.timeToCast,
+            idAttackType: this.idAttackType,
+            effects: this.effects.map(e => e.toApi(lang))
         }
     }
 }
