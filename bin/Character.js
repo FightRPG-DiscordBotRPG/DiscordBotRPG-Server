@@ -810,6 +810,14 @@ class Character extends CharacterEntity {
 
     /**
      * 
+     * Related To Builds/Talents about skills
+     * 
+     */
+        // TODO
+
+
+    /**
+     * 
      * @param {string} lang
      */
     async toApiSimple(lang="en") {

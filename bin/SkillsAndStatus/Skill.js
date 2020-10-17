@@ -6,6 +6,7 @@ const Utils = require("../Utilities/Utils");
 const Trait = require("./Trait");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
+const Character = require("../Character");
 
 class Skill {
 
@@ -147,21 +148,13 @@ class Skill {
 
     getNumberOfTarget() {
         switch (this.idTargetRange) {
-            case 1:
-            case 9:
-            case 13:
+            case 1,9 ,13:
                 return 99;
-            case 2:
-            case 6:
-            case 10:
+            case 2, 6, 10:
                 return 1;
-            case 3:
-            case 7:
-            case 11:
+            case 3, 7, 11:
                 return 2;
-            case 4:
-            case 8:
-            case 12:
+            case 4, 8, 12:
                 return 3;
             case 5:
                 return 4;
@@ -308,24 +301,29 @@ class Skill {
 
     /**
      * 
-     * @param {WorldEntity} entity Required to get true mana/energy cost
+     * @param {Character} character Required to get true mana/energy cost and other data
      * @param {string} lang
      */
-    toApi(entity, lang = "en") {
+    toApi(character, lang = "en") {
         return {
             name: this.getName(lang),
             desc: this.getDesc(lang),
             numberOfTargets: this.getNumberOfTarget(),
             idTargetRange: this.idTargetRange,
             damage: this.damage,
-            mpCost: entity.getSkillMpCost(this),
-            energyCost: entity.getSkillEnergyCost(this),
+            mpCost: character.getSkillMpCost(this),
+            energyCost: character.getSkillEnergyCost(this),
             repeat: this.repeat,
             successRate: this.successRate,
             timeToCast: this.timeToCast,
             idAttackType: this.idAttackType,
-            effects: this.effects.map(e => e.toApi(lang))
+            effects: this.effects.map(e => e.toApi(lang)),
+            isUnlocked: character.talents.isSkillUnlocked(this.id),
+            canEquip: false, // TODO: After builds is implemented
+            isEquipped: false, // Same ^
         }
+
+        
     }
 }
 

@@ -242,13 +242,25 @@ class CharacterModule extends GModule {
         this.router.get("/skills/show/:idSkill", async (req, res, next) => {
             // Temp
             let err;
+            let data;
             let skill = new Skill();
+
             if (!await skill.loadWithID(parseInt(req.params.idSkill, 10))) {
                 err = Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist");
             }
+
+            if (err != null) {
+                data = { error: err };
+            } else {
+                data = {
+                    skill: skill.toApi(res.locals.character, res.locals.lang),
+                    lang: res.locals.lang
+                };
+            }
+
             
             await next();
-            return err != null ? res.json({ error: err }) : res.json({ skill: skill.toApi(Globals.connectedUsers[res.locals.id].character, res.locals.lang), lang: res.locals.lang});
+            return res.json(data);
         });
 
 
