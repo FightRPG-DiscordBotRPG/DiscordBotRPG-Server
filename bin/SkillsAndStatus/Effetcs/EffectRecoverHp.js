@@ -33,7 +33,7 @@ class EffectRecoverHp extends Effect {
      */
     toApi(lang="en") {
         return {
-            type: "recoverHp",
+            type: this.typeShorthand,
             percentageValue: this.percentageValue,
             fixedValue: this.fixedValue,
         };

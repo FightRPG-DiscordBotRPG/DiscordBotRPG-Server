@@ -23,7 +23,9 @@ class Skill {
         this.idAttackType = 0;
         this.damage = {
             idDamageType: 0,
+            damageTypeShorthand: "",
             idElementType: null,
+            elementTypeShorthand: "",
             formula: "1",
             variance: 0,
             criticalHit: false,
@@ -45,10 +47,10 @@ class Skill {
      */
     async loadWithID(id) {
         this.id = id;
-        let res = await conn.query("SELECT * FROM skills INNER JOIN castinfo ON castinfo.idSkill = skills.idSkill LEFT JOIN damageinfo ON damageinfo.idSkill = skills.idSkill WHERE skills.idSkill = ?;", [this.id]);
+        let res = await conn.query("SELECT *, skills.shorthand as skillshorthand, damagestypes.shorthand as damagetypesshorthand, elementstypes.shorthand as elementstypesshorthand FROM skills INNER JOIN castinfo ON castinfo.idSkill = skills.idSkill LEFT JOIN damageinfo ON damageinfo.idSkill = skills.idSkill LEFT JOIN damagestypes ON damagestypes.idDamageType = damageinfo.idDamageType LEFT JOIN elementstypes ON elementstypes.idElementType = damageinfo.idElementType WHERE skills.idSkill = ?", [this.id]);
 
         if (res[0]) {
-            this.shorthand = res[0].shorthand;
+            this.shorthand = res[0].skillshorthand;
             this.idSkillType = res[0].idSkillType;
             this.energyCost = res[0].energyCost;
             this.manaCost = res[0].manaCost;
@@ -60,7 +62,9 @@ class Skill {
             this.idAttackType = res[0].idAttackType;
             this.damage = {
                 idDamageType: res[0].idDamageType,
+                damageTypeShorthand: res[0].damagetypesshorthand,
                 idElementType: res[0].idElementType,
+                elementTypeShorthand: res[0].elementstypesshorthand,
                 formula: res[0].formula,
                 variance: res[0].variance,
                 criticalHit: res[0].criticalHit,
@@ -154,6 +158,7 @@ class Skill {
             case 2:
             case 6:
             case 10:
+            case 14:
                 return 1;
             case 3:
             case 7:
@@ -313,6 +318,7 @@ class Skill {
      */
     toApi(character, lang = "en") {
         return {
+            id: this.id,
             name: this.getName(lang),
             desc: this.getDesc(lang),
             numberOfTargets: this.getNumberOfTarget(),

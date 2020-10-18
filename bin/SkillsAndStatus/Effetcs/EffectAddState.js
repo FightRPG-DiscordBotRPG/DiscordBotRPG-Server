@@ -52,7 +52,7 @@ class EffectAddState extends Effect {
 
     toApi(lang = "en") {
         return {
-            type: "addState",
+            type: this.typeShorthand,
             chance: this.percentageValue,
             stateAdded: Translator.getString(lang, "statesNames", this.stateValue)
         };

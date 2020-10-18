@@ -20,7 +20,7 @@ class EffectRecoverEnergy extends Effect {
 
     toApi(lang = "en") {
         return {
-            type: "recoverEnergy",
+            type: this.typeShorthand,
             value: this.fixedValue
         };
     }

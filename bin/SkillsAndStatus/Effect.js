@@ -14,11 +14,12 @@ class Effect {
         this.stateValue = null;
         this.statValue = null;
         this.roundsValue = 0;
+        this.typeShorthand = "";
     }
 
     async loadWithID(id) {
         this.id = id;
-        let res = await conn.query("SELECT * FROM effectsskills WHERE idEffectSkill = ?;", [this.id]);
+        let res = await conn.query("SELECT * FROM effectsskills INNER JOIN effectstypes ON effectstypes.idEffectType = effectsskills.idEffectType WHERE idEffectSkill = ?;", [this.id]);
 
         this.idEffectType = res[0].idEffectType;
         this.percentageValue = res[0].percentageValue;
@@ -26,6 +27,7 @@ class Effect {
         this.stateValue = res[0].stateValue;
         this.statValue = res[0].statValue;
         this.roundsValue = res[0].roundsValue;
+        this.typeShorthand = res[0].shortname;
     }
 
     /**

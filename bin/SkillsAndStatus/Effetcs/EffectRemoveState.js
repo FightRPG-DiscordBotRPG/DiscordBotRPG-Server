@@ -21,7 +21,7 @@ class EffectRemoveState extends Effect {
 
     toApi(lang = "en") {
         return {
-            type: "removeState",
+            type: this.typeShorthand,
             stateRemoved: Translator.getString(lang, "statesNames", this.stateValue),
         };
     }
