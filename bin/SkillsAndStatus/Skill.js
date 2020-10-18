@@ -147,13 +147,21 @@ class Skill {
 
     getNumberOfTarget() {
         switch (this.idTargetRange) {
-            case 1,9 ,13:
+            case 1:
+            case 9:
+            case 13:
                 return 99;
-            case 2, 6, 10:
+            case 2:
+            case 6:
+            case 10:
                 return 1;
-            case 3, 7, 11:
+            case 3:
+            case 7:
+            case 11:
                 return 2;
-            case 4, 8, 12:
+            case 4:
+            case 8:
+            case 12:
                 return 3;
             case 5:
                 return 4;
@@ -322,7 +330,7 @@ class Skill {
             isEquipped: false, // Same ^
         }
 
-        
+
     }
 }
 
@@ -331,5 +339,4 @@ module.exports = Skill;
 
 /**
  * @typedef {import("../Character")} Character;
- * 
  */
