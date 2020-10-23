@@ -2,6 +2,7 @@ const SkillBuild = require("./SkillBuild");
 const conn = require("../../conf/mysql");
 const Globals = require("../Globals");
 const Utils = require("../Utilities/Utils");
+const Skill = require("../SkillsAndStatus/Skill");
 
 class SkillBuildCharacter extends SkillBuild {
 
@@ -21,8 +22,28 @@ class SkillBuildCharacter extends SkillBuild {
         return this.skillsIds.length < Globals.maximumSkillsPerBuild;
     }
 
+    /**
+     * 
+     * @param {number} idSkill
+     */
+    isSkillEquiped(idSkill) {
+        return this.skills[idSkill] != null;
+    }
+
+    /**
+     * 
+     * @param {number} idSkill
+     */
+    canEquip(idSkill) {
+        return this.canAddMore() && !this.isSkillEquiped(idSkill);
+    }
+
+    /**
+     * 
+     * @param {number} id
+     */
     async pushSkill(id) {
-        if (this.canAddMore()) {
+        if (this.canEquip()) {
             this.skillsIds.push(id);
             return await this.returnSuccessAndSave(true);
         }
@@ -53,6 +74,7 @@ class SkillBuildCharacter extends SkillBuild {
     async returnSuccessAndSave(isSuccess) {
         await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
         await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
+        await this.loadSkills();
         return isSuccess;
     }
 }

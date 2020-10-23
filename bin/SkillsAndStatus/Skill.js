@@ -332,7 +332,7 @@ class Skill {
             idAttackType: this.idAttackType,
             effects: this.effects.map(e => e.toApi(lang)),
             isUnlocked: character.talents.isSkillUnlocked(this.id),
-            canEquip: false, // TODO: After builds is implemented
+            canEquip: , // TODO: After builds is implemented
             isEquipped: false, // Same ^
         }
 
