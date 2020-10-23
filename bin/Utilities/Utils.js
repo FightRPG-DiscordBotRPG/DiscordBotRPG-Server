@@ -114,6 +114,44 @@ class Utils {
         }
         return n;
     }
+
+    /**
+     * 
+     * @param {any[]} arr
+     * @param {any} itemToSwap
+     * @param {number} indexMoveTo
+     * Returns if successful
+     */
+    static swapArrayItemToIndex(arr, itemToSwap, indexMoveTo) {
+        let indexOfSwap = arr.indexOf(itemToSwap);
+
+        if (indexOfSwap > -1) {
+            if (indexMoveTo >= arr.length && indexMoveTo >= 0) {
+                indexMoveTo -= 1;
+            } else if (indexMoveTo < 0) {
+                indexMoveTo = 0;
+            }
+            [arr[indexMoveTo], arr[indexOfSwap]] = [arr[indexOfSwap], arr[indexMoveTo]];
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param {any[]} arr
+     * @param {any} item
+     */
+    static removeItemFromArray(arr, item) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === item) {
+                arr.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 

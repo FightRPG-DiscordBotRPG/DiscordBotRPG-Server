@@ -5,6 +5,7 @@ const StatsMonsters = require("../Stats/StatsMonsters");
 const SecondaryStatsMonsters = require("../Stats/Secondary/SecondaryStatsMonsters");
 const Globals = require("../Globals.js");
 const Translator = require("../Translator/Translator");
+const SkillBuild = require("../EntitiesBuilds/SkillBuild.js");
 
 class Monster extends WorldEntity {
 
@@ -24,8 +25,8 @@ class Monster extends WorldEntity {
         this.secondaryStats = new SecondaryStatsMonsters();
         this.difficulty = {};
         this.type = "";
-
-        this.buildSkills = [1, 17, 23, 25, 28, 37, 39, 40, 41];
+        // TODO: Use SkillBuild Monster
+        this.skillBuild = new SkillBuild();
     }
 
 

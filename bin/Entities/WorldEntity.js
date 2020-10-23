@@ -34,29 +34,18 @@ class WorldEntity {
         this.tempStatsModifiers = {};
 
         /**
-        * @type {Object.<number, Skill>}
-        */
-        this.skills = {};
-        /**
         * @type {Object.<number, State>}
         */
         this.states = {};
-        this.skillToTestIndex = -1;
 
-        this.buildSkills = [1];
+        /**
+         * @type {SkillBuild}
+         */
+        this.skillBuild = null;
     }
 
     async loadSkills() {
-        // TODO load depending on class / or monsters skills
-        let promises = [];
-        let skillsToTest = [1];
-        //let skillsToTest = [];
-        for (let item of this.buildSkills) {
-            let s = new Skill();
-            this.skills[item] = s;
-            promises.push(s.loadWithID(item));
-        }
-        await Promise.all(promises);
+        await this.skillBuild.loadSkills();
         this.skillToTestIndex = 0;
     }
 
@@ -399,21 +388,16 @@ class WorldEntity {
      * @returns {Skill} Skill to be cast     
      */
     getSkillToUse() {
-        let indexSKillToUse = this.buildSkills[this.skillToTestIndex];
-        let selectedSkill = this.skills[indexSKillToUse];
-
+        let selectedSkill = this.skillBuild.getSelectedSkill();
+        this.skillBuild.prepareNextSkill();
         // Updating next spell to use
-        this.skillToTestIndex++;
-        if (this.skillToTestIndex >= this.buildSkills.length) {
-            this.skillToTestIndex = 0;
-        }
+
 
         if (selectedSkill && selectedSkill.canBeCast() && this.canUseSkill(selectedSkill)) {
             return selectedSkill;
         } else {
             return this.getSkillsArray().find(skill => skill.canBeCast() && this.canUseSkill(skill));
         }
-
 
     }
 
@@ -585,7 +569,7 @@ class WorldEntity {
      * @returns {Array<Skill>}
      */
     getSkillsArray() {
-        return Object.values(this.skills);
+        return this.skillBuild.skillsObjects;
     }
 
     /**
@@ -871,3 +855,4 @@ class WorldEntity {
 module.exports = WorldEntity;
 
 const Globals = require("../Globals");
+const SkillBuild = require("../EntitiesBuilds/SkillBuild");

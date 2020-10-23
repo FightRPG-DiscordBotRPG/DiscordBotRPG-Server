@@ -3,6 +3,7 @@ const StatsPlayer = require("../Stats/StatsPlayer");
 const LevelSystem = require("../LevelSystem");
 const CharacterEquipement = require("../CharacterEquipement");
 const CharacterTalents = require("../CharacterTalents");
+const SkillBuildCharacter = require("../EntitiesBuilds/SkillBuildCharacter");
 
 class CharacterEntity extends WorldEntity {
 
@@ -18,7 +19,7 @@ class CharacterEntity extends WorldEntity {
         this.levelSystem = new LevelSystem();
         this.talents = new CharacterTalents();
         this._type = "Character";
-        this.buildSkills = [1, 2, 37, 52, 91, 101, 172];
+        this.skillBuild = new SkillBuildCharacter();
     }
 
     /**
@@ -33,6 +34,7 @@ class CharacterEntity extends WorldEntity {
             this.levelSystem.loadLevelSystem(id),
             this.equipement.loadEquipements(id),
             this.talents.load(null, id),
+            this.skillBuild.load(id),
         ]);
     }
 
