@@ -21,6 +21,14 @@ class SkillBuild {
         this.skillToTestIndex = -1;
     }
 
+    /**
+    * 
+    * @param {number} idSkill
+    */
+    isSkillEquipped(idSkill) {
+        return this.skills[idSkill] != null;
+    }
+
     async loadSkills() {
         let promises = [];
         //let skillsToTest = [];

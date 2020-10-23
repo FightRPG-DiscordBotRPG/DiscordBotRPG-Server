@@ -26,16 +26,8 @@ class SkillBuildCharacter extends SkillBuild {
      * 
      * @param {number} idSkill
      */
-    isSkillEquiped(idSkill) {
-        return this.skills[idSkill] != null;
-    }
-
-    /**
-     * 
-     * @param {number} idSkill
-     */
     canEquip(idSkill) {
-        return this.canAddMore() && !this.isSkillEquiped(idSkill);
+        return this.canAddMore() && !this.isSkillEquipped(idSkill);
     }
 
     /**
