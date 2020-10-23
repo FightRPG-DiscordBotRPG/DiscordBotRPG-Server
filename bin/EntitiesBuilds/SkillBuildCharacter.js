@@ -69,7 +69,20 @@ class SkillBuildCharacter extends SkillBuild {
         await this.loadSkills();
         return isSuccess;
     }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {string} lang
+     */
+    toApi(character, lang="en") {
+        return this.skillsObjects.map((e) => e.toApi(character, lang))
+    }
 }
 
 
 module.exports = SkillBuildCharacter;
+
+/**
+ * @typedef {import("./Character")} Character
+ **/
