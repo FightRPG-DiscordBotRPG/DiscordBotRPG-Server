@@ -13,6 +13,7 @@ const express = require("express"),
     port = 25012,
     url = require('url'),
     compression = require('compression');
+app.disable("x-powered-by");
 require('express-async-errors');
 app.listen(port, () => console.log("Starting RESTful api server for PSTree on: " + port));
 app.use(express.urlencoded({
