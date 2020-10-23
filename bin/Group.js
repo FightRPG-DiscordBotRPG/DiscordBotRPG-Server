@@ -12,11 +12,11 @@ class Group {
         this.id = nextID;
         nextID++;
         /**
-         * @type {Array<User>}
+         * @type {Object<string, User>}
          */
         this.players = {};
         /**
-         * @type {Array<User>}
+         * @type {Object<string, User>}
          */
         this.pendingPlayers = {};
         /**
@@ -270,7 +270,7 @@ class Group {
             members: members,
             invitedPlayers: invitedPlayers,
             avgPower: await this.getAveragePower(),
-            avgLevel: await this.getAverageLevel(),
+            avgLevel: this.getAverageLevel(),
             numberOfPlayers: this.nbOfPlayers(),
             numberOfInvitedPlayers: this.nbOfInvitedPlayers(),
         }

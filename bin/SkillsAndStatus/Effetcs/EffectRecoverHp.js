@@ -24,7 +24,7 @@ class EffectRecoverHp extends Effect {
      * @param {WorldEntity} entity
      */
     getValue(entity) {
-        return Math.floor(entity.maxHP * this.percentageValue + this.fixedValue);;
+        return Math.floor(entity.maxHP * this.percentageValue + this.fixedValue);
     }
 
     /**

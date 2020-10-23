@@ -714,13 +714,13 @@ class WorldEntity {
         return this.getStatesArray().reduce((r, obj) => {
             return r.concat(obj.traits);
         }, []);
-    };
+    }
 
     getTraits(idType) {
         return this.getAllTraits().filter((trait) => {
             return trait.idTraitType === idType;
         });
-    };
+    }
 
     /*
      * FIND BY Type And Value Type
@@ -751,7 +751,7 @@ class WorldEntity {
      */
     getTraitsWithElementType(idType, idElementType) {
         return this.filterByCondition(idType, (trait) => trait.valueElementType === idElementType);
-    };
+    }
 
     /**
      * 
@@ -760,7 +760,7 @@ class WorldEntity {
      */
     getTraitsWithStateType(idType, idStateType) {
         return this.filterByCondition(idType, (trait) => trait.valueState === idStateType);
-    };
+    }
 
 
     /**
@@ -770,7 +770,7 @@ class WorldEntity {
      */
     getTraitsWithIdStat(idType, idStat) {
         return this.filterByCondition(idType, (trait) => trait.valueStat === idStat);
-    };
+    }
 
     getTraitsWithIdSecondaryStats(idType, idSecondaryStat) {
         return this.filterByCondition(idType, (trait) => trait.valueSecondaryStat === idSecondaryStat);
@@ -783,7 +783,7 @@ class WorldEntity {
      */
     getTraitsWithIdSkill(idType, idSkill) {
         return this.filterByCondition(idType, (trait) => trait.valueSkill === idSkill);
-    };
+    }
 
     /**
      * 
@@ -792,7 +792,7 @@ class WorldEntity {
      */
     getTraitsWithSkillType(idType, idSkillType) {
         return this.filterByCondition(idType, (trait) => trait.valueSkillType === idSkillType);
-    };
+    }
 
     getTraitsWithCode(idType, value) {
         switch (idType) {
@@ -822,19 +822,19 @@ class WorldEntity {
         return this.getTraitsWithCode(idType, value).reduce((r, trait) => {
             return r * trait.getNumericValue();
         }, 1);
-    };
+    }
 
     getTraitValueSum(idType, value, defaultValue = 0) {
         return this.getTraitsWithCode(idType, value).reduce((r, trait) => {
             return r + trait.getNumericValue();
         }, defaultValue);
-    };
+    }
 
     getTraitValueSumAll(idType) {
         return this.getTraits(idType).reduce((r, trait) => {
             return r + trait.getNumericValue();
         }, 0);
-    };
+    }
 
     /**
      * 
@@ -846,7 +846,7 @@ class WorldEntity {
         return this.getTraitsWithCode(idType, value).reduce(function (r, trait) {
             return r.concat(trait.getSingleValue());
         }, []);
-    };
+    }
 
     getStateRate(idState) {
         return this.getTraitsValueMult(Trait.TraitTypesNames.StatusDebuff, idState);

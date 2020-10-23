@@ -311,7 +311,7 @@ class Guild {
     }
 
     /**
-     * @returns {{totalPower: Number, totalLevel: Number}}
+     * @returns {Promise<{totalPower: Number, totalLevel: Number}>}
      */
     async getGuildStats() {
         return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers LEFT JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
@@ -483,7 +483,7 @@ class Guild {
     }
 
     /**
-     * @returns {number}
+     * @returns {Promise<number>}
      */
     async getLevel() {
         return (await conn.query("SELECT level FROM guilds WHERE idGuild = ?;", [this.id]))[0].level;
@@ -540,7 +540,7 @@ class Guild {
      * Apply to guild
      * @param {Number} idGuild
      * @param {Number} idCharacter
-     * @returns {Array}
+     * @returns {Promise<string[]>}
      */
     static async applyTo(idGuild, idCharacter, lang) {
         let err = [];

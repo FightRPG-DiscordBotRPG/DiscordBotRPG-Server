@@ -72,7 +72,7 @@ class CharacterEquipement {
     }
 
     /**
-     * @returns {Array<Item>}
+     * @returns {Promise<Item[]>}
      */
     async getAllItems() {
         let res = await conn.query("SELECT itemstypes.nomType, charactersequipements.idItem FROM charactersequipements INNER JOIN itemstypes ON itemstypes.idType = charactersequipements.idType WHERE charactersequipements.idCharacter = ?;", [this.id]);

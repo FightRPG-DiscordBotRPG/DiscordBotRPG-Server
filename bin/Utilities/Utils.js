@@ -30,7 +30,7 @@ class Utils {
         if (destructive || n <= (k <= 5 ? 21 : 21 + Math.pow(4, Math.ceil(Math.log(k * 3, 4))))) {
             if (!destructive)
                 pool = Array.prototype.slice.call(pool);
-            for (var i = 0; i < k; i++) { // invariant: non-selected at [i,n)
+            for (let i = 0; i < k; i++) { // invariant: non-selected at [i,n)
                 var j = i + Math.random() * (n - i) | 0;
                 var x = pool[i];
                 pool[i] = pool[j];

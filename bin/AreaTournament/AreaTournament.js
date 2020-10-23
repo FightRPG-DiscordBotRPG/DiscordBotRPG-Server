@@ -34,7 +34,7 @@ class AreaTournament {
     }
 
     /**
-     * @returns {Date} Date of the next tournament
+     * @returns {Promise<Date>} Date of the next tournament
      */
     static async getNextTournament(idArea) {
         let date = new Date();
@@ -203,7 +203,7 @@ class AreaTournament {
     /**
      * 
      * @param {number} idArea 
-     * @returns {number}
+     * @returns {Promise<number>}
      */
     static async getNumberOfGuildsEnrolled(idArea) {
         return (await conn.query("SELECT count(*) as total FROM conquesttournamentinscriptions WHERE idArea = ?;", [idArea]))[0].total;

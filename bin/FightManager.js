@@ -10,7 +10,7 @@ const conf = require("../conf/conf");
 class FightManager {
     constructor() {
         /**
-         * @type {Array<Fight>}
+         * @type {Object<string, Fight>}
          */
         this.fights = {};
         this.lootSystem = new LootSystem();

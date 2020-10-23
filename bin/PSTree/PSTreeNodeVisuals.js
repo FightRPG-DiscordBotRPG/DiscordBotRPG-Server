@@ -34,7 +34,7 @@ class NodeVisuals {
     /**
      * 
      * @param {string} lang
-     * @return {string}
+     * @return {Promise<string>}
      */
     async getName(lang="en") {
         let res = (await conn.query("SELECT name FROM localizationnodespstree WHERE idNode = ? AND (lang = ? || lang = 'en');", [this.id, lang]))[0];

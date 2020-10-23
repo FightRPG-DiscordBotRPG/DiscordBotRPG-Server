@@ -87,11 +87,11 @@ var Globals = {
         "maxBeforeChange": 110,
     },
     /**
-     * @type {Array<User>}
+     * @type {Object<string, User>}
      */
     "connectedUsers": [],
     /**
-     * @type {Array<Guild>}
+     * @type {Object<any, Guild>}
      */
     "connectedGuilds": {},
     /**

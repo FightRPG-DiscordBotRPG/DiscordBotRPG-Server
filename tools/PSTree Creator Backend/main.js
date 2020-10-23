@@ -77,11 +77,9 @@ async function Start() {
 
         await ClearAllVisuals();
 
-        let allVisuals = [];
         let promisesToWait = [];
 
         for (let nodeVisual of json.visuals) {
-            allVisuals.push(nodeVisual);
             nodeVisual = JSON.parse(nodeVisual);
 
             let visual = Object.assign(new NodeVisuals(), nodeVisual);

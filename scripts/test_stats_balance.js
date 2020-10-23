@@ -4,10 +4,10 @@ const SecondaryStats = require("../bin/Stats/Secondary/SecondaryStats");
 let totalStatsPerSubtypes = {};
 let totalSecondaryStatsPerSubtypes = {};
 
-let possibleStats = Object.values(Stats.possibleStats);
+let possiblePrimaryStats = Object.values(Stats.possibleStats);
 let possibleSecondaryStats = [...Object.values(SecondaryStats.possibleStats), ...Object.values(SecondaryStats.possibleElementalResists)]
 
-for (let stat of possibleStats) {
+for (let stat of possiblePrimaryStats) {
     for (let subtype of Object.keys(Stats.ratiosBasedOnSubtype[stat])) {
 
         if (totalStatsPerSubtypes[subtype] == null) {
@@ -61,7 +61,7 @@ function TestStats(stats, possibleStats) {
 console.clear();
 console.log("Values For Primary Stats\n");
 
-TestStats(totalStatsPerSubtypes, possibleStats);
+TestStats(totalStatsPerSubtypes, possiblePrimaryStats);
 
 console.log("\nValues For Secondary Stats\n");
 

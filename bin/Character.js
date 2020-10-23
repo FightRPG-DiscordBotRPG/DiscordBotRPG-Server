@@ -386,7 +386,7 @@ class Character extends CharacterEntity {
     // number : Nbr of items to sell
     async sellThisItem(idEmplacement, number) {
         number = number ? number : 1;
-        let value = await (await (this.getInv()).getItem(idEmplacement)).getCost(number);
+        let value = (await (this.getInv()).getItem(idEmplacement)).getCost(number);
 
 
         // Si cost > 0 alors item existe et peut se vendre
