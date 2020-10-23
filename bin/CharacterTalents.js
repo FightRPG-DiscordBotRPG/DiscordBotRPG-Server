@@ -60,7 +60,7 @@ class CharacterTalents {
     }
 
     isSkillUnlocked(idSkill) {
-        this.unlockedSkillsIds[idSkill] === true;
+        return this.unlockedSkillsIds[idSkill] === true;
     }
 
     async canUnlock(idNode) {
