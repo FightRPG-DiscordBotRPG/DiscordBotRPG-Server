@@ -13,17 +13,17 @@ class PSTreeNode {
 		/**
 		 * @type {NodeVisuals}
 		 */
-        this.visuals;
+        this.visuals = null;
 
 		/**
 		 * @type {StatsPSTreeNode}
 		 */
-        this.stats;
+        this.stats = null;
 
 		/**
 		 * @type {SecondaryStatsPSTreeNode}
 		 */
-        this.secondaryStats;
+        this.secondaryStats = null;
 
 		/**
 		 * @type {Object<number, boolean>}
