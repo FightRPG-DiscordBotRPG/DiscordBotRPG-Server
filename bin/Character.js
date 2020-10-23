@@ -420,7 +420,7 @@ class Character extends CharacterEntity {
     }
 
     async sellAllInventory(params, lang="en") {
-        let value = await (await this.getInv().getAllInventoryValue(params, lang)).value;
+        let value = (await this.getInv().getAllInventoryValue(params, lang)).value;
         await Promise.all([
             this.getInv().deleteAllFromInventory(params, lang),
             this.addMoney(value)
