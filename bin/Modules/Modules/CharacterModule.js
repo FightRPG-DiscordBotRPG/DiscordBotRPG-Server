@@ -244,8 +244,8 @@ class CharacterModule extends GModule {
             let err;
             let data;
             let skill = new Skill();
-
-            if (!await skill.loadWithID(parseInt(req.params.idSkill, 10))) {
+            let idSkill = parseInt(req.params.idSkill, 10);
+            if (isNaN(idSkill) || !await skill.loadWithID(idSkill)) {
                 err = Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist");
             }
 
