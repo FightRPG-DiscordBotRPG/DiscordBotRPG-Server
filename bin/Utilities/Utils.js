@@ -72,12 +72,12 @@ class Utils {
             let weightTotal = 0;
             let distrib = [];
 
-            for (let i = 0; i < itemsNonDestructive.length; i++) {
+            for (let j = 0; i < itemsNonDestructive.length; i++) {
                 weightTotal += arrWeight[i];
             }
 
 
-            for (let i = 0; i < itemsNonDestructive.length; i++) {
+            for (let j = 0; i < itemsNonDestructive.length; i++) {
                 distrib[i] = arrWeight[i] / weightTotal;
             }
 
