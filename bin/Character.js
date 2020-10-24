@@ -69,6 +69,7 @@ class Character extends CharacterEntity {
             conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);"),
             this.achievements.load(this.id),
             this.talents.load(this, this.id),
+            this.skillBuild.load(this.id),
         ]);
 
         this.idArea = 1;
@@ -95,6 +96,7 @@ class Character extends CharacterEntity {
             this.equipement.loadEquipements(id),
             this.achievements.load(id),
             this.talents.load(this, id),
+            this.skillBuild.load(id),
         ]);
 
         this.idArea = res["idArea"];
@@ -123,6 +125,7 @@ class Character extends CharacterEntity {
             this.levelSystem.loadLevelSystem(id, this.idUser),
             this.equipement.loadEquipements(id),
             this.talents.load(this, id),
+            this.skillBuild.load(id),
         ]);
 
         this.updateStats();
