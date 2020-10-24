@@ -2,9 +2,17 @@ const SkillBuild = require("./SkillBuild");
 const conn = require("../../conf/mysql");
 const Globals = require("../Globals");
 const Utils = require("../Utilities/Utils");
-const Skill = require("../SkillsAndStatus/Skill");
 
 class SkillBuildCharacter extends SkillBuild {
+
+    /**
+     * 
+     * @param {CharacterEntity} character
+     */
+    constructor(character) {
+        super();
+        this.character = character;
+    }
 
     /**
      * 
@@ -27,7 +35,7 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {number} idSkill
      */
     canEquip(idSkill) {
-        return this.canAddMore() && !this.isSkillEquipped(idSkill);
+        return this.canAddMore() && !this.isSkillEquipped(idSkill) && this.character.talents.isSkillUnlocked(idSkill);
     }
 
     /**
@@ -59,6 +67,16 @@ class SkillBuildCharacter extends SkillBuild {
         return await this.returnSuccessAndSave(Utils.removeItemFromArray(this.skillsIds, id));
     }
 
+    async reset() {
+        await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
+        this.reload();
+    }
+
+    async reload() {
+        await this.load(this.id);
+        await this.loadSkills();
+    }
+
     /**
      * 
      * @param {Promise<boolean>} isSuccess
@@ -66,17 +84,16 @@ class SkillBuildCharacter extends SkillBuild {
     async returnSuccessAndSave(isSuccess) {
         await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
         await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
-        await this.loadSkills();
+        await this.reload();
         return isSuccess;
     }
 
     /**
      * 
-     * @param {Character} character
      * @param {string} lang
      */
-    toApi(character, lang="en") {
-        return this.skillsObjects.map((e) => e.toApi(character, lang))
+    toApi(lang="en") {
+        return this.skillsObjects.map((e) => e.toApi(this.character, lang))
     }
 }
 
@@ -84,5 +101,5 @@ class SkillBuildCharacter extends SkillBuild {
 module.exports = SkillBuildCharacter;
 
 /**
- * @typedef {import("./Character")} Character
+ * @typedef {import("../Entities/CharacterEntity")} CharacterEntity
  **/
