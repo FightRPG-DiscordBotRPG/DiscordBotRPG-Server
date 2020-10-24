@@ -313,36 +313,37 @@ class Skill {
 
     /**
      * 
-     * @param {Character} character Required to get true mana/energy cost and other data
+     * @param {CharacterEntity|WorldEntity} entity Required to get true mana/energy cost and other data
      * @param {string} lang
      */
-    toApi(character, lang = "en") {
-        return {
+    toApi(entity, lang = "en") {
+        const CharacterEntity = require("../Entities/CharacterEntity");
+        let apiObject = {
             id: this.id,
             name: this.getName(lang),
             desc: this.getDesc(lang),
             numberOfTargets: this.getNumberOfTarget(),
             idTargetRange: this.idTargetRange,
             damage: this.damage,
-            mpCost: character.getSkillMpCost(this),
-            energyCost: character.getSkillEnergyCost(this),
+            mpCost: entity.getSkillMpCost(this),
+            energyCost: entity.getSkillEnergyCost(this),
             repeat: this.repeat,
             successRate: this.successRate,
             timeToCast: this.timeToCast,
             idAttackType: this.idAttackType,
             effects: this.effects.map(e => e.toApi(lang)),
-            isUnlocked: character.talents.isSkillUnlocked(this.id),
-            canEquip: character.skillBuild.canEquip(this.id),
-            isEquipped: character.skillBuild.isSkillEquipped(this.id),
         }
 
+        if (entity instanceof CharacterEntity) {
+            apiObject.isUnlocked = entity.talents.isSkillUnlocked(this.id);
+            apiObject.canEquip = entity.skillBuild.canEquip(this.id);
+            apiObject.isEquipped = entity.skillBuild.isSkillEquipped(this.id);
+        }
+
+        return apiObject;
 
     }
 }
 
 
 module.exports = Skill;
-
-/**
- * @typedef {import("../Character")} Character;
- */
