@@ -575,6 +575,10 @@ class GModule {
         return { error: val };
     }
 
+    asSuccess(val) {
+        return { success: val };
+    }
+
 
 }
 
