@@ -45,7 +45,7 @@ class SkillBuildCharacter extends SkillBuild {
      * @returns {string|null} Null if no errors
      */
     getErrorEquip(idSkill) {
-        if (!this.canAddMore) {
+        if (!this.canAddMore()) {
             return "skill_build_cant_add_more";
         }
 
