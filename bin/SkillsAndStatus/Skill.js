@@ -288,11 +288,29 @@ class Skill {
     }
 
     getDesc(lang = "en") {
-        return Translator.getString(lang, "skillDesc", this.id);
+        return Skill.getDesc(this.id, lang);
     }
 
     getName(lang = "en") {
-        return Translator.getString(lang, "skillNames", this.id);
+        return Skill.getName(this.id, lang);
+    }
+
+    /**
+    * 
+    * @param {number} idSkill
+    * @param {string} lang
+    */
+    static getDesc(idSkill, lang = "en") {
+        return Translator.getString(lang, "skillDesc", idSkill);
+    }
+
+    /**
+     * 
+     * @param {number} idSkill
+     * @param {string} lang
+     */
+    static getName(idSkill, lang = "en") {
+        return Translator.getString(lang, "skillNames", idSkill);
     }
 
     /**
@@ -342,6 +360,15 @@ class Skill {
 
         return apiObject;
 
+    }
+
+
+    /**
+     * 
+     * @param {number} idSkill
+     */
+    static async exists(idSkill) {
+        return (await conn.query("SELECT idSkill FROM skills WHERE idSkill = ?;", [idSkill])).length > 0;
     }
 }
 
