@@ -64,7 +64,7 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {number} id
      */
     async pushSkill(id) {
-        if (this.canEquip()) {
+        if (this.canEquip(id)) {
             this.skillsIds.push(id);
             return await this.returnSuccessAndSave(true);
         }
