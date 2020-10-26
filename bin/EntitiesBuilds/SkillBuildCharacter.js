@@ -106,7 +106,9 @@ class SkillBuildCharacter extends SkillBuild {
     async returnSuccessAndSave(isSuccess) {
         if (isSuccess) {
             await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
-            await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
+            if (this.skillsIds.length > 0) {
+                await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
+            }
             await this.reload();
         }
         return isSuccess;
