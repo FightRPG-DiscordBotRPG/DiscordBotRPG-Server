@@ -9,7 +9,7 @@ class CharacterTalents {
     constructor(id) {
         this.id = id;
         /**
-         * @type {Array<PSTreeNode>}
+         * @type {Object<string, PSTreeNode>}
          **/
         this.talents = {};
         this.unlockedSkillsIds = {};
@@ -125,6 +125,16 @@ class CharacterTalents {
             secondaryStats: this.secondaryStats.toApi(),
             initialTalents: Globals.pstreenodes.initialTalents,
         }
+    }
+
+    toExport() {
+        return {
+            talents: Object.values(this.talents).map(e => e.id).join(",")
+        }
+    }
+
+    async import(talentsIds) {
+
     }
 
     async getTalentsToApi(lang = "en") {

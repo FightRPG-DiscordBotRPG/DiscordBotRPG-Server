@@ -208,6 +208,62 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/talents/export", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].character.talents.toExport();
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+        this.router.post("/talents/import", async (req, res, next) => {
+            // Protect this more by limiting the number of characters (or something)
+            let allNodesString = req.body.talentsIds == null ? "" : req.body.talentsIds;
+
+            /**
+             * @type any[]
+             */
+            let allNodesIds = allNodesString.split(",");
+
+            //Idiot way Optimize one day pls someone
+            //console.time("Idiot Way");
+            let somethingWasAdded = true;
+            let lastGoodResult = null;
+            let lastBadResult = null;
+
+            while (somethingWasAdded) {
+                somethingWasAdded = false;
+                let newAllNodesIds = [];
+                for (let i in allNodesIds) {
+                    let lastResult = await this.tryUnlockTalent(res.locals.character, parseInt(allNodesIds[i]), res.locals.lang);
+                    if (lastResult.error) {
+                        newAllNodesIds.push(allNodesIds[i]);
+                        lastBadResult = lastResult;
+                    } else {
+                        lastGoodResult = lastResult;
+                        somethingWasAdded = true;
+                    }
+                }
+                allNodesIds = newAllNodesIds;
+            }
+            //console.timeEnd("Idiot Way");
+
+            let data;
+            if (lastGoodResult) {
+                if (lastBadResult) {
+                    data = this.asSuccess(Translator.getString(res.locals.lang, "talents", "talents_import_not_totally_successful", [allNodesIds.join(","), lastBadResult.error]));
+                } else {
+                    data = this.asSuccess(Translator.getString(res.locals.lang, "talents", "talents_import_successful"));
+                }
+            } else {
+                data = lastBadResult;
+            }
+
+            //let data = await Globals.connectedUsers[res.locals.id].character.talents.import(allNodes.split(","));
+            //data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
         this.router.get("/talents/show/:idNode", async (req, res, next) => {
             let idNodeToSee = parseInt(req.params.idNode, 10);
             let err = null;
@@ -237,7 +293,7 @@ class CharacterModule extends GModule {
 
         this.router.post("/talents/up", async (req, res, next) => {
             await next();
-            return res.json(await this.tryUnlockTalent(req, res));
+            return res.json(await this.tryUnlockTalent(res.locals.character, parseInt(req.body.idNode), res.locals.lang));
         });
 
         this.router.get("/skills/show/:idSkill", async (req, res, next) => {
@@ -377,45 +433,44 @@ class CharacterModule extends GModule {
         }
     }
 
-    async tryUnlockTalent(req, res) {
-        /**
-         * @type {Character}
-         */
-        let character = res.locals.character;
-        let idNode = parseInt(req.body.idNode);
-
+    /**
+     * 
+     * @param {Character} character
+     * @param {number} idNode
+     * @param {string} lang
+     */
+    async tryUnlockTalent(character, idNode, lang="en") {
         if (isNaN(idNode)) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_show_missing_id"));
+            return this.asError(Translator.getString(lang, "errors", "talents_show_missing_id"));
         }
 
         let node = Globals.pstreenodes.getNode(idNode);
         if (node == null) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_show_node_dont_exist"));
+            return this.asError(Translator.getString(lang, "errors", "talents_show_node_dont_exist"));
         }
 
         if (character.talents.isReachable(idNode) == false) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_node_not_reachable"));
+            return this.asError(Translator.getString(lang, "errors", "talents_node_not_reachable"));
         }
 
         if (await character.talents.haveEnoughPoints(idNode) == false) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_not_enough_points"));
+            return this.asError(Translator.getString(lang, "errors", "talents_not_enough_points"));
         }
 
         if (character.talents.isTalentUnlocked(idNode)) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "talents_already_unlocked"));
+            return this.asError(Translator.getString(lang, "errors", "talents_already_unlocked"));
         }
 
 
         if (!await character.talents.unlock(idNode)) {
             // Unknown error or not implemented check maybe
-            return this.asError(Translator.getString(res.locals.lang, "errors", "generic_cant_do_that"));
+            return this.asError(Translator.getString(lang, "errors", "generic_cant_do_that"));
         }
 
         return {
-            node: await node.toApi(res.locals.lang),
+            node: await node.toApi(lang),
             pointsLeft: await character.getStatPoints(),
         };
-
     }
 
 }
