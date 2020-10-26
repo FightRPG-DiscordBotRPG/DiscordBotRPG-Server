@@ -23,6 +23,7 @@ const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
 const Skill = require("../../SkillsAndStatus/Skill");
+const Character = require("../../Character");
 
 
 
@@ -258,7 +259,7 @@ class CharacterModule extends GModule {
                 };
             }
 
-            
+
             await next();
             return res.json(data);
         });
@@ -268,12 +269,119 @@ class CharacterModule extends GModule {
             return res.json(res.locals.character.skillBuild.toApi(res.locals.lang));
         });
 
+        this.router.post("/build/add", async (req, res, next) => {
+            await next();
+            return res.json(await this.tryAddSkillToBuild(req, res));
+        });
+
+        this.router.post("/build/move", async (req, res, next) => {
+            await next();
+            return res.json(await this.tryMoveSkillBuild(req, res));
+        });
+
+        this.router.post("/build/remove", async (req, res, next) => {
+            await next();
+            return res.json(await this.tryRemoveSkillFromBuild(req, res));
+        });
+
+        this.router.post("/build/clear", async (req, res, next) => {
+            await next();
+            return res.json(await this.tryClearBuild(res));
+        });
 
     }
 
+    async tryClearBuild(res) {
+        /**
+        * @type {Character}
+        */
+        let character = res.locals.character;
+        await character.skillBuild.reset()
+        return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "reset_success"));
+    }
+
+    async tryRemoveSkillFromBuild(req, res) {
+        /**
+        * @type {Character}
+        */
+        let character = res.locals.character;
+        let idSkill = parseInt(req.body.idSkill, 10);
+
+        if (isNaN(idSkill) || !await Skill.exists(idSkill)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist"));
+        }
+
+        if (!character.skillBuild.isSkillEquipped(idSkill)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_build_not_equipped"));
+        }
+
+
+        if (await character.skillBuild.removeSkill(idSkill)) {
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "remove_success", [Skill.getName(idSkill)]));
+        } else {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
+        }
+    }
+
+    async tryMoveSkillBuild(req, res) {
+        /**
+        * @type {Character}
+        */
+        let character = res.locals.character;
+
+        let idSkill = parseInt(req.body.idSkill, 10);
+        let priority = parseInt(req.body.priority, 10);
+
+        if (isNaN(idSkill) || !await Skill.exists(idSkill)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist"));
+        }
+
+        if (isNaN(priority) || priority < 0 || priority >= Globals.maximumSkillsPerBuild) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_build_incorrect_priority"));
+        }
+
+        if (!character.skillBuild.isSkillEquipped(idSkill)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_build_not_equipped"));
+        }
+
+        if (await character.skillBuild.swapSkill(idSkill, priority)) {
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "swap_succes"));
+        } else {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
+        }
+
+
+    }
+
+    async tryAddSkillToBuild(req, res) {
+        /**
+        * @type {Character}
+        */
+        let character = res.locals.character;
+
+        let idSkill = parseInt(req.body.idSkill, 10);
+
+        if (isNaN(idSkill) || !await Skill.exists(idSkill)) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist"));
+        }
+
+        let equipErrorString = character.skillBuild.getErrorEquip(idSkill);
+        if (equipErrorString !== null) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", equipErrorString));
+        }
+
+        if (await character.skillBuild.pushSkill(idSkill)) {
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "add_success", [Skill.getName(idSkill)]));
+        } else {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
+        }
+    }
 
     async tryUnlockTalent(req, res) {
-        let character = Globals.connectedUsers[res.locals.id].character;
+        /**
+         * @type {Character}
+         */
+        let character = res.locals.character;
         let idNode = parseInt(req.body.idNode);
 
         if (isNaN(idNode)) {
@@ -298,14 +406,14 @@ class CharacterModule extends GModule {
         }
 
 
-        if (!character.talents.unlock(idNode)) {
+        if (!await character.talents.unlock(idNode)) {
             // Unknown error or not implemented check maybe
             return this.asError(Translator.getString(res.locals.lang, "errors", "generic_cant_do_that"));
         }
 
         return {
             node: await node.toApi(res.locals.lang),
-            pointsLeft: await Globals.connectedUsers[res.locals.id].character.getStatPoints(),
+            pointsLeft: await character.getStatPoints(),
         };
 
     }
