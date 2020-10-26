@@ -35,7 +35,28 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {number} idSkill
      */
     canEquip(idSkill) {
-        return this.canAddMore() && !this.isSkillEquipped(idSkill) && this.character.talents.isSkillUnlocked(idSkill);
+        return this.getErrorEquip(idSkill) === null;
+    }
+
+    /**
+     * 
+     * @param {number} idSkill
+     * @returns {string|null} Null if no errors
+     */
+    getErrorEquip(idSkill) {
+        if (!this.canAddMore) {
+            return "skill_build_cant_add_more";
+        }
+
+        if (this.isSkillEquipped(idSkill)) {
+            return "skill_build_already_equipped";
+        }
+
+        if (!this.character.talents.isSkillUnlocked(idSkill)) {
+            return "skill_build_not_unlocked";
+        }
+
+        return null;
     }
 
     /**
@@ -82,9 +103,11 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {Promise<boolean>} isSuccess
      */
     async returnSuccessAndSave(isSuccess) {
-        await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
-        await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
-        await this.reload();
+        if (isSuccess) {
+            await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
+            await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
+            await this.reload();
+        }
         return isSuccess;
     }
 
