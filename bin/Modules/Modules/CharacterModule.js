@@ -263,6 +263,11 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/build/show", async (req, res, next) => {
+            await next();
+            return res.json(res.locals.character.skillBuild.toApi(res.locals.lang));
+        });
+
 
     }
 
