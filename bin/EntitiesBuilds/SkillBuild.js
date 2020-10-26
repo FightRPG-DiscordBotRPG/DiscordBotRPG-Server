@@ -37,7 +37,8 @@ class SkillBuild {
 
     async loadSkills() {
         let promises = [];
-        //let skillsToTest = [];
+        this.skillsObjects = [];
+        this.skills = {};
         for (let item of this.skillsIds) {
             let s = new Skill();
             this.skills[item] = s;

@@ -25,9 +25,10 @@ class SkillBuildCharacter extends SkillBuild {
         for (let item of res) {
             this.skillsIds[item.priority] = item.idSkill;
         }
+        await this.loadSkills();
     }
 
-    canAddMore() {
+    canAddMore() { 
         return this.skillsIds.length < Globals.maximumSkillsPerBuild;
     }
 
@@ -96,7 +97,6 @@ class SkillBuildCharacter extends SkillBuild {
 
     async reload() {
         await this.load(this.id);
-        await this.loadSkills();
     }
 
     /**
