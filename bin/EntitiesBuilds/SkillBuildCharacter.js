@@ -20,6 +20,7 @@ class SkillBuildCharacter extends SkillBuild {
      */
     async load(id) {
         this.id = id;
+        this.clear();
         let res = await conn.query("SELECT * FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
         for (let item of res) {
             this.skillsIds[item.priority] = item.idSkill;
@@ -115,7 +116,7 @@ class SkillBuildCharacter extends SkillBuild {
      * 
      * @param {string} lang
      */
-    toApi(lang="en") {
+    toApi(lang = "en") {
         return {
             build: this.skillsObjects.map((e) => e.toApi(this.character, lang)),
             maximumSkills: Globals.maximumSkillsPerBuild,
