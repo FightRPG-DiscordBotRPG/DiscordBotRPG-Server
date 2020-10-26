@@ -21,6 +21,12 @@ class SkillBuild {
         this.skillToTestIndex = -1;
     }
 
+    clear() {
+        this.skillsIds = [];
+        this.skillsObjects = [];
+        this.skills = {};
+    }
+
     /**
     * 
     * @param {number} idSkill
