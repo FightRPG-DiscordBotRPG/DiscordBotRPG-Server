@@ -93,7 +93,10 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {string} lang
      */
     toApi(lang="en") {
-        return this.skillsObjects.map((e) => e.toApi(this.character, lang))
+        return {
+            build: this.skillsObjects.map((e) => e.toApi(this.character, lang)),
+            maximumSkills: Globals.maximumSkillsPerBuild,
+        }
     }
 }
 
