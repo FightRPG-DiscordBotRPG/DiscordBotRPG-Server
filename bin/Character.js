@@ -811,13 +811,6 @@ class Character extends CharacterEntity {
         return res[0] != null ? res[0].idGuild : 0;
     }
 
-    /**
-     * 
-     * Related To Builds/Talents about skills
-     * 
-     */
-        // TODO
-
 
     /**
      * 
