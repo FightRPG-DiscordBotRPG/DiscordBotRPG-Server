@@ -19,7 +19,7 @@ class Skill {
         this.timeToCast = 0;
         this.successRate = 0;
         this.repeat = 1;
-        this.energyGain = 0; // Unused
+        this.energyGain = 0;
         this.idAttackType = 0;
         this.damage = {
             idDamageType: 0,
