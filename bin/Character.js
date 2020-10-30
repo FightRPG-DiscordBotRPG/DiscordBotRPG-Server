@@ -311,6 +311,7 @@ class Character extends CharacterEntity {
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
             await this.talents.reset();
+            await this.skillBuild.reset();
             return true;
         }
         return false;
