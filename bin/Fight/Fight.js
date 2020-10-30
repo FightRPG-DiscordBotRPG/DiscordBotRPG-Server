@@ -181,6 +181,8 @@ class Fight {
 
             for (let target of targets) {
 
+                let wasAlive = target.isAlive();
+
                 let defenderLogger = this.initNewEntityLogger(target);
 
                 roundLog.defenders.push(defenderLogger);
@@ -215,9 +217,12 @@ class Fight {
                 this.updateEntityLogger(defenderLogger, target);
 
                 // Remove from original array since it's dead
-                // Should be changed so we can resurrect people
-                if (!target.isAlive()) {
+                if (wasAlive && !target.isAlive()) {
                     this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
+                } else if (!wasAlive && target.isAlive()) {
+                    // If he is alive and was not at first, then it means that the target is ressurected
+                    // Push at the end of entities list
+                    this.concatEntities.push(target);
                 }
             }
         }
