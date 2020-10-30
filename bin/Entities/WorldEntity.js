@@ -364,7 +364,7 @@ class WorldEntity {
      * @param {Skill} skill
      */
     getSkillMpCost(skill) {
-        return Math.floor(1 + (this.getSecondaryStat(SecondaryStats.possibleStats.SkillManaCost) / 100)) * skill.manaCost;
+        return Math.floor((1 + (this.getSecondaryStat(SecondaryStats.possibleStats.SkillManaCost) / 100)) * skill.manaCost * (1 + this.getLevel() / 20));
     }
 
     /**
