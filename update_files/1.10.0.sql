@@ -738,14 +738,14 @@ VALUES
 (4, "addState"),
 (5, "removeState");
 
-INSERT INTO damagestypes
+REPLACE INTO damagestypes
 VALUES
 (1, "hpDamage"),
 (2, "manaDamage"),
-(3, "lifeSteal"),
-(4, "manaSteal"),
-(5, "healHp"),
-(6, "healMp");
+(3, "healHp"),
+(4, "healMp"),
+(5, "lifeSteal"),
+(6, "manaSteal");
 
 REPLACE INTO secondarystats
 VALUES 
