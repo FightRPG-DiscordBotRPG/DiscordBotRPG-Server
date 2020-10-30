@@ -157,22 +157,30 @@ class Fight {
         if (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf) {
             let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
+            let alreadyCheckedIds = {};
+            // check if can target with skill
+            let targets = this.getSkillTargets(skillToUse, attacker);
+
+            while (targets.length === 0) {
+                if (!alreadyCheckedIds[skillToUse.id]) {
+                    alreadyCheckedIds[skillToUse.id] = true;
+                }
+
+                skillToUse = attacker.getSkillToUse();
+
+                if (alreadyCheckedIds[skillToUse.id]) {
+                    skillToUse = await this.getDefaultSkill(attackerRestrictions);
+                }
+
+                targets = this.getSkillTargets(skillToUse, attacker);
+            }
+
             skillToUse.resetCast();
             roundLog.skillInfo.id = skillToUse.id;
             roundLog.skillInfo.message = skillToUse.getMessage(attacker.getName(), this.lang);
 
-            let targets = [];
 
-            let numberOfTarget = skillToUse.getNumberOfTarget();
-            if (skillToUse.isTargetingAliveAllies()) {
-                targets = this.getAliveAttackers(numberOfTarget);
-            } else if (skillToUse.isTargetingAliveEnemies()) {
-                targets = this.getAliveDefenders(numberOfTarget);
-            } else if (skillToUse.isTargetingDeadAllies()) {
-                targets = this.getAllDeadAttackers();
-            } else if (skillToUse.isTargetingSelf()) {
-                targets.push(attacker);
-            }
+
 
             let skillCosts = attacker.removeSkillCost(skillToUse);
             roundLog.attacker.logSkillDamageEnergy(skillCosts.energy);
@@ -254,6 +262,24 @@ class Fight {
 
 
 
+    }
+
+    /**
+     * 
+     * @param {Skill} skillToUse
+     * @param {WorldEntity} attacker
+     */
+    getSkillTargets(skillToUse, attacker) {
+        let numberOfTarget = skillToUse.getNumberOfTarget();
+        if (skillToUse.isTargetingAliveAllies()) {
+            return this.getAliveAttackers(numberOfTarget);
+        } else if (skillToUse.isTargetingAliveEnemies()) {
+            return this.getAliveDefenders(numberOfTarget);
+        } else if (skillToUse.isTargetingDeadAllies()) {
+            return this.getAllDeadAttackers();
+        } else if (skillToUse.isTargetingSelf()) {
+            return [attacker];
+        }
     }
 
     /**

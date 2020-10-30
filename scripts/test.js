@@ -13,3 +13,30 @@
 //}
 //console.timeEnd("Time");
 //console.log(repartition);
+
+//let obj = { 1: 1, 2: true, 4: true, 56: false, 99: 6666, 79: "tryue" };
+let obj = {};
+
+for (let i = 0; i < 1000; i++) {
+    obj[i] = Math.random() * 10000;
+}
+
+
+const testMax = 10000;
+console.time("Object Keys");
+for (let i = 0; i < testMax; i++) {
+    Object.keys(obj);
+}
+console.timeEnd("Object Keys");
+
+console.time("Object Entries");
+for (let i = 0; i < testMax; i++) {
+    Object.entries(obj);
+}
+console.timeEnd("Object Entries");
+
+console.time("Object Values");
+for (let i = 0; i < testMax; i++) {
+    Object.keys(obj);
+}
+console.timeEnd("Object Values");
