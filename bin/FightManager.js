@@ -40,7 +40,7 @@ class FightManager {
 
     /**
      * 
-     * @param {Array<Monstre>} monsters 
+     * @param {Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>} monsters
      * @param {Array<Character>} characters 
      */
     async loadMonsters(monsters, characters) {
@@ -71,6 +71,7 @@ class FightManager {
                 }
                 let ms = new Monstre(monsters[i].id);
                 ms.uuid = i + j + ms.id + "";
+                ms.decoratedId = monsters[i].number > 1 ? (j + 1) : null;
                 await ms.loadMonster(realLevel);
                 arr.push(ms);
             }

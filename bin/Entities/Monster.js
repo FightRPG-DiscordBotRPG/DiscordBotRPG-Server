@@ -13,6 +13,7 @@ class Monster extends WorldEntity {
         super();
         this._type = "Monster";
         this.uuid = id;
+        this.decoratedId = null;
         this.id = id;
         this.name = "g_monster";
         this.actualHP = 0;
@@ -61,7 +62,7 @@ class Monster extends WorldEntity {
     }
 
     getName(lang = "en") {
-        return Translator.getString(lang, "monstersNames", this.id);
+        return Translator.getString(lang, "monstersNames", this.id) + (this.decoratedId !== null ? " #" + this.decoratedId : "");
     }
 
     static getName(id, lang = "en") {
