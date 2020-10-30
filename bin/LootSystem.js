@@ -186,7 +186,7 @@ class LootSystem {
                 baseValue = Utils.randRangeInt(3, 5) * ratio;
                 break;
             case SecondaryStats.possibleStats.RegenEnergy:
-                baseValue = Utils.randRangeInt(2, 10) * ratio;
+                baseValue = Utils.randRangeInt(1, 3) * ratio;
                 break;
             case SecondaryStats.possibleStats.RegenHp:
             case SecondaryStats.possibleStats.RegenMp:
