@@ -590,10 +590,12 @@ class Character extends CharacterEntity {
         if (this.canUse(itemToUse)) {
             amount = amount > 0 ? amount : 1;
             amount = amount > itemToUse.number ? itemToUse.number : (amount < 1 ? 1 : amount);
-            if (itemToUse.canBeMultUsed == false) {
+            if (itemToUse.maxUseInOneTime === 1) {
                 amount = 1;
+            } else if (amount > itemToUse.maxUseInOneTime) {
+                amount = itemToUse.maxUseInOneTime;
             }
-            amount = amount > 100 ? 100 : amount;
+
             let promises = [];
             promises.push(this.getInv().removeSomeFromInventory(idEmplacement, amount, true));
 

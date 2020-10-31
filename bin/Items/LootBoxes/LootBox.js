@@ -11,6 +11,7 @@ class LootBox extends Consumable {
             gold: 0
         }
         this.canBeMultUsed = true;
+        this.maxUseInOneTime = 100;
     }
 
     addItem(id, number) {

@@ -5,9 +5,10 @@ class Consumable extends Item {
         super(id);
         this.numberOfUse = 0;
         this.canBeMultUsed = false;
+        this.maxUseInOneTime = 1;
     }
 
-    async use(character) {
+    async use(character, numberOfUse=1) {
         throw "Must Be Implemented";
     }
 
