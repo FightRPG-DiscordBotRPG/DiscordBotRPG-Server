@@ -91,7 +91,18 @@ WHERE items.level = 75 AND localizationitems.lang = "fr";
 -- Check user inv
 SELECt * from charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem WHERE idCharacter = 10472 AND lang = "fr"
 
-
+-- Get Mythicals and join with leaderboard (example to use if want to add more filter or sort)
+SELECT characters.idCharacter, Honor, actualLevel, mythicals
+FROM charactershonor 
+INNER JOIN characters ON characters.idCharacter = charactershonor.idCharacter 
+INNER JOIN users ON users.idCharacter = charactershonor.idCharacter
+INNER JOIN levels ON levels.idCharacter = characters.idCharacter 
+INNER JOIN 
+	(SELECT idCharacter, COUNT(*) as mythicals FROM charactersequipements
+	INNER JOIN items ON items.idItem = charactersequipements.idItem 
+	INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem 
+	WHERE itemsbase.idRarity = 6 AND idCharacter GROUP BY idCharacter) test ON test.idCharacter = characters.idCharacter
+ORDER BY `charactershonor`.`Honor`  DESC
 
 
 
