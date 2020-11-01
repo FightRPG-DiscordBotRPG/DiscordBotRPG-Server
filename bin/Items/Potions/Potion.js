@@ -7,7 +7,7 @@ class Potion extends Consumable {
     }
 
     resultToString(lang) {
-        return Translator.getString(lang, "potions", "drink", [this.getName(lang), this.numberOfUse]);
+        return Translator.getString(lang, "potions", this.numberOfUse > 1 ? "drink_plur" : "drink", [this.getName(lang), this.numberOfUse]);
     }
 }
 
