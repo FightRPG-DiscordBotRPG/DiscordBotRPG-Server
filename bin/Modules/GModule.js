@@ -299,7 +299,7 @@ class GModule {
                             for (let character of grpCharacters) {
                                 // Not wating this since players can't move because of exhaust
                                 character.changeArea(areaToTravel, character.getExhaust());
-                                if (areaToTravel.areaType != "dungeon") {
+                                if (areaToTravel.isFirstFloor()) {
                                     character.resetFullHp();
                                 }
                             }
