@@ -180,7 +180,7 @@ class PSTreeNode {
 
 
     async save() {
-        await conn.query("REPLACE INTO pstreenodes VALUES (?, ?, ?, ?, ?, ?)", [this.id, this.visuals.id, this.x, this.y, this.cost, this.isInitial]);
+        await conn.query("REPLACE INTO pstreenodes VALUES (?, ?, ?, ?, ?, ?)", [this.id, this.visuals.id > 0 ? this.visuals.id : 1, this.x, this.y, this.cost, this.isInitial]);
 
         let promisesToWait = [];
         promisesToWait.push(this.secondaryStats.save());
