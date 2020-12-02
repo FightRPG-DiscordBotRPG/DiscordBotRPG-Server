@@ -1141,6 +1141,21 @@ REPLACE INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 (61, 'en', 'Wolf');
 
 
+REPLACE INTO statsprofil VALUES
+(2, "smorc_warrior"),
+(3, "tank_stun_warrior"),
+(4, "crit_warrior"),
+(5, "tank_armor_stun_warrior"),
+(6, "tank_will_warrior"),
+(7, "damage_warrior"),
+(8, "damage_crit_warrior"),
+(9, "tanky_warrior");
+
+
+
+
+
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
