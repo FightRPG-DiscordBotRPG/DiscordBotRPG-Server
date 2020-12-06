@@ -670,23 +670,51 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`MonstersBuildsProfil`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`monstersbuildsprofil` (
+  `idMonstersBuildsProfil` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  PRIMARY KEY (`idMonstersBuildsProfil`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `discord_bot_rpg`.`MonstersBuilds`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`monstersbuilds` (
-  `idStatsProfil` INT UNSIGNED NOT NULL,
+  `idMonstersBuildsProfil` INT UNSIGNED NOT NULL,
   `idSkill` INT UNSIGNED NOT NULL,
   `priority` TINYINT NOT NULL DEFAULT 0,
-  PRIMARY KEY (`idStatsProfil`, `idSkill`),
+  PRIMARY KEY (`idMonstersBuildsProfil`, `idSkill`),
   INDEX `fk_MonstersBuilds_Skills1_idx` (`idSkill` ASC) VISIBLE,
-  CONSTRAINT `fk_MonstersBuilds_StatsProfil1`
-    FOREIGN KEY (`idStatsProfil`)
-    REFERENCES `discord_bot_rpg`.`statsprofil` (`idStatsProfil`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_MonstersBuilds_MonstersBuildsProfil1_idx` (`idMonstersBuildsProfil` ASC) VISIBLE,
   CONSTRAINT `fk_MonstersBuilds_Skills1`
     FOREIGN KEY (`idSkill`)
     REFERENCES `discord_bot_rpg`.`skills` (`idSkill`)
     ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MonstersBuilds_MonstersBuildsProfil1`
+    FOREIGN KEY (`idMonstersBuildsProfil`)
+    REFERENCES `discord_bot_rpg`.`monstersbuildsprofil` (`idMonstersBuildsProfil`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+ALTER TABLE `discord_bot_rpg`.`statsmonstres` 
+ADD COLUMN `idMonstersBuildsProfil` INT(10) UNSIGNED NOT NULL AFTER `idStatsProfil`,
+ADD INDEX `fk_StatsMonstres_MonstersBuildsProfil1_idx` (`idMonstersBuildsProfil` ASC) VISIBLE;
+;
+
+ALTER TABLE `discord_bot_rpg`.`statsmonstres` 
+ADD CONSTRAINT `fk_StatsMonstres_MonstersBuildsProfil1`
+  FOREIGN KEY (`idMonstersBuildsProfil`)
+  REFERENCES `discord_bot_rpg`.`monstersbuildsprofil` (`idMonstersBuildsProfil`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
+
 
 
 
