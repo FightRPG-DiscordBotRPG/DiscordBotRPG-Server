@@ -25,13 +25,17 @@ class SecondaryStatsMonsters extends SecondaryStats {
                 statsmonstres.idMonstre = ?;`, [this.id]);
 
         for (let stat in res) {
-            let mult = 1 + parseFloat(res[stat].multPerLevel) * (level + difficulty);
+            let mult = 1 + parseFloat(res[stat].multPerLevel) * level * (1 + (difficulty-1) / 2);
             this[res[stat].name] = Math.ceil(mult * res[stat].baseValue);
         }
 
-        this.hitRate = 100;
-        this.regenMp = 5;
-        this.regenEnergy = 5;
+        if (this.hitRate <= 0) {
+            this.hitRate = 100;
+        }
+
+        if (this.regenEnergy <= 0) {
+            this.regenEnergy = 5;
+        }
 
     }
 
