@@ -1,4 +1,5 @@
 const conn = require("../../conf/mysql");
+const Translator = require("../Translator/Translator");
 
 class NodeVisuals {
     constructor() {
@@ -34,23 +35,21 @@ class NodeVisuals {
     /**
      * 
      * @param {string} lang
-     * @return {Promise<string>}
+     * @return {string}
      */
-    async getName(lang="en") {
-        let res = (await conn.query("SELECT name FROM localizationnodespstree WHERE idNode = ? AND (lang = ? || lang = 'en');", [this.id, lang]))[0];
-
-        return res ? res.name : "";
+    getName(lang = "en") {
+        return Translator.getString(lang, "nodeVisualsName", this.id);
     }
 
     /**
      * 
      * @param {string} lang
      */
-    async toApi(lang = "en") {
+    toApi(lang = "en") {
         return {
             id: this.id,
             icon: this.icon,
-            name : await this.getName(lang),
+            name : this.getName(lang),
         };
     }
 }

@@ -10,6 +10,8 @@ const Globals = require("../Globals");
 class PSTreeNode {
     constructor() {
 
+        this.id = 0;
+
 		/**
 		 * @type {NodeVisuals}
 		 */
@@ -55,7 +57,14 @@ class PSTreeNode {
          * Array of linked nodes ids
          * @type Array<number>
          **/
-        this.linkedNodes = [];
+        this.linkedNodesIds = [];
+
+        /**
+         * Array of all linked nodes Parent+Children
+         * @type Array<PSTreeNode>
+         **/
+        this.connectedNodes = [];
+        this.localizedNodesNames = [];
 
     }
 
@@ -110,7 +119,7 @@ class PSTreeNode {
         let skillsIds = Object.keys(this.skillsUnlockedIds);
         return {
             id: this.id,
-            visuals: this.visuals ? await this.visuals.toApi(lang) : null,
+            visuals: this.visuals ? this.visuals.toApi(lang) : null,
             stats: this.stats.toApi(),
             secondaryStats: this.secondaryStats.toApi(),
             skillsUnlockedIds: skillsIds,
@@ -122,7 +131,7 @@ class PSTreeNode {
             cost: this.cost,
             realCost: this.getRealCost(),
             isInitial: this.isInitial,
-            linkedNodes: this.linkedNodes,
+            linkedNodes: this.localizedNodesNames[lang],
         }
     }
 
@@ -149,7 +158,20 @@ class PSTreeNode {
     }
 
     updateLinkedNodes() {
-        this.linkedNodes = [...Object.keys(this.children), ...Object.keys(this.parents)].map(e => Number.parseInt(e));
+        /**
+         * @type {Array<PSTreeNode>} 
+         **/
+        this.connectedNodes = [...Object.values(this.children), ...Object.values(this.parents)];
+        this.linkedNodesIds = [];
+        this.localizedNodesNames = {};
+        for (let lang of Translator.getAvailableLanguagesShorthands()) {
+            this.localizedNodesNames[lang] = [];
+            for (let node of this.connectedNodes) {
+                this.linkedNodesIds.push(node.id);
+                this.localizedNodesNames[lang].push(node.id + " (" + node.visuals.getName(lang) + ")");
+            }
+        }
+        this.linkedNodesIds = this.connectedNodes.map(e => e.id);
     }
 
     updateFromAssign() {
@@ -204,7 +226,7 @@ class PSTreeNode {
 
     async saveLinks() {
         let promises = [];
-        for (let item of this.linkedNodes) {
+        for (let item of this.linkedNodesIds) {
             promises.push(conn.query("REPLACE INTO pstreenodeslinks VALUES (?, ?)", [this.id, item]));
         }
 

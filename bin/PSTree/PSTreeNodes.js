@@ -99,10 +99,10 @@ class PSTreeNodes {
 
         for (let i in this.possibleNodesVisuals) {
             let visual = this.possibleNodesVisuals[i];
-            let visualToApi = await visual.toApi();
+            let visualToApi = visual.toApi();
             visualToApi.localizedNames = {};
             for (let lang in Translator.translations) {
-                visualToApi.localizedNames[lang] = await visual.getName(lang);
+                visualToApi.localizedNames[lang] = visual.getName(lang);
             }
             values.push(visualToApi);
         }
