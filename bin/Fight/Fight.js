@@ -376,16 +376,16 @@ class Fight {
             // Log recovery
             defenderLogger.logSkillRecoverHp(recoverDone);
         } else {
-            let damageDone = this.applyDamage(target, evaluation.value);
-
+            let damageDone = this.applyDamage(target, evaluation.value * this.getTimeMultiplier());            
             // Log damage
             defenderLogger.logSkillDamageHp(damageDone);
 
             if (skill.isDrain()) {
-                caster.actualHP += damageDone;
+                let drainedDamage = damageDone / this.getTimeMultiplier();
+                caster.actualHP += drainedDamage;
 
                 // Log Drain
-                this.getCurrentRoundCurrentAttackerLogger().logDrainHp(damageDone);
+                this.getCurrentRoundCurrentAttackerLogger().logDrainHp(drainedDamage);
             }
         }
 
@@ -604,6 +604,11 @@ class Fight {
 
     getAllAttackers() {
         return this.entities[this.initiative[0]];
+    }
+
+    // 100% more damage each 6 turns
+    getTimeMultiplier() {
+        return 1 + Math.floor(this.summary.rounds.length / 6);
     }
 
 
