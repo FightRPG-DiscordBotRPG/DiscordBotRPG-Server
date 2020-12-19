@@ -75,8 +75,9 @@ async function Start() {
     app.post("/visuals_update", async (req, res) => {
         let json = JSON.parse(req.body.visuals);
 
-        await ClearAllVisuals();
+        //await ClearAllVisuals();
 
+        conn.isForeignKeyCheckDisabled = true;
         let promisesToWait = [];
 
         for (let nodeVisual of json.visuals) {
@@ -84,10 +85,11 @@ async function Start() {
 
             let visual = Object.assign(new NodeVisuals(), nodeVisual);
             promisesToWait.push(visual.save());
+            
         }
 
         await Promise.all(promisesToWait);
-
+        conn.isForeignKeyCheckDisabled = false;
         res.json({ done: true });
     });
 
@@ -145,5 +147,7 @@ async function ClearAllVisuals() {
     await conn.query("DELETE FROM localizationnodespstree");
     await conn.query("DELETE FROM pstreepossiblesnodesvisuals");
 }
+
+
 
 Start();
