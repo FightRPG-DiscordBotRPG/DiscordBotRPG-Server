@@ -21,7 +21,7 @@ class SkillBuildMonster extends SkillBuild {
     async load(id) {
         this.id = id;
         this.clear();
-        let res = await conn.query("SELECT * FROM monstersbuilds WHERE idStatsProfil = ?;", [this.id]);
+        let res = await conn.query("SELECT * FROM monstersbuilds WHERE idMonstersBuildsProfil = ?;", [this.id]);
         for (let item of res) {
             this.skillsIds[item.priority] = item.idSkill;
         }

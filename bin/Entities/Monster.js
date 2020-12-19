@@ -33,7 +33,7 @@ class Monster extends WorldEntity {
 
     async loadMonster(level=null) {
         this.difficulty = Globals.mDifficulties[2];
-        let res = await conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom, idStatsProfil FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN statsmonstres ON statsmonstres.idMonstre = monstres.idMonstre WHERE monstres.idMonstre = ?;", [this.id]);
+        let res = await conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom, idStatsProfil, idMonstersBuildsProfil FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN statsmonstres ON statsmonstres.idMonstre = monstres.idMonstre WHERE monstres.idMonstre = ?;", [this.id]);
         res = res[0];
         let bonus = 1;
         this.type = res["nom"];
@@ -53,7 +53,7 @@ class Monster extends WorldEntity {
             this.luckBonus = 1024;
         }
 
-        await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idStatsProfil"])]);
+        await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idMonstersBuildsProfil"])]);
 
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 6 * bonus);
