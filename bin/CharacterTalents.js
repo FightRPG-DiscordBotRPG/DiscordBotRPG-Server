@@ -84,7 +84,7 @@ class CharacterTalents {
     isReachable(idNode) {
         let node = Globals.pstreenodes.getNode(idNode);
         for (let unlockedNode of Object.values(this.talents)) {
-            if (unlockedNode.id !== idNode && (unlockedNode.linkedNodes.includes(idNode) || node.isInitial)) {
+            if (unlockedNode.id !== idNode && (unlockedNode.linkedNodesIds.includes(idNode) || node.isInitial)) {
                 return true;
             }
         }

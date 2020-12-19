@@ -106,6 +106,10 @@ class Translator {
         return data;
     }
 
+    static getAvailableLanguagesShorthands() {
+        return Object.keys(this.translations);
+    }
+
     static async loadFromJson() {
         try {
             var conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
@@ -258,6 +262,18 @@ class Translator {
         }
     }
 
+    static async loadNodesVisuals() {
+        let res = await conn.query("SELECT * FROM localizationnodespstree");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["nodeVisualsName"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["nodeVisualsName"][trad.idNode] = trad.name;
+        }
+    }
+
     // IDEA: Use Promise.all ?
     static async load() {
         this.translations = {};
@@ -272,6 +288,7 @@ class Translator {
         await this.loadBosses();
         await this.loadSkillBases();
         await this.loadStatesBases();
+        await this.loadNodesVisuals();
     }
 }
 
