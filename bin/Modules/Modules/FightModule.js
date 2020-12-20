@@ -85,8 +85,7 @@ class FightModule extends GModule {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
                 }
             } else {
-                // TODO: Should be user don't exist or something
-                data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_not_same_area");
+                data.error = Translator.getString(res.locals.lang, "errors", "generic_user_dont_exist");
             }
 
 
