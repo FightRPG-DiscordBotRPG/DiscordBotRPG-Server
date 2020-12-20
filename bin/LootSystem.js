@@ -19,7 +19,8 @@ class LootSystem {
      * @param {number} level 
      */
     async loot(character, totalLuck = 0, level = 1) {
-        let possibleLoots = await conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [character.getIdArea()]);
+        let possibleLoots = character.getArea().getPossibleLoots();
+
         let luckModifier = totalLuck / 1000 + 1;
         let jsonLoot = {};
         let promises = [];

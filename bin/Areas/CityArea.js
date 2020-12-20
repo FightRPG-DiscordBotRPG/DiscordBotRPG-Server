@@ -16,6 +16,9 @@ class CityArea extends Area {
         }
 
         this.authorizedBonuses = ["xp_craft"];
+
+        this.minItemRarityId = 0;
+        this.maxItemRarityId = 0;
     }
 
     async loadArea() {

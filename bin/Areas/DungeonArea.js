@@ -9,7 +9,14 @@ class DungeonArea extends Area {
         super(id, id);
         this.fightPossible = true;
         this.authorizedBonuses = ["xp_fight", "xp_collect", "gold_drop", "item_drop", "collect_drop"];
+
+        this.minItemRarityName = "legendary";
+        this.minItemRarityId = 5;
+
+        this.maxItemRarityName = "legendary";
+        this.maxItemRarityId = 5;
     }
+
 
     async isFirstFloor() {
         if (this.paths.from.length >= 1) {

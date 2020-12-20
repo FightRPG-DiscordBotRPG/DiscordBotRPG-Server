@@ -35,7 +35,14 @@ class Area {
          * @type {AreaBonus}
          */
         this.bonuses = [];
-        this.maxItemRarity = "";
+        this.minItemRarityId = 1;
+        this.minItemRarityName = "common";
+        this.maxItemRarityId = 5;
+        this.maxItemRarityName = "legendary";
+        /**
+         * @type {Array<{idBaseItem:number, percentage:number, min:number, max:number, idRarity:number, equipable:number}>}
+         */
+        this.possibleLoots = [];
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
@@ -114,24 +121,7 @@ class Area {
 
         }
 
-        // Load max rarity/quality item
-        res = await conn.query(
-            `SELECT
-                DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity
-                FROM
-                itemsbase
-                INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity
-                INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem
-                AND areasitems.idArea = ?
-                GROUP BY
-                itemsrarities.idRarity
-                ORDER BY itemsrarities.idRarity DESC
-                LIMIT 1`
-            , [this.id]);
-
-        if (res[0]) {
-            this.maxItemRarity = res[0]["nomRarity"];
-        }
+        await this.loadItemsLootTable()
 
         // load required achievments
         res = await conn.query("SELECT * FROM areasrequirements WHERE idArea = ?;", [this.id]);
@@ -140,6 +130,48 @@ class Area {
         }
 
         await this.areaClimate.load();
+
+    }
+
+    getPossibleLoots() {
+        return this.possibleLoots;
+    }
+
+    async loadItemsLootTable() {
+
+
+        // For generic items drop based on default min and max rarity
+        let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idType IN (1,2,3,4) AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
+
+        this.possibleLoots = [];
+
+
+        for (let item of res) {
+            item.percentage = 0;
+            item.min = 1;
+            item.max = 1;
+            this.possibleLoots.push(item);
+        }
+
+        // Load real loot table for this area
+        res = await conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [this.getID()]);
+
+        this.possibleLoots = [...this.possibleLoots, ...res];
+
+        // Take real min/max rarity fro database (useful for displays)
+
+        let minQuality = await this.getMinItemQualityFromDatabase();
+        let maxQuality = await this.getMaxItemQualityFromDatabase();
+
+        if (minQuality[0] && minQuality[0].idRarity < this.minItemRarityId) {
+            this.minItemRarityId = minQuality[0].idRarity;
+            this.minItemRarityName = minQuality[0].nomRarity;
+        }
+
+        if (maxQuality[0] && maxQuality[0].idRarity > this.maxItemRarityId) {
+            this.maxItemRarityId = maxQuality[0].idRarity;
+            this.maxItemRarityName = maxQuality[0].nomRarity;
+        }
 
     }
 
@@ -533,16 +565,28 @@ class Area {
         await conn.query("INSERT INTO areasowners VALUES(?, ?)", [idArea, idGuild]);
     }
 
-    async getMaxItemQuality() {
-        let res = await conn.query(
+    /**
+     * @returns {[{idRarity:number, nomRarity: string}]}
+     **/
+    async getMaxItemQualityFromDatabase() {
+        return await conn.query(
             "SELECT DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ORDER BY itemsrarities.idRarity DESC LIMIT 1;", [this.id]);
-        return res[0] != null ? res[0]["nomRarity"] : "common";
     }
 
-    async getMinItemQuality() {
-        let res = await conn.query(
+    async getMaxItemQualityName() {
+        return this.maxItemRarityName;
+    }
+
+    /**
+     * @returns {[{idRarity:number, nomRarity: string}]}
+     **/
+    async getMinItemQualityFromDatabase() {
+        return await conn.query(
             "SELECT DISTINCT itemsrarities.idRarity, itemsrarities.nomRarity FROM itemsbase INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN areasitems ON areasitems.idBaseItem = itemsbase.idBaseItem AND areasitems.idArea = ? GROUP BY itemsrarities.idRarity ORDER BY itemsrarities.idRarity ASC LIMIT 1;", [this.id]);
-        return res[0] != null ? res[0]["nomRarity"] : "common";
+    }
+
+    async getMinItemQualityName() {
+        return this.minItemRarityName;
     }
 
 
@@ -560,8 +604,8 @@ class Area {
     }
 
     async toApi(lang) {
-        let minimumQuality = await this.getMinItemQuality();
-        let maximumQuality = await this.getMaxItemQuality();
+        let minimumQuality = await this.getMinItemQualityName();
+        let maximumQuality = await this.getMaxItemQualityName();
         return {
             name: this.getName(lang),
             levels: this.minMaxLevelToString(),

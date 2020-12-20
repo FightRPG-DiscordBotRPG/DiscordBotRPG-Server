@@ -1,10 +1,10 @@
 const conn = require("../conf/mysql.js");
 
 let rarityChances = {
-    commun: 40 / 100,
-    rare: 7 / 100,
-    superieur: 6 / 100,
-    epique: 0.9 / 100,
+    commun: 5 / 100,
+    rare: 4 / 100,
+    superieur: 3 / 100,
+    epique: 1 / 100,
     legendaire: 0.1 / 100,
     mythic: 0.01 / 100
 }
