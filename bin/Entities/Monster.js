@@ -26,7 +26,6 @@ class Monster extends WorldEntity {
         this.secondaryStats = new SecondaryStatsMonsters();
         this.difficulty = {};
         this.type = "";
-        // TODO: Use SkillBuild Monster
         this.skillBuild = new SkillBuildMonster();
     }
 
