@@ -538,9 +538,17 @@ class GModule {
                 }
 
                 commands[Translator.getString(lang, "help_panel", "talents_title")] = {
-                    "talents" : "",
-                    "talentshow <idTalent>": "",
-                    "talentup <idTalent>":""
+                    "talents": Translator.getString(lang, "help_panel", "talents"),
+                    "talentshow <idTalent>": Translator.getString(lang, "help_panel", "talentshow"),
+                    "talentup <idTalent>": Translator.getString(lang, "help_panel", "talentup"),
+                    "skillshow <idSkill>": Translator.getString(lang, "help_panel", "skillshow"),
+                    "buildshow": Translator.getString(lang, "help_panel", "buildshow"),
+                    "buildadd <idSkill>": Translator.getString(lang, "help_panel", "buildadd"),
+                    "buildremove <idSkill>": Translator.getString(lang, "help_panel", "buildremove"),
+                    "buildmove <idSkill> <slotNumber>": Translator.getString(lang, "help_panel", "buildmove"),
+                    "buildclear": Translator.getString(lang, "help_panel", "buildclear"),
+                    "talentexport": Translator.getString(lang, "help_panel", "talentexport"),
+                    "talentimport <importString>": Translator.getString(lang, "help_panel", "talentimport"),
                 }
                 break;
 
