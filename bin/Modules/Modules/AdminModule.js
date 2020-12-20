@@ -245,8 +245,8 @@ class AdminModule extends GModule {
             let data = {};
 
             let lcommand = await conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [res.locals.id]);
-            data.success = "The last command used is: " + lcommand[0].command;
-            data.success += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
+            data.success = "The last command used is: " + lcommand[0]?.command;
+            data.success += "\nUsed " + ((Date.now() - lcommand[0]?.timestamp) / 1000) + " seconds ago.";
 
             data.lang = res.locals.lang;
             await next();
