@@ -21,6 +21,7 @@ class DungeonArea extends Area {
     async isFirstFloor() {
         if (this.paths.from.length >= 1) {
             if (this.paths.from.length === 1) {
+                console.log(this.getName() + " : " + (Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea))
                 return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
             } else {
                 let fromArea = Globals.areasManager.getArea(this.paths.from[0]);
@@ -72,15 +73,15 @@ class DungeonArea extends Area {
         return true;
     }
 
-    getEntrance() {
+    async getEntrance() {
         let area = this;
-        while (Globals.areasManager.getArea(area.paths.from[0]).constructor === DungeonArea && !Globals.areasManager.getArea(area.paths.from[0]).isFirstFloor()) {
+        while (Globals.areasManager.getArea(area.paths.from[0]).constructor === DungeonArea && !(await Globals.areasManager.getArea(area.paths.from[0]).isFirstFloor())) {
             area = Globals.areasManager.getArea(area.paths.from[0]);
         }
         return Globals.areasManager.getArea(area.paths.from[0]);
     }
 
-    getNextFloorOrExit() {
+    async getNextFloorOrExit() {
         if (this.paths.to.length === 1) {
             let possibleReturnArea = Globals.areasManager.getArea(this.paths.to[0]);
             if (possibleReturnArea instanceof DungeonArea) {
@@ -88,7 +89,7 @@ class DungeonArea extends Area {
             } else {
                 // If not dungeon returns first floor instead of end area
                 // Temp fix to get players to always returns to first floor
-                return this.getEntrance();
+                return await this.getEntrance();
             }
         } else {
             let areaToReturn = Globals.areasManager.getArea(this.paths.to[0]);

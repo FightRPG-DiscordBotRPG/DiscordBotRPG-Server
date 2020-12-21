@@ -668,11 +668,11 @@ class Area {
         return true;
     }
 
-    getNextFloorOrExit() {
+    async getNextFloorOrExit() {
         throw "Not implemented";
     }
 
-    getEntrance() {
+    async getEntrance() {
         throw "Not implemented";
     }
 

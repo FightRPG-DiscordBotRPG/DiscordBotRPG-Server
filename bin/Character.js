@@ -153,6 +153,14 @@ class Character extends CharacterEntity {
         this.area = area;
         await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
+        this.healIfAreaIsSafe();
+
+    }
+
+    async healIfAreaIsSafe() {
+        if (await this.area.isFirstFloor()) {
+            this.resetFullHp();
+        }
     }
 
     /**
