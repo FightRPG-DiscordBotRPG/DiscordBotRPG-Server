@@ -296,8 +296,9 @@ class WorldEntity {
         if (skill.isPhysical()) {
             chance = (this.getSecondaryStat(SecondaryStats.possibleStats.HitRate) - enemy.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100;
         } else {
-            chance = (1 - enemy.getSecondaryStat(SecondaryStats.possibleStats.MagicalEvadeRate)) / 100;
+            chance = 1 - enemy.getSecondaryStat(SecondaryStats.possibleStats.MagicalEvadeRate) / 100;
         }
+
         chance = chance < 0.2 ? 0.2 : chance;
         return Math.random() <= chance;
     }
