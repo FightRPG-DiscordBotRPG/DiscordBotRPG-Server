@@ -606,9 +606,9 @@ class Fight {
         return this.entities[this.initiative[0]];
     }
 
-    // 100% more damage each 6 turns
+    // 100% more damage each 10 turns
     getTimeMultiplier() {
-        return 1 + Math.floor(this.summary.rounds.length / 6);
+        return 1 + Math.floor(this.summary.rounds.length / 10);
     }
 
 
