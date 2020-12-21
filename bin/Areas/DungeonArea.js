@@ -21,7 +21,6 @@ class DungeonArea extends Area {
     async isFirstFloor() {
         if (this.paths.from.length >= 1) {
             if (this.paths.from.length === 1) {
-                console.log(this.getName() + " : " + (Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea))
                 return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
             } else {
                 let fromArea = Globals.areasManager.getArea(this.paths.from[0]);
