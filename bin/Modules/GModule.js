@@ -290,22 +290,18 @@ class GModule {
 
                             // 0 means first group aka users
                             if (response.summary.winner === 0) {
-                                areaToTravel = res.locals.currentArea.getNextFloorOrExit();
+                                areaToTravel = await res.locals.currentArea.getNextFloorOrExit();
                             } else {
                                 // They lost, so they go to entrance
-                                areaToTravel = res.locals.currentArea.getEntrance();
+                                areaToTravel = await res.locals.currentArea.getEntrance();
                             }
 
                             for (let character of grpCharacters) {
                                 // Not wating this since players can't move because of exhaust
                                 character.changeArea(areaToTravel, character.getExhaust());
-                                if (areaToTravel.isFirstFloor()) {
-                                    character.resetFullHp();
-                                }
                             }
 
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);
-    
 
                         }
                     }
