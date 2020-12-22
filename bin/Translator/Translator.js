@@ -139,6 +139,9 @@ class Translator {
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
                     try {
+                        if (!fs.existsSync(__dirname + "/locale/")) {
+                            fs.mkdirSync(__dirname + "/locale");
+                        }
                         fs.writeFileSync(__dirname + "/locale/" + lang + ".json", JSON.stringify(res.data));
                     } catch (e) {
                         console.log(e);
