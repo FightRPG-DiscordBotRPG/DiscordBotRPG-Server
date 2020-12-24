@@ -14,20 +14,20 @@ class Utils {
         return Math.random() * (max - min) + min;
     }
 
-	/**
-	 * 
-	 * @param {Array} pool
-	 * @param {number} k
-	 * @param {boolean} destructive
-	 * @returns {Array}
-	 */
+    /**
+    * 
+    * @param {Array} pool
+    * @param {number} k
+    * @param {boolean} destructive
+    * @returns {Array}
+    */
     static sample(pool, k, destructive) {
         var n = pool.length;
-
         if (k < 0 || k > n)
             throw new RangeError("Sample larger than population or is negative");
 
         if (destructive || n <= (k <= 5 ? 21 : 21 + Math.pow(4, Math.ceil(Math.log(k * 3, 4))))) {
+
             if (!destructive)
                 pool = Array.prototype.slice.call(pool);
             for (let i = 0; i < k; i++) { // invariant: non-selected at [i,n)
@@ -39,9 +39,11 @@ class Utils {
             pool.length = k; // truncate
             return pool;
         } else {
-            var selected = new Set();
-            while (selected.add(Math.random() * n | 0).size < k) { }
-            return Array.prototype.map.call(selected, i => population[i]);
+            let selected = new Set();
+            let ret = [];
+            while (selected.add(Math.random() * n | 0).size < k) { console.log(selected); }
+            selected.forEach((i, j) => ret.push(pool[i]));
+            return ret;
         }
     }
 
