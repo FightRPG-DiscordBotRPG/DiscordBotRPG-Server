@@ -132,6 +132,7 @@ class PSTreeNode {
             realCost: this.getRealCost(),
             isInitial: this.isInitial,
             linkedNodes: this.localizedNodesNames[lang],
+            linkedNodesIds: this.linkedNodesIds,
         }
     }
 
