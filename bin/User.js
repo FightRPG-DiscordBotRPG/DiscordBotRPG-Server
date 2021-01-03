@@ -299,6 +299,7 @@ class User {
             username: this.character.name,
             avatar: this.avatar,
             statPoints: await this.character.getStatPoints(),
+            talentPoints: await this.character.getTalentPoints(),
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             secondaryStats: this.character.secondaryStats.toApi(),

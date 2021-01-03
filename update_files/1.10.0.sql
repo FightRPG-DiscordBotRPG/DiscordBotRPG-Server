@@ -711,6 +711,11 @@ ADD CONSTRAINT `fk_StatsMonstres_MonstersBuildsProfil1`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
+ALTER TABLE `discord_bot_rpg`.`characters` 
+ADD COLUMN `talentPoints` INT(11) NOT NULL DEFAULT 0 AFTER `idArea`;
+
+UPDATE characters INNER JOIN levels ON levels.idCharacter = characters.idCharacter SET talentPoints = levels.actualLevel;
+
 REPLACE INTO statesrestrictions
 VALUES
 (1, "cant_target_enemy"),(2, "cant_target_ally"),(3, "cant_target_self"),(4, "cant_target_do_anything");

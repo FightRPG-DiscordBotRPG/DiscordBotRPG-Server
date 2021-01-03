@@ -469,7 +469,7 @@ class CharacterModule extends GModule {
 
         return {
             node: await node.toApi(lang),
-            pointsLeft: await character.getStatPoints(),
+            pointsLeft: await character.getTalentPoints(),
         };
     }
 

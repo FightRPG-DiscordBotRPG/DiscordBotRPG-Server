@@ -68,7 +68,7 @@ class CharacterTalents {
     }
 
     async haveEnoughPoints(idNode) {
-        return (await this.character.getStatPoints()) >= Globals.pstreenodes.getNode(idNode).getRealCost();
+        return (await this.character.getTalentPoints()) >= Globals.pstreenodes.getNode(idNode).getRealCost();
     }
 
     async reset() {
@@ -109,7 +109,7 @@ class CharacterTalents {
             this.talents[idNode] = Globals.pstreenodes.getNode(idNode);
             await Promise.all([
                 conn.query("INSERT INTO characterstalents VALUES (?, ?);", [this.id, idNode]),
-                this.character.removeStatPoints(this.talents[idNode].getRealCost()),
+                this.character.removeTalentPoints(this.talents[idNode].getRealCost()),
             ]);
             this.reloadStats();
             return true;
@@ -124,6 +124,7 @@ class CharacterTalents {
             stats: this.stats.toApi(),
             secondaryStats: this.secondaryStats.toApi(),
             initialTalents: Globals.pstreenodes.initialTalents,
+            talentPoints: await this.character.getTalentPoints(),
         }
     }
 

@@ -24,6 +24,7 @@ class Character extends CharacterEntity {
         this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
+        this.talentPoints = 0;
         this.canFightAt = 0;
         this.idArea = 1;
         this.area = new Area();
@@ -56,7 +57,7 @@ class Character extends CharacterEntity {
 
     async init() {
 
-        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1);");
+        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1, 1);");
         this.id = res["insertId"];
         this.uuid = this.id.toString();
         //Init level system
@@ -82,7 +83,7 @@ class Character extends CharacterEntity {
 
     async loadCharacter(id) {
         // load from database
-        let res = (await conn.query("SELECT statPoints, money, idArea " +
+        let res = (await conn.query("SELECT statPoints, money, idArea, talentPoints " +
             "FROM characters " +
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
             "WHERE characters.idCharacter = ?", [id]))[0];
@@ -318,11 +319,17 @@ class Character extends CharacterEntity {
             await this.removeMoney(resetValue);
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
-            await this.talents.reset();
-            await this.skillBuild.reset();
+            await this.resetTalents();
             return true;
         }
         return false;
+    }
+
+    async resetTalents() {
+        await this.setTalentPoints(this.levelSystem.actualLevel);
+        await this.talents.reset();
+        await this.skillBuild.reset();
+        return true;
     }
 
     getResetStatsValue() {
@@ -337,6 +344,7 @@ class Character extends CharacterEntity {
         if (startingLevel < this.levelSystem.actualLevel) {
             await Promise.all([
                 this.addStatPoints(5 * (this.levelSystem.actualLevel - startingLevel)),
+                this.addTalentPoints(this.levelSystem.actualLevel -  startingLevel),
                 this.levelSystem.saveMyLevel()
             ]);
         } else {
@@ -367,6 +375,21 @@ class Character extends CharacterEntity {
     async setStatPoints(statPoints) {
         statPoints = statPoints >= 0 ? statPoints : 0;
         await conn.query("UPDATE characters SET statPoints = ? WHERE idCharacter = ?;", [statPoints, this.id]);
+    }
+
+    async addTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = talentPoints + ? WHERE idCharacter = ?;", [talentPoints, this.id]);
+    }
+
+    async removeTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = talentPoints - ? WHERE idCharacter = ?;", [talentPoints, this.id]);
+    }
+
+    async setTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = ? WHERE idCharacter = ?;", [talentPoints, this.id]);
     }
 
     async doIHaveEnoughMoney(money) {
@@ -758,6 +781,10 @@ class Character extends CharacterEntity {
     // GetSpecial
     async getStatPoints() {
         return (await conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]))[0].statPoints;
+    }
+
+    async getTalentPoints() {
+        return (await conn.query("SELECT talentPoints FROM characters WHERE idCharacter = ?", [this.id]))[0].talentPoints;
     }
 
     async getHonor() {
