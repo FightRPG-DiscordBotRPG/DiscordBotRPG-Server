@@ -154,8 +154,9 @@ class Fight {
         // Add skills prep
         attacker.prepareCast();
 
-        if (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf) {
-            let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
+        let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
+
+        if (skillToUse !== null && (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf)) {
 
             let alreadyCheckedIds = {};
             // check if can target with skill
@@ -656,11 +657,10 @@ class Fight {
         if (restrictions.targetEnemy === true) {
             // Auto attack
             await defaultSkill.loadWithID(1);
+            return defaultSkill;
         } else {
-            await defaultSkill.loadWithID(2);
+            return null;
         }
-
-        return defaultSkill;
     }
 
 }
