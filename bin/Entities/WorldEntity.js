@@ -537,11 +537,11 @@ class WorldEntity {
      * 
      * @returns {Array<State>}
      */
-    removeStatesByRounds() {
+    removeStatesByRounds(lang="en") {
         let removedStates = [];
         this.getStatesArray().forEach((state) => {
             if (state.isExpired()) {
-                removedStates.push(state);
+                removedStates.push(state.toApi(lang));
                 this.removeState(state.id);
             }
             state.currentRound++;

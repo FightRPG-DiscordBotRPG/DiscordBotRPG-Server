@@ -131,10 +131,8 @@ class Fight {
         let roundLog = this.initNewRoundLog(attacker);
 
         // Clean Status after number of rounds
-        let removedStatesAfterRounds = attacker.removeStatesByRounds();
-
         // Log removed status
-        roundLog.attacker.battle.removedStates = removedStatesAfterRounds;
+        roundLog.attacker.battle.removedStates = attacker.removeStatesByRounds(this.lang);
 
         // Reset stat get modifier
         attacker.resetStatsModifiers();
