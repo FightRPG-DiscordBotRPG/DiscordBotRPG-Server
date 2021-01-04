@@ -27,9 +27,9 @@ const nodesObject = new PSTreeNodes();
 
 async function Start() {
     // Load Object before 
+    await Translator.load();
     await nodesObject.load();
     await Globals.loadGlobals();
-    await Translator.load();
     app.get("/nodes", async (req, res) => {
         res.json(await nodesObject.toApi());
     });
