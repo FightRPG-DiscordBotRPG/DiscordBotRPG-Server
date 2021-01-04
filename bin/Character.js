@@ -160,7 +160,10 @@ class Character extends CharacterEntity {
 
     async healIfAreaIsSafe() {
         if (await this.area.isFirstFloor()) {
-            this.resetFullHp();
+            this.recoverAll();
+        } else {
+            // Still need to reset energy
+            this.resetEnergy();
         }
     }
 
