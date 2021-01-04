@@ -165,7 +165,7 @@ class Fight {
                     alreadyCheckedIds[skillToUse.id] = true;
                 }
 
-                skillToUse = attacker.getSkillToUse();
+                skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
                 if (alreadyCheckedIds[skillToUse.id]) {
                     skillToUse = await this.getDefaultSkill(attackerRestrictions);
@@ -605,9 +605,9 @@ class Fight {
         return this.entities[this.initiative[0]];
     }
 
-    // 100% more damage each 10 turns
+    // 1/6% more damage each turn after 6 turns
     getTimeMultiplier() {
-        return 1 + Math.floor(this.summary.rounds.length / 10);
+        return this.summary.rounds.length >= 6 ? this.summary.rounds.length / 6 : 1;
     }
 
 

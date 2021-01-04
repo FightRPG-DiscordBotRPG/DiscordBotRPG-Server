@@ -27,6 +27,7 @@ class WorldEntity {
         this.secondaryStats.regenEnergy = 10;
 
         this.consecutiveStuns = 0;
+        this.consecutiveNonAttacks = 0;
 
         // Stats modifiers key => statname, value => traits modifier
         // Reseted each round on fight
@@ -52,6 +53,7 @@ class WorldEntity {
     updateStats() {
         this.updateMaxStats();
         this.consecutiveStuns = 0;
+        this.consecutiveNonAttacks = 0;
         if (this.actualHP <= (this.maxHP * 0.1)) {
             this.actualHP = Math.ceil(this.maxHP * 0.1);
         }
@@ -390,11 +392,23 @@ class WorldEntity {
      */
     getSkillToUse() {
         let selectedSkill = this.skillBuild.getSelectedSkill();
+
         this.skillBuild.prepareNextSkill();
         // Updating next spell to use
 
 
         if (selectedSkill && selectedSkill.canBeCast() && this.canUseSkill(selectedSkill)) {
+
+            if (!selectedSkill.isDamage()) {
+                this.consecutiveNonAttacks++;
+                if (this.consecutiveNonAttacks >= 5) {
+                    this.consecutiveNonAttacks = 0;
+                    return null;
+                }
+            } else {
+                this.consecutiveNonAttacks = 0;
+            }
+
             return selectedSkill;
         } else {
             return this.getSkillsArray().find(skill => skill.canBeCast() && this.canUseSkill(skill));
