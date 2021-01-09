@@ -21,7 +21,7 @@
       "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
       "version": "1.0.0"
     },
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "babel-runtime": {
       "integrity": "sha1-llxwWGaOgrVde/4E/yM3vItWR/4=",
       "requires": {
@@ -80,7 +80,7 @@
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
       "version": "3.2.0"
     },
-    "get-routes": "^2.0.8",
+    "get-routes": "^2.0.15",
     "graceful-fs": {
       "integrity": "sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=",
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
@@ -175,7 +175,7 @@
       "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz",
       "version": "5.1.1"
     },
-    "session-file-store": "^1.2.0",
+    "session-file-store": "^1.5.0",
     "snekfetch": {
       "integrity": "sha512-aLEvf1YR440pINb0LEo/SL2Q2s/A26+YEqPlx09A0XpGH7qWp8iqIFFolVILHn2yudWXJne9QWyQu+lzDp+ksQ==",
       "resolved": "https://registry.npmjs.org/snekfetch/-/snekfetch-3.6.1.tgz",
