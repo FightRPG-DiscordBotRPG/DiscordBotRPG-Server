@@ -26,7 +26,6 @@ class DungeonArea extends Area {
 
         let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea1 WHERE idArea2 = ?", [this.id]);
         for (let item of res) {
-            console.log(item.idAreaType);
             if (item.idAreaType !== 3) {
                 this.isFirstFloorCacheValue = true;
                 return true;
