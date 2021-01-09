@@ -59,6 +59,9 @@ class Area {
         this.areaClimate = new AreaClimate(this.id);
 
         this.bonusresetCooldown = 0;
+
+        this.isFirstFloorCacheValue = null;
+        this.isLastFloorCacheValue = null;
     }
 
     async loadArea() {

@@ -254,6 +254,7 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
+            
             //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
             //let s = new Skill();
             //await s.loadWithID(6);
@@ -283,16 +284,24 @@ class AdminModule extends GModule {
             //]);
             //console.timeEnd("Test Promise All");
 
-            let mst = new Monster(1);
-            mst.loadMonster(100);
-            mst.secondaryStats.airResist = -10;
-            console.log(mst.getElementalResistMultiplier("airResist"));
-            mst.secondaryStats.airResist = 10;
-            console.log(mst.getElementalResistMultiplier("airResist"));
+            //let mst = new Monster(1);
+            //mst.loadMonster(100);
+            //mst.secondaryStats.airResist = -10;
+            //console.log(mst.getElementalResistMultiplier("airResist"));
+            //mst.secondaryStats.airResist = 10;
+            //console.log(mst.getElementalResistMultiplier("airResist"));
 
-            console.log("user");
-            console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("darkResist"));
-            console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("fireResist"));
+            //console.log("user");
+            //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("darkResist"));
+            //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("fireResist"));
+            console.log("start debug");
+            console.time("isFirstFloor");
+            console.log(await res.locals.currentArea.isFirstFloor());
+            console.timeEnd("isFirstFloor");
+
+            console.time("isLastFloor");
+            console.log(await res.locals.currentArea.isLastFloor());
+            console.timeEnd("isLastFloor");
 
             await next();
             return res.json({ succes: "done" });
