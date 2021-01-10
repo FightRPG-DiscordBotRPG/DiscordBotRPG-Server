@@ -49,7 +49,7 @@ var Globals = {
     "collectTriesOnce": 10,
     "baseTalentPointCost": 1,
     "maximumSkillsPerBuild": 5,
-    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834", "245858206021058560"],
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "245858206021058560"],
     "activated": true,
     "mDifficulties": [{
         name: "Weak",
