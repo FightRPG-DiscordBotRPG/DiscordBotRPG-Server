@@ -185,7 +185,7 @@ class Fight {
             roundLog.attacker.logSkillDamageEnergy(skillCosts.energy);
             roundLog.attacker.logSkillDamageMp(skillCosts.mp);
 
-            roundLog.attacker.logSkillRecoverEnergy(skillToUse.energyGain);
+            roundLog.attacker.logSkillRecoverEnergy(attacker.healEnergy(skillToUse.energyGain));
 
             for (let target of targets) {
 
