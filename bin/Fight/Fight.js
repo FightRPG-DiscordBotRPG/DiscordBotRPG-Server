@@ -113,7 +113,7 @@ class Fight {
             this.concatEntities[i].updateStats();
             await this.concatEntities[i].loadSkills();
             if (resetStats || this.concatEntities[i].constructor === Monster) {
-                this.concatEntities[i].resetFullHp();
+                this.concatEntities[i].recoverAll();
             }
         }
 

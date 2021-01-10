@@ -73,7 +73,7 @@ class FightPvE extends Fight {
 
                 if (area.areaType != "dungeon") {
                     // [Health]
-                    entity.resetFullHp();
+                    entity.recoverAll();
                 }
 
                 entity.waitForNextFight(this.summary.rounds.length * 2500);
