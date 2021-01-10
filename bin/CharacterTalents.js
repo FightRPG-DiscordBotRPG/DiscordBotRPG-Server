@@ -53,6 +53,8 @@ class CharacterTalents {
                 this.unlockedSkillsIds[id] = true;
             }
         }
+        this.character.updateMaxStats();
+        this.character.healIfAreaIsSafe();
     }
 
     isTalentUnlocked(idNode) {

@@ -309,6 +309,7 @@ class Character extends CharacterEntity {
             ]);
 
             this.updateStats();
+            this.healIfAreaIsSafe();
             return true;
         }
 
@@ -323,6 +324,8 @@ class Character extends CharacterEntity {
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
             await this.resetTalents();
+            this.updateMaxStats();
+            this.healIfAreaIsSafe();
             return true;
         }
         return false;

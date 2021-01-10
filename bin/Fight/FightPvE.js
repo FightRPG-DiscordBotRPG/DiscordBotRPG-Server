@@ -71,10 +71,7 @@ class FightPvE extends Fight {
                  */
                 let entity = this.entities[0][i];
 
-                if (area.areaType != "dungeon") {
-                    // [Health]
-                    entity.recoverAll();
-                }
+                entity.healIfAreaIsSafe();
 
                 entity.waitForNextFight(this.summary.rounds.length * 2500);
 
