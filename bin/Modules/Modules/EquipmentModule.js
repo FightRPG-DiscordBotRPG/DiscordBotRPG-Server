@@ -39,7 +39,6 @@ class EquipmentModule extends GModule {
         this.router.post("/equip", async (req, res, next) => {
             let data = {}
             data.lang = res.locals.lang;
-
             let toEquip = parseInt(req.body.idItem, 10);
             let isRealID = req.body.isRealID;
             if (toEquip != null && Number.isInteger(toEquip)) {
@@ -54,6 +53,10 @@ class EquipmentModule extends GModule {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
                                 Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+
+                                res.locals.character.updateMaxStats();
+                                res.locals.character.healIfAreaIsSafe();
+
                                 data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [tItemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
@@ -76,6 +79,10 @@ class EquipmentModule extends GModule {
                                     await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
                                 }
                                 Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+
+                                res.locals.character.updateMaxStats();
+                                res.locals.character.healIfAreaIsSafe();
+
                                 data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [itemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [itemToEquip.getLevel()]);
@@ -109,6 +116,10 @@ class EquipmentModule extends GModule {
                     itemToInventory = await Globals.connectedUsers[res.locals.id].character.equipement.unEquip(toUnequip);
                     if (itemToInventory > 0) {
                         await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(itemToInventory);
+
+                        res.locals.character.updateMaxStats();
+                        res.locals.character.healIfAreaIsSafe();
+
                         data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_unequiped");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_item_equiped_here");
@@ -123,6 +134,10 @@ class EquipmentModule extends GModule {
                     itemToInventory = await Globals.connectedUsers[res.locals.id].character.equipement.unEquip(itemToUnequip.getEquipTypeID());
                     if (itemToInventory > 0) {
                         await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(itemToInventory);
+
+                        res.locals.character.updateMaxStats();
+                        res.locals.character.healIfAreaIsSafe();
+
                         data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_unequiped");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_item_equiped_here");
