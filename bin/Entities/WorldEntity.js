@@ -230,7 +230,25 @@ class WorldEntity {
 
     getSecondaryStat(statName) {
         this.updateSecondaryStatModifier(statName);
-        return this.secondaryStats.getStat(statName) + this.tempStatsModifiers[statName];
+
+        let modToAdd;
+        switch (statName) {
+            case SecondaryStats.possibleStats.RegenHp:
+                modToAdd = this.maxHP * this.tempStatsModifiers[statName];
+                break;
+            case SecondaryStats.possibleStats.RegenMp:
+                modToAdd = this.maxMP * this.tempStatsModifiers[statName];
+                break;
+            case SecondaryStats.possibleStats.RegenEnergy:
+                modToAdd = this.maxEnergy * this.tempStatsModifiers[statName];
+                break;
+            default:
+                modToAdd = this.tempStatsModifiers[statName];
+                break;
+        }
+
+        return this.secondaryStats.getStat(statName) + modToAdd;
+
     }
 
     getElementalResistMultiplier(elementalName) {
@@ -241,6 +259,7 @@ class WorldEntity {
     updateSecondaryStatModifier(statName) {
         if (!this.tempStatsModifiers[statName]) {
             // Calcul with debuff
+            
             this.tempStatsModifiers[statName] = this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, Globals.secondaryStatsIdsByName[statName]);
         }
     }
