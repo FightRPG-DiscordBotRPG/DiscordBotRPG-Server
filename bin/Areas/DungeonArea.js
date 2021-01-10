@@ -15,6 +15,9 @@ class DungeonArea extends Area {
 
         this.maxItemRarityName = "legendary";
         this.maxItemRarityId = 5;
+
+        this.entranceCacheValue = null;
+        this.nextFloorOrExitCacheValue = null;
     }
 
 
@@ -56,31 +59,47 @@ class DungeonArea extends Area {
     }
 
     async getEntrance() {
+
+        if (this.entranceCacheValue !== null) {
+            return this.entranceCacheValue;
+        }
+
         let area = this;
         while (Globals.areasManager.getArea(area.paths.from[0]).constructor === DungeonArea && !(await Globals.areasManager.getArea(area.paths.from[0]).isFirstFloor())) {
             area = Globals.areasManager.getArea(area.paths.from[0]);
         }
-        return Globals.areasManager.getArea(area.paths.from[0]);
+        this.entranceCacheValue = Globals.areasManager.getArea(area.paths.from[0]);
+        return this.entranceCacheValue;
     }
 
     async getNextFloorOrExit() {
+
+        if (this.nextFloorOrExitCacheValue !== null) {
+            return this.nextFloorOrExitCacheValue;
+        }
+
         if (this.paths.to.length === 1) {
             let possibleReturnArea = Globals.areasManager.getArea(this.paths.to[0]);
             if (possibleReturnArea instanceof DungeonArea) {
+                this.nextFloorOrExitCacheValue = possibleReturnArea;
                 return possibleReturnArea;
             } else {
                 // If not dungeon returns first floor instead of end area
                 // Temp fix to get players to always returns to first floor
-                return await this.getEntrance();
+                this.nextFloorOrExitCacheValue = await this.getEntrance();
+                return this.nextFloorOrExitCacheValue;
             }
         } else {
             let areaToReturn = Globals.areasManager.getArea(this.paths.to[0]);
             for (let idArea of this.paths.to) {
                 areaToReturn = Globals.areasManager.getArea(idArea)
                 if (areaToReturn.constructor === DungeonArea) {
+                    this.nextFloorOrExitCacheValue = areaToReturn;
                     return areaToReturn;
                 }
             }
+
+            this.nextFloorOrExitCacheValue = areaToReturn;
             return areaToReturn;
         }
     }

@@ -294,14 +294,17 @@ class AdminModule extends GModule {
             //console.log("user");
             //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("darkResist"));
             //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("fireResist"));
-            console.log("start debug");
-            console.time("isFirstFloor");
-            console.log(await res.locals.currentArea.isFirstFloor());
-            console.timeEnd("isFirstFloor");
+            if (res.locals.currentArea.areaType === "dungeon") {
+                console.log("start debug");
+                console.time("getEntrance");
+                await res.locals.currentArea.getEntrance();
+                console.timeEnd("getEntrance");
 
-            console.time("isLastFloor");
-            console.log(await res.locals.currentArea.isLastFloor());
-            console.timeEnd("isLastFloor");
+                console.time("getNextFloorOrExit");
+                await res.locals.currentArea.getNextFloorOrExit();
+                console.timeEnd("getNextFloorOrExit");
+            }
+
 
             await next();
             return res.json({ succes: "done" });
