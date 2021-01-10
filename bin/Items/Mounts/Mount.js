@@ -57,8 +57,8 @@ class Mount extends Item {
         return (1 - this.getTravelReductionModifier(climate)) * 100;
     }
 
-    getDesc(lang = "en") {
-        let desc = super.getDesc(lang);
+    async getDesc(lang = "en") {
+        let desc = await super.getDesc(lang);
 
 
         /**

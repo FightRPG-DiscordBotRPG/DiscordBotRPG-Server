@@ -31,8 +31,8 @@ class EnergyPotion extends Potion {
         return this.getIdRarity() * 0.1;
     }
 
-    getDesc(lang = "en") {
-        let desc = super.getDesc(lang);
+    async getDesc(lang = "en") {
+        let desc = await super.getDesc(lang);
         desc += "\n" + Translator.getString(lang, "inventory_equipment", "wait_time_reduction", [this.getReductionPercentage() * 100]);
         return desc;
     }

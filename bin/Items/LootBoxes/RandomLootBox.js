@@ -1,19 +1,29 @@
 const Globals = require("../../Globals");
 const LootBox = require("./LootBox");
+const Translator = require("../../Translator/Translator");
+const EquipmentRandomLootBox = require("./EquipmentRandomLootBox");
+const Item = require("../Item");
 
 
 class RandomLootBox extends LootBox {
+
+    static descsCacheValues = {};
+
     constructor(id) {
         super(id);
         /**
-         * [
-         *  {
-         *      id: number,
-         *      amount: number,
-         *      ?dropRate: number,
-         *      ?rarityDrop: number,
-         *  } 
-         * ]
+
+         * @type
+         {
+            [
+                {
+                    id: number,
+                    amount: number,
+                    dropRate?: number,
+                    rarityDrop?: number,
+                }
+            ]
+         }
          */
         this.itemsList = [];
         this.maxDrop = 1;
@@ -25,7 +35,7 @@ class RandomLootBox extends LootBox {
      * @param {Character} character
      * @param {number} numberOfUse
      */
-    async use(character, numberOfUse=1) {
+    async use(character, numberOfUse = 1) {
         this.numberOfUse += numberOfUse;
 
         const LootSystem = require("../../LootSystem");
@@ -63,6 +73,48 @@ class RandomLootBox extends LootBox {
             await character.addMoney(this.openResult.gold);
         }
 
+
+    }
+
+    async getDesc(lang = "en") {
+
+        // Return cached value
+        if (RandomLootBox.descsCacheValues[this.idBaseItem]) {
+            return RandomLootBox.descsCacheValues[this.idBaseItem];
+        }
+
+
+        let desc = await super.getDesc(lang);
+
+        await this.prepareToUse();
+
+        desc += "\n\n" + Translator.getString(lang, "lootbox", "contains", [this.maxDrop]) + "\n";
+
+        /**
+         * @type Object<string, string[]>
+         */
+        let possiblesPerPercentages = {};
+
+        for (let item of this.itemsList) {
+            let dropRate = Translator.getFormater(lang).format(item.dropRate * 100);
+            if (!possiblesPerPercentages[dropRate]) {
+                possiblesPerPercentages[dropRate] = [];
+            }
+
+            possiblesPerPercentages[dropRate].push(Item.getName(item.id, lang));
+        }
+
+        let arrOfPercentagesString = [];
+        for (let i in possiblesPerPercentages) {
+            arrOfPercentagesString.push("**" + i + "%** - " + possiblesPerPercentages[i].join(", "));
+        }
+
+        desc += arrOfPercentagesString.join("\n");
+
+        // Add to cache
+        RandomLootBox.descsCacheValues[this.idBaseItem] = desc;
+
+        return desc;
 
     }
 

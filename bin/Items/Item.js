@@ -240,7 +240,7 @@ class Item {
         return Translator.getString(lang, "itemsNames", this.idBaseItem);
     }
 
-    getDesc(lang = "en") {
+    async getDesc(lang = "en") {
         let desc = Translator.getString(lang, "itemsDesc", this.idBaseItem, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
@@ -261,7 +261,7 @@ class Item {
 
     async toApi(lang) {
         let toApiObject = await this.toApiLight(lang);
-        toApiObject.desc = this.getDesc(lang);
+        toApiObject.desc = await this.getDesc(lang);
         toApiObject.stats = this.stats.toApi();
         toApiObject.secondaryStats = this.secondaryStats.toApi();
 
