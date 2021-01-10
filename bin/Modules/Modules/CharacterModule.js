@@ -209,7 +209,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/talents/export", async (req, res, next) => {
-            let data = await Globals.connectedUsers[res.locals.id].character.talents.toExport();
+            let data = Globals.connectedUsers[res.locals.id].character.talents.toExport();
             data.lang = res.locals.lang;
             await next();
             return res.json(data);

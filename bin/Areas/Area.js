@@ -569,7 +569,7 @@ class Area {
     }
 
     /**
-     * @returns {[{idRarity:number, nomRarity: string}]}
+     * @returns {Promise<[{idRarity:number, nomRarity: string}]>}
      **/
     async getMaxItemQualityFromDatabase() {
         return await conn.query(
@@ -581,7 +581,7 @@ class Area {
     }
 
     /**
-     * @returns {[{idRarity:number, nomRarity: string}]}
+     * @returns {Promise<[{idRarity:number, nomRarity: string}]>}
      **/
     async getMinItemQualityFromDatabase() {
         return await conn.query(

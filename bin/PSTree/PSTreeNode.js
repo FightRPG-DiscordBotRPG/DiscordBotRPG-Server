@@ -64,7 +64,7 @@ class PSTreeNode {
          * @type Array<PSTreeNode>
          **/
         this.connectedNodes = [];
-        this.localizedNodesNames = [];
+        this.localizedNodesNames = {};
 
     }
 

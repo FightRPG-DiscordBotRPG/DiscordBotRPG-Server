@@ -41,7 +41,7 @@ class Utils {
         } else {
             let selected = new Set();
             let ret = [];
-            while (selected.add(Math.random() * n | 0).size < k) { console.log(selected); }
+            while (selected.add(Math.random() * n | 0).size < k) { }
             selected.forEach((i, j) => ret.push(pool[i]));
             return ret;
         }

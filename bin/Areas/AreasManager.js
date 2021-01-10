@@ -53,10 +53,10 @@ class AreasManager {
 
     async loadAreas() {
         let res = await conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, areasmonsterslevels.maxLevel ASC, idArea");
-        let area;
         let notDisplayedList = [];
         let promisesLoadAreas = [];
         for (let i in res) {
+            let area;
             switch (res[i].NomAreaType) {
                 case "wild":
                     area = new WildArea(res[i].idArea);
