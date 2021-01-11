@@ -72,7 +72,6 @@ class LootSystem {
             
         }
 
-        console.log(jsonLoot);
         await Promise.all(promises);
         return jsonLoot;
 
