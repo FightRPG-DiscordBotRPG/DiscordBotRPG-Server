@@ -41,7 +41,7 @@ class Monster extends WorldEntity {
 
         if (this.type == "elite") {
             bonus = 2;
-            this.luckBonus = 60;
+            this.luckBonus = this.stats.getMaximumStat(this.getLevel()) * 0.4;
 
         } else if (this.type == "normal") {
             let tDifficulty = Math.floor(Math.random() * 4);
@@ -49,7 +49,7 @@ class Monster extends WorldEntity {
             multiplier = this.difficulty.value;
         } else if (this.type == "boss") {
             bonus = 8;
-            this.luckBonus = 1024;
+            this.luckBonus = this.stats.getMaximumStat(this.getLevel());
         }
 
         await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idMonstersBuildsProfil"])]);
