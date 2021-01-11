@@ -39,7 +39,6 @@ class LootSystem {
             } else {
                 loots = [];
                 for (let item of possibleLoots[rarity]) {
-                    let dropRate = 0;
                     if (item.percentage > 0) {
                         dropRate = item.percentage;
                     } else {
