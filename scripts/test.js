@@ -49,3 +49,11 @@ for (let i = 0; i < testMax; i++) {
     }
 }
 console.timeEnd("Object For In")
+
+console.time("Object For I In Keys")
+for (let i = 0; i < testMax; i++) {
+    for (let i in Object.keys(obj)) {
+        //
+    }
+}
+console.timeEnd("Object For I In Keys")

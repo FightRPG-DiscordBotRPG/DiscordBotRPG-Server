@@ -40,9 +40,9 @@ class Area {
         this.maxItemRarityId = 5;
         this.maxItemRarityName = "legendary";
         /**
-         * @type {Array<{idBaseItem:number, percentage:number, min:number, max:number, idRarity:number, equipable:number}>}
+         * @type {Object<string,Array<{idBaseItem:number, percentage:number, min:number, max:number, idRarity:number, equipable:number}>>}
          */
-        this.possibleLoots = [];
+        this.possibleLoots = {};
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
@@ -146,20 +146,26 @@ class Area {
         // For generic items drop based on default min and max rarity
         let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idType IN (1,2,3,4) AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
 
-        this.possibleLoots = [];
+        this.possibleLoots = {};
 
 
         for (let item of res) {
+            if (!this.possibleLoots[item.idRarity]) {
+                this.possibleLoots[item.idRarity] = [];
+            }
             item.percentage = 0;
             item.min = 1;
             item.max = 1;
-            this.possibleLoots.push(item);
+            this.possibleLoots[item.idRarity].push(item);
         }
 
         // Load real loot table for this area
         res = await conn.query("SELECT areasitems.idBaseItem, areasitems.percentage, areasitems.min, areasitems.max, itemsbase.idRarity, equipable FROM areasitems INNER JOIN itemsbase ON itemsbase.idBaseItem = areasitems.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idArea = ?;", [this.getID()]);
 
-        this.possibleLoots = [...this.possibleLoots, ...res];
+
+        // Manually added loots
+        // Should always be every items checked
+        this.possibleLoots["others"] = res;
 
         // Take real min/max rarity fro database (useful for displays)
 

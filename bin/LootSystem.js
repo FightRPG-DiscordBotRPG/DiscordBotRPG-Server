@@ -21,20 +21,38 @@ class LootSystem {
     async loot(character, totalLuck = 0, level = 1) {
         let possibleLoots = character.getArea().getPossibleLoots();
 
-        let luckModifier = totalLuck / 1000 + 1;
+        let luckModifier = Math.min(totalLuck / character.stats.getMaximumStat(level) + 1, 3);
         let jsonLoot = {};
         let promises = [];
-        for (let itemPossible of possibleLoots) {
-
+        
+        for (let rarity in possibleLoots) {
             let dropRate = 0;
-            if (itemPossible.percentage > 0) {
-                dropRate = itemPossible.percentage;
+            let itemPossibles = possibleLoots[rarity];
+            let loots;
+            if (rarity !== "others") {
+                dropRate = this.getRarityBaseChances(parseInt(rarity)) * luckModifier;
+                if (Math.random() <= dropRate) {
+                    loots = Utils.getRandomItemsInArray(itemPossibles, 1);
+                } else {
+                    loots = [];
+                }
             } else {
-                dropRate = this.getRarityBaseChances(itemPossible.idRarity);
+                loots = [];
+                for (let item of possibleLoots[rarity]) {
+                    let dropRate = 0;
+                    if (item.percentage > 0) {
+                        dropRate = item.percentage;
+                    } else {
+                        dropRate = this.getRarityBaseChances(item.idRarity);
+                    }
+                    dropRate = dropRate * luckModifier;
+                    if (Math.random() <= dropRate) {
+                        loots.push(item);
+                    }
+                }
             }
-            dropRate = dropRate * luckModifier;
 
-            if (Math.random() < dropRate) {
+            for (let itemPossible of loots) {
                 let number = Globals.randomInclusive(itemPossible.min, itemPossible.max);
                 if (jsonLoot[itemPossible.idRarity] == null) {
                     jsonLoot[itemPossible.idRarity] = {
@@ -50,9 +68,11 @@ class LootSystem {
 
                 promises.push(this.giveToPlayer(character, itemPossible.idBaseItem, level, number));
                 PStatistics.incrStat(character.id, "items_" + Globals.getRarityName(itemPossible.idRarity) + "_loot", number);
-
             }
+            
         }
+
+        console.log(jsonLoot);
         await Promise.all(promises);
         return jsonLoot;
 
