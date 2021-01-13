@@ -92,12 +92,12 @@ class LootSystem {
     async giveToPlayerDatabase(idCharacter, idBase = 0, level = 1, number = 1, makeItFavorite = false) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
-        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
+        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idBaseItem = ?", [idBase]);
         let idToAdd;
 
         if (res[0]) {
             res = res[0];
-            level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
+            level = LootSystem.isModularLevelPossible(res.nomType, res.nomSousType) ? level : 1;
             if (res.stackable == true) {
                 // C'est un objet stackable
                 idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
@@ -134,11 +134,11 @@ class LootSystem {
     async giveToPlayer(character, idBase = 0, level = 1, number = 1) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
-        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
+        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idBaseItem = ?", [idBase]);
 
         if (res[0]) {
             res = res[0];
-            level = LootSystem.isModularLevelPossible(res.nomType) ? level : 1;
+            level = LootSystem.isModularLevelPossible(res.nomType, res.nomSousType) ? level : 1;
             if (res.stackable == true) {
                 // C'est un objet stackable
                 let idToAdd = await character.getIdOfThisIdBase(idBase, level);
@@ -350,12 +350,21 @@ class LootSystem {
      * 
      * @param {string} type 
      */
-    static isModularLevelPossible(type) {
+    static isModularLevelPossible(type, subtype) {
+
         switch (type) {
             case "resource":
                 return false;
             case "mount":
                 return false;
+            case "potion": {
+                switch (subtype) {
+                    case "reset_time_potion":
+                        return false;
+                    default:
+                        return true;
+                }
+            }
             default:
                 return true;
         }
