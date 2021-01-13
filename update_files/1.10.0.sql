@@ -894,7 +894,7 @@ REPLACE INTO `effectsskills` (`idEffectSkill`, `idSkill`, `idEffectType`, `perce
 (13, 27, 4, 1, 0, 2, NULL, 0),
 (14, 29, 4, 0.25, 0, 10, NULL, 0),
 (15, 30, 4, 0.25, 0, 4, NULL, 0),
-(16, 31, 4, 0.33, 0, 1, NULL, 0);
+(16, 31, 4, 1, 0, 1, NULL, 0);
 
 REPLACE INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 (1, 'en', 'Strength'),
@@ -3388,7 +3388,7 @@ REPLACE INTO monstersbuilds VALUES
 (3, 14, 0),
 (3, 15, 0),
 
-(4, 1, 0),
+(4, 2, 0),
 (4, 8, 0),
 (4, 9, 0),
 (4, 10, 0),
