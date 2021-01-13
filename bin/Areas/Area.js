@@ -140,7 +140,7 @@ class Area {
         return this.possibleLoots;
     }
 
-    async loadItemsLootTable() {
+    async loadItemsLootTable() {     
 
 
         // For generic items drop based on default min and max rarity
