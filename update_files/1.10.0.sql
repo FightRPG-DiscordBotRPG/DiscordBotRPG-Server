@@ -1,8 +1,5 @@
--- MySQL Workbench Synchronization
--- Generated: 2020-07-04 14:55
--- Model: New Model
--- Version: 1.0
--- Project: Name of the project
+-- Fight RPG
+-- Version: 1.10.0
 -- Author: Roncarlos
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -700,7 +697,7 @@ CREATE TABLE IF NOT EXISTS `monstersbuilds` (
 ENGINE = InnoDB;
 
 ALTER TABLE `statsmonstres` 
-ADD COLUMN `idMonstersBuildsProfil` INT(10) UNSIGNED NOT NULL AFTER `idStatsProfil`,
+ADD COLUMN `idMonstersBuildsProfil` INT UNSIGNED NOT NULL AFTER `idStatsProfil`,
 ADD INDEX `fk_StatsMonstres_MonstersBuildsProfil1_idx` (`idMonstersBuildsProfil` ASC) VISIBLE;
 ;
 
@@ -712,7 +709,7 @@ ADD CONSTRAINT `fk_StatsMonstres_MonstersBuildsProfil1`
   ON UPDATE NO ACTION;
 
 ALTER TABLE `discord_bot_rpg`.`characters` 
-ADD COLUMN `talentPoints` INT(11) NOT NULL DEFAULT 0 AFTER `idArea`;
+ADD COLUMN `talentPoints` INT NOT NULL DEFAULT 0 AFTER `idArea`;
 
 UPDATE characters INNER JOIN levels ON levels.idCharacter = characters.idCharacter SET talentPoints = levels.actualLevel;
 
@@ -3694,6 +3691,171 @@ REPLACE INTO localizationitems VALUES
 
 
 DELETE FROM areasitems WHERE areasitems.percentage = 0;
+
+-- Changing to big int for items ids => more future proof
+
+ALTER TABLE `discord_bot_rpg`.`items` 
+DROP FOREIGN KEY `fk_Items_ItemsBase1`,
+DROP FOREIGN KEY `fk_Items_LevelsRequire1`;
+
+ALTER TABLE `discord_bot_rpg`.`itemsstats` 
+DROP FOREIGN KEY `fk_ItemsStats_Items1`,
+DROP FOREIGN KEY `fk_ItemsStats_Stats1`;
+
+ALTER TABLE `discord_bot_rpg`.`charactersinventory` 
+DROP FOREIGN KEY `fk_CharactersInventory_Characters1`,
+DROP FOREIGN KEY `fk_CharactersInventory_Items1`;
+
+ALTER TABLE `discord_bot_rpg`.`charactersequipements` 
+DROP FOREIGN KEY `fk_CharactersEquipements_Characters1`,
+DROP FOREIGN KEY `fk_CharactersEquipements_Items1`,
+DROP FOREIGN KEY `fk_CharactersEquipements_ItemsTypes1`;
+
+ALTER TABLE `discord_bot_rpg`.`marketplacesorders` 
+DROP FOREIGN KEY `fk_MarketplacesOrders_Marketplaces1`,
+DROP FOREIGN KEY `fk_MarketplacesOrders_Items1`,
+DROP FOREIGN KEY `fk_MarketplacesOrders_Characters1`;
+
+ALTER TABLE `discord_bot_rpg`.`itemspower` 
+DROP FOREIGN KEY `fk_ItemsPower_Items1`;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystats` 
+DROP FOREIGN KEY `fk_ItemsSecondaryStats_Items1`,
+DROP FOREIGN KEY `fk_ItemsSecondaryStats_SecondaryStats1`;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystatselementalresists` 
+DROP FOREIGN KEY `fk_ItemsSecondaryStatsElementalResists_ElementsTypes1`,
+DROP FOREIGN KEY `fk_ItemsSecondaryStatsElementalResists_Items1`;
+
+ALTER TABLE `discord_bot_rpg`.`items` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ;
+
+ALTER TABLE `discord_bot_rpg`.`itemsstats` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`charactersinventory` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`charactersequipements` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`marketplacesorders` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ,
+CHANGE COLUMN `price` `price` BIGINT UNSIGNED NOT NULL DEFAULT 1 ,
+ADD INDEX `fk_MarketplacesOrders_Items1_idx` (`idItem` ASC) VISIBLE,
+ADD INDEX `fk_MarketplacesOrders_Characters1_idx` (`idCharacter` ASC) VISIBLE,
+DROP INDEX `fk_MarketplacesOrders_Characters1_idx` ,
+DROP INDEX `fk_MarketplacesOrders_Items1_idx` ;
+
+ALTER TABLE `discord_bot_rpg`.`itemspower` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystats` 
+CHARACTER SET = utf8mb4 , COLLATE = utf8mb4_unicode_ci ,
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystatselementalresists` 
+CHANGE COLUMN `idItem` `idItem` BIGINT UNSIGNED NOT NULL ;
+
+ALTER TABLE `discord_bot_rpg`.`items` 
+ADD CONSTRAINT `fk_Items_ItemsBase1`
+  FOREIGN KEY (`idBaseItem`)
+  REFERENCES `discord_bot_rpg`.`itemsbase` (`idBaseItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_Items_LevelsRequire1`
+  FOREIGN KEY (`level`)
+  REFERENCES `discord_bot_rpg`.`levelsrequire` (`level`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`itemsstats` 
+ADD CONSTRAINT `fk_ItemsStats_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_ItemsStats_Stats1`
+  FOREIGN KEY (`idStat`)
+  REFERENCES `discord_bot_rpg`.`stats` (`idStat`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`charactersinventory` 
+ADD CONSTRAINT `fk_CharactersInventory_Characters1`
+  FOREIGN KEY (`idCharacter`)
+  REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_CharactersInventory_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`charactersequipements` 
+ADD CONSTRAINT `fk_CharactersEquipements_Characters1`
+  FOREIGN KEY (`idCharacter`)
+  REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_CharactersEquipements_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_CharactersEquipements_ItemsTypes1`
+  FOREIGN KEY (`idType`)
+  REFERENCES `discord_bot_rpg`.`itemstypes` (`idType`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`marketplacesorders` 
+ADD CONSTRAINT `fk_MarketplacesOrders_Marketplaces1`
+  FOREIGN KEY (`idMarketplace`)
+  REFERENCES `discord_bot_rpg`.`marketplaces` (`idMarketplace`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_MarketplacesOrders_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_MarketplacesOrders_Characters1`
+  FOREIGN KEY (`idCharacter`)
+  REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`itemspower` 
+ADD CONSTRAINT `fk_ItemsPower_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystats` 
+ADD CONSTRAINT `fk_ItemsSecondaryStats_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_ItemsSecondaryStats_SecondaryStats1`
+  FOREIGN KEY (`idSecondaryStat`)
+  REFERENCES `discord_bot_rpg`.`secondarystats` (`idSecondaryStat`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `discord_bot_rpg`.`itemssecondarystatselementalresists` ADD CONSTRAINT `fk_ItemsSecondaryStatsElementalResists_Items1`
+  FOREIGN KEY (`idItem`)
+  REFERENCES `discord_bot_rpg`.`items` (`idItem`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_ItemsSecondaryStatsElementalResists_ElementsTypes1`
+  FOREIGN KEY (`idElementType`)
+  REFERENCES `discord_bot_rpg`.`elementstypes` (`idElementType`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
 
 
 
