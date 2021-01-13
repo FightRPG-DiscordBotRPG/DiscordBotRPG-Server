@@ -44,7 +44,7 @@ console.timeEnd("Object Values");
 console.time("Object For In")
 for (let i = 0; i < testMax; i++) {
     let arr = [];
-    for (let i in obj) {
+    for (let o in obj) {
         arr.push(i);
     }
 }
@@ -52,7 +52,7 @@ console.timeEnd("Object For In")
 
 console.time("Object For I In Keys")
 for (let i = 0; i < testMax; i++) {
-    for (let i in Object.keys(obj)) {
+    for (let o in Object.keys(obj)) {
         //
     }
 }

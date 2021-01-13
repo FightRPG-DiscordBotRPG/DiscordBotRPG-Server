@@ -83,12 +83,13 @@ class LootSystem {
 
     /**
      * Don't use of classes, for more efficent processing (Need to be changed if soemthing about the database is changed)
-     * @param {*} idCharacter 
-     * @param {*} idBase 
-     * @param {*} level 
-     * @param {*} number 
+     * @param {number} idCharacter
+     * @param {number} idBase
+     * @param {number} level
+     * @param {number} number 
+     * @param {boolean} makeItFavorite 
      */
-    async giveToPlayerDatabase(idCharacter, idBase = 0, level = 1, number = 1) {
+    async giveToPlayerDatabase(idCharacter, idBase = 0, level = 1, number = 1, makeItFavorite = false) {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
         let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idBaseItem = ?", [idBase]);
@@ -112,6 +113,12 @@ class LootSystem {
                 }
 
             }
+
+            if (makeItFavorite) {
+                await conn.query("UPDATE items SET favorite = true WHERE idItem = ?;", [idToAdd])
+            }
+
+
             return true;
         }
         return false;

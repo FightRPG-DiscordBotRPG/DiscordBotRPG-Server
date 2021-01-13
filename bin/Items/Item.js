@@ -71,8 +71,10 @@ class Item {
      * Insert an item to the database (using idBase and level and optionally power)
      * and returns the id if done
      * else return -1
-     * @param {*} idBase 
-     * @param {*} level 
+     * @param {number} idBase 
+     * @param {number} level 
+     * @param {number} power 
+     * @returns {Promise<number>}
      */
     static async lightInsert(idBase, level, power = 0) {
         if (idBase != null && idBase > 0 && level != null && level > 0) {
@@ -85,7 +87,7 @@ class Item {
 
     /**
      * 
-     * @param {Array<number>} idItems 
+     * @param {Promise<Array<number>>} idItems 
      */
     static async deleteItems(idItems) {
         if (idItems.toString().length > 0) {

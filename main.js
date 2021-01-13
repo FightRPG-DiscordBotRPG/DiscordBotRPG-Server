@@ -27,7 +27,7 @@ if (conf.env === "prod") {
         let idAndLang = await User.getIdAndLang(vote.user);
         if (idAndLang != null) {
             let ls = new LootSystem();
-            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1);
+            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true);
             let lang = idAndLang.lang;
             let msg = Translator.getString(lang, "vote_daily", "you_voted");
             if (vote.isWeekend) {
