@@ -20,6 +20,8 @@ const State = require("../../SkillsAndStatus/State");
 const Skill = require("../../SkillsAndStatus/Skill");
 const Effect = require("../../SkillsAndStatus/Effect");
 const Utils = require("../../Utilities/Utils");
+const Character = require("../../Character");
+const { maximumSkillsPerBuild } = require("../../Globals");
 
 class AdminModule extends GModule {
     constructor() {
@@ -306,6 +308,66 @@ class AdminModule extends GModule {
             //}
 
             //await res.locals.character.addStatPoints(10);
+
+            //let results = {};
+
+            //let anthelme = new Character("228787710607753216");
+            //await anthelme.lightLoad(8);
+
+            //let maxId = (await conn.query("SELECT count(*) as max FROM monstres;"))[0].max;
+
+
+            //let promises = [];
+            //console.time("Combats");
+
+            //for (let i = 0; i < 100; i++) {
+            //    for (let i = 1; i <= maxId; i++) {
+            //        let monster = new Monster(i);
+            //        await monster.loadMonster(anthelme.getLevel());
+
+            //        if (monster.type != "boss") {
+            //            continue;
+            //        }
+
+            //        let fight = new Fight([anthelme], [monster], "fr");
+
+
+            //        promises.push(
+            //            (async () => {
+            //                await fight.init(true);
+
+            //                let idBuild = monster.idStatsProfil + "," + monster.skillBuild.id;
+            //                if (results[idBuild] == null) {
+            //                    results[idBuild] = { win: 0, lost: 0 };
+            //                }
+
+            //                //if (results[idBuild][monster.type] == null) {
+            //                //    results[idBuild][monster.type] = ;
+            //                //}
+
+            //                if (fight.winnerGroup === 0) {
+            //                    results[idBuild].win++;
+            //                } else {
+            //                    results[idBuild].lost++;
+            //                }
+
+            //            })()
+            //        )
+                    
+            //    }
+            //}
+
+            //await Promise.all(promises);
+
+            //for (let id in results) {
+            //    let total = results[id].win + results[id].lost;
+            //    results[id] = Math.round((results[id].win / total * 100)) + "%";
+            //}
+
+            //console.timeEnd("Combats");
+            
+            //console.log(results);
+
 
             await next();
             return res.json({ succes: "done" });

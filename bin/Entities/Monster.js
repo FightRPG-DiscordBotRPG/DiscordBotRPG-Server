@@ -27,6 +27,7 @@ class Monster extends WorldEntity {
         this.difficulty = {};
         this.type = "";
         this.skillBuild = new SkillBuildMonster();
+        this.idStatsProfil = 0;
     }
 
 
@@ -36,6 +37,7 @@ class Monster extends WorldEntity {
         res = res[0];
         let bonus = 1;
         this.type = res["nom"];
+        this.idStatsProfil = res.idStatsProfil;
         this.level = level && level > 0 ? level : (res["avglevel"] > 0 ? res["avglevel"] : 1);
         let multiplier = res["idType"];
 
