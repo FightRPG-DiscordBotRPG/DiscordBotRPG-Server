@@ -206,9 +206,9 @@ class WorldEntity {
         }
     }
 
-    getStat(statName) {
+    getStat(statName, toAdd=0) {
         this.updateStatModifier(statName);
-        return this.stats.getStat(statName) * this.tempStatsModifiers[statName];
+        return (this.stats.getStat(statName) + toAdd) * this.tempStatsModifiers[statName];
     }
 
     updateStatModifier(statName) {
@@ -228,7 +228,7 @@ class WorldEntity {
         }
     }
 
-    getSecondaryStat(statName) {
+    getSecondaryStat(statName, bonusToAdd = 0) {
         this.updateSecondaryStatModifier(statName);
 
         let modToAdd;
@@ -247,19 +247,18 @@ class WorldEntity {
                 break;
         }
 
-        return this.secondaryStats.getStat(statName) + modToAdd;
+        return this.secondaryStats.getStat(statName) + bonusToAdd + modToAdd;
 
     }
 
-    getElementalResistMultiplier(elementalName) {
+    getElementalResistMultiplier(elementalName, bonusToAdd=0) {
         this.updateSecondaryStatModifier(elementalName);
-        return this.secondaryStats.getElementalResist(elementalName) + this.tempStatsModifiers[elementalName];
+        return this.secondaryStats.getElementalResist(elementalName) + bonusToAdd + this.tempStatsModifiers[elementalName];
     }
 
     updateSecondaryStatModifier(statName) {
         if (!this.tempStatsModifiers[statName]) {
             // Calcul with debuff
-            
             this.tempStatsModifiers[statName] = this.getTraitValueSum(Trait.TraitTypesNames.SecondaryStatsDebuff, Globals.secondaryStatsIdsByName[statName]);
         }
     }
@@ -570,7 +569,7 @@ class WorldEntity {
      * 
      * @returns {Array<State>}
      */
-    removeStatesByRounds(lang="en") {
+    removeStatesByRounds(lang = "en") {
         let removedStates = [];
         this.getStatesArray().forEach((state) => {
             if (state.isExpired()) {

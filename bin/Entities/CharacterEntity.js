@@ -51,7 +51,7 @@ class CharacterEntity extends WorldEntity {
      * @returns {number} Stat value
      */
     getStat(statName) {
-        return super.getStat(statName) + ((this.equipement.getStat(statName) + this.talents.stats.getStat(statName)) * this.tempStatsModifiers[statName]);
+        return super.getStat(statName, this.equipement.getStat(statName) + this.talents.stats.getStat(statName));
     }
 
     /**
@@ -60,7 +60,7 @@ class CharacterEntity extends WorldEntity {
     * @returns {number} Secondary stat value
     */
     getSecondaryStat(secondaryStatName) {
-        return super.getSecondaryStat(secondaryStatName) + ((this.equipement.getSecondaryStat(secondaryStatName) + this.talents.secondaryStats.getStat(secondaryStatName)) * this.tempStatsModifiers[secondaryStatName]);
+        return super.getSecondaryStat(secondaryStatName, this.equipement.getSecondaryStat(secondaryStatName) + this.talents.secondaryStats.getStat(secondaryStatName));
     }
 
     /**
@@ -68,7 +68,7 @@ class CharacterEntity extends WorldEntity {
      * @param {string} elementName
      */
     getElementalResistMultiplier(elementName) {
-        return (super.getElementalResistMultiplier(elementName) + this.equipement.secondaryStats.getElementalResist(elementName) + this.talents.secondaryStats.getElementalResist(elementName)) - 2;
+        return super.getElementalResistMultiplier(elementName, (this.equipement.secondaryStats.getElementalResist(elementName) + this.talents.secondaryStats.getElementalResist(elementName) - 2));
     }
 
     /**
