@@ -59,7 +59,9 @@ class FightManager {
         }
 
 
-
+        /**
+         * @type {Monstre[]}
+         **/
         let arr = [];
         for (let i in monsters) {
             for (let j = 0; j < monsters[i].number; j++) {
@@ -110,15 +112,21 @@ class FightManager {
      */
     async fightPvE(characters, monsters, userid, canIFightTheMonster, lang, resetFightStats = true) {
         let toApi = {
-            beingAttacked: false,
             team1_number: characters.length,
             team2_number: monsters.length,
-            summary: new FightPvE([], []).summary
+            summary: new FightPvE([], []).summary,
+            beingAttacked: !canIFightTheMonster
         }
         let alreadyInBattle = characters.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
         let timeToFight = this.timeToFight(characters);
         if (timeToFight < 0 && !alreadyInBattle) {
             let enemies = await this.loadMonsters(monsters, characters);
+
+            if (toApi.beingAttacked) {
+                // Ensure that the monster will attack firt
+                enemies[0].secondaryStats.initiative += 2000;
+            }
+
             let fight = new FightPvE(characters, enemies, lang);
 
             await fight.init(resetFightStats);
@@ -140,9 +148,6 @@ class FightManager {
             }, conf.env == "dev" ? 2000 : (fight.summary.rounds.length) * 4000);
 
             toApi.summary = this.fights[userid].summary;
-            if (!canIFightTheMonster) {
-                toApi.beingAttacked = true;
-            }
         } else {
             // erreur
             if (alreadyInBattle) {
@@ -229,5 +234,4 @@ module.exports = FightManager;
 const Fight = require("./Fight/Fight");
 const Character = require("./Character");
 const WolrdEntity = require("./Entities/WorldEntity");
-
 
