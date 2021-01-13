@@ -75,8 +75,8 @@ class Monster extends WorldEntity {
         return true;
     }
 
-    getIdentity() {
-        let identity = super.getIdentity();
+    getIdentity(lang = "en") {
+        let identity = super.getIdentity(lang);
         identity.monsterType = this.type;
         identity.monsterDifficultyName = this.difficulty.name;
         return identity;
