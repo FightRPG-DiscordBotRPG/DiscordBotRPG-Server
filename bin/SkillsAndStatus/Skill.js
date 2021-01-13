@@ -301,7 +301,7 @@ class Skill {
     * @param {string} lang
     */
     static getDesc(idSkill, lang = "en") {
-        return Translator.getString(lang, "skillDesc", idSkill);
+        return Translator.getString(lang, "skillDesc", idSkill, [], true);
     }
 
     /**
