@@ -106,7 +106,7 @@ class Fight {
     async init(resetStats = true) {
         //attacker.character.stats.intellect + attacker.character.equipement.stats.intellect) <= (defender.character.stats.intellect + defender.character.equipement.stats.intellect
         this.concatEntities.sort((a, b) => {
-            return b.getStat("intellect") - a.getStat("intellect");
+            return b.getInitiative() - a.getInitiative();
         });
 
         for (let i in this.concatEntities) {
@@ -667,3 +667,4 @@ module.exports = Fight
 
 const Monster = require("../Entities/Monster");
 const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
+const Stats = require("../Stats/Stats");

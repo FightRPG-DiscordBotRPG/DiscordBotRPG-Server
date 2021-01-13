@@ -17,6 +17,7 @@ class SecondaryStats {
         CritcalEvadeRate: "criticalEvadeRate",
         MagicalEvadeRate: "magicalEvadeRate",
         Threat: "threat",
+        Initiative: "initiative"
     }
 
     static possibleElementalResists = {
@@ -41,6 +42,7 @@ class SecondaryStats {
         cevr: SecondaryStats.possibleStats.CritcalEvadeRate,
         magevr: SecondaryStats.possibleStats.MagicalEvadeRate,
         threat: SecondaryStats.possibleStats.Threat,
+        ini: SecondaryStats.possibleStats.Initiative
     }
 
     static possibleElementalResistsShort = {
@@ -252,6 +254,17 @@ class SecondaryStats {
             "whip": 1,
             "staff": 1,
         },
+        initiative: {
+            "metal": 1,
+            "cloth": 1,
+            "leather": 1,
+            "bow": 1,
+            "dagger": 1,
+            "sword": 1,
+            "wand": 1,
+            "whip": 1,
+            "staff": 1,
+        }
 
     }
 
@@ -270,6 +283,7 @@ class SecondaryStats {
         this.criticalEvadeRate = 0;
         this.magicalEvadeRate = 0;
         this.threat = 0;
+        this.initiative = 0;
 
         this.physicalResist = 0;
         this.fireResist = 0;

@@ -883,6 +883,9 @@ class WorldEntity {
         return this.getTraitValueSet(Trait.TraitTypesNames.StatusResist, idState);
     }
 
+    getInitiative() {
+        return this.getLevel() / 2 + this.getSecondaryStat(SecondaryStats.possibleStats.Initiative);
+    }
 
 }
 

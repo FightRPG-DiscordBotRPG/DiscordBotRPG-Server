@@ -171,7 +171,8 @@ class Item {
                 case SecondaryStats.possibleStats.RegenHp:
                 case SecondaryStats.possibleStats.Threat:
                 case SecondaryStats.possibleStats.RegenMp:
-                    mult = 0.6 / 100;
+                case SecondaryStats.possibleStats.Initiative:
+                    mult = 0.2;
                     break;
                 case SecondaryStats.possibleElementalResists.Air:
                 case SecondaryStats.possibleElementalResists.Dark:

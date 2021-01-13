@@ -25,7 +25,6 @@ for (let stat of possiblePrimaryStats) {
 }
 
 for (let secondaryStat of possibleSecondaryStats) {
-    console.log(secondaryStat);
     for (let subtype of Object.keys(SecondaryStats.ratiosBasedOnSubtype[secondaryStat])) {
 
         if (totalSecondaryStatsPerSubtypes[subtype] == null) {

@@ -223,6 +223,7 @@ class LootSystem {
                 baseValue = Utils.randRangeInt(2, 5) * ratio;
                 break;
             case SecondaryStats.possibleStats.Threat:
+            case SecondaryStats.possibleStats.Initiative:
                 baseValue = Utils.randRangeInt(1, level / 2);
                 break;
             case SecondaryStats.possibleElementalResists.Air:
@@ -256,7 +257,7 @@ class LootSystem {
             let statsPossible = Object.keys(Globals.statsIdsByName);
             let secondaryStatsPossible = [...Globals.allSecondaryStatsNames];
             let numberOfStats = this.getStatsNumber(rarity);
-            let numberOfSecondaryStats = this.getStatsNumber(rarity);
+            let numberOfSecondaryStats = this.getSecondaryStatsNumber(rarity);
             let objectType = res[0]["nomType"];
             let objectSubtype = res[0]["nomSousType"];
             let equipable = res[0]["equipable"];
@@ -380,7 +381,7 @@ class LootSystem {
     }
 
     getSecondaryStatsNumber(rarity) {
-        return rarity + this.numberOfStatsBonus(rarity);
+        return Math.max(rarity - 4, 0) + this.numberOfStatsBonus(rarity - 1);
     }
 
     numberOfStatsBonus(rarity) {
