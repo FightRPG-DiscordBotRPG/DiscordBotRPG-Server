@@ -381,7 +381,7 @@ class LootSystem {
     }
 
     getSecondaryStatsNumber(rarity) {
-        return Math.max(rarity - 4, 0) + this.numberOfStatsBonus(rarity - 1);
+        return rarity + this.numberOfStatsBonus(rarity + 2);
     }
 
     numberOfStatsBonus(rarity) {
