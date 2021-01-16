@@ -149,92 +149,101 @@ class Fight {
         // Log Restrictions
         roundLog.restrictions = attackerRestrictions;
 
+        let canDoSomething = (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf);
+
+
+        let skillToUse = null;
+
         // Add skills prep
-        attacker.prepareCast();
+        if (canDoSomething) {
+            attacker.prepareCast();
+            skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
-        let skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
+            if (skillToUse !== null && canDoSomething) {
 
-        if (skillToUse !== null && (attackerRestrictions.targetAlly || attackerRestrictions.targetEnemy || attackerRestrictions.targetSelf)) {
+                let alreadyCheckedIds = {};
+                // check if can target with skill
+                let targets = this.getSkillTargets(skillToUse, attacker);
 
-            let alreadyCheckedIds = {};
-            // check if can target with skill
-            let targets = this.getSkillTargets(skillToUse, attacker);
+                while (targets.length === 0) {
+                    if (!alreadyCheckedIds[skillToUse.id]) {
+                        alreadyCheckedIds[skillToUse.id] = true;
+                    }
 
-            while (targets.length === 0) {
-                if (!alreadyCheckedIds[skillToUse.id]) {
-                    alreadyCheckedIds[skillToUse.id] = true;
+                    skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
+
+                    if (alreadyCheckedIds[skillToUse.id]) {
+                        skillToUse = await this.getDefaultSkill(attackerRestrictions);
+                    }
+
+                    targets = this.getSkillTargets(skillToUse, attacker);
                 }
 
-                skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
+                skillToUse.resetCast();
+                roundLog.skillInfo.id = skillToUse.id;
+                roundLog.skillInfo.message = skillToUse.getMessage(attacker.getName(), this.lang);
 
-                if (alreadyCheckedIds[skillToUse.id]) {
-                    skillToUse = await this.getDefaultSkill(attackerRestrictions);
+
+
+
+                let skillCosts = attacker.removeSkillCost(skillToUse);
+                roundLog.attacker.logSkillDamageEnergy(skillCosts.energy);
+                roundLog.attacker.logSkillDamageMp(skillCosts.mp);
+
+                roundLog.attacker.logSkillRecoverEnergy(attacker.healEnergy(skillToUse.energyGain));
+
+                for (let target of targets) {
+
+                    let wasAlive = target.isAlive();
+
+                    let defenderLogger = this.initNewEntityLogger(target);
+
+                    roundLog.defenders.push(defenderLogger);
+
+                    // States stats modifiers reset
+                    target.resetStatsModifiers();
+
+                    // Apply damage if not evaded by enemy
+                    if (target === attacker || skillToUse.isRawDamage() || attacker.haveHit(target, skillToUse)) {
+                        // Hp
+                        if (skillToUse.isAffectingHp()) {
+                            this.applySkillHpDamage(skillToUse, attacker, target);
+                        }
+
+                        // Mp
+                        if (skillToUse.isAffectingMp()) {
+                            this.applySkillMpDamage(skillToUse, attacker, target);
+                        }
+
+                        // Effects apply
+                        for (let effect of skillToUse.effects) {
+                            await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker }, skillToUse);
+                        }
+
+                        roundLog.success = true;
+                    } else {
+                        // meaning attack is not successful due to evade
+                        roundLog.success = false;
+                    }
+
+                    // Update total entity
+                    this.updateEntityLogger(defenderLogger, target);
+
+                    // Remove from original array since it's dead
+                    if (wasAlive && !target.isAlive()) {
+                        this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
+                    } else if (!wasAlive && target.isAlive()) {
+                        // If he is alive and was not at first, then it means that the target is ressurected
+                        // Push at the end of entities list
+                        this.concatEntities.push(target);
+                    }
                 }
-
-                targets = this.getSkillTargets(skillToUse, attacker);
             }
 
-            skillToUse.resetCast();
-            roundLog.skillInfo.id = skillToUse.id;
-            roundLog.skillInfo.message = skillToUse.getMessage(attacker.getName(), this.lang);
-
-
-
-
-            let skillCosts = attacker.removeSkillCost(skillToUse);
-            roundLog.attacker.logSkillDamageEnergy(skillCosts.energy);
-            roundLog.attacker.logSkillDamageMp(skillCosts.mp);
-
-            roundLog.attacker.logSkillRecoverEnergy(attacker.healEnergy(skillToUse.energyGain));
-
-            for (let target of targets) {
-
-                let wasAlive = target.isAlive();
-
-                let defenderLogger = this.initNewEntityLogger(target);
-
-                roundLog.defenders.push(defenderLogger);
-
-                // States stats modifiers reset
-                target.resetStatsModifiers();
-
-                // Apply damage if not evaded by enemy
-                if (target === attacker || skillToUse.isRawDamage() || attacker.haveHit(target, skillToUse)) {
-                    // Hp
-                    if (skillToUse.isAffectingHp()) {
-                        this.applySkillHpDamage(skillToUse, attacker, target);
-                    }
-
-                    // Mp
-                    if (skillToUse.isAffectingMp()) {
-                        this.applySkillMpDamage(skillToUse, attacker, target);
-                    }
-
-                    // Effects apply
-                    for (let effect of skillToUse.effects) {
-                        await effect.applyToOne({ entity: target, logger: defenderLogger, attacker: attacker }, skillToUse);
-                    }
-
-                    roundLog.success = true;
-                } else {
-                    // meaning attack is not successful due to evade
-                    roundLog.success = false;
-                }
-
-                // Update total entity
-                this.updateEntityLogger(defenderLogger, target);
-
-                // Remove from original array since it's dead
-                if (wasAlive && !target.isAlive()) {
-                    this.concatEntities.splice(this.concatEntities.indexOf(target), 1);
-                } else if (!wasAlive && target.isAlive()) {
-                    // If he is alive and was not at first, then it means that the target is ressurected
-                    // Push at the end of entities list
-                    this.concatEntities.push(target);
-                }
-            }
         }
 
+
+       
 
 
         // Update attacker
