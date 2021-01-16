@@ -2691,7 +2691,7 @@ REPLACE INTO `states` (`idState`, `idStateRestriction`, `shorthand`) VALUES
 
 REPLACE INTO `statesremovalconditions` (`idState`, `afterFight`, `afterRounds`, `roundMin`, `roundMax`, `afterDamage`, `damageProbability`) VALUES
 (1, 1, 1, 1, 1, 0, 100),
-(2, 1, 1, 2, 4, 0, 100),
+(2, 1, 1, 3, 4, 0, 100),
 (3, 1, 1, 2, 3, 0, 100),
 (4, 1, 1, 1, 3, 0, 100),
 (5, 1, 1, 1, 2, 0, 100),
@@ -2723,8 +2723,8 @@ REPLACE INTO `statestraits` (`idState`, `idTrait`) VALUES
 
 REPLACE INTO `traits` (`idTrait`, `idTraitType`, `valueFloat`, `valueState`, `valueElementType`, `valueSkillType`, `valueStat`, `valueSkill`, `valueSecondaryStat`) VALUES
 (1, 9, -1, NULL, NULL, NULL, NULL, NULL, 2),
-(2, 3, 1.1, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 3, 1.1, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 3, 1.25, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 3, 1.25, NULL, NULL, NULL, NULL, NULL, NULL),
 (4, 9, 0.1, NULL, NULL, NULL, NULL, NULL, 4),
 (5, 9, 0.1, NULL, NULL, NULL, NULL, NULL, 5),
 (6, 9, 0.1, NULL, NULL, NULL, NULL, NULL, 6),
