@@ -867,7 +867,7 @@ REPLACE INTO `damageinfo` (`idSkill`, `idDamageType`, `idElementType`, `formula`
 (15, 1, 5, 'a.int * 2 + a.wis * 1.2', 10, 0),
 (16, 1, 4, 'b.mhp * 0.1 + a.dex * 0.4', 50, 0),
 (17, 1, 4, 'b.mhp * 0.05 + a.dex * 0.2', 50, 0),
-(18, 3, 1, 'a.con * 0.1', 5, 0),
+(18, 3, 1, 'a.mhp * 0.1', 5, 0),
 (21, 3, 1, 'a.int * 0.7 + a.wis * 0.2', 20, 1),
 (22, 3, 1, 'a.int * 0.5 + a.wis * 0.15', 20, 1),
 (23, 3, 1, 'a.int * 0.2 + a.wis * 0.1', 30, 1),
