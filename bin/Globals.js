@@ -41,7 +41,7 @@ var Globals = {
      **/
     "pstreenodes": null,
     "allSecondaryStatsNames": [],
-    "basicWaitTimeBeforeFight": 60,
+    "basicWaitTimeBeforeFight": 40,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
     "basicWaitTimeCollectTravel": 25,
