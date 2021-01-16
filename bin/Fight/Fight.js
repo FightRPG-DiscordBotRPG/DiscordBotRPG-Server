@@ -156,6 +156,11 @@ class Fight {
 
         // Add skills prep
         if (canDoSomething) {
+
+            if (attacker.consecutiveStuns >= Globals.maxConsecutiveStuns) {
+                attacker.consecutiveStuns = 0;
+            }
+
             attacker.prepareCast();
             skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
