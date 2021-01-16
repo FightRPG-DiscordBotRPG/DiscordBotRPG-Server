@@ -41,7 +41,7 @@ class WorldBosses extends GModule {
         this.router.get("/display/all", async (req, res, next) => {
             let data = {};
 
-            data = await WorldBossSpawner.getBossesInfos(res.locals.lang);
+            data = await WorldBossSpawner.instance.getBossesInfos(res.locals.lang);
 
             data.lang = res.locals.lang;
             await next();
@@ -69,7 +69,7 @@ class WorldBosses extends GModule {
             let wb = await res.locals.currentArea.getWorldBoss(res.locals.lang);
             if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (wb != null) {
-                    data = await WorldBossSpawner.userAttack(Globals.connectedUsers[res.locals.id].character, wb);
+                    data = await WorldBossSpawner.instance.userAttack(Globals.connectedUsers[res.locals.id].character, wb, Globals.connectedUsers[res.locals.id].getLang());
                 } else {
                     data.error = Translator.getString(res.locals.lang, "world_bosses", "no_world_boss");
                 }

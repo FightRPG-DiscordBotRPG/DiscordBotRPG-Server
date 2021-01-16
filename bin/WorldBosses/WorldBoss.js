@@ -1,12 +1,12 @@
 const conn = require("../../conf/mysql.js");
 const Translator = require("../Translator/Translator");
+const WorldEntity = require("../Entities/WorldEntity.js");
 
-class WorldBoss {
+class WorldBoss extends WorldEntity {
     constructor(id) {
+        super();
         this.id = id; // Spawned id
         this.idBaseBoss = 0; // This gives boss id base
-        this.actualHp = 0;
-        this.maxHp = 0;
     }
 
     async load() {

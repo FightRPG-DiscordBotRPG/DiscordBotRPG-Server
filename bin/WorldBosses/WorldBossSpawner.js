@@ -6,8 +6,43 @@ const axios = require("axios").default;
 const LeaderboardWBAttacks = require("../Leaderboards/LeaderboardWBAttacks");
 const LeaderboardWBDamage = require("../Leaderboards/LeaderboardWBDamage");
 const User = require("../User");
+const Character = require("../Character");
+const Skill = require("../SkillsAndStatus/Skill.js");
+const Fight = require("../Fight/Fight.js");
 
 class WorldBossSpawner {
+
+    /**
+     * @type {WorldBossSpawner}
+     */
+    static instance = null;
+
+    constructor() {
+        /**
+         * @type {Skill[]}
+         * */
+        this.skillsToTest = [];
+
+        if (!WorldBossSpawner.instance) {
+            WorldBossSpawner.instance = this;
+        }
+
+    }
+
+    async load() {
+
+        let promises = [];
+
+        for (let i = 1; i <= 3; i++) {
+            let skill = new Skill();
+            this.skillsToTest.push(skill);
+            promises.push(skill.loadWithID(i));
+        }
+
+        await Promise.all(promises);
+
+    }
+
     async startUp() {
         let res = await conn.query("SELECT * FROM bossspawninfo");
         if (res[0]) {
@@ -35,7 +70,7 @@ class WorldBossSpawner {
         let randomArea = (await conn.query("SELECT areasregions.idArea FROM areasregions INNER JOIN areas ON areas.idArea = areasregions.idArea WHERE areasregions.idRegion = ? AND areas.idAreaType IN (1) ORDER BY RAND() LIMIT 1;", [randomBossInfo.idRegion]))[0].idArea;
 
         // Date calcul
-        let date = await WorldBossSpawner.getNextBossDate();
+        let date = await this.getNextBossDate();
         console.log("Next boss schedule for : " + date.toUTCString());
         await conn.query("INSERT INTO bossspawninfo (idBoss, idArea, spawnDate) VALUES (?, ?, ?);", [randomBossInfo.idBoss, randomArea, date.getTime()])
     }
@@ -45,9 +80,9 @@ class WorldBossSpawner {
     }
 
     /**
-     * @returns {Date}
+     * @returns {Promise<Date>}
      */
-    static async getNextBossDate() {
+    async getNextBossDate() {
         let date = new Date();
         date.setUTCMinutes(0);
         date.setUTCSeconds(0);
@@ -60,8 +95,8 @@ class WorldBossSpawner {
         return date;
     }
 
-    static async getBossesInfos(lang = "en") {
-        let res = await conn.query("SELECT * FROM bossspawninfo INNER JOIN regionsbosses ON regionsbosses.idBoss = bossspawninfo.idBoss", [this.id]);
+    async getBossesInfos(lang = "en") {
+        let res = await conn.query("SELECT * FROM bossspawninfo INNER JOIN regionsbosses ON regionsbosses.idBoss = bossspawninfo.idBoss;");
         let toApi = {
             bosses: [],
         }
@@ -69,6 +104,7 @@ class WorldBossSpawner {
             let toReturn = {
                 regionName: Translator.getString(lang, "regionsNames", info.idRegion),
                 areaName: Translator.getString(lang, "areasNames", info.idArea),
+                idArea: info.idArea,
                 worldBoss: null,
                 spawnDate: info.spawnDate
             }
@@ -82,7 +118,7 @@ class WorldBossSpawner {
         return toApi;
     }
 
-    static async getStatsFromFight(spawnedBossId) {
+    async getStatsFromFight(spawnedBossId) {
         return (await conn.query("SELECT SUM(attackCount) as totalAttacks, MAX(attackCount) as highestAttackCount, ROUND(AVG(attackCount)) as averageAttackCount, MAX(damage) as highestDamages, ROUND(AVG(damage)) as averageDamages, SUM(damage) as totalDamage FROM charactersattacks WHERE idSpawnedBoss = ?;", [spawnedBossId]))[0];
     }
 
@@ -92,20 +128,20 @@ class WorldBossSpawner {
         await conn.query("INSERT INTO spawnedbossesareas VALUES (?, ?);", [idInsert, res.idArea]);
         await conn.query("INSERT INTO wbrewardstates VALUES (?, 0)", [idInsert]);
         await conn.query("UPDATE bossspawninfo SET idSpawnedBoss = ? WHERE bossspawninfo.idBoss = ?;", [idInsert, res.idBoss]);
-        WorldBossSpawner.announceWorldBossSpawn();
+        WorldBossSpawner.instance.announceWorldBossSpawn();
     }
 
-    static async announceWorldBossSpawn() {
-        let binfo = await WorldBossSpawner.getBossesInfos();
+    async announceWorldBossSpawn() {
+        let binfo = await WorldBossSpawner.instance.getBossesInfos();
         binfo = binfo.bosses[0];
         let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName;
         WorldBossSpawner.wbTell(str);
     }
 
-    static async announceNextBoss(oldWorldBossId) {
-        let binfo = await WorldBossSpawner.getBossesInfos();
+    async announceNextBoss(oldWorldBossId) {
+        let binfo = await WorldBossSpawner.instance.getBossesInfos();
         binfo = binfo.bosses[0];
-        let statsFight = await WorldBossSpawner.getStatsFromFight(oldWorldBossId);
+        let statsFight = await WorldBossSpawner.instance.getStatsFromFight(oldWorldBossId);
         let date = new Date();
         date.setTime(binfo.spawnDate);
         let str = "";
@@ -143,20 +179,20 @@ class WorldBossSpawner {
         WorldBossSpawner.wbTell(str);
     }
 
-    static async giveRewards(worldBossId) {
+    async giveRewards(worldBossId) {
         await conn.query("UPDATE wbrewardstates SET state = 1 WHERE idSpawnedBoss = ?;", [worldBossId]);
         // Must be redone to know if players got the rewards
         WorldBossSpawner.tellToUsers(worldBossId);
-        await WorldBossSpawner.giveRewardsToTopDamage(worldBossId);
-        await WorldBossSpawner.giveRewardsToTopAttackCount(worldBossId);
+        await WorldBossSpawner.instance.giveRewardsToTopDamage(worldBossId);
+        await WorldBossSpawner.instance.giveRewardsToTopAttackCount(worldBossId);
         await conn.query("UPDATE wbrewardstates SET state = 2 WHERE idSpawnedBoss = ?;", [worldBossId]);
     }
 
-    static async giveRewardsToTopDamage(worldBossId) {
+    async giveRewardsToTopDamage(worldBossId) {
         await WorldBossSpawner.giveToRewardsToPlayers(worldBossId, 1);
     }
 
-    static async giveRewardsToTopAttackCount(worldBossId) {
+    async giveRewardsToTopAttackCount(worldBossId) {
         await WorldBossSpawner.giveToRewardsToPlayers(worldBossId, 2);
     }
 
@@ -373,30 +409,40 @@ class WorldBossSpawner {
      * @param {Character} character 
      * @param {WorldBoss} wb 
      */
-    static async userAttack(character, wb) {
-        let damage = character.damageCalcul();
-        let isCriticalHit = character.isThisACriticalHit();
-        if (isCriticalHit) {
-            damage = damage * 2;
-        }
+    async userAttack(character, wb, lang="en") {
+
+        let higestEvaluation = null;
+        wb.level = character.getLevel();
+        this.skillsToTest.forEach((skill) => {
+            let evalDamage = Fight.getSkillEvaluation(skill, character, wb);
+            if (higestEvaluation === null || higestEvaluation.value < evalDamage.value) {
+                higestEvaluation = evalDamage;
+                higestEvaluation.skillName = skill.getName(lang);
+            }
+        });
+
+        let damage = higestEvaluation.value;
+        let isCriticalHit = higestEvaluation.isCritical;
+
         await wb.wound(damage);
         WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
-        let wbs = new WorldBossSpawner();
+        let wbs = WorldBossSpawner.instance;
 
         // pourquoi j'ai remove wb.load() ?!
         // actual hp n'était pas à jour du coup.
         // Maintenant .wound mets à jour les pvs.
         if (wb.actualHp <= 0) {
-            WorldBossSpawner.giveRewards(wb.id);
+            WorldBossSpawner.instance.giveRewards(wb.id);
             await wbs.reset();
             await wbs.startUp();
-            WorldBossSpawner.announceNextBoss(wb.id);
+            WorldBossSpawner.instance.announceNextBoss(wb.id);
         }
         character.waitForNextPvPFight();
         return {
             damage: damage,
             isCriticalHit: isCriticalHit,
             waitTime: character.getExhaust(),
+            skillUsed: higestEvaluation.skillName
         };
     }
 

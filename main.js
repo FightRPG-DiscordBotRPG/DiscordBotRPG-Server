@@ -82,6 +82,7 @@ let startUp = async () => {
     console.log("Passives/Skills Tree Nodes loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     let wbs = new WorldBossSpawner();
+    await wbs.load();
     await wbs.startUp();
 
 

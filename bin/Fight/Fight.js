@@ -375,7 +375,7 @@ class Fight {
             // Log recovery
             defenderLogger.logSkillRecoverHp(recoverDone);
         } else {
-            let damageDone = this.applyDamage(target, evaluation.value * this.getTimeMultiplier());            
+            let damageDone = this.applyDamage(target, evaluation.value * this.getTimeMultiplier());
             // Log damage
             defenderLogger.logSkillDamageHp(damageDone);
 
@@ -430,9 +430,18 @@ class Fight {
      * @param {WorldEntity} defender
      */
     getSkillEvaluation(skill, attacker, defender) {
+        return Fight.getSkillEvaluation(skill, attacker, defender);
+    }
 
+    /**
+    *
+    * @param {Skill} skill
+    * @param {WorldEntity} attacker
+    * @param {WorldEntity} defender
+    */
+    static getSkillEvaluation(skill, attacker, defender) {
         let val = skill.evaluateSkill(attacker, defender);
-        let isCritical = this.isCritical(skill, attacker, defender);
+        let isCritical = Fight.isCritical(skill, attacker, defender);
 
         if (isCritical) {
             val *= 2;
@@ -484,7 +493,7 @@ class Fight {
     * @param {WorldEntity} attacker
     * @param {WorldEntity} defender
     */
-    isCritical(skill, attacker, defender) {
+    static isCritical(skill, attacker, defender) {
         let criticalChanceAttacker = 0;
         let criticalChanceEvadeDefender = 0;
 
