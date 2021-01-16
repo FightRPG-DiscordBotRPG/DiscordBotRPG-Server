@@ -411,11 +411,10 @@ class WorldEntity {
     getSkillToUse() {
         let selectedSkill = this.skillBuild.getSelectedSkill();
 
-        this.skillBuild.prepareNextSkill();
-        // Updating next spell to use
-
-
         if (selectedSkill && selectedSkill.canBeCast() && this.canUseSkill(selectedSkill)) {
+
+            // Updating next spell to use
+            this.skillBuild.prepareNextSkill();
 
             if (!selectedSkill.isDamage()) {
                 this.consecutiveNonAttacks++;
