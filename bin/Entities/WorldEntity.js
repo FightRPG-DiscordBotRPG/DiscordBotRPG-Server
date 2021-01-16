@@ -242,6 +242,13 @@ class WorldEntity {
             case SecondaryStats.possibleStats.RegenEnergy:
                 modToAdd = this.maxEnergy * this.tempStatsModifiers[statName];
                 break;
+            case SecondaryStats.possibleStats.EvadeRate:
+            case SecondaryStats.possibleStats.HitRate:
+            case SecondaryStats.possibleStats.CriticalRate:
+            case SecondaryStats.possibleStats.CritcalEvadeRate:
+            case SecondaryStats.possibleStats.MagicalEvadeRate:
+                modToAdd = this.tempStatsModifiers[statName] * 100;
+                break;
             default:
                 modToAdd = this.tempStatsModifiers[statName];
                 break;
