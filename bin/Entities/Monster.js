@@ -57,7 +57,7 @@ class Monster extends WorldEntity {
         await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idMonstersBuildsProfil"])]);
 
         this.updateStats();
-        this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 6 * bonus);
+        this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 7 * bonus);
         this.money = Math.round((Math.random() * (this.getLevel() * 2 - this.getLevel()) + this.getLevel()) * bonus);
 
     }
