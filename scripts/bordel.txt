@@ -13,3 +13,17 @@ Express ? =>
         currentArea: Area,
         tLootSystem: LootSystem
     };
+
+
+    //Test Stats
+    console.log("before");
+    console.log("stats value: " + anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate));
+    console.log((100 - anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100);
+    console.log(anthelme.tempStatsModifiers[SecondaryStats.possibleStats.EvadeRate]);
+
+    await anthelme.addState(1);
+
+    console.log("after");
+    console.log("stats value: " + anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate));
+    console.log((100 - anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100);
+    console.log(anthelme.tempStatsModifiers[SecondaryStats.possibleStats.EvadeRate]);
