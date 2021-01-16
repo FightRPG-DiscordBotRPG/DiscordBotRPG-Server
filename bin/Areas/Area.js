@@ -616,6 +616,7 @@ class Area {
         let minimumQuality = await this.getMinItemQualityName();
         let maximumQuality = await this.getMaxItemQualityName();
         return {
+            id: this.id,
             name: this.getName(lang),
             levels: this.minMaxLevelToString(),
             type: this.areaType,
