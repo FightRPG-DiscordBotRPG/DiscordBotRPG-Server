@@ -150,7 +150,7 @@ class Item {
         }
 
         for (let i of secondaryStatsPossible) {
-            let statPower = secondaryStats[i] / 3;
+            let statPower = secondaryStats[i] / 10;
 
             let mult = 1;
             switch (i) {
@@ -189,7 +189,7 @@ class Item {
         return Math.floor(power / 5 * 100);
     }
 
-    async calculPower() {
+    calculPower() {
         return Item.calculPower(this.stats, this.secondaryStats);
     }
 

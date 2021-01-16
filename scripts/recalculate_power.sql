@@ -1,7 +1,7 @@
 -- Should be Updated For 1.10
 
 REPLACE INTO itemspower SELECT idItem, 
-ROUND(COALESCE((SELECT DISTINCT
+FLOOR(COALESCE((SELECT DISTINCT
 (
     SELECT
     COALESCE((SELECT DISTINCT
@@ -66,7 +66,7 @@ ROUND(COALESCE((SELECT DISTINCT
     (
         SELECT
             COALESCE(
-                SUM(itemssecondarystats.value) / 3 * 0.7
+                SUM(itemssecondarystats.value) / 10 * 0.7
             , 0) AS powerValue
         FROM
             itemssecondarystats
@@ -77,7 +77,7 @@ ROUND(COALESCE((SELECT DISTINCT
     (
         SELECT
             COALESCE(
-                SUM(itemssecondarystats.value) / 3 * 0.5
+                SUM(itemssecondarystats.value) / 10 * 0.5
             , 0) AS powerValue
         FROM
             itemssecondarystats
@@ -88,7 +88,7 @@ ROUND(COALESCE((SELECT DISTINCT
     (
         SELECT
             COALESCE(
-                SUM(itemssecondarystats.value) / 3 * 0.6
+                SUM(itemssecondarystats.value) / 10 * 0.6
             , 0) AS powerValue
         FROM
             itemssecondarystats
@@ -99,12 +99,12 @@ ROUND(COALESCE((SELECT DISTINCT
     (
         SELECT
             COALESCE(
-                SUM(itemssecondarystats.value) / 3 * 0.6 / 100
+                SUM(itemssecondarystats.value) / 10 * 0.2
             , 0) AS powerValue
         FROM
             itemssecondarystats
         WHERE
-            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (4, 5)
+            idItem = subItems.idItem AND itemssecondarystats.idSecondaryStat IN (4, 5, 11, 12)
     )
     FROM
         itemssecondarystats
@@ -116,7 +116,7 @@ ROUND(COALESCE((SELECT DISTINCT
 (
     SELECT
         COALESCE(
-            SUM(itemssecondarystatselementalresists.value) / 3
+            SUM(itemssecondarystatselementalresists.value) / 10
         , 0) AS powerValue
     FROM
         itemssecondarystatselementalresists
