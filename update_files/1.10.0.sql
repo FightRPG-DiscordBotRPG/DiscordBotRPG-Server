@@ -876,7 +876,7 @@ REPLACE INTO `damageinfo` (`idSkill`, `idDamageType`, `idElementType`, `formula`
 (28, 1, 1, 'a.mhp / 2', 0, 0),
 (29, 1, 1, 'a.str * 3', 20, 1),
 (30, 1, 1, '(a.str + a.dex) * 1.2', 30, 1),
-(31, 1, 1, 'a.str * 0.25 + a.con * 0.5', 20, 1);
+(31, 1, 1, 'a.str * 0.6 + a.con * 0.6', 20, 1);
 
 REPLACE INTO `effectsskills` (`idEffectSkill`, `idSkill`, `idEffectType`, `percentageValue`, `fixedValue`, `stateValue`, `statValue`, `roundsValue`) VALUES
 (1, 1, 4, 0, 0, 1, NULL, 0),
