@@ -1364,11 +1364,11 @@ REPLACE INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 (74, 'ru', 'Regeneration'),
 (74, 'vi', 'Regeneration'),
 (75, 'en', 'Warrior Path'),
-(75, 'es', 'en | nodeVisualsName | 75'),
-(75, 'fr', 'en | nodeVisualsName | 75'),
-(75, 'pt-BR', 'en | nodeVisualsName | 75'),
-(75, 'ru', 'en | nodeVisualsName | 75'),
-(75, 'vi', 'en | nodeVisualsName | 75'),
+(75, 'es', 'Warrior Path'),
+(75, 'fr', 'Warrior Path'),
+(75, 'pt-BR', 'Warrior Path'),
+(75, 'ru', 'Warrior Path'),
+(75, 'vi', 'Warrior Path'),
 (76, 'en', 'Armor Up'),
 (76, 'es', 'Armor Up'),
 (76, 'fr', 'Armor Up'),
@@ -1387,6 +1387,8 @@ REPLACE INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 (78, 'pt-BR', 'Wisdom'),
 (78, 'ru', 'Wisdom'),
 (78, 'vi', 'Wisdom');
+
+DELETE FROM localizationnodespstree WHERE lang != "en";
 
 --
 -- Déchargement des données de la table `localizationskills`
@@ -4405,9 +4407,6 @@ REPLACE INTO `traits` (`idTrait`, `idTraitType`, `valueFloat`, `valueState`, `va
 (16, 3, 0.7, NULL, NULL, NULL, NULL, NULL, NULL),
 (17, 9, -0.1, NULL, NULL, NULL, NULL, NULL, 4),
 (18, 9, -0.2, NULL, NULL, NULL, NULL, NULL, 1);
-
-
---- New items
 
 REPLACE INTO itemsbase VALUES 
 (75, 1, 1, "unknown", 20),
