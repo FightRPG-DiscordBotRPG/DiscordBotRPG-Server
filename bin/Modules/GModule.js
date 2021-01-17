@@ -255,11 +255,11 @@ class GModule {
                     let grpUsers = [];
 
                     if (fightType === 0) {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Perception));
                         grpCharacters = [Globals.connectedUsers[res.locals.id].character];
                         grpUsers = [Globals.connectedUsers[res.locals.id]];
                     } else {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat("perception"));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat(Stats.possibleStats.Perception));
                         grpCharacters = group.getArrayOfCharacters();
                         grpUsers = group.getArrayOfPlayers();
                     }
@@ -678,3 +678,4 @@ module.exports = GModule;
 const User = require("../User");
 const Character = require("../Character");
 const Area = require("../Areas/Area");
+const Stats = require("../Stats/Stats");

@@ -98,7 +98,7 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.2 ? 1.2 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (entity.getStat("wisdom") / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
+                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / 1000 + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[entity.name] = xp;
                     promises.push(entity.addExp(xp));
@@ -122,7 +122,7 @@ class FightPvE extends Fight {
                 }
                 // Loot or Not
                 let lootSystem = new LootSystem();
-                let totalLuck = entity.getStat("luck") + this.getAvgLuckBonus();
+                let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
 
                 promises.push((async () => {
@@ -186,3 +186,4 @@ module.exports = FightPvE;
 const Character = require("../Character");
 const Monstre = require("../Entities/Monster");
 const Area = require("../Areas/Area");
+const Stats = require("../Stats/Stats");

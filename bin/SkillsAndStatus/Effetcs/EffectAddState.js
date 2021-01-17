@@ -4,6 +4,7 @@ const Skill = require("../Skill");
 const Effect = require("../Effect");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
+const Stats = require("../../Stats/Stats");
 
 
 class EffectAddState extends Effect {
@@ -23,7 +24,7 @@ class EffectAddState extends Effect {
 
             if (skillUsed.id === 1 && this.stateValue === 1) {
                 // PENDING : Hardcoded for stun on auto attack
-                chance = target.attacker.stun(target.entity.getStat("will")) ? 1 : 0;
+                chance = target.attacker.stun(target.entity.getStat(Stats.possibleStats.Will)) ? 1 : 0;
             } else {
                 chance *= target.entity.getStateRate(this.stateValue);
                 chance *= target.attacker.getLuckEffectRate(target.entity);

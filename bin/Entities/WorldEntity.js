@@ -185,11 +185,6 @@ class WorldEntity {
         return damage;
     }
 
-    damageCalcul() {
-        let baseDamage = this.getStat("strength") + 1;
-        return Math.ceil(baseDamage * (1.5 + Math.random()));
-    }
-
     getLevel() {
         return this.level;
     }
@@ -276,12 +271,6 @@ class WorldEntity {
 
     prepareCast() {
         this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += 1 + this.getCastSkillBonus(skill));
-
-        // To Balance ? Every skill vs only one per one
-        //if (this.skillToTestIndex > -1) {
-        //    let speed = this.getStat("dexterity") / this.stats.getOptimalCrit(this.getLevel()) * 25;
-        //    this.skills[this.skillToTestIndex].currentCastPreparation += speed;
-        //}
     }
 
     /**
@@ -306,7 +295,7 @@ class WorldEntity {
     getRawStunChance() {
         let max = this.stats.getOptimalStun(this.getLevel());
         // Calcul of chance
-        let stun = this.getStat("charisma") / max;
+        let stun = this.getStat(Stats.possibleStats.Charisma) / max;
         // Cap to 50%;
         return stun > .5 ? .5 : stun;
     }

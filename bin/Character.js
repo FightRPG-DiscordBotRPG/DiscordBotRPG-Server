@@ -246,11 +246,6 @@ class Character extends CharacterEntity {
         return this.trade != null;
     }
 
-    damageCalcul() {
-        let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
-        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
-    }
-
     /**
      * 
      * @param {string} stat 
@@ -695,13 +690,13 @@ class Character extends CharacterEntity {
     }
 
     getWaitTimeFight(more = 0) {
-        let conReduction = Math.floor(this.getStat("constitution") / 50);
+        let conReduction = Math.floor(this.getStat(Stats.possibleStats.Constitution) / 50);
         conReduction = conReduction > Globals.basicWaitTimeBeforeFight / 2 ? Globals.basicWaitTimeBeforeFight / 2 : conReduction;
         return (Globals.basicWaitTimeBeforeFight - conReduction) * 1000 + more;
     }
 
     getWaitTimePvPFight(more = 0) {
-        let conReduction = Math.floor(this.getStat("charisma") / 50);
+        let conReduction = Math.floor(this.getStat(Stats.possibleStats.Charisma) / 50);
         conReduction = conReduction > Globals.basicWaitTimeBeforePvPFight / 2 ? Globals.basicWaitTimeBeforePvPFight / 2 : conReduction;
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
@@ -897,6 +892,7 @@ class Character extends CharacterEntity {
 module.exports = Character;
 
 const Area = require("./Areas/Area");
+const Stats = require("./Stats/Stats.js");
 
 /**
  * @typedef {import("./Trades/Trade")} Trade
