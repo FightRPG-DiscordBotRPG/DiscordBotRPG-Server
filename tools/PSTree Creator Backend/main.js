@@ -83,6 +83,9 @@ async function Start() {
         for (let nodeVisual of json.visuals) {
             nodeVisual = JSON.parse(nodeVisual);
 
+            /**
+             * @type {NodeVisuals}
+             **/
             let visual = Object.assign(new NodeVisuals(), nodeVisual);
             promisesToWait.push(visual.save());
             
@@ -123,6 +126,7 @@ async function Start() {
         }
 
         await Promise.all(promisesToWait);
+        await Translator.load();
         await nodesObject.load();
         res.json({ done: true });
     });
