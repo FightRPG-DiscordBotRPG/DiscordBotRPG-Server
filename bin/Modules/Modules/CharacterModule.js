@@ -30,7 +30,7 @@ const Character = require("../../Character");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "up", "attributes"];
+        this.commands = ["reset", "leaderboard", "info", "up", "attributes", "resettalents"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -122,6 +122,27 @@ class CharacterModule extends GModule {
                 await next();
                 return res.json({
                     error: Translator.getString(res.locals.lang, "errors", "character_you_dont_have_enough_to_reset"),
+                    lang: res.locals.lang,
+                });
+            }
+
+        });
+
+        this.router.get("/talents/reset", async (req, res, next) => {
+            if (await Globals.connectedUsers[res.locals.id].character.resetTalents()) {
+                let ptsLeft = await Globals.connectedUsers[res.locals.id].character.getTalentPoints();
+                let talentPointsPlur = ptsLeft > 1 ? "_plural" : "";
+                let ptsLeftStr = Translator.getString(res.locals.lang, "character", "attribute_x_points_available" + talentPointsPlur, [ptsLeft]);
+                let output = Translator.getString(res.locals.lang, "character", "reset_done") + " " + ptsLeftStr;
+                await next();
+                return res.json({
+                    success: output,
+                    lang: res.locals.lang,
+                });
+            } else {
+                await next();
+                return res.json({
+                    error: Translator.getString(res.locals.lang, "errors", "character_you_dont_have_enough_to_reset_talents"),
                     lang: res.locals.lang,
                 });
             }

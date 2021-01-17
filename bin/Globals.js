@@ -73,7 +73,7 @@ var Globals = {
     "collectChances": collectChances,
     "areasTypes": null,
     "chanceToFightTheMonsterYouWant": 0.63,
-    "resetStatsPricePerLevel": 60,
+    "resetStatsPricePerLevel": 45,
     "maxConsecutiveStuns": 1,
     "guilds": {
         "maxLevel": 10,

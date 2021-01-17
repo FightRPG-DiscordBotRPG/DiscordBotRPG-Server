@@ -402,6 +402,7 @@ class GModule {
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
+                    "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
                     "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 };
 

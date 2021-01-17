@@ -313,12 +313,29 @@ class Character extends CharacterEntity {
 
     // Call for reseting stats
     async resetStats() {
-        let resetValue = this.getResetStatsValue()
-        if (await this.doIHaveEnoughMoney(resetValue)) {
-            await this.removeMoney(resetValue);
+        return this.genericReset(async () => {
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
-            await this.resetTalents();
+        });
+    }
+
+    async resetTalents() {
+        return this.genericReset(async () => {
+            await this.setTalentPoints(this.levelSystem.actualLevel);
+            await this.talents.reset();
+            await this.skillBuild.reset();
+        });
+    }
+
+    /**
+     * Common tests with reset stats/talents
+     * @param {Function} resetFunction
+     */
+    async genericReset(resetFunction) {
+        let resetValue = this.getResetStatsValue();
+        if (await this.doIHaveEnoughMoney(resetValue)) {
+            await this.removeMoney(resetValue);
+            await resetFunction();
             this.updateMaxStats();
             this.healIfAreaIsSafe();
             return true;
@@ -326,15 +343,8 @@ class Character extends CharacterEntity {
         return false;
     }
 
-    async resetTalents() {
-        await this.setTalentPoints(this.levelSystem.actualLevel);
-        await this.talents.reset();
-        await this.skillBuild.reset();
-        return true;
-    }
-
     getResetStatsValue() {
-        let levelMult = this.getLevel() > 2 ? this.getLevel() : 0;
+        let levelMult = this.getLevel() > 3 ? this.getLevel() : 0;
         return Math.round(((levelMult) * Globals.resetStatsPricePerLevel));
     }
 
