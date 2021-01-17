@@ -1,6 +1,6 @@
 E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < discord_bot_rpg.sql
 
-Express ? =>
+    
     locals: {
         lang: string,
         trade: Trade,
@@ -11,9 +11,11 @@ Express ? =>
         craftingbuilding: CraftingBuilding,
         shop: Shop,
         currentArea: Area,
-        tLootSystem: LootSystem
+        tLootSystem: LootSystem,
+        id: string,
+        user: User,
+        character: Character
     };
-
 
     //Test Stats
     console.log("before");
