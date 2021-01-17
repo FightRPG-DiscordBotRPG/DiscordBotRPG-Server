@@ -531,6 +531,7 @@ class GModule {
                     "lang": Translator.getString(lang, "help_panel", "lang"),
                     "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
                     "settings": Translator.getString(lang, "help_panel", "settings"),
+                    "setmobile <arg>": Translator.getString(lang, "help_panel", "setmobile"),
                 }
 
                 commands[Translator.getString(lang, "help_panel", "talents_title")] = {
