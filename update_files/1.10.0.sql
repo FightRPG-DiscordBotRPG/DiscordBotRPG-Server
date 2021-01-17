@@ -820,7 +820,7 @@ VALUES
 -- Déchargement des données de la table `castinfo`
 --
 
-INSERT INTO `castinfo` (`idSkill`, `timeToCast`, `successRate`, `repeat`, `energyGain`, `idAttackType`) VALUES
+REPLACE INTO `castinfo` (`idSkill`, `timeToCast`, `successRate`, `repeat`, `energyGain`, `idAttackType`) VALUES
 (1, 0, 100, 1, 10, 2),
 (2, 0, 100, 1, 20, 2),
 (3, 0, 100, 1, 0, 3),
@@ -860,7 +860,7 @@ INSERT INTO `castinfo` (`idSkill`, `timeToCast`, `successRate`, `repeat`, `energ
 -- Déchargement des données de la table `damageinfo`
 --
 
-INSERT INTO `damageinfo` (`idSkill`, `idDamageType`, `idElementType`, `formula`, `variance`, `criticalHit`) VALUES
+REPLACE INTO `damageinfo` (`idSkill`, `idDamageType`, `idElementType`, `formula`, `variance`, `criticalHit`) VALUES
 (1, 1, 1, 'a.str * 1.5', 20, 1),
 (2, 1, 1, 'a.dex * 1.8', 40, 1),
 (3, 1, 1, 'a.int * 2', 10, 1),
@@ -896,7 +896,7 @@ INSERT INTO `damageinfo` (`idSkill`, `idDamageType`, `idElementType`, `formula`,
 -- Déchargement des données de la table `effectsskills`
 --
 
-INSERT INTO `effectsskills` (`idEffectSkill`, `idSkill`, `idEffectType`, `percentageValue`, `fixedValue`, `stateValue`, `statValue`, `roundsValue`) VALUES
+REPLACE INTO `effectsskills` (`idEffectSkill`, `idSkill`, `idEffectType`, `percentageValue`, `fixedValue`, `stateValue`, `statValue`, `roundsValue`) VALUES
 (1, 1, 4, 0, 0, 1, NULL, 0),
 (2, 16, 4, 0.9, 0, 4, NULL, 0),
 (3, 17, 4, 0.5, 0, 4, NULL, 0),
@@ -918,7 +918,7 @@ INSERT INTO `effectsskills` (`idEffectSkill`, `idSkill`, `idEffectType`, `percen
 -- Déchargement des données de la table `localizationnodespstree`
 --
 
-INSERT INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
+REPLACE INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 (1, 'en', 'Strength'),
 (1, 'es', 'Strength'),
 (1, 'fr', 'Strength'),
@@ -1392,7 +1392,7 @@ INSERT INTO `localizationnodespstree` (`idNode`, `lang`, `name`) VALUES
 -- Déchargement des données de la table `localizationskills`
 --
 
-INSERT INTO `localizationskills` (`idSkill`, `lang`, `nameSkill`, `descSkill`, `messageSkill`) VALUES
+REPLACE INTO `localizationskills` (`idSkill`, `lang`, `nameSkill`, `descSkill`, `messageSkill`) VALUES
 (1, 'en', 'Melee Attack', '', ' uses %s!'),
 (2, 'en', 'Distant Attack', '', ' uses %s!'),
 (3, 'en', 'Magic Bolt', '', ' uses %s!'),
@@ -1433,7 +1433,7 @@ INSERT INTO `localizationskills` (`idSkill`, `lang`, `nameSkill`, `descSkill`, `
 -- Déchargement des données de la table `localizationstates`
 --
 
-INSERT INTO `localizationstates` (`idState`, `lang`, `nameState`, `descState`) VALUES
+REPLACE INTO `localizationstates` (`idState`, `lang`, `nameState`, `descState`) VALUES
 (1, 'en', 'Stun', ''),
 (2, 'en', 'Defense', ''),
 (3, 'en', 'Regeneration', ''),
@@ -1449,7 +1449,7 @@ INSERT INTO `localizationstates` (`idState`, `lang`, `nameState`, `descState`) V
 -- Déchargement des données de la table `monstersbuilds`
 --
 
-INSERT INTO `monstersbuilds` (`idMonstersBuildsProfil`, `idSkill`, `priority`) VALUES
+REPLACE INTO `monstersbuilds` (`idMonstersBuildsProfil`, `idSkill`, `priority`) VALUES
 (1, 1, 0),
 (1, 29, 0),
 (1, 31, 0),
@@ -1517,7 +1517,7 @@ INSERT INTO `monstersbuilds` (`idMonstersBuildsProfil`, `idSkill`, `priority`) V
 -- Déchargement des données de la table `monstersbuildsprofil`
 --
 
-INSERT INTO `monstersbuildsprofil` (`idMonstersBuildsProfil`, `name`) VALUES
+REPLACE INTO `monstersbuildsprofil` (`idMonstersBuildsProfil`, `name`) VALUES
 (1, 'animal_generic_melee'),
 (2, 'warrior'),
 (3, 'mage'),
@@ -1541,7 +1541,7 @@ INSERT INTO `monstersbuildsprofil` (`idMonstersBuildsProfil`, `name`) VALUES
 -- Déchargement des données de la table `pstreenodes`
 --
 
-INSERT INTO `pstreenodes` (`idNode`, `idNodeVisual`, `x`, `y`, `cost`, `isInitial`) VALUES
+REPLACE INTO `pstreenodes` (`idNode`, `idNodeVisual`, `x`, `y`, `cost`, `isInitial`) VALUES
 (1, 32, 5, 1.5, 4, 0),
 (2, 58, 3, -1.5, 4, 0),
 (3, 23, -4.5, 0, 2, 0),
@@ -1612,7 +1612,7 @@ INSERT INTO `pstreenodes` (`idNode`, `idNodeVisual`, `x`, `y`, `cost`, `isInitia
 -- Déchargement des données de la table `pstreenodeslinks`
 --
 
-INSERT INTO `pstreenodeslinks` (`idNodeParent`, `PSTreeNodesChild`) VALUES
+REPLACE INTO `pstreenodeslinks` (`idNodeParent`, `PSTreeNodesChild`) VALUES
 (22, 1),
 (23, 1),
 (59, 1),
@@ -1682,7 +1682,7 @@ INSERT INTO `pstreenodeslinks` (`idNodeParent`, `PSTreeNodesChild`) VALUES
 -- Déchargement des données de la table `pstreenodessecondarystatsdata`
 --
 
-INSERT INTO `pstreenodessecondarystatsdata` (`idNode`, `idSecondaryStat`, `value`) VALUES
+REPLACE INTO `pstreenodessecondarystatsdata` (`idNode`, `idSecondaryStat`, `value`) VALUES
 (1, 1, 0),
 (1, 2, 0),
 (1, 3, 0),
@@ -2444,7 +2444,7 @@ INSERT INTO `pstreenodessecondarystatsdata` (`idNode`, `idSecondaryStat`, `value
 -- Déchargement des données de la table `pstreenodessecondarystatselementalresistsdata`
 --
 
-INSERT INTO `pstreenodessecondarystatselementalresistsdata` (`idNode`, `idElementType`, `value`) VALUES
+REPLACE INTO `pstreenodessecondarystatselementalresistsdata` (`idNode`, `idElementType`, `value`) VALUES
 (1, 1, 0),
 (1, 2, 0),
 (1, 3, 0),
@@ -2892,7 +2892,7 @@ INSERT INTO `pstreenodessecondarystatselementalresistsdata` (`idNode`, `idElemen
 -- Déchargement des données de la table `pstreenodesskillsunlockdata`
 --
 
-INSERT INTO `pstreenodesskillsunlockdata` (`idNode`, `idSkill`) VALUES
+REPLACE INTO `pstreenodesskillsunlockdata` (`idNode`, `idSkill`) VALUES
 (9, 1),
 (34, 2),
 (21, 3),
@@ -2929,7 +2929,7 @@ INSERT INTO `pstreenodesskillsunlockdata` (`idNode`, `idSkill`) VALUES
 -- Déchargement des données de la table `pstreenodesstatsdata`
 --
 
-INSERT INTO `pstreenodesstatsdata` (`idNode`, `idStat`, `value`) VALUES
+REPLACE INTO `pstreenodesstatsdata` (`idNode`, `idStat`, `value`) VALUES
 (1, 1, 0),
 (1, 2, 0),
 (1, 3, 0),
@@ -3567,7 +3567,7 @@ INSERT INTO `pstreenodesstatsdata` (`idNode`, `idStat`, `value`) VALUES
 -- Déchargement des données de la table `pstreepossiblesnodesvisuals`
 --
 
-INSERT INTO `pstreepossiblesnodesvisuals` (`idNode`, `icon`) VALUES
+REPLACE INTO `pstreepossiblesnodesvisuals` (`idNode`, `icon`) VALUES
 (1, 'https://i.ibb.co/M8jsQ39/sword-strength.png'),
 (2, 'https://i.ibb.co/q9sJ3Pb/constitution.png'),
 (3, 'https://i.ibb.co/FVzwrp7/perception.png'),
@@ -3652,7 +3652,7 @@ INSERT INTO `pstreepossiblesnodesvisuals` (`idNode`, `icon`) VALUES
 -- Déchargement des données de la table `secondarystatselementalresistsrepartition`
 --
 
-INSERT INTO `secondarystatselementalresistsrepartition` (`idStatsProfil`, `idElementType`, `baseValue`, `multPerLevel`) VALUES
+REPLACE INTO `secondarystatselementalresistsrepartition` (`idStatsProfil`, `idElementType`, `baseValue`, `multPerLevel`) VALUES
 (1, 1, 0, 0),
 (1, 2, 0, 0),
 (1, 3, 0, 0),
@@ -3785,7 +3785,7 @@ INSERT INTO `secondarystatselementalresistsrepartition` (`idStatsProfil`, `idEle
 -- Déchargement des données de la table `secondarystatsrepartition`
 --
 
-INSERT INTO `secondarystatsrepartition` (`idStatsProfil`, `idSecondaryStat`, `baseValue`, `multPerLevel`) VALUES
+REPLACE INTO `secondarystatsrepartition` (`idStatsProfil`, `idSecondaryStat`, `baseValue`, `multPerLevel`) VALUES
 (1, 1, 100, 0),
 (1, 2, 0, 0),
 (1, 3, 0, 0),
@@ -3990,7 +3990,7 @@ INSERT INTO `secondarystatsrepartition` (`idStatsProfil`, `idSecondaryStat`, `ba
 -- Déchargement des données de la table `skills`
 --
 
-INSERT INTO `skills` (`idSkill`, `shorthand`, `idSkillType`, `energyCost`, `manaCost`, `idTargetRange`) VALUES
+REPLACE INTO `skills` (`idSkill`, `shorthand`, `idSkillType`, `energyCost`, `manaCost`, `idTargetRange`) VALUES
 (1, 'melee_attack', NULL, 0, 0, 2),
 (2, 'distant_attack', NULL, 0, 0, 2),
 (3, 'magic_bolt', 1, 0, 0, 2),
@@ -4032,7 +4032,7 @@ INSERT INTO `skills` (`idSkill`, `shorthand`, `idSkillType`, `energyCost`, `mana
 -- Déchargement des données de la table `states`
 --
 
-INSERT INTO `states` (`idState`, `idStateRestriction`, `shorthand`) VALUES
+REPLACE INTO `states` (`idState`, `idStateRestriction`, `shorthand`) VALUES
 (1, 4, 'stun'),
 (2, NULL, 'defense'),
 (3, NULL, 'regeneration'),
@@ -4048,7 +4048,7 @@ INSERT INTO `states` (`idState`, `idStateRestriction`, `shorthand`) VALUES
 -- Déchargement des données de la table `statesremovalconditions`
 --
 
-INSERT INTO `statesremovalconditions` (`idState`, `afterFight`, `afterRounds`, `roundMin`, `roundMax`, `afterDamage`, `damageProbability`) VALUES
+REPLACE INTO `statesremovalconditions` (`idState`, `afterFight`, `afterRounds`, `roundMin`, `roundMax`, `afterDamage`, `damageProbability`) VALUES
 (1, 1, 1, 1, 1, 0, 100),
 (2, 1, 1, 3, 4, 0, 100),
 (3, 1, 1, 2, 3, 0, 100),
@@ -4065,7 +4065,7 @@ INSERT INTO `statesremovalconditions` (`idState`, `afterFight`, `afterRounds`, `
 -- Déchargement des données de la table `statestraits`
 --
 
-INSERT INTO `statestraits` (`idState`, `idTrait`) VALUES
+REPLACE INTO `statestraits` (`idState`, `idTrait`) VALUES
 (1, 1),
 (2, 2),
 (2, 3),
@@ -4089,7 +4089,7 @@ INSERT INTO `statestraits` (`idState`, `idTrait`) VALUES
 -- Déchargement des données de la table `statsmonstres`
 --
 
-INSERT INTO `statsmonstres` (`idMonstre`, `idStatsProfil`, `idMonstersBuildsProfil`) VALUES
+REPLACE INTO `statsmonstres` (`idMonstre`, `idStatsProfil`, `idMonstersBuildsProfil`) VALUES
 (1, 1, 1),
 (2, 1, 1),
 (3, 1, 5),
@@ -4176,7 +4176,7 @@ INSERT INTO `statsmonstres` (`idMonstre`, `idStatsProfil`, `idMonstersBuildsProf
 -- Déchargement des données de la table `statsprofil`
 --
 
-INSERT INTO `statsprofil` (`idStatsProfil`, `name`) VALUES
+REPLACE INTO `statsprofil` (`idStatsProfil`, `name`) VALUES
 (1, 'balance_low'),
 (2, 'elemental_strength_fire'),
 (3, 'elemental_strength_water'),
@@ -4200,7 +4200,7 @@ INSERT INTO `statsprofil` (`idStatsProfil`, `name`) VALUES
 -- Déchargement des données de la table `statsrepartition`
 --
 
-INSERT INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES
+REPLACE INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES
 (1, 1, 5),
 (1, 2, 0),
 (1, 3, 5),
@@ -4386,7 +4386,7 @@ INSERT INTO `statsrepartition` (`idStatsProfil`, `idStat`, `percentage`) VALUES
 -- Déchargement des données de la table `traits`
 --
 
-INSERT INTO `traits` (`idTrait`, `idTraitType`, `valueFloat`, `valueState`, `valueElementType`, `valueSkillType`, `valueStat`, `valueSkill`, `valueSecondaryStat`) VALUES
+REPLACE INTO `traits` (`idTrait`, `idTraitType`, `valueFloat`, `valueState`, `valueElementType`, `valueSkillType`, `valueStat`, `valueSkill`, `valueSecondaryStat`) VALUES
 (1, 9, -1, NULL, NULL, NULL, NULL, NULL, 2),
 (2, 3, 1.25, NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 3, 1.25, NULL, NULL, NULL, NULL, NULL, NULL),
