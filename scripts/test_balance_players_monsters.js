@@ -39,7 +39,7 @@ async function Start() {
 }
 
 async function Test() {
-    let results = {};
+    let results = {0: 0, 1:0};
 
     let anthelme = new Character("228787710607753216");
     await anthelme.lightLoad(8);
@@ -49,54 +49,68 @@ async function Test() {
 
     let promises = [];
     console.time("Combats");
+    let totalFights = 500;
 
-    for (let i = 0; i < 100; i++) {
-        for (let i = 1; i <= maxId; i++) {
-            let monster = new Monster(i);
-            await monster.loadMonster(anthelme.getLevel());
+    for (let i = 0; i < totalFights; i++) {
+        let roncarlos = new Character();
+        await roncarlos.lightLoad(1);
+        let frpgDev = new Character();
+        await frpgDev.lightLoad(6029);
 
-            if (monster.type != "normal") {
-                continue;
-            }
+        let fight = new Fight([roncarlos], [frpgDev], "fr");
+        promises.push((async () => {
+            await fight.init(true);
+            results[fight.winnerGroup]++;
+        })());
 
-            let fight = new Fight([anthelme], [monster], "fr");
 
 
-            promises.push(
-                (async () => {
-                    await fight.init(true);
+        //for (let i = 1; i <= maxId; i++) {
+        //    let monster = new Monster(i);
+        //    await monster.loadMonster(anthelme.getLevel());
 
-                    let idBuild = monster.idStatsProfil + "," + monster.skillBuild.id;
-                    if (results[idBuild] == null) {
-                        results[idBuild] = { win: 0, lost: 0 };
-                    }
+        //    if (monster.type != "normal") {
+        //        continue;
+        //    }
 
-                    //if (results[idBuild][monster.type] == null) {
-                    //    results[idBuild][monster.type] = ;
-                    //}
+        //    let fight = new Fight([anthelme], [monster], "fr");
 
-                    if (fight.winnerGroup === 0) {
-                        results[idBuild].win++;
-                    } else {
-                        results[idBuild].lost++;
-                    }
 
-                })()
-            )
+        //    promises.push(
+        //        (async () => {
+        //            await fight.init(true);
 
-        }
+        //            let idBuild = monster.idStatsProfil + "," + monster.skillBuild.id;
+        //            if (results[idBuild] == null) {
+        //                results[idBuild] = { win: 0, lost: 0 };
+        //            }
+
+        //            //if (results[idBuild][monster.type] == null) {
+        //            //    results[idBuild][monster.type] = ;
+        //            //}
+
+        //            if (fight.winnerGroup === 0) {
+        //                results[idBuild].win++;
+        //            } else {
+        //                results[idBuild].lost++;
+        //            }
+
+        //        })()
+        //    )
+
+        //}
     }
 
     await Promise.all(promises);
 
-    for (let id in results) {
-        let total = results[id].win + results[id].lost;
-        results[id] = Math.round((results[id].win / total * 100)) + "%";
-    }
+    //for (let id in results) {
+    //    let total = results[id].win + results[id].lost;
+    //    results[id] = Math.round((results[id].win / total * 100)) + "%";
+    //}
 
     console.timeEnd("Combats");
 
-    console.log(results);
+    console.log("First: " + Math.round(results[0] / totalFights * 100) + "% vs Second: " + Math.round(results[1] / totalFights * 100) + "%");
 }
 
 Start();
