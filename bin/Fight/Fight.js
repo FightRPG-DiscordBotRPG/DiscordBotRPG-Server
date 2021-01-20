@@ -164,7 +164,7 @@ class Fight {
             attacker.prepareCast();
             skillToUse = attacker.getSkillToUse() || await this.getDefaultSkill(attackerRestrictions);
 
-            if (skillToUse !== null && canDoSomething) {
+            if (skillToUse !== null) {
 
                 let alreadyCheckedIds = {};
                 // check if can target with skill
