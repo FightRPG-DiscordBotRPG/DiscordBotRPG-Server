@@ -272,9 +272,7 @@ class GModule {
                     }
 
                     // Specific to dungeon
-                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !(await res.locals.currentArea.isFirstFloor()));
-
-                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, shouldHealPlayer);
+                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, await res.locals.currentArea.isFirstFloor());
                     if (response.error) {
                         data.error = response.error;
                     } else {
@@ -304,6 +302,12 @@ class GModule {
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);
 
                         }
+
+                        let promises = [];
+                        for (let char of grpCharacters) {
+                            promises.push(char.healIfAreaIsSafe());
+                        }
+                        await Promise.all(promises);
                     }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
