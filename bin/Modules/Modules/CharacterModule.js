@@ -266,11 +266,10 @@ class CharacterModule extends GModule {
                 }
                 allNodesIds = newAllNodesIds;
             }
-            //console.timeEnd("Idiot Way");
 
             let data;
             if (lastGoodResult) {
-                if (lastBadResult) {
+                if (lastBadResult && allNodesIds.length > 0) {
                     data = this.asSuccess(Translator.getString(res.locals.lang, "talents", "talents_import_not_totally_successful", [allNodesIds.join(","), lastBadResult.error]));
                 } else {
                     data = this.asSuccess(Translator.getString(res.locals.lang, "talents", "talents_import_successful"));
