@@ -562,10 +562,11 @@ class GModule {
         return data;
     }
 
+    /**
+     * 
+     * @param {express.Request} req
+     */
     getSearchParams(req) {
-        let fav = (req.body.fav != null ? req.body.fav : req.query.fav);
-        fav = fav != null ? fav == "true" : null;
-
         return {
             rarity: parseInt(req.body.idRarity != null ? req.body.idRarity : req.query.idRarity),
             type: parseInt(req.body.idType != null ? req.body.idType : req.query.idType),
@@ -577,7 +578,7 @@ class GModule {
             power_up: parseInt(req.body.power != null ? req.body.power : req.query.power),
             power_down: parseInt(req.body.power_down != null ? req.body.power_down : req.query.power_down),
             name: req.body.name != null ? req.body.name : req.query.name,
-            fav: fav,
+            fav: req.body.fav != null ? req.body.fav : req.query.fav,
         }
     }
 

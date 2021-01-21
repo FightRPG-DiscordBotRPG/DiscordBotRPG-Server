@@ -238,25 +238,25 @@ var Globals = {
 
         if (params != null) {
             let equivalent = {
-                "name": { name: "nameItem", sign: "LIKE", isString: true },
-                "rarity": { name: "idRarity", sign: "=", isString: false },
-                "type": { name: "idType", sign: "=", isString: false },
-                "subtype": { name: "idSousType", sign: "=", isString: false },
+                "name": { name: "nameItem", sign: "LIKE", isString: true, isBool: false },
+                "rarity": { name: "idRarity", sign: "=", isString: false, isBool: false },
+                "type": { name: "idType", sign: "=", isString: false, isBool: false },
+                "subtype": { name: "idSousType", sign: "=", isString: false, isBool: false },
 
-                "level_up": { name: "level", sign: ">=", isString: false },
-                "level": { name: "level", sign: ">=", isString: false },
-                "level_down": { name: "level", sign: "<=", isString: false },
+                "level_up": { name: "level", sign: ">=", isString: false, isBool: false },
+                "level": { name: "level", sign: ">=", isString: false, isBool: false },
+                "level_down": { name: "level", sign: "<=", isString: false, isBool: false },
 
-                "power": { name: "power", sign: ">=", isString: false },
-                "power_up": { name: "power", sign: ">=", isString: false },
-                "power_down": { name: "power", sign: "<=", isString: false },
+                "power": { name: "power", sign: ">=", isString: false, isBool: false },
+                "power_up": { name: "power", sign: ">=", isString: false, isBool: false },
+                "power_down": { name: "power", sign: "<=", isString: false, isBool: false },
 
-                "fav": { name: "favorite", sign: "=", isString: true },
+                "fav": { name: "favorite", sign: "=", isString: false, isBool: true },
 
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && equivalent[param] != null && (params[param] > 0 || equivalent[param].isString)) {
+                if (params[param] != null && equivalent[param] != null && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
                     if (more.length > 0) {
                         more += " AND ";
                     }
@@ -267,6 +267,9 @@ var Globals = {
                         params[param] = `%${params[param]}%`;
                     }
 
+                    if (equivalent[param].isBool) {
+                        params[param] = params[param] === "true" ? 1 : 0;
+                    }
 
                     values.push(params[param]);
                 }
