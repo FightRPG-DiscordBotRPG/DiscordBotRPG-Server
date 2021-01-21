@@ -94,6 +94,7 @@ class LootSystem {
         number = number > 0 ? number : 1;
         let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idBaseItem = ?", [idBase]);
         let idToAdd;
+        let idsToFavorites = [];
 
         if (res[0]) {
             res = res[0];
@@ -105,17 +106,25 @@ class LootSystem {
                     idToAdd = await this.newItem(idBase, level);
                 }
                 await CharacterInventory.addToInventory(idCharacter, idToAdd, number);
+                idsToFavorites.push(idToAdd);
             } else {
+
+                let promises = [];
                 // C'est autre chose
                 for (let i = 0; i < number; i++) {
-                    idToAdd = await this.newItem(idBase, level);
-                    await CharacterInventory.addToInventory(idCharacter, idToAdd, 1);
+                    promises.push((async () => {
+                        let idToAdd = await this.newItem(idBase, level);
+                        await CharacterInventory.addToInventory(idCharacter, idToAdd, 1);
+                        idsToFavorites.push(idToAdd);
+                    })());
+
                 }
 
+                await Promise.all(promises);
             }
 
             if (makeItFavorite) {
-                await conn.query("UPDATE items SET favorite = true WHERE idItem = ?;", [idToAdd])
+                await conn.query("UPDATE items SET favorite = true WHERE idItem IN (" + idsToFavorites.join(",") + ");");
             }
 
 
@@ -131,39 +140,8 @@ class LootSystem {
      * @param {number} level
      * @param {number} number
      */
-    async giveToPlayer(character, idBase = 0, level = 1, number = 1) {
-        number = Number.parseInt(number);
-        number = number > 0 ? number : 1;
-        let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idBaseItem = ?", [idBase]);
-
-        if (res[0]) {
-            res = res[0];
-            level = LootSystem.isModularLevelPossible(res.nomType, res.nomSousType) ? level : 1;
-            if (res.stackable == true) {
-                // C'est un objet stackable
-                let idToAdd = await character.getIdOfThisIdBase(idBase, level);
-                if (idToAdd == null) {
-                    idToAdd = await this.newItem(idBase, level);
-                }
-                await character.inv.addToInventory(idToAdd, number);
-
-            } else {
-                let promises = [];
-                // C'est autre chose
-                for (let i = 0; i < number; i++) {
-                    promises.push((async () => {
-                        let idToAdd = await this.newItem(idBase, level);
-
-                        await character.inv.addToInventory(idToAdd, 1);
-                    })());
-
-                }
-
-                await Promise.all(promises);
-            }
-            return true;
-        }
-        return false;
+    async giveToPlayer(character, idBase = 0, level = 1, number = 1, makeItFavorite = false) {
+        return await this.giveToPlayerDatabase(character.id, idBase, level, number, true);
     }
 
     
