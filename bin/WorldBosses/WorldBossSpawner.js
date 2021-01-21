@@ -219,7 +219,7 @@ class WorldBossSpawner {
         for (let info of res) {
             let items = WorldBossSpawner.getRewardsByRank(rank, info.actualLevel);
             for (let item of items) {
-                await lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number);
+                await lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number, true);
             }
             rank++;
         }
