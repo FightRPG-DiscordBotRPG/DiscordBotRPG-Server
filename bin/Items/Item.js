@@ -422,7 +422,9 @@ class Item {
             }
             power += statPower * mult;
         }
-        return Math.floor(power / 5 * 100);
+        power = Math.floor(power / 5 * 100);
+
+        return power >= 0 ? power : 0;
     }
 
     calculPower() {
