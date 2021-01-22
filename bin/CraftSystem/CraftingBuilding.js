@@ -26,29 +26,44 @@ class CraftingBuilding {
         }
     }
 
-    async getCraftingList(page, params) {
-        page = Number.parseInt(page ? page : 1);
-        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
-        let perPage = 10;
+    async getNumberOfItems(params, lang = "en") {
+        let searchParamsResult = Globals.getSearchParams(params, false, true, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-
-        let searchParamsResult = Globals.getSearchParams(params, false, true);
-
-        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel], 4);
+        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, lang], 5);
 
 
 
         let res = await conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ${paramsCount.more};`, paramsCount.sqlParams
-           );
-        let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
+                                INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem 
+                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND lang = ? ${paramsCount.more};`, paramsCount.sqlParams
+        );
+
+        return res[0]["COUNT(*)"];
+    }
+
+    async getCraftingList(page, params, lang = "en") {
+        page = Number.parseInt(page ? page : 1);
+        page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
+        let perPage = 10;
+
+        let maxPage = await this.getNumberOfItems(params, lang);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage], 4);
 
+        let searchParamsResult = Globals.getSearchParams(params, true, false, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-        res = await conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ${paramsSearch.more} ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, paramsSearch.sqlParams);
+        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, lang, perPage, (page - 1) * perPage], 5);
+
+        let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, 
+                                (SELECT * FROM craftitem 
+                                    INNER JOIN itemsbase USING(idBaseItem)
+                                    INNER JOIN itemstypes USING(idType)
+                                    INNER JOIN itemssoustypes USING(idSousType)
+                                    INNER JOIN localizationitems USING(idBaseItem)
+                                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND lang = ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem) craftlist
+                                ) craftlist_filtered ${paramsSearch.more} LIMIT ? OFFSET ?`, paramsSearch.sqlParams);
 
         return {
             res: res,
@@ -71,6 +86,7 @@ class CraftingBuilding {
         for (let craft of crafts) {
             let craftToApi = {};
             let itemName = Translator.getString(lang, "itemsNames", craft.idBaseItem);
+            craftToApi.idEmplacement = craft.idEmplacement;
             craftToApi.name = itemName;
             craftToApi.type = Translator.getString(lang, "item_types", craft.nomType);
             craftToApi.type_shorthand = craft.nomType;
