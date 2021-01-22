@@ -40,7 +40,7 @@ class CraftingModule extends GModule {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
-                data = await res.locals.craftingbuilding.craftingListToApi(req.params.page, res.locals.lang);
+                data = await res.locals.craftingbuilding.craftingListToApi(req.params.page, this.getSearchParams(req), res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
             }

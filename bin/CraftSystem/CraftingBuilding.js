@@ -2,6 +2,7 @@ const conn = require("../../conf/mysql");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Craft = require("./Craft");
+const Utils = require("../Utilities/Utils");
 
 class CraftingBuilding {
     constructor() {
@@ -25,18 +26,29 @@ class CraftingBuilding {
         }
     }
 
-    async getCraftingList(page) {
+    async getCraftingList(page, params) {
         page = Number.parseInt(page ? page : 1);
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
+
+
+        let searchParamsResult = Globals.getSearchParams(params, false, true);
+
+        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel], 4);
+
+
+
         let res = await conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ?;`,
-            [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel]);
+                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ${paramsCount.more};`, paramsCount.sqlParams
+           );
         let maxPage = Math.ceil(res[0]["COUNT(*)"] / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
-        res = await conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage]);
+        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, perPage, (page - 1) * perPage], 4);
+
+
+        res = await conn.query(`SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ${paramsSearch.more} ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT ? OFFSET ?`, paramsSearch.sqlParams);
 
         return {
             res: res,
@@ -45,8 +57,8 @@ class CraftingBuilding {
         };
     }
 
-    async craftingListToApi(page = 1, lang="en") {
-        let res = await this.getCraftingList(page);
+    async craftingListToApi(page, params, lang="en") {
+        let res = await this.getCraftingList(page, params, lang);
         let toApi = {
             page: res.page,
             maxPage: res.maxPage > 0 ? res.maxPage : 1,

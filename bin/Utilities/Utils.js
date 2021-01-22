@@ -169,6 +169,20 @@ class Utils {
         }
         return array;
     }
+
+    /**
+     * 
+     * @param {{}} searchParamsResult
+     * @param {any[]} sqlParams
+     */
+    static getParamsAndSqlMore(searchParamsResult, sqlParams, indexInsert) {
+        let more = "";
+        if (searchParamsResult.values.length > 0) {
+            sqlParams = sqlParams.slice(0, indexInsert).concat(searchParamsResult.values.concat(sqlParams.slice(indexInsert)))
+            more = searchParamsResult.sqlQuery;
+        }
+        return { more: more, sqlParams: sqlParams };
+    }
 }
 
 
