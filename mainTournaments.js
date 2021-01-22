@@ -5,7 +5,6 @@ const FightManager = require("./bin/FightManager");
 const crypto = require("crypto");
 const AreasManager = require("./bin/Areas/AreasManager.js");
 const DatabaseInitializer = require("./bin/DatabaseInitializer");
-const ModuleHandler = require("./bin/Modules/ModuleHandler");
 const User = require("./bin/User");
 const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
