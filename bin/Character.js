@@ -870,8 +870,13 @@ class Character extends CharacterEntity {
             name: this.getName(),
             level: this.getLevel(),
             power: await this.getPower(),
-            currentHp: this.actualHP,
-            maxHp: this.maxHP,
+            actualHP: this.actualHP,
+            maxHP: this.maxHP,
+            actualMP: this.actualMP,
+            maxMP: this.maxMP,
+            actualEnergy: this.actualEnergy,
+            maxEnergy: this.maxEnergy,
+            idArea: this.getIdArea(),
             areaName: this.getArea().getName(lang)
         }
     }
