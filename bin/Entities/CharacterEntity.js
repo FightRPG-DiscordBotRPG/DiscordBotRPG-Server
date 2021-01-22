@@ -2,6 +2,8 @@ const WorldEntity = require("./WorldEntity");
 const StatsPlayer = require("../Stats/StatsPlayer");
 const LevelSystem = require("../LevelSystem");
 const CharacterEquipement = require("../CharacterEquipement");
+const CharacterTalents = require("../CharacterTalents");
+const SkillBuildCharacter = require("../EntitiesBuilds/SkillBuildCharacter");
 
 class CharacterEntity extends WorldEntity {
 
@@ -15,7 +17,9 @@ class CharacterEntity extends WorldEntity {
         this.stats = new StatsPlayer();
         this.equipement = new CharacterEquipement();
         this.levelSystem = new LevelSystem();
+        this.talents = new CharacterTalents();
         this._type = "Character";
+        this.skillBuild = new SkillBuildCharacter(this);
     }
 
     /**
@@ -24,10 +28,13 @@ class CharacterEntity extends WorldEntity {
      */
     async loadCharacter(id) {
         this.id = id;
+        this.uuid = id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id),
-            this.equipement.loadEquipements(id)
+            this.equipement.loadEquipements(id),
+            this.talents.load(null, id),
+            this.skillBuild.load(id),
         ]);
     }
 
@@ -44,7 +51,24 @@ class CharacterEntity extends WorldEntity {
      * @returns {number} Stat value
      */
     getStat(statName) {
-        return this.stats.getStat(statName) + this.equipement.getStat(statName);
+        return super.getStat(statName, this.equipement.getStat(statName) + this.talents.stats.getStat(statName));
+    }
+
+    /**
+    *
+    * @param {string} secondaryStatName
+    * @returns {number} Secondary stat value
+    */
+    getSecondaryStat(secondaryStatName) {
+        return super.getSecondaryStat(secondaryStatName, this.equipement.getSecondaryStat(secondaryStatName) + this.talents.secondaryStats.getStat(secondaryStatName));
+    }
+
+    /**
+     * 
+     * @param {string} elementName
+     */
+    getElementalResistMultiplier(elementName) {
+        return super.getElementalResistMultiplier(elementName, (this.equipement.secondaryStats.getElementalResist(elementName) + this.talents.secondaryStats.getElementalResist(elementName) - 2));
     }
 
     /**

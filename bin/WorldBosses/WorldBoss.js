@@ -1,12 +1,12 @@
 const conn = require("../../conf/mysql.js");
 const Translator = require("../Translator/Translator");
+const WorldEntity = require("../Entities/WorldEntity.js");
 
-class WorldBoss {
+class WorldBoss extends WorldEntity {
     constructor(id) {
+        super();
         this.id = id; // Spawned id
         this.idBaseBoss = 0; // This gives boss id base
-        this.actualHp = 0;
-        this.maxHp = 0;
     }
 
     async load() {
@@ -36,7 +36,7 @@ class WorldBoss {
         if (nb > 0) {
             this.actualHp = this.actualHp - nb;
             this.actualHp = this.actualHp > 0 ? this.actualHp : 0;
-            await conn.query("UPDATE spawnedbosses SET actualHp = (CASE WHEN actualHp >= ? THEN actualHp - ? ELSE actualHp = 0 END);", [nb, nb]);
+            await conn.query("UPDATE spawnedbosses SET actualHp = (CASE WHEN actualHp >= ? THEN actualHp - ? ELSE 0 END) WHERE idSpawnedBoss = ?", [nb, nb, this.id]);
         }
     }
 

@@ -1,7 +1,5 @@
 const Fight = require("../Fight/Fight");
-const GuildEntity = require("../Entities/GuildEntity");
 const conn = require("../../conf/mysql");
-
 class AreaTournamentRound {
 
     /**
@@ -47,15 +45,28 @@ class AreaTournamentRound {
     async doFights() {
         //console.log("Round : " + this.round)
         //console.log(this.guildsPlacements);
+        const Guild = require("../Guild");
+        console.log(Guild);
         for (let guildsIndex in this.guildsPlacements) {
             let guilds = this.guildsPlacements[guildsIndex]
             if (guilds[1] != 0) {
-                let g1 = new GuildEntity(guilds[0]);
-                let g2 = new GuildEntity(guilds[1]);
+                let g1 = new Guild();
+                let g2 = new Guild();
 
-                await Promise.all([g1.loadGuild(), g2.loadGuild()]);
+                let g1Characters = [];
+                let g2Characters = [];
 
-                let fight = new Fight([g1], [g2]);
+
+                await Promise.all([
+                    g1.loadGuild(guilds[0]), g2.loadGuild(guilds[1]),
+                ]);
+
+                await Promise.all([
+                    (async () => g1Characters = await g1.getCharacters())(),
+                    (async () => g2Characters = await g2.getCharacters())(),
+                ]);
+
+                let fight = new Fight(g1Characters, g2Characters);
                 await fight.init(true);
                 if (fight.summary.winner == 0) {
                     this.winners.push(guilds[0]);
@@ -67,12 +78,12 @@ class AreaTournamentRound {
                     //console.log(g2.name);
                 }
 
-                this.guildsPlacementsNames[guildsIndex] = [g1.getName(), g2.getName()];
+                this.guildsPlacementsNames[guildsIndex] = [g1.name, g2.name];
 
             } else {
-                let g0 = new GuildEntity(guilds[0]);
-                await g0.loadGuild();
-                this.guildsPlacementsNames[guildsIndex] = [g0.getName(), "Not Matched"];
+                let g0 = new Guild();
+                await g0.loadGuild(guilds[0]);
+                this.guildsPlacementsNames[guildsIndex] = [g0.name, "Not Matched"];
                 this.winners.push(guilds[0]);
                 await conn.query("UPDATE conquesttournamentrounds SET winner = 1 WHERE idRound = ? AND idGuild_1 = ?", [this.round, guilds[0]]);
             }

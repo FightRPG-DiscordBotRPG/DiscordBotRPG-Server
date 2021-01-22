@@ -14,7 +14,7 @@
 
 > Install
 - npm
-- Node.js (recommended 12.16.3 LTS)
+- Node.js (recommended 14.15.4 LTS)
 - Mysql Database 8.0.X
 
 ### Clone
@@ -26,7 +26,7 @@
 This project uses a mysql database. 
 What you should do:
 - Create an user
-- Create a database and grant to the newly created user all rights on it
+- Create a database (named discord_bot_rpg) and grant to the newly created user all rights on it
 
 Next with nodejs run "init.js" and follow the instructions
 
@@ -51,6 +51,12 @@ Reach out to me at one of the following places!
 
 - contact@fight-rpg.com
 - <a href="https://discord.gg/vhHJY8V" target="_blank">`Discord Fight-RPG`</a>
+
+## Contrinbutors
+- <a href="https://github.com/Roncarlos" target="_blank">Roncarlos</a> - Everything ? :D
+- <a href="https://github.com/AstragorG" target="_blank">TBlazeWarriorT</a> - Developer 
+- <a href="https://github.com/AstragorG" target="_blank">AstragorG</a> - Content Maker
+
 
 ## Licence
 

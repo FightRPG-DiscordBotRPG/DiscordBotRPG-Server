@@ -29,16 +29,11 @@ class FightModule extends GModule {
     }
 
     init() {
-        this.router = express.Router();
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_fights", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
@@ -69,29 +64,34 @@ class FightModule extends GModule {
 
             if (mId != -1 && await User.exist(mId)) {
                 if (res.locals.id !== mId) {
-                    if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
-                        let userToAttack = new User(mId);
-                        await userToAttack.lightLoad();
+                    if (await Globals.connectedUsers[res.locals.id].character.getArea().isFirstFloor()) {
+                        if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                            let userToAttack = new User(mId);
+                            await userToAttack.lightLoad();
 
-                        // FIX Bug Arena Spam
-                        let userWhoAttack = Globals.connectedUsers[res.locals.id];
+                            // FIX Bug Arena Spam
+                            let userWhoAttack = Globals.connectedUsers[res.locals.id];
 
-                        response = await Globals.fightManager.fightPvP([userWhoAttack.character], [userToAttack.character], res.locals.id, res.locals.lang);
+                            response = await Globals.fightManager.fightPvP([userWhoAttack.character], [userToAttack.character], res.locals.id, res.locals.lang);
 
-                        if (response.error != null) {
-                            data.error = response.error;
+                            if (response.error != null) {
+                                data.error = response.error;
+                            } else {
+                                data = response;
+                                userWhoAttack.character.healIfAreaIsSafe();
+                            }
                         } else {
-                            data = response;
+                            data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
                         }
                     } else {
-                        data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                        data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_here");
                     }
+                    
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_yourself");
                 }
             } else {
-                // TODO: Should be user don't exist or something
-                data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_not_same_area");
+                data.error = Translator.getString(res.locals.lang, "errors", "generic_user_dont_exist");
             }
 
 

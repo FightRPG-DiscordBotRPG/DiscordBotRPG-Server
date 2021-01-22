@@ -2,7 +2,7 @@
   "requires": true,
   "lockfileVersion": 1,
   "name": "discordbotrpg-server",
-  "version": "1.9.5",
+  "version": "1.10.0",
   "description": "",
   "author": "Jean-Charles TECHER",
   "license": "SEE LICENCE IN LICENSE.md",
@@ -21,7 +21,7 @@
       "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
       "version": "1.0.0"
     },
-    "axios": "^0.18.1",
+    "axios": "0.21.1",
     "babel-runtime": {
       "integrity": "sha1-llxwWGaOgrVde/4E/yM3vItWR/4=",
       "requires": {
@@ -65,22 +65,22 @@
       "resolved": "https://registry.npmjs.org/concat-stream/-/concat-stream-1.6.0.tgz",
       "version": "1.6.0"
     },
-    "core-js": "^2.6.1",
+    "core-js": "3.6.5",
     "core-util-is": {
       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=",
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "version": "1.0.2"
     },
-    "dblapi.js": "^2.3.0",
+    "dblapi.js": "^2.4.1",
     "express": "^4.16.4",
     "express-async-errors": "^3.1.1",
-    "express-rate-limit": "^2.14.2",
+    "express-rate-limit": "5.1.3",
     "get-port": {
       "integrity": "sha1-3Xzn3hh8Bsi/NTeWrHHgmfCYDrw=",
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
       "version": "3.2.0"
     },
-    "get-routes": "^2.0.0",
+    "get-routes": "^2.0.15",
     "graceful-fs": {
       "integrity": "sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=",
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
@@ -112,7 +112,7 @@
       "requires": {
         "graceful-fs": "4.1.11",
         "is-promise": "2.1.0",
-        "lodash": "4.17.4",
+        "lodash": "4.17.19",
         "pify": "3.0.0",
         "steno": "0.4.4"
       },
@@ -175,7 +175,7 @@
       "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz",
       "version": "5.1.1"
     },
-    "session-file-store": "^1.2.0",
+    "session-file-store": "^1.5.0",
     "snekfetch": {
       "integrity": "sha512-aLEvf1YR440pINb0LEo/SL2Q2s/A26+YEqPlx09A0XpGH7qWp8iqIFFolVILHn2yudWXJne9QWyQu+lzDp+ksQ==",
       "resolved": "https://registry.npmjs.org/snekfetch/-/snekfetch-3.6.1.tgz",

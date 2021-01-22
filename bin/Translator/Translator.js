@@ -40,7 +40,7 @@ class Translator {
                     case 115:
                         tempStr = String(args[argsAlreadyPassed]);
                         break;
-                    case 100:
+                    case 100: {
                         let num = args[argsAlreadyPassed];
                         if (!isNaN(num)) {
                             tempStr = this.getFormater(lang).format(num);
@@ -48,6 +48,7 @@ class Translator {
                             tempStr = "NaN";
                         }
                         break;
+                    }
                     default:
                         continue;
                 }
@@ -105,6 +106,10 @@ class Translator {
         return data;
     }
 
+    static getAvailableLanguagesShorthands() {
+        return Object.keys(this.translations);
+    }
+
     static async loadFromJson() {
         try {
             var conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
@@ -128,9 +133,15 @@ class Translator {
             try {
                 let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json', { timeout: 2000 });
                 if (res.status == 200) {
+                    if (typeof res.data === "string") {
+                        res.data = JSON.parse(res.data.trimLeft());
+                    }
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
                     try {
+                        if (!fs.existsSync(__dirname + "/locale/")) {
+                            fs.mkdirSync(__dirname + "/locale");
+                        }
                         fs.writeFileSync(__dirname + "/locale/" + lang + ".json", JSON.stringify(res.data));
                     } catch (e) {
                         console.log(e);
@@ -224,6 +235,49 @@ class Translator {
         }
     }
 
+    static async loadSkillBases() {
+        let res = await conn.query("SELECT * FROM localizationskills");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["skillNames"] = {};
+            this.translations[language.lang]["skillDesc"] = {};
+            this.translations[language.lang]["skillMessages"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["skillNames"][trad.idSkill] = trad.nameSkill;
+            this.translations[trad.lang]["skillDesc"][trad.idSkill] = trad.descSkill;
+            this.translations[trad.lang]["skillMessages"][trad.idSkill] = trad.messageSkill.trimLeft();
+        }
+    }
+
+    static async loadStatesBases() {
+        let res = await conn.query("SELECT * FROM localizationstates");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["statesNames"] = {};
+            this.translations[language.lang]["stateDesc"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["statesNames"][trad.idState] = trad.nameState;
+            this.translations[trad.lang]["stateDesc"][trad.idState] = trad.descState;
+        }
+    }
+
+    static async loadNodesVisuals() {
+        let res = await conn.query("SELECT * FROM localizationnodespstree");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["nodeVisualsName"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["nodeVisualsName"][trad.idNode] = trad.name;
+        }
+    }
+
+    // IDEA: Use Promise.all ?
     static async load() {
         this.translations = {};
         this.formaters = {};
@@ -235,6 +289,9 @@ class Translator {
         await this.loadRegionsBases();
         await this.loadMonstersBases();
         await this.loadBosses();
+        await this.loadSkillBases();
+        await this.loadStatesBases();
+        await this.loadNodesVisuals();
     }
 }
 

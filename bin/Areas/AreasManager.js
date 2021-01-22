@@ -53,10 +53,10 @@ class AreasManager {
 
     async loadAreas() {
         let res = await conn.query("SELECT areas.idArea, NomAreaType, idRegion FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea ORDER BY areasmonsterslevels.minLevel ASC, areasmonsterslevels.maxLevel ASC, idArea");
-        let area;
         let notDisplayedList = [];
+        let promisesLoadAreas = [];
         for (let i in res) {
-            let isDisplayed = true;
+            let area;
             switch (res[i].NomAreaType) {
                 case "wild":
                     area = new WildArea(res[i].idArea);
@@ -66,22 +66,25 @@ class AreasManager {
                     break;
                 case "dungeon":
                     area = new DungeonArea(res[i].idArea);
-                    isDisplayed = await area.isFirstFloor();
                     break;
             }
-            await area.loadArea();
+            promisesLoadAreas.push(area.loadArea());
             this.areas.set(res[i].idArea, area);
+        }
 
-            // To be sure of order when displaying areas
-            if (isDisplayed) {
-                this.regions[res[i].idRegion].addArea(this.areas.get(res[i].idArea));
+        await Promise.all(promisesLoadAreas);
+
+        for (let area of this.areas.values()) {
+            if (await area.isFirstFloor()) {
+                this.regions[area.idRegion].addArea(area);
             } else {
                 notDisplayedList.push({
-                    idRegion: res[i].idRegion,
-                    idArea: res[i].idArea,
+                    idRegion: area.idRegion,
+                    idArea: area.id,
                 });
             }
         }
+        
 
         // Adding "invisibles" areas
         for (let item of notDisplayedList) {

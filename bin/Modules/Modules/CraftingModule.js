@@ -16,6 +16,7 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
+const Stats = require("../../Stats/Stats");
 
 class CraftingModule extends GModule {
     constructor() {
@@ -27,18 +28,11 @@ class CraftingModule extends GModule {
     }
 
     init() {
-        this.router = express.Router();
-
-        // Add to router needed things
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_job", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
@@ -46,7 +40,7 @@ class CraftingModule extends GModule {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
-                data = await res.locals.craftingbuilding.craftingListToApi(req.params.page, res.locals.lang);
+                data = await res.locals.craftingbuilding.craftingListToApi(req.params.page, this.getSearchParams(req), res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "craft_no_building");
             }
@@ -149,7 +143,7 @@ class CraftingModule extends GModule {
                         let collectBonuses = await res.locals.currentArea.getAllBonuses();
                         Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity, numberToCollect);
                         idToCollect = await Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat("intellect") * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather, numberToCollect);
+                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Intellect) * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather, numberToCollect);
                         data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [numberToCollect]) + "\n";
                         if (numberItemsCollected > 0) {
                             if (idToCollect) {

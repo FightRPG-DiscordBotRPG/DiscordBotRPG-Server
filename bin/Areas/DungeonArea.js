@@ -9,81 +9,97 @@ class DungeonArea extends Area {
         super(id, id);
         this.fightPossible = true;
         this.authorizedBonuses = ["xp_fight", "xp_collect", "gold_drop", "item_drop", "collect_drop"];
+
+        this.minItemRarityName = "legendary";
+        this.minItemRarityId = 5;
+
+        this.maxItemRarityName = "legendary";
+        this.maxItemRarityId = 5;
+
+        this.entranceCacheValue = null;
+        this.nextFloorOrExitCacheValue = null;
     }
 
+
     async isFirstFloor() {
-        if (this.paths.from.length >= 1) {
-            if (this.paths.from.length === 1) {
-                return Globals.areasManager.getArea(this.paths.from[0]).constructor !== DungeonArea;
-            } else {
-                let fromArea = Globals.areasManager.getArea(this.paths.from[0]);
-                for (let idArea of this.paths.from) {
-                    fromArea = Globals.areasManager.getArea(idArea);
-                    if (fromArea.constructor !== DungeonArea) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            // = 0 Meaning no link OR not loaded 
-            // Then we do a request to be sure
-            // This is useful when areas are loaded
-            let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea1 WHERE idArea2 = ?", [this.id]);
-            for (let item of res) {
-                if (item.idAreaType != 3) {
-                    return true;
-                }
+
+        if (this.isFirstFloorCacheValue !== null) {
+            return this.isFirstFloorCacheValue;
+        }
+
+        let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea1 WHERE idArea2 = ?", [this.id]);
+        for (let item of res) {
+            if (item.idAreaType !== 3) {
+                this.isFirstFloorCacheValue = true;
+                return true;
             }
         }
+
+        this.isFirstFloorCacheValue = false;
         return false;
     }
 
     async isLastFloor() {
-        if (this.paths.to.length >= 1) {
-            if (this.paths.to.length === 1) {
-                return Globals.areasManager.getArea(this.paths.to[0]).constructor !== DungeonArea;
-            } else {
-                for (let idArea of this.paths.to) {
-                    let toArea = Globals.areasManager.getArea(idArea);
-                    if (toArea.constructor === DungeonArea) {
-                        return false;
-                    }
-                }
-            }
-        } else {
-            // = 0 Meaning no link OR not loaded 
-            // Then we do a request to be sure
-            // This is useful when areas are loaded
-            let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea2 WHERE idArea1 = ?", [this.id]);
-            for (let item of res) {
-                if (item.idAreaType === 3) {
-                    return false;
-                }
+
+        if (this.isLastFloorCacheValue !== null) {
+            return this.isLastFloorCacheValue;
+        }
+
+        let res = await conn.query("SELECT * FROM areaspaths INNER JOIN areas ON areas.idArea = areaspaths.idArea2 WHERE idArea1 = ?", [this.id]);
+        for (let item of res) {
+            if (item.idAreaType === 3) {
+                this.isLastFloorCacheValue = false;
+                return false;
             }
         }
 
+
+        this.isLastFloorCacheValue = true;
         return true;
     }
 
-    getEntrance() {
+    async getEntrance() {
+
+        if (this.entranceCacheValue !== null) {
+            return this.entranceCacheValue;
+        }
+
         let area = this;
-        while (Globals.areasManager.getArea(area.paths.from[0]).constructor === DungeonArea) {
+        while (Globals.areasManager.getArea(area.paths.from[0]).constructor === DungeonArea && !(await Globals.areasManager.getArea(area.paths.from[0]).isFirstFloor())) {
             area = Globals.areasManager.getArea(area.paths.from[0]);
         }
-        return Globals.areasManager.getArea(area.paths.from[0]);
+        this.entranceCacheValue = Globals.areasManager.getArea(area.paths.from[0]);
+        return this.entranceCacheValue;
     }
 
-    getNextFloorOrExit() {
+    async getNextFloorOrExit() {
+
+        if (this.nextFloorOrExitCacheValue !== null) {
+            return this.nextFloorOrExitCacheValue;
+        }
+
         if (this.paths.to.length === 1) {
-            return Globals.areasManager.getArea(this.paths.to[0]);
+            let possibleReturnArea = Globals.areasManager.getArea(this.paths.to[0]);
+            if (possibleReturnArea instanceof DungeonArea) {
+                this.nextFloorOrExitCacheValue = possibleReturnArea;
+                return possibleReturnArea;
+            } else {
+                // If not dungeon returns first floor instead of end area
+                // Temp fix to get players to always returns to first floor
+                this.nextFloorOrExitCacheValue = await this.getEntrance();
+                return this.nextFloorOrExitCacheValue;
+            }
         } else {
             let areaToReturn = Globals.areasManager.getArea(this.paths.to[0]);
             for (let idArea of this.paths.to) {
                 areaToReturn = Globals.areasManager.getArea(idArea)
                 if (areaToReturn.constructor === DungeonArea) {
+                    this.nextFloorOrExitCacheValue = areaToReturn;
                     return areaToReturn;
                 }
             }
+
+            this.nextFloorOrExitCacheValue = areaToReturn;
             return areaToReturn;
         }
     }

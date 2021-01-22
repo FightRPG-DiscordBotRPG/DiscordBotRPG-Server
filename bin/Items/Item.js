@@ -1,6 +1,7 @@
 ﻿'use strict';
 const conn = require("../../conf/mysql.js");
 const StatsItems = require("../Stats/StatsItems.js");
+const SecondaryStatsItems = require("../Stats/Secondary/SecondaryStatsItems");
 const Globals = require("../Globals.js");
 const Translator = require("../Translator/Translator.js");
 
@@ -22,6 +23,7 @@ class Item {
         this.equipable = true;
         this.stackable = false;
         this.stats = new StatsItems(id);
+        this.secondaryStats = new SecondaryStatsItems(id);
         this.power = 0;
         this.number = 1;
         this.isFavorite = false;
@@ -52,19 +54,16 @@ class Item {
         this.isFavorite = res["favorite"];
 
         this.power = res["power"];
-
-        await this.stats.loadStats();
+        await Promise.all([this.stats.loadStats(), this.secondaryStats.loadStats()]);
     }
 
     async deleteItem() {
-        await this.stats.deleteStats();
-        await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [this.id])
+        await Promise.all([this.stats.deleteStats(), this.secondaryStats.deleteStats(), conn.query("DELETE FROM itemspower WHERE idItem = ?;", [this.id])]);
         await conn.query("DELETE FROM items WHERE idItem = ?;", [this.id]);
     }
 
     static async deleteItem(idItem) {
-        await StatsItems.deleteStats(idItem);
-        await conn.query("DELETE FROM itemspower WHERE idItem = ?;", [idItem]);
+        await Promise.all([StatsItems.deleteStats(idItem), SecondaryStatsItems.deleteStats(idItem), conn.query("DELETE FROM itemspower WHERE idItem = ?;", [idItem])]);
         await conn.query("DELETE FROM items WHERE idItem = ?;", [idItem]);
     }
 
@@ -72,8 +71,10 @@ class Item {
      * Insert an item to the database (using idBase and level and optionally power)
      * and returns the id if done
      * else return -1
-     * @param {*} idBase 
-     * @param {*} level 
+     * @param {number} idBase 
+     * @param {number} level 
+     * @param {number} power 
+     * @returns {Promise<number>}
      */
     static async lightInsert(idBase, level, power = 0) {
         if (idBase != null && idBase > 0 && level != null && level > 0) {
@@ -86,15 +87,232 @@ class Item {
 
     /**
      * 
-     * @param {Array<number>} idItems 
+     * @param {Promise<Array<number>>} idItems 
      */
     static async deleteItems(idItems) {
         if (idItems.toString().length > 0) {
             let itemsToDelete = "(" + idItems.toString() + ")";
-            await StatsItems.deleteStatsMultiple(idItems);
-            await conn.query("DELETE FROM itemspower WHERE idItem IN " + itemsToDelete + ";");
+            await Promise.all([
+                StatsItems.deleteStatsMultiple(idItems),
+                SecondaryStatsItems.deleteStatsMultiple(idItems),
+                conn.query("DELETE FROM itemspower WHERE idItem IN " + itemsToDelete + ";"),
+            ]);
+
             await conn.query("DELETE FROM items WHERE idItem IN " + itemsToDelete + ";");
         }
+    }
+
+    static getStatsNumber(rarity) {
+        if (rarity < 6) {
+            return rarity - 1 + this.numberOfStatsBonus(rarity);
+        } else {
+            return Object.keys(Globals.statsIdsByName).length;
+        }
+    }
+
+    static getSecondaryStatsNumber(rarity) {
+        return rarity + this.numberOfStatsBonus(rarity + 2);
+    }
+
+    static numberOfStatsBonus(rarity) {
+        let maxPossible = 5 - rarity;
+        maxPossible = maxPossible < 0 ? 0 : maxPossible;
+        let maxStats = 0;
+        while (maxPossible > 0) {
+            if (Math.random() < 0.1) {
+                maxStats++;
+            }
+            maxPossible--;
+        }
+        return maxStats;
+    }
+
+    static getRandomStatRatio(rarity, maxToPerfection = 100) {
+        if (rarity < 6) {
+            let min = (rarity - 1) / 5;
+            let max = rarity / 5;
+            return Math.random() * (max - min) + min;
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * 
+     * @param {string} objectSubtype
+     * @param {string} statName
+     * @param {number} level
+     * @param {number} ratio
+     */
+    static getStatValue(objectSubtype, statName, level, ratio) {
+
+        let baseValue;
+
+        switch (statName) {
+            case Stats.possibleStats.Armor:
+                baseValue = Math.ceil((8 * (Math.pow(level, 2)) / 7) * ratio / 4.5);
+                break;
+            default:
+                baseValue = Math.ceil(level * ratio * 2);
+                break;
+
+        }
+
+        let multiplier = Stats.ratiosBasedOnSubtype[statName] && Stats.ratiosBasedOnSubtype[statName][objectSubtype] ? Stats.ratiosBasedOnSubtype[statName][objectSubtype] : 1;
+        
+        return Math.ceil(baseValue * multiplier);
+
+    }
+
+    /**
+     * 
+     * @param {string} secondaryStatName
+     * @param {number} level
+     * @param {number} ratio
+     */
+    static getSecondaryStatValue(objectSubtype, secondaryStatName, level, ratio) {
+
+        let baseValue;
+        switch (secondaryStatName) {
+            case SecondaryStats.possibleStats.CriticalRate:
+            case SecondaryStats.possibleStats.EvadeRate:
+            case SecondaryStats.possibleStats.HitRate:
+            case SecondaryStats.possibleStats.MagicalEvadeRate:
+            case SecondaryStats.possibleStats.CritcalEvadeRate:
+                baseValue = Utils.randRangeInt(3, 5) * ratio;
+                break;
+            case SecondaryStats.possibleStats.RegenEnergy:
+                baseValue = Utils.randRangeInt(1, 3) * ratio;
+                break;
+            case SecondaryStats.possibleStats.RegenHp:
+            case SecondaryStats.possibleStats.RegenMp:
+                baseValue = Utils.randRangeInt(1, level * 1.25) * ratio;
+                break;
+            case SecondaryStats.possibleStats.SkillEnergyCost:
+            case SecondaryStats.possibleStats.SkillManaCost:
+                baseValue = Utils.randRangeInt(2, 5) * ratio;
+                break;
+            case SecondaryStats.possibleStats.Threat:
+            case SecondaryStats.possibleStats.Initiative:
+                baseValue = Utils.randRangeInt(1, level / 2);
+                break;
+            case SecondaryStats.possibleElementalResists.Air:
+            case SecondaryStats.possibleElementalResists.Dark:
+            case SecondaryStats.possibleElementalResists.Earth:
+            case SecondaryStats.possibleElementalResists.Fire:
+            case SecondaryStats.possibleElementalResists.Water:
+            case SecondaryStats.possibleElementalResists.Light:
+                baseValue = Utils.randRangeInt(1, 5) * ratio;
+                break;
+            default:
+                baseValue = 1;
+                break;
+
+        }
+
+        let multiplier = SecondaryStats.ratiosBasedOnSubtype[secondaryStatName] && SecondaryStats.ratiosBasedOnSubtype[secondaryStatName][objectSubtype] ? SecondaryStats.ratiosBasedOnSubtype[secondaryStatName][objectSubtype] : 1;
+
+        return Math.ceil(baseValue * multiplier);
+
+    }
+
+    /**
+     * 
+     * @param {any} idItem
+     * @param {Stats} stats
+     * @param {SecondaryStats} secondaryStats
+     */
+    static async replaceAllStats(idItem, stats, secondaryStats) {
+        let statsValues = [];
+        let secondaryStatsValues = [];
+        let secondaryStatsElementalValues = [];
+
+        // Preparing Stats
+        for (let i in Globals.statsIdsByName) {
+            statsValues.push([idItem, parseInt(Globals.statsIdsByName[i]), stats[i]]);
+        }
+
+        // Preparing Secondary Stats
+        for (let i in Globals.secondaryStatsIdsByName) {
+            secondaryStatsValues.push([idItem, parseInt(Globals.secondaryStatsIdsByName[i]), secondaryStats[i]]);
+        }
+
+        // Preparing Elemental Resists
+        for (let i in Globals.elementsTypesIdsByName) {
+            secondaryStatsElementalValues.push([idItem, parseInt(Globals.elementsTypesIdsByName[i]), secondaryStats[i + "Resist"]]);
+        }
+
+        await Promise.all([
+            conn.query("REPLACE INTO itemsstats VALUES ?;", [statsValues]),
+            conn.query("REPLACE INTO itemssecondarystats VALUES ?;", [secondaryStatsValues]),
+            secondaryStatsElementalValues.length > 0 ? conn.query("REPLACE INTO itemssecondarystatselementalresists VALUES ?;", [secondaryStatsElementalValues]) : null,
+        ]);
+    }
+
+    /**
+     * 
+     * @param {number} rarity
+     * @param {string} objectType
+     * @param {string} objectSubtype
+     * @param {number} level
+     * @param {any} maxStatsPercentage
+     */
+    static generateItemsStats(rarity, objectType, objectSubtype, level, maxStatsPercentage = 100) {
+        let stats = new Stats(0);
+        let secondaryStats = new SecondaryStats(0);
+
+        let statsPossible = Object.keys(Globals.statsIdsByName);
+        let secondaryStatsPossible = [...Globals.allSecondaryStatsNames];
+        let numberOfStats = this.getStatsNumber(rarity);
+        let numberOfSecondaryStats = this.getSecondaryStatsNumber(rarity);
+
+        let ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+
+        if (objectType == "weapon") {
+            //Une arme
+            stats.strength = this.getStatValue(objectSubtype, Stats.possibleStats.Strength, level, ratio);
+            statsPossible.splice(statsPossible.indexOf("strength"), 1);
+        } else {
+            stats.armor = this.getStatValue(objectSubtype, Stats.possibleStats.Armor, level, ratio);
+            statsPossible.splice(statsPossible.indexOf("armor"), 1);
+        }
+
+        while (numberOfStats > 0 && statsPossible.length > 0) {
+            ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+            let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
+
+            stats[r] = this.getStatValue(objectSubtype, r, level, ratio);
+
+            statsPossible.splice(statsPossible.indexOf(r), 1);
+            numberOfStats--;
+        }
+
+        while (numberOfSecondaryStats > 0 && secondaryStatsPossible.length > 0) {
+            ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+
+            let r = secondaryStatsPossible[Math.floor(Math.random() * secondaryStatsPossible.length)];
+
+            secondaryStats[r] = this.getSecondaryStatValue(objectSubtype, r, level, ratio);
+
+            // Not a bonus then
+            if (Math.random() <= 0.2) {
+                secondaryStats[r] = -secondaryStats[r];
+
+                if (Math.random() <= 0.4 && secondaryStatsPossible.length - 1 > 0) {
+
+                    if (Math.random() <= 0.1 && secondaryStatsPossible.length - 2 > 0) {
+                        numberOfSecondaryStats++;
+                    }
+
+                    numberOfSecondaryStats++;
+                }
+            }
+
+            secondaryStatsPossible.splice(statsPossible.indexOf(r), 1);
+            numberOfSecondaryStats--;
+        }
+
+        return { stats: stats, secondaryStats: secondaryStats };
     }
 
     getLevel() {
@@ -105,43 +323,110 @@ class Item {
         return this.idRarity;
     }
 
+    async reforge() {
+        if (!Item.canHaveStats(this.typeName)) {
+            return;
+        }
+        let newStats = Item.generateItemsStats(this.idRarity, this.typeName, this.subTypeName, this.getLevel());
+        this.stats = newStats.stats;
+        this.secondaryStats = newStats.secondaryStats;
+        await Item.replaceAllStats(this.id, newStats.stats, newStats.secondaryStats);
+        await this.updatePower();
+    }
+
+    static canHaveStats(type) {
+        switch (type) {
+            case "weapon":
+            case "chest":
+            case "legs":
+            case "head":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /**
      * This will be a general static function to get power based on stats
      * @param {Stats} stats 
+     * @param {SecondaryStats} secondaryStats
      */
-    static calculPower(stats) {
-        let statsPossible = Object.keys(Globals.statsIds);
+    static calculPower(stats, secondaryStats) {
+        let statsPossible = Object.keys(Globals.statsIdsByName);
+        let secondaryStatsPossible = [...Globals.allSecondaryStatsNames];
         let power = 0;
         for (let i of statsPossible) {
             let statPower = 0;
             if (i != "armor") {
-                statPower = stats[i] / (50 * 2);
+                statPower = stats[i] / 100;
             } else {
                 statPower = stats[i] / Math.ceil((8 * (Math.pow(50, 2)) / 7) / 4.5);
             }
             let mult = 1;
             switch (i) {
-                case "intellect":
-                case "wisdom":
-                case "luck":
-                case "perception":
+                case Stats.possibleStats.Strength:
+                case Stats.possibleStats.Intellect:
+                case Stats.possibleStats.Dexterity:
+                    mult = 1;
+                    break;
+                case Stats.possibleStats.Constitution:
+                case Stats.possibleStats.Wisdom:
+                    mult = 0.9;
+                    break;
+                case Stats.possibleStats.Perception:
+                case Stats.possibleStats.Luck:
                     mult = 0.25;
                     break;
-                case "dexterity":
-                    mult = 0.8;
+                case Stats.possibleStats.Will:
+                case Stats.possibleStats.Charisma:
+                case Stats.possibleStats.Armor:
+                    mult = 0.65;
+            }
+            power += statPower * mult;
+        }
+
+        for (let i of secondaryStatsPossible) {
+            let statPower = secondaryStats[i] / 10;
+
+            let mult = 1;
+            switch (i) {
+                case SecondaryStats.possibleStats.CriticalRate:
+                case SecondaryStats.possibleStats.EvadeRate:
+                case SecondaryStats.possibleStats.HitRate:
+                case SecondaryStats.possibleStats.MagicalEvadeRate:
+                case SecondaryStats.possibleStats.CritcalEvadeRate:
+                    mult = 0.7;
                     break;
-                case "will":
-                case "charisma":
-                case "armor":
+                case SecondaryStats.possibleStats.RegenEnergy:
+                    mult = 0.5;
+                    break;
+                case SecondaryStats.possibleStats.SkillEnergyCost:
+                case SecondaryStats.possibleStats.SkillManaCost:
                     mult = 0.6;
+                    break;
+                case SecondaryStats.possibleStats.RegenHp:
+                case SecondaryStats.possibleStats.Threat:
+                case SecondaryStats.possibleStats.RegenMp:
+                case SecondaryStats.possibleStats.Initiative:
+                    mult = 0.2;
+                    break;
+                case SecondaryStats.possibleElementalResists.Air:
+                case SecondaryStats.possibleElementalResists.Dark:
+                case SecondaryStats.possibleElementalResists.Earth:
+                case SecondaryStats.possibleElementalResists.Fire:
+                case SecondaryStats.possibleElementalResists.Water:
+                case SecondaryStats.possibleElementalResists.Light:
+                    mult = 1;
+                    break;
+
             }
             power += statPower * mult;
         }
         return Math.floor(power / 5 * 100);
     }
 
-    async calculPower() {
-        return Item.calculPower(this.stats);
+    calculPower() {
+        return Item.calculPower(this.stats, this.secondaryStats);
     }
 
     async getPower() {
@@ -194,7 +479,7 @@ class Item {
         return Translator.getString(lang, "itemsNames", this.idBaseItem);
     }
 
-    getDesc(lang = "en") {
+    async getDesc(lang = "en") {
         let desc = Translator.getString(lang, "itemsDesc", this.idBaseItem, [], true);
         return desc != null ? desc : Translator.getString(lang, "inventory_equipment", "no_desc");
     }
@@ -214,9 +499,10 @@ class Item {
      */
 
     async toApi(lang) {
-        let toApiObject = await this.toApiLight();
-        toApiObject.desc = this.getDesc(lang);
+        let toApiObject = await this.toApiLight(lang);
+        toApiObject.desc = await this.getDesc(lang);
         toApiObject.stats = this.stats.toApi();
+        toApiObject.secondaryStats = this.secondaryStats.toApi();
 
         return toApiObject;
     }
@@ -244,7 +530,11 @@ class Item {
             /**
              * @type {StatsItems}
              */
-            stats: {}
+            stats: {},
+            /**
+            * @type {SecondaryStatsItems}
+            */
+            secondaryStats: {},
         };
         return toApiObject;
     }
@@ -305,4 +595,6 @@ const Salamander = require("./Mounts/Salamander");
 const Camel = require("./Mounts/Camel");
 const PolarBear = require("./Mounts/PolarBear");
 const EnergyPotion = require("./Potions/EnergyPotion");
-const Stats = require("../Stats/Stats")
+const Stats = require("../Stats/Stats");
+const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
+const Utils = require("../Utilities/Utils.js");

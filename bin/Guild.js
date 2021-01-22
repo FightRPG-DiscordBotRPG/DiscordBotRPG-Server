@@ -5,6 +5,7 @@ const Translator = require("./Translator/Translator");
 const AreaTournament = require("./AreaTournament/AreaTournament");
 const CharacterAchievements = require("./Achievement/CharacterAchievements");
 const User = require("./User");
+const CharacterEntity = require("./Entities/CharacterEntity.js");
 
 class Guild {
     // Discord User Info
@@ -310,7 +311,7 @@ class Guild {
     }
 
     /**
-     * @returns {{totalPower: Number, totalLevel: Number}}
+     * @returns {Promise<{totalPower: Number, totalLevel: Number}>}
      */
     async getGuildStats() {
         return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers LEFT JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
@@ -482,7 +483,7 @@ class Guild {
     }
 
     /**
-     * @returns {number}
+     * @returns {Promise<number>}
      */
     async getLevel() {
         return (await conn.query("SELECT level FROM guilds WHERE idGuild = ?;", [this.id]))[0].level;
@@ -513,6 +514,23 @@ class Guild {
         await conn.query("DELETE FROM guildsappliances WHERE idGuild = ?;", [this.id]);
     }
 
+    async getCharacters() {
+        // Get all characters from guild
+        let res = await conn.query("SELECT guildsmembers.idCharacter FROM guildsmembers WHERE guildsmembers.idGuild = ?", [this.id]);
+
+        let promises = [];
+
+        for (let r of res) {
+            promises.push((async () => {
+                let character = new CharacterEntity(r.idCharacter);
+                await character.loadCharacter(r.idCharacter);
+                return character;
+            })());
+        }
+
+        return Promise.all((await Promise.all(promises)).map(async p => await p));
+    }
+
     /*
      * Static Methods
      * 
@@ -522,7 +540,7 @@ class Guild {
      * Apply to guild
      * @param {Number} idGuild
      * @param {Number} idCharacter
-     * @returns {Array}
+     * @returns {Promise<string[]>}
      */
     static async applyTo(idGuild, idCharacter, lang) {
         let err = [];
@@ -635,6 +653,8 @@ class Guild {
             maxPage: maxPage,
         }
     }
+
+
 
 
 }

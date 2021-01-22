@@ -16,24 +16,25 @@ const Craft = require("../../CraftSystem/Craft");
 const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
+const State = require("../../SkillsAndStatus/State");
+const Skill = require("../../SkillsAndStatus/Skill");
+const Effect = require("../../SkillsAndStatus/Effect");
+const Utils = require("../../Utilities/Utils");
+const Character = require("../../Character");
+const { maximumSkillsPerBuild } = require("../../Globals");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "debug"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
     }
 
     init() {
-        this.router = express.Router();
-        this.loadNeededVariables();
+        super.init();
         this.router.use(this.isAdmin);
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
@@ -246,8 +247,8 @@ class AdminModule extends GModule {
             let data = {};
 
             let lcommand = await conn.query("SELECT * FROM commandslogs WHERE commandslogs.idUser != ? ORDER BY commandslogs.idCommandsLogs DESC LIMIT 1;", [res.locals.id]);
-            data.success = "The last command used is: " + lcommand[0].command;
-            data.success += "\nUsed " + ((Date.now() - lcommand[0].timestamp) / 1000) + " seconds ago.";
+            data.success = "The last command used is: " + lcommand[0]?.command;
+            data.success += "\nUsed " + ((Date.now() - lcommand[0]?.timestamp) / 1000) + " seconds ago.";
 
             data.lang = res.locals.lang;
             await next();
@@ -255,7 +256,61 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
+            
             //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
+            //let s = new Skill();
+            //await s.loadWithID(6);
+            //console.log(s);
+            //let st = new State();
+            //await st.loadWithID(4);
+            //console.log(await Effect.newEffect(1));
+            //await Globals.connectedUsers[res.locals.id].tell("Test");
+            //await Globals.connectedUsers[res.locals.id].character.loadSkills()
+            //console.log(Globals.connectedUsers[res.locals.id].character.skills);
+            //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResist(Globals.elementsTypesNameById[0] + "Resist"));
+            //console.log(Globals);
+            //let guild = new Guild();
+            //await guild.loadGuild(33);
+
+            //let guild2 = new Guild();
+            //await guild2.loadGuild(55);
+            //console.time("Test");
+            //await guild.getCharacters();
+            //await guild2.getCharacters();
+            //console.timeEnd("Test");
+
+            //console.time("Test Promise All");
+            //await Promise.all([
+            //    guild.getCharacters(),
+            //    guild2.getCharacters()
+            //]);
+            //console.timeEnd("Test Promise All");
+
+            //let mst = new Monster(1);
+            //mst.loadMonster(100);
+            //mst.secondaryStats.airResist = -10;
+            //console.log(mst.getElementalResistMultiplier("airResist"));
+            //mst.secondaryStats.airResist = 10;
+            //console.log(mst.getElementalResistMultiplier("airResist"));
+
+            //console.log("user");
+            //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("darkResist"));
+            //console.log(Globals.connectedUsers[res.locals.id].character.getElementalResistMultiplier("fireResist"));
+            //if (res.locals.currentArea.areaType === "dungeon") {
+            //    console.log("start debug");
+            //    console.time("getEntrance");
+            //    await res.locals.currentArea.getEntrance();
+            //    console.timeEnd("getEntrance");
+
+            //    console.time("getNextFloorOrExit");
+            //    await res.locals.currentArea.getNextFloorOrExit();
+            //    console.timeEnd("getNextFloorOrExit");
+            //}
+
+            //await res.locals.character.addStatPoints(10);
+
+
+
             await next();
             return res.json({ succes: "done" });
         });
@@ -292,7 +347,7 @@ class AdminModule extends GModule {
                 // Making user moving out of dungeon when connecting
                 let area = Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea);
                 if (area.areaType == "dungeon") {
-                    area = area.getEntrance();
+                    area = await area.getEntrance();
                 }
                 Globals.connectedUsers[authorIdentifier].character.setArea(area);
             }

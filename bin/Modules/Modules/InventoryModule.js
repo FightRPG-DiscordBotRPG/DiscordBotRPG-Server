@@ -28,18 +28,11 @@ class InventoryModule extends GModule {
     }
 
     init() {
-        this.router = express.Router();
-
-        // Add to router needed things
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_inventory", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
@@ -59,13 +52,19 @@ class InventoryModule extends GModule {
                 doIHaveThisItem = await Globals.connectedUsers[res.locals.id].character.getInv().doIHaveThisItem(idItemToSee);
                 if (doIHaveThisItem) {
                     itemToSee = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(idItemToSee);
-                    let equippedStats = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
-                    if (equippedStats != null)
-                        equippedStats = equippedStats.stats;
-                    else
-                        equippedStats = {};
+                    let equippedItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().getItem(this.getEquipableIDType(itemToSee.typeName));
+
+                    let equippedStats = {};
+                    let equippedSecondaryStats = {};
+
+                    if (equippedItem != null) {
+                        equippedStats = equippedItem.stats.toApi();
+                        equippedSecondaryStats = equippedItem.secondaryStats.toApi();
+                    }
+
                     data.item = await itemToSee.toApi(res.locals.lang);;
                     data.equippedStats = equippedStats;
+                    data.equippedSecondaryStats = equippedSecondaryStats;
                     data.idInInventory = idItemToSee;
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
@@ -105,7 +104,6 @@ class InventoryModule extends GModule {
         this.router.get("/show/:page?", async (req, res, next) => {
             let data = {};
             let params = this.getSearchParams(req);
-
             let invPage = parseInt(req.params.page, 10);
             if (invPage == null || invPage != null && !Number.isInteger(invPage)) {
                 invPage = 0;
@@ -320,13 +318,11 @@ class InventoryModule extends GModule {
     async commonSellChecks(req, res) {
         let data = {};
         data.lang = res.locals.lang;
-        let params = this.getSearchParams(req);
-
 
         if (!Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
             data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
         } else {
-            data.params = params;
+            data.params = this.getSearchParams(req);
         }
         return data;
     }

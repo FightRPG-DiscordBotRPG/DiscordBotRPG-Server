@@ -29,7 +29,7 @@ class NonameModule extends GModule {
     init() {
         //this.router = express.Router();
         //app.use("/", this.router);
-
+        super.init();
         this.loadRoutes();
         //this.crashHandler();
     }

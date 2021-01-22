@@ -7,6 +7,7 @@ const Crypto = require("crypto");
 const DatabaseInitializer = require("./DatabaseInitializer");
 const Translator = require("./Translator/Translator");
 const axios = require("axios").default;
+const conf = require("../conf/conf");
 
 class User {
     // Discord User Info
@@ -269,22 +270,22 @@ class User {
     }
 
     async tell(str) {
-        try {
-            await axios.post("http://127.0.0.1:48921/usr", {
-                id: this.id,
-                message: str,
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        User.tell(this.id, str);
     }
 
     static async tell(id, str) {
         try {
-            await axios.post("http://127.0.0.1:48921/usr", {
-                id: id,
-                message: str,
-            });
+            for (let addr of conf.discordBotAddresses) {
+                let res = await axios.post(`http://${addr}/usr`, {
+                    id: id,
+                    message: str,
+                });
+
+                // Well sended user found
+                if (res.data.sended === true) {
+                    break;
+                }
+            }
         } catch (e) {
             console.log(e);
         }
@@ -298,16 +299,32 @@ class User {
             username: this.character.name,
             avatar: this.avatar,
             statPoints: await this.character.getStatPoints(),
+            talentPoints: await this.character.getTalentPoints(),
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
+            secondaryStats: this.character.secondaryStats.toApi(),
+            talents: await this.character.talents.toApi(),
             level: this.character.getLevel(),
             money: await this.character.getMoney(),
             honor: await this.character.getHonor(),
             power: await this.character.getPower(),
+            attributesResults: {
+                magicalCriticalEvasionRate: this.character.getMagicalCriticalEvasionRate(this.character.getLevel()),
+                magicalCriticalRate: this.character.getMagicalCriticalRate(this.character.getLevel()),
+                magicalDefense: this.character.getMagicalDefense(this.character.getLevel()),
+                physicalCriticalEvasionRate: this.character.getPhysicalCriticalEvasionRate(this.character.getLevel()),
+                physicalCriticalRate: this.character.getPhysicalCriticalRate(this.character.getLevel()),
+                physicalDefense: this.character.getPhysicalDefense(this.character.getLevel()),
+            },
             maxLevel: Globals.maxLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
+            secondaryStatsEquipment: this.character.equipement.secondaryStats.toApi(),
             currentHp: this.character.actualHP,
             maxHp: this.character.maxHP,
+            currentMp: this.character.actualMP,
+            maxMp: this.character.maxMP,
+            currentEnergy: this.character.actualEnergy,
+            maxEnergy: this.character.maxEnergy,
             craft: {
                 level: this.character.getCraftLevel(),
                 xp: this.character.getCratfXP(),

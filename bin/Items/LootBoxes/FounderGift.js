@@ -3,6 +3,7 @@ const LootBox = require("./LootBox");
 class FounderGift extends LootBox {
     constructor(id) {
         super(id);
+        this.maxUseInOneTime = 1;
     }
 
     async use(character) {

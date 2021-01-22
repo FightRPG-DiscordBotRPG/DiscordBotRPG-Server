@@ -1,12 +1,12 @@
 const conn = require("../conf/mysql.js");
 
 let rarityChances = {
-    commun: 40 / 100,
-    rare: 7 / 100,
-    superieur: 6 / 100,
-    epique: 0.9 / 100,
-    legendaire: 0.1 / 100,
-    mythic: 0.01 / 100
+    commun: 30 / 100,
+    rare: 25 / 100,
+    superieur: 20 / 100,
+    epique: 5 / 100,
+    legendaire: 1 / 100,
+    mythic: 0.05 / 100
 }
 
 let collectChances = {
@@ -27,17 +27,29 @@ var Globals = {
     "maintenance_message": null,
     "maxLevel": null,
     "maxStatsId": null,
-    "statsIds": null,
+    "statsIdsByName": null,
+    "secondaryStatsIdsByName": null,
+    "statsNameById": null,
+    "secondaryStatsNameById": null,
+    "elementsTypesIdsByName": null,
+    "elementsTypesNameById": null,
     "monstersIds": null,
     "itemsrarities": null,
     "equipableCorresponds": null,
-    "basicWaitTimeBeforeFight": 60,
+    /**
+     * @type PSTreeNodes
+     **/
+    "pstreenodes": null,
+    "allSecondaryStatsNames": [],
+    "basicWaitTimeBeforeFight": 40,
     "basicWaitTimeAfterTravel": 120,
     "basicWaitTimeBeforePvPFight": 900,
     "basicWaitTimeCollectTravel": 25,
     "basicWaitTimeCraft": 40,
     "collectTriesOnce": 10,
-    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834", "245858206021058560"],
+    "baseTalentPointCost": 1,
+    "maximumSkillsPerBuild": 5,
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "245858206021058560"],
     "activated": true,
     "mDifficulties": [{
         name: "Weak",
@@ -61,7 +73,7 @@ var Globals = {
     "collectChances": collectChances,
     "areasTypes": null,
     "chanceToFightTheMonsterYouWant": 0.63,
-    "resetStatsPricePerLevel": 60,
+    "resetStatsPricePerLevel": 45,
     "maxConsecutiveStuns": 1,
     "guilds": {
         "maxLevel": 10,
@@ -76,11 +88,11 @@ var Globals = {
         "maxBeforeChange": 110,
     },
     /**
-     * @type {Array<User>}
+     * @type {Object<string, User>}
      */
     "connectedUsers": [],
     /**
-     * @type {Array<Guild>}
+     * @type {Object<any, Guild>}
      */
     "connectedGuilds": {},
     /**
@@ -147,6 +159,11 @@ var Globals = {
     },
     loadGlobals: async () => {
         let statsIds = {};
+        let statsNames = {};
+        let secondaryStatsIds = {};
+        let secondaryStatsNames = {};
+        let elementsTypesIds = {};
+        let elementsTypesNames = {};
         let equipsPossible = [];
         let areasTypes = [];
         let monstersTypes = {};
@@ -159,8 +176,31 @@ var Globals = {
         res = await conn.query("SELECT * FROM stats");
         for (let i = 0; i < res.length; ++i) {
             statsIds[res[i].nom] = res[i].idStat;
+            statsNames[res[i].idStat] = res[i].nom;
         }
-        Globals.statsIds = statsIds;
+        Globals.statsIdsByName = statsIds;
+        Globals.statsNameById = statsNames;
+
+        res = await conn.query("SELECT * FROM secondarystats");
+        for (let i = 0; i < res.length; ++i) {
+            secondaryStatsIds[res[i].name] = res[i].idSecondaryStat;
+            secondaryStatsNames[res[i].idStat] = res[i].name;
+        }
+        Globals.secondaryStatsIdsByName = secondaryStatsIds;
+        Globals.secondaryStatsNameById = secondaryStatsNames;
+
+
+        res = await conn.query("SELECT * FROM elementstypes");
+        for (let i = 0; i < res.length; ++i) {
+            elementsTypesIds[res[i].shorthand] = res[i].idElementType;
+            elementsTypesNames[res[i].idElementType] = res[i].shorthand;
+        }
+
+        Globals.elementsTypesIdsByName = elementsTypesIds;
+        Globals.elementsTypesNameById = elementsTypesNames;
+
+        Globals.allSecondaryStatsNames = [...Object.keys(Globals.secondaryStatsIdsByName), ...Object.keys(Globals.elementsTypesIdsByName).map(x => x + "Resist")];
+
 
         res = await conn.query("SELECT idType FROM itemstypes WHERE equipable = 1");
         for (let i = 0; i < res.length; i++) {
@@ -192,22 +232,31 @@ var Globals = {
         }
         Globals.equipableCorresponds = equipableCorresponds;
     },
-    getSearchParams: (params, withWhere = true, withAndBefore = false) => {
+    getSearchParams: (params, withWhere = true, withAndBefore = false, includeList=null) => {
         let values = [];
         let more = "";
 
         if (params != null) {
             let equivalent = {
-                "rarity": { name: "idRarity", sign: "=", isString: false },
-                "type": { name: "idType", sign: "=", isString: false },
-                "level": { name: "level", sign: ">=", isString: false },
-                "power": { name: "power", sign: ">=", isString: false },
-                "name": { name: "nameItem", sign: "LIKE", isString: true },
-                "subtype": { name: "idSousType", sign: "=", isString: false },
+                "name": { name: "nameItem", sign: "LIKE", isString: true, isBool: false },
+                "rarity": { name: "idRarity", sign: "=", isString: false, isBool: false },
+                "type": { name: "idType", sign: "=", isString: false, isBool: false },
+                "subtype": { name: "idSousType", sign: "=", isString: false, isBool: false },
+
+                "level_up": { name: "level", sign: ">=", isString: false, isBool: false },
+                "level": { name: "level", sign: ">=", isString: false, isBool: false },
+                "level_down": { name: "level", sign: "<=", isString: false, isBool: false },
+
+                "power": { name: "power", sign: ">=", isString: false, isBool: false },
+                "power_up": { name: "power", sign: ">=", isString: false, isBool: false },
+                "power_down": { name: "power", sign: "<=", isString: false, isBool: false },
+
+                "fav": { name: "favorite", sign: "=", isString: false, isBool: true },
+
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && equivalent[param] != null && (params[param] > 0 || equivalent[param].isString)) {
+                if (params[param] != null && equivalent[param] != null && (includeList ===null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
                     if (more.length > 0) {
                         more += " AND ";
                     }
@@ -218,6 +267,9 @@ var Globals = {
                         params[param] = `%${params[param]}%`;
                     }
 
+                    if (equivalent[param].isBool) {
+                        params[param] = params[param] === "true" ? 1 : 0;
+                    }
 
                     values.push(params[param]);
                 }
@@ -244,4 +296,5 @@ module.exports = Globals;
  * @typedef {import("./User")} User
  * @typedef {import("./Guild")} Guild
  * @typedef {import("./FightManager")} FightManager
+ * @typedef {import("./PSTree/PSTreeNodes")} PSTreeNodes
  **/

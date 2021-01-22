@@ -24,6 +24,7 @@ class Character extends CharacterEntity {
         this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
+        this.talentPoints = 0;
         this.canFightAt = 0;
         this.idArea = 1;
         this.area = new Area();
@@ -56,9 +57,9 @@ class Character extends CharacterEntity {
 
     async init() {
 
-        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1);");
+        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1, 1);");
         this.id = res["insertId"];
-
+        this.uuid = this.id.toString();
         //Init level system
         await Promise.all([
             this.levelSystem.init(this.id, this.idUser),
@@ -67,7 +68,9 @@ class Character extends CharacterEntity {
             this.getInv().loadInventory(this.id),
             this.equipement.loadEquipements(this.id),
             conn.query("INSERT INTO charactershonor VALUES (" + this.id + ", 0);"),
-            this.achievements.load(this.id)
+            this.achievements.load(this.id),
+            this.talents.load(this, this.id),
+            this.skillBuild.load(this.id),
         ]);
 
         this.idArea = 1;
@@ -75,23 +78,26 @@ class Character extends CharacterEntity {
         this.updateStats();
 
         // [Health]
-        this.resetFullHp();
+        this.recoverAll()
     }
 
     async loadCharacter(id) {
         // load from database
-        let res = (await conn.query("SELECT statPoints, money, idArea " +
+        let res = (await conn.query("SELECT statPoints, money, idArea, talentPoints " +
             "FROM characters " +
             "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
             "WHERE characters.idCharacter = ?", [id]))[0];
         this.id = id;
+        this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id, this.idUser),
             this.craftSystem.load(id),
             this.getInv().loadInventory(id),
             this.equipement.loadEquipements(id),
-            this.achievements.load(id)
+            this.achievements.load(id),
+            this.talents.load(this, id),
+            this.skillBuild.load(id),
         ]);
 
         this.idArea = res["idArea"];
@@ -103,8 +109,7 @@ class Character extends CharacterEntity {
 
         this.updateStats();
 
-        // [Health]
-        this.resetFullHp();
+        this.recoverAll()
 
     }
 
@@ -115,13 +120,18 @@ class Character extends CharacterEntity {
      */
     async lightLoad(id) {
         this.id = id;
+        this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.loadLevelSystem(id, this.idUser),
             this.equipement.loadEquipements(id),
+            this.talents.load(this, id),
+            this.skillBuild.load(id),
         ]);
 
         this.updateStats();
+
+        this.recoverAll();
     }
 
     async saveArea() {
@@ -144,6 +154,17 @@ class Character extends CharacterEntity {
         this.area = area;
         await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
+        this.healIfAreaIsSafe();
+
+    }
+
+    async healIfAreaIsSafe() {
+        if (await this.area.isFirstFloor()) {
+            this.recoverAll();
+        } else {
+            // Still need to reset energy
+            this.resetEnergy();
+        }
     }
 
     /**
@@ -225,27 +246,6 @@ class Character extends CharacterEntity {
         return this.trade != null;
     }
 
-    damageCalcul() {
-        let baseDamage = (this.stats.strength + 1 + this.equipement.stats.strength) * 2;
-        return Math.ceil(Math.random() * (baseDamage * 1.25 - baseDamage * 0.75) + baseDamage * 0.75);
-    }
-
-    // Critical hit
-    isThisACriticalHit() {
-        // LAST NUMBER = NBR MAX ITEM
-        // LIMIT 50%
-        // Maximum Stat for this level
-        let max = this.getLevel() * 2 * 4;
-        // Calcul of chance
-        let critique = (this.stats.dexterity + this.equipement.stats.dexterity) / max;
-
-        // Cap to 50%;
-        critique = critique > .75 ? .75 : critique;
-
-        return Math.random() <= critique ? true : false;
-
-    }
-
     /**
      * 
      * @param {string} stat 
@@ -304,6 +304,7 @@ class Character extends CharacterEntity {
             ]);
 
             this.updateStats();
+            this.healIfAreaIsSafe();
             return true;
         }
 
@@ -312,18 +313,38 @@ class Character extends CharacterEntity {
 
     // Call for reseting stats
     async resetStats() {
-        let resetValue = this.getResetStatsValue()
-        if (await this.doIHaveEnoughMoney(resetValue)) {
-            await this.removeMoney(resetValue);
+        return this.genericReset(async () => {
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * 5);
+        });
+    }
+
+    async resetTalents() {
+        return this.genericReset(async () => {
+            await this.setTalentPoints(this.levelSystem.actualLevel);
+            await this.talents.reset();
+            await this.skillBuild.reset();
+        });
+    }
+
+    /**
+     * Common tests with reset stats/talents
+     * @param {Function} resetFunction
+     */
+    async genericReset(resetFunction) {
+        let resetValue = this.getResetStatsValue();
+        if (await this.doIHaveEnoughMoney(resetValue)) {
+            await this.removeMoney(resetValue);
+            await resetFunction();
+            this.updateMaxStats();
+            this.healIfAreaIsSafe();
             return true;
         }
         return false;
     }
 
     getResetStatsValue() {
-        let levelMult = this.getLevel() > 2 ? this.getLevel() : 0;
+        let levelMult = this.getLevel() > 3 ? this.getLevel() : 0;
         return Math.round(((levelMult) * Globals.resetStatsPricePerLevel));
     }
 
@@ -334,6 +355,7 @@ class Character extends CharacterEntity {
         if (startingLevel < this.levelSystem.actualLevel) {
             await Promise.all([
                 this.addStatPoints(5 * (this.levelSystem.actualLevel - startingLevel)),
+                this.addTalentPoints(this.levelSystem.actualLevel -  startingLevel),
                 this.levelSystem.saveMyLevel()
             ]);
         } else {
@@ -366,6 +388,21 @@ class Character extends CharacterEntity {
         await conn.query("UPDATE characters SET statPoints = ? WHERE idCharacter = ?;", [statPoints, this.id]);
     }
 
+    async addTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = talentPoints + ? WHERE idCharacter = ?;", [talentPoints, this.id]);
+    }
+
+    async removeTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = talentPoints - ? WHERE idCharacter = ?;", [talentPoints, this.id]);
+    }
+
+    async setTalentPoints(talentPoints) {
+        talentPoints = talentPoints >= 0 ? talentPoints : 0;
+        await conn.query("UPDATE characters SET talentPoints = ? WHERE idCharacter = ?;", [talentPoints, this.id]);
+    }
+
     async doIHaveEnoughMoney(money) {
         return (await this.getMoney() >= money);
     }
@@ -395,7 +432,7 @@ class Character extends CharacterEntity {
     // number : Nbr of items to sell
     async sellThisItem(idEmplacement, number) {
         number = number ? number : 1;
-        let value = await (await (this.getInv()).getItem(idEmplacement)).getCost(number);
+        let value = (await (this.getInv()).getItem(idEmplacement)).getCost(number);
 
 
         // Si cost > 0 alors item existe et peut se vendre
@@ -429,7 +466,7 @@ class Character extends CharacterEntity {
     }
 
     async sellAllInventory(params, lang="en") {
-        let value = await (await this.getInv().getAllInventoryValue(params, lang)).value;
+        let value = (await this.getInv().getAllInventoryValue(params, lang)).value;
         await Promise.all([
             this.getInv().deleteAllFromInventory(params, lang),
             this.addMoney(value)
@@ -595,10 +632,12 @@ class Character extends CharacterEntity {
         if (this.canUse(itemToUse)) {
             amount = amount > 0 ? amount : 1;
             amount = amount > itemToUse.number ? itemToUse.number : (amount < 1 ? 1 : amount);
-            if (itemToUse.canBeMultUsed == false) {
+            if (itemToUse.maxUseInOneTime === 1) {
                 amount = 1;
+            } else if (amount > itemToUse.maxUseInOneTime) {
+                amount = itemToUse.maxUseInOneTime;
             }
-            amount = amount > 100 ? 100 : amount;
+
             let promises = [];
             promises.push(this.getInv().removeSomeFromInventory(idEmplacement, amount, true));
 
@@ -661,13 +700,13 @@ class Character extends CharacterEntity {
     }
 
     getWaitTimeFight(more = 0) {
-        let conReduction = Math.floor(this.getStat("constitution") / 50);
+        let conReduction = Math.floor(this.getStat(Stats.possibleStats.Constitution) / 50);
         conReduction = conReduction > Globals.basicWaitTimeBeforeFight / 2 ? Globals.basicWaitTimeBeforeFight / 2 : conReduction;
         return (Globals.basicWaitTimeBeforeFight - conReduction) * 1000 + more;
     }
 
     getWaitTimePvPFight(more = 0) {
-        let conReduction = Math.floor(this.getStat("charisma") / 50);
+        let conReduction = Math.floor(this.getStat(Stats.possibleStats.Charisma) / 50);
         conReduction = conReduction > Globals.basicWaitTimeBeforePvPFight / 2 ? Globals.basicWaitTimeBeforePvPFight / 2 : conReduction;
         return (Globals.basicWaitTimeBeforePvPFight - conReduction) * 1000 + more;
     }
@@ -755,6 +794,10 @@ class Character extends CharacterEntity {
         return (await conn.query("SELECT statPoints FROM characters WHERE idCharacter = ?", [this.id]))[0].statPoints;
     }
 
+    async getTalentPoints() {
+        return (await conn.query("SELECT talentPoints FROM characters WHERE idCharacter = ?", [this.id]))[0].talentPoints;
+    }
+
     async getHonor() {
         return (await conn.query("SELECT honor FROM charactershonor WHERE idCharacter = ?;", [this.id]))[0].honor;
     }
@@ -817,13 +860,24 @@ class Character extends CharacterEntity {
         return res[0] != null ? res[0].idGuild : 0;
     }
 
-    async toApiSimple() {
+
+    /**
+     * 
+     * @param {string} lang
+     */
+    async toApiSimple(lang="en") {
         return {
             name: this.getName(),
             level: this.getLevel(),
             power: await this.getPower(),
-            currentHp: this.actualHP,
-            maxHp: this.maxHP
+            actualHP: this.actualHP,
+            maxHP: this.maxHP,
+            actualMP: this.actualMP,
+            maxMP: this.maxMP,
+            actualEnergy: this.actualEnergy,
+            maxEnergy: this.maxEnergy,
+            idArea: this.getIdArea(),
+            areaName: this.getArea().getName(lang)
         }
     }
 
@@ -832,8 +886,6 @@ class Character extends CharacterEntity {
             let res = await conn.query("SELECT characters.idCharacter FROM characters WHERE characters.idCharacter = ?;", [id]);
             if (res != null && res[0] != null) {
                 return true;
-            } else {
-                return false;
             }
         }
         return false;
@@ -855,6 +907,7 @@ class Character extends CharacterEntity {
 module.exports = Character;
 
 const Area = require("./Areas/Area");
+const Stats = require("./Stats/Stats.js");
 
 /**
  * @typedef {import("./Trades/Trade")} Trade

@@ -24,7 +24,12 @@ class GModule {
     async run() { }
 
     init() {
-
+        this.router = express.Router();
+        this.loadNeededVariables();
+        this.reactHandler();
+        this.loadRoutes();
+        this.freeLockedMembers();
+        this.crashHandler();
     }
 
     unStuck(id) {
@@ -140,16 +145,22 @@ class GModule {
                     }
                 }
 
-                res.locals.trade = Globals.connectedUsers[res.locals.id].character.trade;
-                res.locals.group = Globals.connectedUsers[res.locals.id].character.group;
-                res.locals.lang = Globals.connectedUsers[res.locals.id].getLang();
-                res.locals.pending = Globals.connectedUsers[res.locals.id].character.pendingPartyInvite;
-                res.locals.pendingTrade = Globals.connectedUsers[res.locals.id].character.pendingTradeInvite;
-                res.locals.marketplace = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "marketplace");
-                res.locals.craftingbuilding = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "craftingbuilding");
-                res.locals.shop = Globals.areasManager.getService(Globals.connectedUsers[res.locals.id].character.getIdArea(), "shop");
-                res.locals.currentArea = Globals.connectedUsers[res.locals.id].character.getArea();
+                let user = Globals.connectedUsers[res.locals.id];
+                let character = user.character;
+
+
+                res.locals.trade = character.trade;
+                res.locals.group = character.group;
+                res.locals.lang = user.getLang();
+                res.locals.pending = character.pendingPartyInvite;
+                res.locals.pendingTrade = character.pendingTradeInvite;
+                res.locals.marketplace = Globals.areasManager.getService(character.getIdArea(), "marketplace");
+                res.locals.craftingbuilding = Globals.areasManager.getService(character.getIdArea(), "craftingbuilding");
+                res.locals.shop = Globals.areasManager.getService(character.getIdArea(), "shop");
+                res.locals.currentArea = character.getArea();
                 res.locals.tLootSystem = new LootSystem();
+                res.locals.user = user;
+                res.locals.character = character;
                 next();
             } else {
                 res.json({
@@ -244,11 +255,11 @@ class GModule {
                     let grpUsers = [];
 
                     if (fightType === 0) {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat("perception"));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Perception));
                         grpCharacters = [Globals.connectedUsers[res.locals.id].character];
                         grpUsers = [Globals.connectedUsers[res.locals.id]];
                     } else {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat("perception"));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat(Stats.possibleStats.Perception));
                         grpCharacters = group.getArrayOfCharacters();
                         grpUsers = group.getArrayOfPlayers();
                     }
@@ -261,9 +272,7 @@ class GModule {
                     }
 
                     // Specific to dungeon
-                    let shouldHealPlayer = !(res.locals.currentArea.areaType === "dungeon" && !(await res.locals.currentArea.isFirstFloor()));
-
-                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, shouldHealPlayer);
+                    let response = await Globals.fightManager.fightPvE(grpCharacters, grpEnemies, res.locals.id, canIFightTheMonster, res.locals.lang, await res.locals.currentArea.isFirstFloor());
                     if (response.error) {
                         data.error = response.error;
                     } else {
@@ -279,24 +288,26 @@ class GModule {
 
                             // 0 means first group aka users
                             if (response.summary.winner === 0) {
-                                areaToTravel = res.locals.currentArea.getNextFloorOrExit();
+                                areaToTravel = await res.locals.currentArea.getNextFloorOrExit();
                             } else {
                                 // They lost, so they go to entrance
-                                areaToTravel = res.locals.currentArea.getEntrance();
+                                areaToTravel = await res.locals.currentArea.getEntrance();
                             }
 
                             for (let character of grpCharacters) {
                                 // Not wating this since players can't move because of exhaust
                                 character.changeArea(areaToTravel, character.getExhaust());
-                                if (areaToTravel.areaType != "dungeon") {
-                                    character.resetFullHp();
-                                }
                             }
 
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);
-    
 
                         }
+
+                        let promises = [];
+                        for (let char of grpCharacters) {
+                            promises.push(char.healIfAreaIsSafe());
+                        }
+                        await Promise.all(promises);
                     }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "fight_monter_dont_exist");
@@ -390,11 +401,12 @@ class GModule {
                 };
 
                 commands[Translator.getString(lang, "help_panel", "character_title")] = {
-                    "info": Translator.getString(lang, "help_panel", "info"),
+                    "info/profile": Translator.getString(lang, "help_panel", "info"),
                     "attributes": Translator.getString(lang, "help_panel", "attributes"),
                     "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                     "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                     "reset": Translator.getString(lang, "help_panel", "reset"),
+                    "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
                     "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 };
 
@@ -495,7 +507,7 @@ class GModule {
                 }
 
                 commands[Translator.getString(lang, "help_panel", "shop_title")] = {
-                    "sitems <page>": Translator.getString(lang, "help_panel", "sitems"),
+                    "sitems/shop <page>": Translator.getString(lang, "help_panel", "sitems"),
                     "sbuy <idItem> <amount>": Translator.getString(lang, "help_panel", "sbuy"),
                 }
 
@@ -524,6 +536,21 @@ class GModule {
                     "lang": Translator.getString(lang, "help_panel", "lang"),
                     "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
                     "settings": Translator.getString(lang, "help_panel", "settings"),
+                    "setmobile <arg>": Translator.getString(lang, "help_panel", "setmobile"),
+                }
+
+                commands[Translator.getString(lang, "help_panel", "talents_title")] = {
+                    "talents": Translator.getString(lang, "help_panel", "talents"),
+                    "talentshow <idTalent>": Translator.getString(lang, "help_panel", "talentshow"),
+                    "talentup <idTalent>": Translator.getString(lang, "help_panel", "talentup"),
+                    "skillshow <idSkill>": Translator.getString(lang, "help_panel", "skillshow"),
+                    "buildshow": Translator.getString(lang, "help_panel", "buildshow"),
+                    "buildadd <idSkill>": Translator.getString(lang, "help_panel", "buildadd"),
+                    "buildremove <idSkill>": Translator.getString(lang, "help_panel", "buildremove"),
+                    "buildmove <idSkill> <slotNumber>": Translator.getString(lang, "help_panel", "buildmove"),
+                    "buildclear": Translator.getString(lang, "help_panel", "buildclear"),
+                    "talentexport": Translator.getString(lang, "help_panel", "talentexport"),
+                    "talentimport <importString>": Translator.getString(lang, "help_panel", "talentimport"),
                 }
                 break;
 
@@ -535,15 +562,32 @@ class GModule {
         return data;
     }
 
+    /**
+     * 
+     * @param {express.Request} req
+     */
     getSearchParams(req) {
         return {
             rarity: parseInt(req.body.idRarity != null ? req.body.idRarity : req.query.idRarity),
             type: parseInt(req.body.idType != null ? req.body.idType : req.query.idType),
             subtype: parseInt(req.body.idSousType != null ? req.body.idSousType : req.query.idSousType),
             level: parseInt(req.body.level != null ? req.body.level : req.query.level),
+            level_up: parseInt(req.body.level != null ? req.body.level : req.query.level),
+            level_down: parseInt(req.body.level_down != null ? req.body.level_down : req.query.level_down),
             power: parseInt(req.body.power != null ? req.body.power : req.query.power),
+            power_up: parseInt(req.body.power != null ? req.body.power : req.query.power),
+            power_down: parseInt(req.body.power_down != null ? req.body.power_down : req.query.power_down),
             name: req.body.name != null ? req.body.name : req.query.name,
+            fav: req.body.fav != null ? req.body.fav : req.query.fav,
         }
+    }
+
+    asError(val) {
+        return { error: val };
+    }
+
+    asSuccess(val) {
+        return { success: val };
     }
 
 
@@ -608,6 +652,7 @@ class AchievementUnlocker {
         }
         await Promise.all(promises);
     }
+
 }
 
 class AchievementUnlockStructure {
@@ -639,3 +684,4 @@ module.exports = GModule;
 const User = require("../User");
 const Character = require("../Character");
 const Area = require("../Areas/Area");
+const Stats = require("../Stats/Stats");

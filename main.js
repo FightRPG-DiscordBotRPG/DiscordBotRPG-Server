@@ -10,6 +10,7 @@ const User = require("./bin/User");
 const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
 const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
+const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
 const axios = require("axios").default;
 const options = {
     webhookPort: 5000,
@@ -26,7 +27,7 @@ if (conf.env === "prod") {
         let idAndLang = await User.getIdAndLang(vote.user);
         if (idAndLang != null) {
             let ls = new LootSystem();
-            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1);
+            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true);
             let lang = idAndLang.lang;
             let msg = Translator.getString(lang, "vote_daily", "you_voted");
             if (vote.isWeekend) {
@@ -75,7 +76,13 @@ let startUp = async () => {
     Globals.fightManager = new FightManager();
     console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
+    syncStartWith = Date.now();
+    Globals.pstreenodes = new PSTreeNodes();
+    await Globals.pstreenodes.load();
+    console.log("Passives/Skills Tree Nodes loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
     let wbs = new WorldBossSpawner();
+    await wbs.load();
     await wbs.startUp();
 
 

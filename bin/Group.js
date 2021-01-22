@@ -12,11 +12,11 @@ class Group {
         this.id = nextID;
         nextID++;
         /**
-         * @type {Array<User>}
+         * @type {Object<string, User>}
          */
         this.players = {};
         /**
-         * @type {Array<User>}
+         * @type {Object<string, User>}
          */
         this.pendingPlayers = {};
         /**
@@ -250,23 +250,27 @@ class Group {
         }
     }
 
-    async toApi() {
+    /**
+     * 
+     * @param {string} lang
+     */
+    async toApi(lang="en") {
         let members = [];
         for (let user in this.players) {
-            members.push(await this.players[user].character.toApiSimple());
+            members.push(await this.players[user].character.toApiSimple(lang));
         }
 
         let invitedPlayers = [];
         for (let user in this.pendingPlayers) {
-            invitedPlayers.push(await this.pendingPlayers[user].character.toApiSimple())
+            invitedPlayers.push(await this.pendingPlayers[user].character.toApiSimple(lang))
         }
 
         return {
-            leader: await this.leader.character.toApiSimple(),
+            leader: await this.leader.character.toApiSimple(lang),
             members: members,
             invitedPlayers: invitedPlayers,
             avgPower: await this.getAveragePower(),
-            avgLevel: await this.getAverageLevel(),
+            avgLevel: this.getAverageLevel(),
             numberOfPlayers: this.nbOfPlayers(),
             numberOfInvitedPlayers: this.nbOfInvitedPlayers(),
         }

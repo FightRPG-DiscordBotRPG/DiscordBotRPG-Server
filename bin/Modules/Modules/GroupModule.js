@@ -27,16 +27,11 @@ class GroupModule extends GModule {
         this.endLoading("Group");
     }
     init() {
-        this.router = express.Router();
-        this.loadNeededVariables();
+        super.init();
         this.router.use((req, res, next) => {
             PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "commands_groups", 1);
             next();
         });
-        this.reactHandler();
-        this.loadRoutes();
-        this.freeLockedMembers();
-        this.crashHandler();
     }
 
     loadRoutes() {
@@ -271,7 +266,7 @@ class GroupModule extends GModule {
             let group = res.locals.group;
 
             if (group != null) {
-                data = await group.toApi();
+                data = await group.toApi(res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
             }
