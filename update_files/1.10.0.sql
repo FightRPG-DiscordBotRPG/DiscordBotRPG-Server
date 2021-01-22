@@ -4520,6 +4520,59 @@ REPLACE INTO localizationitems VALUES
 (133, "fr", "Chapeau en Cuir Vibrant",               "Ce n'est pas une légende ! Ce chapeau vibre ! Est-ce qu'il aurait peur ?"),
 (134, "fr", "Chapeau en Cuir du Chaos",              "Ce chapeau en cuir est fait de magie provenant d'éclats du chaos appartenant à une autre dimension.");
 
+-- Crafts
+REPLACE INTO craftitem VALUES 
+(25, 100, 100, 80),
+(26, 100, 100, 86),
+(27, 100, 100, 92),
+(28, 100, 100, 98),
+(29, 100, 100, 104),
+(30, 100, 100, 110),
+(31, 100, 100, 116),
+(32, 100, 100, 122),
+(33, 100, 100, 128),
+(34, 100, 100, 134);
+
+REPLACE INTO craftitemsneeded VALUES
+(25, 25, 2),
+(25, 30, 6),
+(25, 35, 10),
+(25, 49, 800),
+
+(26, 25, 6),
+(26, 30, 7),
+(26, 35, 5),
+(26, 49, 800),
+
+(27, 25, 2),
+(27, 30, 8),
+(27, 35, 8),
+(27, 49, 800),
+
+(28, 25, 1),
+(28, 30, 7),
+(28, 35, 10),
+(28, 49, 800),
+
+(29, 30, 25),
+(29, 49, 1200),
+
+(30, 30, 25),
+(30, 49, 1200),
+
+(31, 30, 15),
+(31, 49, 1000),
+
+(32, 30, 15),
+(32, 49, 1000),
+
+(33, 30, 15),
+(33, 49, 1000),
+
+(34, 30, 15),
+(34, 49, 1000);
+
+
 
 DELETE FROM areasitems WHERE areasitems.percentage = 0;
 
