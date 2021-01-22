@@ -122,7 +122,6 @@ class LootSystem {
 
                 await Promise.all(promises);
             }
-
             if (makeItFavorite) {
                 await conn.query("UPDATE items SET favorite = true WHERE idItem IN (" + idsToFavorites.join(",") + ");");
             }
@@ -141,7 +140,7 @@ class LootSystem {
      * @param {number} number
      */
     async giveToPlayer(character, idBase = 0, level = 1, number = 1, makeItFavorite = false) {
-        return await this.giveToPlayerDatabase(character.id, idBase, level, number, true);
+        return await this.giveToPlayerDatabase(character.id, idBase, level, number, makeItFavorite);
     }
 
     
