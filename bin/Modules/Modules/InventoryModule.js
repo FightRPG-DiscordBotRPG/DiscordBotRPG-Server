@@ -318,13 +318,11 @@ class InventoryModule extends GModule {
     async commonSellChecks(req, res) {
         let data = {};
         data.lang = res.locals.lang;
-        let params = this.getSearchParams(req);
-
 
         if (!Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
             data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
         } else {
-            data.params = params;
+            data.params = this.getSearchParams(req);
         }
         return data;
     }
