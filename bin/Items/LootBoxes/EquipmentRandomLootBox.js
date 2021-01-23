@@ -24,7 +24,7 @@ class EquipmentRandomLootBox extends RandomLootBox {
                         id: pi.idBaseItem,
                         amount: 1,
                         rarityDrop: this.getIdRarity(),
-                        dropRate: Globals.getDropChances(this.getIdRarity()) / 10,
+                        dropRate: Globals.getDropChances(this.getIdRarity()) / 15,
                     });
                 }
 
