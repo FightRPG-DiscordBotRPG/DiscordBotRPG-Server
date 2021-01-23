@@ -110,6 +110,16 @@ class Group {
         return highestLevel;
     }
 
+    getHighestRebirthLevel() {
+        let rebirthLevel = this.leader.character.getRebirthLevel();
+        for (let user in this.players) {
+            if (this.players[user].character.getRebirthLevel() > rebirthLevel) {
+                rebirthLevel = this.players[user].character.getRebirthLevel();
+            }
+        }
+        return rebirthLevel;
+    }
+
     async getAveragePower() {
         let avgPower = await this.leader.character.getPower();
         for (let user in this.players) {

@@ -47,17 +47,21 @@ class EquipmentModule extends GModule {
                         if (await Globals.connectedUsers[res.locals.id].character.getInv().isEquipable(toEquip)) {
                             let tItemToEquip = await Globals.connectedUsers[res.locals.id].character.getInv().getItem(toEquip);
                             if (Globals.connectedUsers[res.locals.id].character.getLevel() >= tItemToEquip.getLevel()) {
-                                let swapItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().equip(tItemToEquip.id);
-                                await Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(tItemToEquip);
-                                if (swapItem > 0) {
-                                    await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
+                                if (Globals.connectedUsers[res.locals.id].character.getRebirthLevel() >= tItemToEquip.getRebirthLevel()) {
+                                    let swapItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().equip(tItemToEquip.id);
+                                    await Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(tItemToEquip);
+                                    if (swapItem > 0) {
+                                        await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
+                                    }
+                                    Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+
+                                    res.locals.character.updateMaxStats();
+                                    res.locals.character.healIfAreaIsSafe();
+
+                                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [tItemToEquip.getName(data.lang)]);
+                                } else {
+                                    data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_rebirth_level", [tItemToEquip.getRebirthLevel()]);
                                 }
-                                Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
-
-                                res.locals.character.updateMaxStats();
-                                res.locals.character.healIfAreaIsSafe();
-
-                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [tItemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [tItemToEquip.getLevel()]);
                             }
@@ -73,17 +77,22 @@ class EquipmentModule extends GModule {
                     if (itemToEquip != null) {
                         if (itemToEquip.isEquipable()) {
                             if (Globals.connectedUsers[res.locals.id].character.getLevel() >= itemToEquip.getLevel()) {
-                                let swapItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().equip(itemToEquip.id);
-                                await Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(itemToEquip);
-                                if (swapItem > 0) {
-                                    await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
+                                if (Globals.connectedUsers[res.locals.id].character.getLevel() >= itemToEquip.getLevel()) {
+                                    let swapItem = await Globals.connectedUsers[res.locals.id].character.getEquipement().equip(itemToEquip.id);
+                                    await Globals.connectedUsers[res.locals.id].character.getInv().deleteFromInventory(itemToEquip);
+                                    if (swapItem > 0) {
+                                        await Globals.connectedUsers[res.locals.id].character.getInv().addToInventory(swapItem);
+                                    }
+                                    Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
+
+                                    res.locals.character.updateMaxStats();
+                                    res.locals.character.healIfAreaIsSafe();
+
+                                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [itemToEquip.getName(data.lang)]);
+                                } else {
+                                    data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_rebirth_level", [itemToEquip.getLevel()]);
                                 }
-                                Globals.connectedUsers[res.locals.id].character.checkEquipmentAchievements();
 
-                                res.locals.character.updateMaxStats();
-                                res.locals.character.healIfAreaIsSafe();
-
-                                data.success = Translator.getString(res.locals.lang, "inventory_equipment", "item_equiped", [itemToEquip.getName(data.lang)]);
                             } else {
                                 data.error = Translator.getString(res.locals.lang, "errors", "item_cant_equip_higher_level", [itemToEquip.getLevel()]);
                             }

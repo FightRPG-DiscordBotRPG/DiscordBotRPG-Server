@@ -305,6 +305,7 @@ class User {
             secondaryStats: this.character.secondaryStats.toApi(),
             talents: await this.character.talents.toApi(),
             level: this.character.getLevel(),
+            rebirthLevel: this.character.getRebirthLevel(),
             money: await this.character.getMoney(),
             honor: await this.character.getHonor(),
             power: await this.character.getPower(),
@@ -317,6 +318,7 @@ class User {
                 physicalDefense: this.character.getPhysicalDefense(this.character.getLevel()),
             },
             maxLevel: Globals.maxLevel,
+            maxRebirthLevel: Globals.maxRebirthLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
             secondaryStatsEquipment: this.character.equipement.secondaryStats.toApi(),
             currentHp: this.character.actualHP,
@@ -327,6 +329,7 @@ class User {
             maxEnergy: this.character.maxEnergy,
             craft: {
                 level: this.character.getCraftLevel(),
+                rebirthLevel: this.character.getCraftRebirthLevel(),
                 xp: this.character.getCratfXP(),
                 xpNextLevel: this.character.getCraftNextLevelXP(),
             },

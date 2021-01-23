@@ -45,6 +45,10 @@ class CharacterEntity extends WorldEntity {
         return this.levelSystem.actualLevel;
     }
 
+    getRebirthLevel() {
+        return this.levelSystem.rebirthLevel;
+    }
+
     /**
      * 
      * @param {string} statName 

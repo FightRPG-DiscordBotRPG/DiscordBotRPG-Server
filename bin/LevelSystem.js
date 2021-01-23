@@ -11,6 +11,7 @@ class LevelSystem {
          * @type {User}
          */
         this.idUser = null;
+        this.rebirthLevel = 0;
         this.actualLevel = 1;
         this.actualXP = 0;
         this.expToNextLevel = 0;
@@ -25,13 +26,14 @@ class LevelSystem {
     async loadLevelSystem(id, idUser) {
         this.idUser = idUser;
         this.id = id;
-        let res = await conn.query("SELECT actualLevel, actualExp FROM levels WHERE idCharacter = " + id);
+        let res = await conn.query("SELECT actualLevel, actualExp, rebirthLevel FROM levels WHERE idCharacter = ?;", [id]);
         res = res[0];
         this.actualLevel = res["actualLevel"];
         this.actualXP = res["actualExp"];
+        this.rebirthLevel = res["rebirthLevel"];
         this.maxLevel = Globals.maxLevel;
 
-        res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = " + this.actualLevel);
+        res = await conn.query("SELECT expNextLevel FROM levelsrequire WHERE level = ?;", [this.actualLevel]);
         res = res[0];
         this.expToNextLevel = res["expNextLevel"];
     }

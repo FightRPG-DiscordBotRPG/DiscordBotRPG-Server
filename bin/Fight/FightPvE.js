@@ -43,6 +43,14 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[idTeam].length);
     }
 
+    getAvgRebirthLevelTeam(idTeam) {
+        let avg = 0;
+        for (let i in this.entities[idTeam]) {
+            avg += this.entities[idTeam][i].getRebirthLevel();
+        }
+        return Math.round(avg / this.entities[idTeam].length);
+    }
+
     getAvgLuckBonus() {
         let avg = 0;
         for (let i in this.entities[1]) {
@@ -59,6 +67,7 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
+            let avgRebirthLevelEnemies = this.getAvgRebirthLevelTeam(1);
             /**
              * @type {Area}
              */
@@ -126,7 +135,7 @@ class FightPvE extends Fight {
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
 
                 promises.push((async () => {
-                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
+                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
                     if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                         this.summary.drops.push({
                             name: entity.name,

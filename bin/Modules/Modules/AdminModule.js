@@ -58,8 +58,9 @@ class AdminModule extends GModule {
             req.body.idItem = parseInt(req.body.idItem); // idItem
             req.body.level = parseInt(req.body.level); // level
             req.body.number = parseInt(req.body.number); // nbr
+            req.body.rebirthLevel = parseInt(req.body.rebirthLevel); // nbr
             if (req.body.idUser && Globals.connectedUsers[req.body.idUser] != null) {
-                if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number)) {
+                if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number, false, isNaN(req.body.rebirthLevel) ? 1 : req.body.rebirthLevel)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";

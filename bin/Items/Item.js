@@ -16,6 +16,7 @@ class Item {
         this.rarityColor = "";
         this.idRarity = 0;
         this.level = 0;
+        this.rebirthLevel = 0;
         this.type = 0;
         this.typeName = "";
         this.subType = 0;
@@ -32,10 +33,11 @@ class Item {
 
     async loadItem() {
         /*SELECT DISTINCT nomItem, descItem, itemsbase.idType, nomType, nomRarity, couleurRarity, level FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity WHERE items.idItem = 1;*/
-        let res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType, power FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemspower ON itemspower.idItem = items.idItem WHERE items.idItem = ?;", [this.id]);
+        let res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, imageItem, itemsbase.idType, nomType, nomRarity, itemsbase.idRarity, couleurRarity, level, equipable, stackable, usable, favorite, itemsbase.idSousType, nomSousType, power, rebirthLevel FROM items INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType INNER JOIN itemsrarities ON itemsbase.idRarity = itemsrarities.idRarity INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemspower ON itemspower.idItem = items.idItem WHERE items.idItem = ?;", [this.id]);
         res = res[0];
         this.idBaseItem = res["idBaseItem"];
         this.level = res["level"];
+        this.rebirthLevel = res["rebirthLevel"];
         this.image = res["imageItem"];
 
         this.rarity = res["nomRarity"];
@@ -76,9 +78,9 @@ class Item {
      * @param {number} power 
      * @returns {Promise<number>}
      */
-    static async lightInsert(idBase, level, power = 0) {
+    static async lightInsert(idBase, level, power = 0, rebirthLevel = 0) {
         if (idBase != null && idBase > 0 && level != null && level > 0) {
-            let insertID = (await conn.query("INSERT INTO items(idItem, idBaseItem, level) VALUES (NULL, ?, ?);", [idBase, level]))["insertId"];
+            let insertID = (await conn.query("INSERT INTO items(idItem, idBaseItem, level, rebirthLevel) VALUES (NULL, ?, ?, ?);", [idBase, level, rebirthLevel]))["insertId"];
             await conn.query("INSERT INTO itemspower VALUES (?, ?);", [insertID, power]);
             return insertID;
         }
@@ -319,6 +321,10 @@ class Item {
         return this.level;
     }
 
+    getRebirthLevel() {
+        return this.rebirthLevel;
+    }
+
     getIdRarity() {
         return this.idRarity;
     }
@@ -327,7 +333,7 @@ class Item {
         if (!Item.canHaveStats(this.typeName)) {
             return;
         }
-        let newStats = Item.generateItemsStats(this.idRarity, this.typeName, this.subTypeName, this.getLevel());
+        let newStats = Item.generateItemsStats(this.idRarity, this.typeName, this.subTypeName, this.getLevel(), this.getRebirthLevel());
         this.stats = newStats.stats;
         this.secondaryStats = newStats.secondaryStats;
         await Item.replaceAllStats(this.id, newStats.stats, newStats.secondaryStats);

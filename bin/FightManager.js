@@ -45,11 +45,14 @@ class FightManager {
      */
     async loadMonsters(monsters, characters) {
         let level = 0;
+        let rebirthLevel = 0;
         let area = characters[0].getArea();
         if (characters.length > 1 && characters[0].group != null) {
             level = characters[0].group.getHighestLevel();
+            rebirthLevel = characters[0].group.getHighestRebirthLevel();
         } else {
             level = characters[0].getLevel();
+            rebirthLevel = characters[0].getRebirthLevel();
         }
 
         if (area.minLevel > level) {
@@ -58,7 +61,13 @@ class FightManager {
             level = area.maxLevel;
         }
 
+        if (area.getMinRebirthLevel() > rebirthLevel) {
+            rebirthLevel = area.getMinRebirthLevel();
+        } else if (area.getMaxRebirthLevel() < rebirthLevel) {
+            rebirthLevel = area.getMaxRebirthLevel();
+        }
 
+        // TODO Rebirth
         /**
          * @type {Monstre[]}
          **/
@@ -74,7 +83,7 @@ class FightManager {
                 let ms = new Monstre(monsters[i].id);
                 ms.uuid = i + j + ms.id + "";
                 ms.decoratedId = monsters[i].number > 1 ? (j + 1) : null;
-                await ms.loadMonster(realLevel);
+                await ms.loadMonster(realLevel, rebirthLevel);
                 arr.push(ms);
             }
         }

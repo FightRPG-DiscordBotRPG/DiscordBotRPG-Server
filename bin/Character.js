@@ -315,16 +315,24 @@ class Character extends CharacterEntity {
     async resetStats() {
         return this.genericReset(async () => {
             await this.stats.reset();
-            await this.setStatPoints(this.levelSystem.actualLevel * 5);
+            await this.setStatPoints(this.levelSystem.actualLevel * this.getStatsPointsPerLevel());
         });
     }
 
     async resetTalents() {
         return this.genericReset(async () => {
-            await this.setTalentPoints(this.levelSystem.actualLevel);
+            await this.setTalentPoints(this.levelSystem.actualLevel + this.getRebirthTalentBonus());
             await this.talents.reset();
             await this.skillBuild.reset();
         });
+    }
+
+    getStatsPointsPerLevel() {
+        return Globals.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfStatsPointsPerLevel;
+    }
+
+    getRebirthTalentBonus() {
+        return Globals.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfTalentPointsBonus;
     }
 
     /**
@@ -354,7 +362,7 @@ class Character extends CharacterEntity {
         await this.levelSystem.addThisExp(exp);
         if (startingLevel < this.levelSystem.actualLevel) {
             await Promise.all([
-                this.addStatPoints(5 * (this.levelSystem.actualLevel - startingLevel)),
+                this.addStatPoints(this.getStatsPointsPerLevel() * (this.levelSystem.actualLevel - startingLevel)),
                 this.addTalentPoints(this.levelSystem.actualLevel -  startingLevel),
                 this.levelSystem.saveMyLevel()
             ]);
@@ -494,9 +502,12 @@ class Character extends CharacterEntity {
         return item;
     }
 
-    // Craft
+    /**
+     * 
+     * @param {Craft} craft
+     */
     isCraftable(craft) {
-        return craft.itemInfo.minLevel <= this.getCraftLevel();
+        return craft.itemInfo.minLevel <= this.getCraftLevel() && craft.itemInfo.minRebirthLevel <= this.getCraftRebirthLevel();
     }
 
     itemCraftedLevel(maxLevelItem) {
@@ -505,7 +516,18 @@ class Character extends CharacterEntity {
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
-    async craft(craft, level = null) {
+    itemCraftRebirthLevel(maxRebirthLevelItem) {
+        let craftingBuilding = this.getArea().getService("craftingbuilding");
+        maxRebirthLevelItem = craftingBuilding.getMaxRebirthLevel() < maxRebirthLevelItem ? craftingBuilding.getMaxRebirthLevel() : maxRebirthLevelItem;
+        return this.getCraftRebirthLevel() <= maxRebirthLevelItem ? this.getCraftRebirthLevel() : maxRebirthLevelItem;
+    }
+
+    /**
+     * 
+     * @param {Craft} craft
+     * @param {number} level
+     */
+    async craft(craft, level = null, rebirthLevel = null) {
         let gotAllItems = true;
         if (craft.id > 0) {
             gotAllItems = (await conn.query(`SELECT 
@@ -546,8 +568,13 @@ class Character extends CharacterEntity {
                 await Promise.all(promises);
 
                 let ls = new LootSystem();
-                let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel)
-                await ls.giveToPlayer(this, craft.itemInfo.idBase, level != null && level > 0 && level <= maxLevel ? level : maxLevel, 1);
+                let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel);
+                let levelItem = level != null && level > 0 && level <= maxLevel ? level : maxLevel;
+
+                let maxRebirthLevel = this.itemCraftRebirthLevel(craft.itemInfo.maxRebirthLevel);
+                let rebirthLevelItem = rebirthLevel != null && rebirthLevel > 0 && rebirthLevel <= maxRebirthLevel ? rebirthLevel : maxRebirthLevel;
+
+                await ls.giveToPlayer(this, craft.itemInfo.idBase, levelItem, 1, true, rebirthLevelItem);
 
                 // Achiev ---> If other use switch case or what ever
                 // This achiev is = craft 1 object
@@ -568,7 +595,7 @@ class Character extends CharacterEntity {
         if (await this.getAmountOfThisItem(idEmplacement) > nbr) {
             // Je doit créer un nouvel item
             let item = await this.getInv().getItem(idEmplacement);
-            idItem = await Item.lightInsert(item.idBaseItem, item.level);
+            idItem = await Item.lightInsert(item.idBaseItem, item.level, 0, item.rebirthLevel);
         } else {
             // Là je n'en ai pas besoin puisque c'est le même nombre
             idItem = await this.getInv().getIdItemOfThisEmplacement(idEmplacement);
@@ -615,7 +642,7 @@ class Character extends CharacterEntity {
                 if (inventoryItemID != null) {
                     await this.getInv().addToInventory(inventoryItemID, number);
                 } else {
-                    let idItem = await Item.lightInsert(item.idBaseItem, item.level);
+                    let idItem = await Item.lightInsert(item.idBaseItem, item.level, 0, item.rebirthLevel);
                     await this.getInv().addToInventory(idItem, number);
                 }
             }
@@ -821,6 +848,10 @@ class Character extends CharacterEntity {
         return this.craftSystem.getLevel();
     }
 
+    getCraftRebirthLevel() {
+        return this.craftSystem.getRebirthLevel();
+    }
+
     getCratfXP() {
         return this.craftSystem.actualXP;
     }
@@ -908,6 +939,7 @@ module.exports = Character;
 
 const Area = require("./Areas/Area");
 const Stats = require("./Stats/Stats.js");
+const Craft = require("./CraftSystem/Craft.js");
 
 /**
  * @typedef {import("./Trades/Trade")} Trade

@@ -30,8 +30,12 @@ class Monster extends WorldEntity {
         this.idStatsProfil = 0;
     }
 
-
-    async loadMonster(level=null) {
+    /**
+     * 
+     * @param {number} level
+     * @param {number} rebirthLevel
+     */
+    async loadMonster(level=null, rebirthLevel=null) {
         this.difficulty = Globals.mDifficulties[2];
         let res = await conn.query("SELECT DISTINCT monstrestypes.idType, avglevel, nom, idStatsProfil, idMonstersBuildsProfil FROM monstres INNER JOIN monstrestypes ON monstrestypes.idType = monstres.idType INNER JOIN statsmonstres ON statsmonstres.idMonstre = monstres.idMonstre WHERE monstres.idMonstre = ?;", [this.id]);
         res = res[0];
@@ -39,6 +43,7 @@ class Monster extends WorldEntity {
         this.type = res["nom"];
         this.idStatsProfil = res.idStatsProfil;
         this.level = level && level > 0 ? level : (res["avglevel"] > 0 ? res["avglevel"] : 1);
+        this.rebirthLevel = rebirthLevel && rebirthLevel >= 0 ? rebirthLevel : 0;
         let multiplier = res["idType"];
 
         if (this.type == "elite") {
@@ -54,7 +59,7 @@ class Monster extends WorldEntity {
             this.luckBonus = this.stats.getMaximumStat(this.getLevel());
         }
 
-        await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idMonstersBuildsProfil"])]);
+        await Promise.all([this.stats.loadStat(this.id, multiplier, this.getLevel(), this.getRebirthLevel()), this.secondaryStats.loadStat(this.id, multiplier, this.getLevel()), this.skillBuild.load(res["idMonstersBuildsProfil"])]);
 
         this.updateStats();
         this.xp = Math.round((10 * (Math.pow(this.getLevel(), 2))) / 7 * bonus);

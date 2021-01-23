@@ -127,7 +127,6 @@ ADD CONSTRAINT `fk_AreasMonstersLevels_RebirthsPossibles2`
 ALTER TABLE `discord_bot_rpg`.`SellableItems` 
 ADD COLUMN `rebirthLevel` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `price`,
 ADD INDEX `fk_SellableItems_RebirthsPossibles1_idx` (`rebirthLevel` ASC) VISIBLE;
-;
 
 ALTER TABLE `discord_bot_rpg`.`SellableItems` 
 ADD CONSTRAINT `fk_SellableItems_RebirthsPossibles1`

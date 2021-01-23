@@ -10,13 +10,15 @@ class PlayerCraft {
         this.actualXP = 0;
         this.expToNextLevel = 0;
         this.maxLevel = 0;
+        this.rebirthLevel = 0;
     }
 
     async load(id) {
         this.id = id;
-        let res = await conn.query("SELECT actualLevel, actualExp FROM characterscraftlevel WHERE idCharacter = ?", [this.id]);
+        let res = await conn.query("SELECT actualLevel, actualExp, rebirthLevel FROM characterscraftlevel WHERE idCharacter = ?", [this.id]);
         res = res[0];
         this.actualLevel = res["actualLevel"];
+        this.rebirthLevel = res["rebirthLevel"];
         this.actualXP = res["actualExp"];
         this.maxLevel = Globals.maxLevel;
 
@@ -27,7 +29,7 @@ class PlayerCraft {
 
     async init(id) {
         this.id = id;
-        await conn.query("INSERT INTO characterscraftlevel VALUES (?, 1, 0)", [this.id]);
+        await conn.query("INSERT INTO characterscraftlevel VALUES (?, 1, 0, 0)", [this.id]);
         this.actualLevel = 1;
         this.actualXP = 0;
         let res = await conn.query("SELECT * FROM levelsrequire WHERE level = 1");
@@ -71,11 +73,15 @@ class PlayerCraft {
     }
 
     async saveMyLevel() {
-        await conn.query("UPDATE characterscraftlevel SET actualExp = ?, actualLevel = ? WHERE idCharacter = ?", [this.actualXP, this.actualLevel, this.id]);
+        await conn.query("UPDATE characterscraftlevel SET actualExp = ?, actualLevel = ?, rebirthLevel = ? WHERE idCharacter = ?", [this.actualXP, this.actualLevel, this.rebirthLevel, this.id]);
     }
 
     getLevel() {
         return this.actualLevel;
+    }
+
+    getRebirthLevel() {
+        return this.rebirthLevel;
     }
 
 

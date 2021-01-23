@@ -11,11 +11,13 @@ class CraftingBuilding {
         this.maxRarity = 1;
         this.minLevel = 0;
         this.maxLevel = 0;
+        this.minRebirthLevel = 0;
+        this.maxRebirthLevel = 0;
         this.isActive = false;
     }
 
     async load(idArea) {
-        let res = await conn.query("SELECT idCraftBuilding, rarityMin, rarityMax, active, minLevel, maxLevel FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
+        let res = await conn.query("SELECT idCraftBuilding, rarityMin, rarityMax, active, minLevel, maxLevel, minRebirthLevel, maxRebirthLevel FROM craftbuilding INNER JOIN itemsrarities ON itemsrarities.idRarity = craftbuilding.rarityMax WHERE idArea = ?", [idArea]);
         if (res[0]) {
             this.id = res[0]["idCraftBuilding"];
             this.minRarity = res[0]["rarityMin"];
@@ -23,21 +25,21 @@ class CraftingBuilding {
             this.isActive = res[0]["active"];
             this.minLevel = res[0]["minLevel"];
             this.maxLevel = res[0]["maxLevel"];
+            this.minRebirthLevel = res[0]["minRebirthLevel"];
+            this.maxRebirthLevel = res[0]["maxRebirthLevel"];
         }
     }
 
     async getNumberOfItems(params, lang = "en") {
         let searchParamsResult = Globals.getSearchParams(params, false, true, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, lang], 5);
-
-
+        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.minRebirthLevel, this.maxRebirthLevel, lang], 7);
 
         let res = await conn.query(`SELECT COUNT(*) FROM craftitem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
                                 INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
                                 INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem 
-                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND lang = ? ${paramsCount.more};`, paramsCount.sqlParams
+                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND craftitem.minRebirthLevel <= ? AND craftitem.maxRebirthLevel >= ? AND lang = ? ${paramsCount.more};`, paramsCount.sqlParams
         );
 
         return res[0]["COUNT(*)"];
@@ -54,7 +56,7 @@ class CraftingBuilding {
 
         let searchParamsResult = Globals.getSearchParams(params, true, false, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, lang, perPage, (page - 1) * perPage], 5);
+        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.minRebirthLevel, this.maxRebirthLevel, lang, perPage, (page - 1) * perPage], 7);
 
         let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, 
                                 (SELECT * FROM craftitem 
@@ -62,7 +64,7 @@ class CraftingBuilding {
                                     INNER JOIN itemstypes USING(idType)
                                     INNER JOIN itemssoustypes USING(idSousType)
                                     INNER JOIN localizationitems USING(idBaseItem)
-                                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND lang = ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem) craftlist
+                                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND craftitem.minRebirthLevel <= ? AND craftitem.maxRebirthLevel >= ? AND lang = ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem) craftlist
                                 ) craftlist_filtered ${paramsSearch.more} LIMIT ? OFFSET ?`, paramsSearch.sqlParams);
 
         return {
@@ -92,6 +94,8 @@ class CraftingBuilding {
             craftToApi.type_shorthand = craft.nomType;
             craftToApi.minLevel = craft.minLevel < this.getMinLevel() ? this.getMinLevel() : craft.minLevel;
             craftToApi.maxLevel = craft.maxLevel > this.getMaxLevel() ? this.getMaxLevel() : craft.maxLevel;
+            craftToApi.minRebirthLevel = craft.minRebirthLevel < this.getMinRebirthLevel() ? this.getMinRebirthLevel() : craft.minRebirthLevel;
+            craftToApi.maxRebirthLevel = craft.maxRebirthLevel > this.getMaxRebirthLevel() ? this.getMaxRebirthLevel() : craft.maxRebirthLevel;
             craftToApi.rarity = Translator.getString(lang, "rarities", Globals.itemsrarities[craft.idRarity]);
             craftToApi.rarity_shorthand = Globals.itemsrarities[craft.idRarity];
             toApi.crafts[(index + indexOffset)] = craftToApi;
@@ -112,6 +116,13 @@ class CraftingBuilding {
                 }
                 if (craft.itemInfo.minLevel < this.minLevel) {
                     craft.itemInfo.minLevel = this.minLevel;
+                }
+
+                if (craft.itemInfo.minRebirthLevel > this.maxRebirtLevel) {
+                    craft.itemInfo.maxRebirtLevel = this.maxRebirtLevel;
+                }
+                if (craft.itemInfo.minRebirtLevel < this.minRebirtLevel) {
+                    craft.itemInfo.minRebirtLevel = this.minRebirtLevel;
                 }
                 return craft;
             }
@@ -137,6 +148,13 @@ class CraftingBuilding {
         return this.maxLevel;
     }
 
+    getMinRebirthLevel() {
+        return this.minRebirthLevel;
+    }
+
+    getMaxRebirthLevel() {
+        return this.maxRebirthLevel;
+    }
 }
 
 module.exports = CraftingBuilding;

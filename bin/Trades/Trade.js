@@ -136,7 +136,7 @@ class Trade {
                         await rightInventory.addToInventory(rightInventoryItemID, tradeItem.number);
                     } else {
                         await leftInventory.removeSomeFromInventoryItem(itemFromLeftPlayer, tradeItem.number);
-                        let newItemID = await Item.lightInsert(itemFromLeftPlayer.idBaseItem, itemFromLeftPlayer.level);
+                        let newItemID = await Item.lightInsert(itemFromLeftPlayer.idBaseItem, itemFromLeftPlayer.level, 0, itemFromLeftPlayer.rebirthLevel);
                         await rightInventory.addToInventory(newItemID, tradeItem.number);
                     }
                 }

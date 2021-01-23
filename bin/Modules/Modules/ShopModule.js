@@ -73,7 +73,8 @@ class ShopModule extends GModule {
                             totalPrice = totalPrice + tax;
                         }
                         if (await Globals.connectedUsers[res.locals.id].character.doIHaveEnoughMoney(totalPrice)) {
-                            if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount)) {
+                            // TODO shop item rebirth level
+                            if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[res.locals.id].character, item.idBase, item.level, amount, false, item.rebirthLevel)) {
                                 if (tax > 0) {
                                     await Guild.addMoney(await res.locals.currentArea.getOwnerID(), tax);
                                 }

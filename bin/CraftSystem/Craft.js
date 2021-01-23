@@ -6,12 +6,38 @@ class Craft {
     constructor(id) {
         this.id = id;
         this.exist = false;
+        /**
+         * @type {Array<{
+                    idBase:     number,
+                    typename:   string,
+                    stypename:  string,
+                    rarity:     string,
+                    number:     number,
+                    minRebirthLevel: number,
+                }>}
+         **/
         this.requiredItems = [];
+        /**
+         * @type {{
+                idBase: number,
+                image: string,
+                typename: string,
+                stypename:  string,
+                rarity:     string,
+                idRarity: number,
+                rarityColor: string,
+                maxLevel: number,
+                minLevel: number,
+                stackable: boolean,
+                minRebirthLevel: number,
+                maxRebirthLevel: number,
+            }}
+         **/
         this.itemInfo = {};
     }
 
     async load() {
-        let res = await conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, stackable, itemsbase.idBaseItem FROM craftitemsneeded 
+        let res = await conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, stackable, itemsbase.idBaseItem, craftitem.minRebirthLevel, craftitem.maxRebirthLevel FROM craftitemsneeded 
         INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
         INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
         INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -33,9 +59,11 @@ class Craft {
                 maxLevel: res.maxLevel,
                 minLevel: res.minLevel,
                 stackable: res.stackable,
+                minRebirthLevel: res.minRebirthLevel,
+                maxRebirthLevel: res.maxRebirthLevel,
             }
 
-            res = await conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
+            res = await conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem, craftitemsneeded.minRebirthLevel FROM craftitemsneeded 
             INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
             INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitemsneeded.NeededItem
             INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -49,7 +77,8 @@ class Craft {
                     typename: item.nomType,
                     stypename: item.nomSousType,
                     rarity: item.nomRarity,
-                    number: item.number
+                    number: item.number,
+                    minRebirthLevel: item.minRebirthLevel,
                 });
             }
         }
@@ -68,6 +97,9 @@ class Craft {
         craft.subType = Translator.getString(lang, "item_sous_types", this.itemInfo.stypename);
         craft.subType_shorthand = this.itemInfo.stypename;
         craft.minLevel = this.itemInfo.minLevel;
+        craft.maxLevel = this.itemInfo.maxLevel;
+        craft.minRebirthLevel = this.itemInfo.minRebirthLevel;
+        craft.maxRebirthLevel = this.itemInfo.maxRebirthLevel;
         craft.maxLevel = this.itemInfo.maxLevel;
         craft.requiredItems = [];
 

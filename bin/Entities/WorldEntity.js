@@ -19,6 +19,7 @@ class WorldEntity {
         this.actualEnergy = 0;
         this.maxEnergy = 0;
         this.level = 0;
+        this.rebirthLevel = 0;
         this.stats = new Stats();
         this.secondaryStats = new SecondaryStats();
 
@@ -187,6 +188,10 @@ class WorldEntity {
 
     getLevel() {
         return this.level;
+    }
+
+    getRebirthLevel() {
+        return this.rebirthLevel;
     }
 
     getName(_lang = "en") {

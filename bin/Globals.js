@@ -104,6 +104,11 @@ var Globals = {
      */
     "fightManager": {},
     "lockedMembers": {},
+    /**
+     * @type {Object<number, {nbrOfStatsPointsPerLevel:number, nbrOfTalentPointsBonus:number, percentageBonusToMonstersStats:number, percentageBonusToItemsStats:number}>}
+     */
+    "rebirthsLevelsModifiers": {},
+    "maxRebirthLevel": 0,
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
@@ -231,6 +236,14 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
+
+        res = await conn.query("SELECT * FROM rebirthspossibles;");
+        for (let rebirth of res) {
+            Globals.rebirthsLevelsModifiers[rebirth.rebirthLevel] = rebirth;
+            if (rebirth.rebirthLevel > Globals.maxRebirthLevel) {
+                Globals.maxRebirthLevel = rebirth.rebirthLevel;
+            }
+        }
     },
     getSearchParams: (params, withWhere = true, withAndBefore = false, includeList=null) => {
         let values = [];

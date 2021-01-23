@@ -298,9 +298,9 @@ class CharacterInventory {
         return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level);
     }
 
-    static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
+    static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1, rebirthLevel = 0) {
         level = level >= 1 ? level : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, idCharacter]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND items.rebirthLevel = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, rebirthLevel, idCharacter]);
         if (res[0]) {
             return res[0].idItem;
         }
