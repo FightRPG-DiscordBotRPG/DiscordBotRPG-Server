@@ -41,7 +41,7 @@ ADD INDEX `fk_AreasMonstersLevels_RebirthsPossibles1_idx` (`minRebirthLevel` ASC
 ADD INDEX `fk_AreasMonstersLevels_RebirthsPossibles2_idx` (`maxRebirthLevel` ASC) VISIBLE;
 
 CREATE TABLE IF NOT EXISTS `rebirthspossibles` (
-  `rebirthLevel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `rebirthLevel` INT UNSIGNED NOT NULL,
   `nbrOfStatsPointsPerLevel` INT UNSIGNED NOT NULL DEFAULT 5,
   `nbrOfTalentPointsBonus` INT UNSIGNED NOT NULL DEFAULT 0,
   `percentageBonusToMonstersStats` INT UNSIGNED NOT NULL DEFAULT 0,
