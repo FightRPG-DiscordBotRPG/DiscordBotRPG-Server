@@ -31,7 +31,6 @@ class CharacterAchievements {
     async getAchievementList(page, lang = "en") {
         page = page > 0 ? page : 1;
         let counts = await this.getCountsAchievements();
-        console.log(counts);
 
         let perPage = 5;
         let maxPage = Math.ceil(counts.totalAchievements / perPage);
