@@ -22,6 +22,7 @@ let collectChances = {
  * A song
  * @typedef {Object} Globals
  * @property {Array<User>} connectedUsers - Users
+ * @property {Array<Guild>} connectedGuilds - Guilds
  */
 var Globals = {
     "maintenance_message": null,
@@ -92,7 +93,7 @@ var Globals = {
      */
     "connectedUsers": [],
     /**
-     * @type {Object<any, Guild>}
+     * @type {Object<string, Guild>}
      */
     "connectedGuilds": {},
     /**
