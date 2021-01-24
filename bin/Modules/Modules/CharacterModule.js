@@ -165,6 +165,14 @@ class CharacterModule extends GModule {
                 err = "InvalidUsername (No username entered)";
             }
 
+            if (req.body.avatar != null) {
+                try {
+                    await conn.query("UPDATE users SET avatar = ? WHERE idUser = ?;", [req.body.avatar]);
+                } catch (ex) {
+                    console.log("Exception on avatar set: " + ex);
+                }
+            }
+
             await next();
             return err != null ? res.json({ error: err }) : res.json({ done: true });
         });
