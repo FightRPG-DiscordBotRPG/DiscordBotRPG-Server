@@ -121,16 +121,12 @@ class EquipmentModule extends GModule {
      */
     async unEquipThisItem(character, itemToUnequip = null, lang = "en") {
 
-        if (itemToUnequip == null) {
-            return this.asError(Translator.getString(lang, "errors", "item_you_have_to_choose_type_to_unequip"));
-        }
-
-        if (await character.getEquipement().isSlotFree(itemToUnequip.getEquipTypeID())) {
+        if (itemToUnequip == null || await character.getEquipement().isSlotFree(itemToUnequip.getEquipTypeID())) {
             return this.asError(Translator.getString(lang, "errors", "item_you_dont_have_item_equiped_here"));
         }
 
         await character.unEquipThisItem(itemToUnequip);
-        return this.asSuccess(Translator.getString(lang, "inventory_equipment", "item_unequiped"));
+        return this.asSuccess(Translator.getString(lang, "inventory_equipment", "item_unequiped", [itemToUnequip.getName(lang)]));
     }
 
     /**
