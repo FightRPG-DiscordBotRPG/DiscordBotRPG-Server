@@ -293,22 +293,22 @@ class User {
 
     // Info pannel API
     async apiInfoPanel() {
+
+        let allPromises = [this.character.getStatPoints(), this.character.getTalentPoints(), this.character.talents.toApi(), this.character.getMoney(), this.character.getHonor(), this.character.getPower(), this.character.getAchievements().getCountsAchievements()];
+
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
             xpNextLevel: this.character.levelSystem.expToNextLevel,
             username: this.character.name,
             avatar: this.avatar,
-            statPoints: await this.character.getStatPoints(),
-            talentPoints: await this.character.getTalentPoints(),
+
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             secondaryStats: this.character.secondaryStats.toApi(),
-            talents: await this.character.talents.toApi(),
+
             level: this.character.getLevel(),
             rebirthLevel: this.character.getRebirthLevel(),
-            money: await this.character.getMoney(),
-            honor: await this.character.getHonor(),
-            power: await this.character.getPower(),
+
             attributesResults: {
                 magicalCriticalEvasionRate: this.character.getMagicalCriticalEvasionRate(this.character.getLevel()),
                 magicalCriticalRate: this.character.getMagicalCriticalRate(this.character.getLevel()),
@@ -334,8 +334,18 @@ class User {
                 xpNextLevel: this.character.getCraftNextLevelXP(),
             },
             lang: this.getLang(),
-
         };
+
+        allPromises = await Promise.all(allPromises);
+
+        infos.statPoints = allPromises[0];
+        infos.talentPoints = allPromises[1];
+        infos.talents = allPromises[2];
+        infos.money = allPromises[3];
+        infos.honor = allPromises[4];
+        infos.power = allPromises[5];
+        infos.achievements = allPromises[6];
+
         return infos;
     }
 
