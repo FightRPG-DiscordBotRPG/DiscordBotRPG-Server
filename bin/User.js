@@ -151,8 +151,13 @@ class User {
         return res[0] != null ? res[0].idUser : null;
     }
 
+    /**
+     * 
+     * @param {number} idCharacter
+     * @returns {Promise<{idUser:string, lang: string}>}
+     */
     static async getIDByIDCharacterAndLang(idCharacter) {
-        let res = await conn.query("SELECT idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
+        let res = await conn.query("SELECT users.idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
         return res[0];
     }
 

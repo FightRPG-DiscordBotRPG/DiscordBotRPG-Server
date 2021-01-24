@@ -107,7 +107,9 @@ class Guild {
                 await conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
 
                 // Don't need to wait it
-                CharacterAchievements.unlock(11, await User.getIDByIDCharacter(idOther));
+                let idAndLang = await User.getIDByIDCharacterAndLang(idOther);
+                CharacterAchievements.unlock(11, idAndLang.idUser);
+                User.tell(idAndLang.idUser, Translator.getString(idAndLang.lang, "guild", "you_ve_been_accepted", [this.name]));
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
@@ -125,6 +127,8 @@ class Guild {
             if (meRank > otherRank || idAsk == idOther) {
                 if (otherRank < 3) {
                     await conn.query("DELETE FROM guildsmembers WHERE idCharacter = ?;", [idOther]);
+                    let idAndLang = await User.getIDByIDCharacterAndLang(idOther);
+                    User.tell(idAndLang.idUser, Translator.getString(idAndLang.lang, "guild", "you_ve_been_kicked"));
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_cant_leave_guild_as_gm"));
                 }
