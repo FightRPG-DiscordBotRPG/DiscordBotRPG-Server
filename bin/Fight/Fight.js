@@ -330,6 +330,7 @@ class Fight {
         // General
         entityLog.setEntityIdentity(entity);
         entityLog.entity.level = entity.getLevel();
+        entityLog.entity.rebirthLevel = entity.getRebirthLevel();
 
         // States
         entityLog.entity.states = entity.states;

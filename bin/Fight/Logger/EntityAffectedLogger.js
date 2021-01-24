@@ -23,6 +23,7 @@ class EntityAffectedLogger {
             actualEnergy: 0,
             maxEnergy: 0,
             level: 0,
+            rebirthLevel: 0,
             states: {}
         };
 
