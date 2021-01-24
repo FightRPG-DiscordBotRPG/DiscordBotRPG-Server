@@ -25,7 +25,7 @@ class LootSystem {
         let luckModifier = Math.min(totalLuck / character.stats.getMaximumStat(level) + 1, 3);
         let jsonLoot = {};
         let promises = [];
-        
+
         for (let rarity in possibleLoots) {
             let dropRate = 0;
             let itemPossibles = possibleLoots[rarity];
@@ -69,7 +69,7 @@ class LootSystem {
                 promises.push(this.giveToPlayer(character, itemPossible.idBaseItem, level, number, false, rebirthLevel));
                 PStatistics.incrStat(character.id, "items_" + Globals.getRarityName(itemPossible.idRarity) + "_loot", number);
             }
-            
+
         }
 
         await Promise.all(promises);
@@ -83,8 +83,8 @@ class LootSystem {
      * @param {number} idBase
      * @param {number} number
      */
-    async adminGetItem(character, idBase, number) {
-        return await this.giveToPlayer(character, idBase, character.getLevel(), number, false, character.getRebirthLevel());
+    async adminGetItem(character, idBase, number, level = null, rebirthLevel = null) {
+        return await this.giveToPlayer(character, idBase, level > 0 ? level : character.getLevel(), number, false, rebirthLevel >= 0 ? rebirthLevel : character.getRebirthLevel());
     }
 
 
@@ -153,10 +153,10 @@ class LootSystem {
         return await this.giveToPlayerDatabase(character.id, idBase, level, number, makeItFavorite, rebirthLevel);
     }
 
-    
+
 
     // Return id of new item if created
-    async newItem(idBase, level, rebirthLevel=0) {
+    async newItem(idBase, level, rebirthLevel = 0) {
         let res = await conn.query(`SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE itemsbase.idBaseItem = ?`, [idBase]);
         if (res[0]) {
             let rarity = res[0].idRarity;

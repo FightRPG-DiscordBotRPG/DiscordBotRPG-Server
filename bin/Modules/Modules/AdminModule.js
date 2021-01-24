@@ -42,7 +42,7 @@ class AdminModule extends GModule {
             let data = {};
             req.body.idItem = parseInt(req.body.idItem);
             if (req.body.idItem && Number.isInteger(req.body.idItem)) {
-                if (await res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number)) {
+                if (await res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number, req.body.level, req.body.rebirthLevel)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";
