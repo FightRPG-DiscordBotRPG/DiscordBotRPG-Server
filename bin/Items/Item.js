@@ -523,6 +523,7 @@ class Item {
             rarity_shorthand: this.rarity,
             rarityColor: this.rarityColor,
             level: this.getLevel(),
+            rebirthLevel: this.getRebirthLevel(),
             type: Translator.getString(lang, "item_types", this.typeName),
             type_shorthand: this.typeName,
             subType: Translator.getString(lang, "item_sous_types", this.subTypeName),
