@@ -60,6 +60,10 @@ class CharacterEquipement {
 
     }
 
+    /**
+     * 
+     * @param {number} type
+     */
     async unEquip(type) {
         if (!await this.isSlotFree(type)) {
             let idItem = await this.getItem(type);

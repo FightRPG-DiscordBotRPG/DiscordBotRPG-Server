@@ -217,6 +217,34 @@ class Character extends CharacterEntity {
     }
 
     /**
+     * 
+     * @param {Item} itemToEquip
+     */
+    async equipThisItem(itemToEquip) {
+        let swapItem = await this.getEquipement().equip(itemToEquip.id);
+        await this.getInv().deleteFromInventory(itemToEquip);
+        if (swapItem > 0) {
+            await this.getInv().addToInventory(swapItem);
+        }
+        this.checkEquipmentAchievements();
+        this.updateMaxStats();
+        this.healIfAreaIsSafe();
+    }
+
+    /**
+     * 
+     * @param {Item} itemToUnequip
+     */
+    async unEquipThisItem(itemToUnequip) {
+        let itemToInventory = await this.equipement.unEquip(itemToUnequip.getEquipTypeID());
+        if (itemToInventory !== -1) {
+            await this.getInv().addToInventory(itemToInventory);
+            this.updateMaxStats();
+            this.healIfAreaIsSafe();
+        }
+    }
+
+    /**
      * Exhaust time in seconds
      * @returns {number} Exhuast time in seconds
      */
