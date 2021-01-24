@@ -217,7 +217,8 @@ class AreaTournament {
     async endTournament() {
         let oldOwner = await Area.staticGetOwnerID(this.idArea);
         if (oldOwner !== this.rounds[this.maxRounds].winners[0]) {
-            await Area.resetBonuses(this.idArea);
+            // No more resets
+            //await Area.resetBonuses(this.idArea);
             // TODO: Améliorer le système pour le rendre plus juste
             //await Area.oneLessLevel(this.idArea);
         }
