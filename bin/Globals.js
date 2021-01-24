@@ -281,7 +281,7 @@ var Globals = {
                     }
 
                     if (equivalent[param].isBool) {
-                        params[param] = params[param] === "true" ? 1 : 0;
+                        params[param] = params[param] == "true" || params[param] == true ? 1 : 0;
                     }
 
                     values.push(params[param]);
