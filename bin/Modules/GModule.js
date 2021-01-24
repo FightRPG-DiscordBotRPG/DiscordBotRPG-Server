@@ -579,6 +579,9 @@ class GModule {
             power_down: parseInt(req.body.power_down != null ? req.body.power_down : req.query.power_down),
             name: req.body.name != null ? req.body.name : req.query.name,
             fav: req.body.fav != null ? req.body.fav : req.query.fav,
+            rebirth: parseInt(req.body.rebirth != null ? req.body.rebirth : req.query.rebirth),
+            rebirth_up: parseInt(req.body.rebirth != null ? req.body.rebirth : req.query.rebirth),
+            rebirth_down: parseInt(req.body.rebirth_down != null ? req.body.rebirth_down : req.query.rebirth_down),
         }
     }
 

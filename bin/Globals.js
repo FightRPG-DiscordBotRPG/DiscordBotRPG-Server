@@ -260,6 +260,10 @@ var Globals = {
                 "level": { name: "level", sign: ">=", isString: false, isBool: false },
                 "level_down": { name: "level", sign: "<=", isString: false, isBool: false },
 
+                "rebirth_up": { name: "rebirthLevel", sign: ">=", isString: false, isBool: false },
+                "rebirth": { name: "rebirthLevel", sign: ">=", isString: false, isBool: false },
+                "rebirth_down": { name: "rebirthLevel", sign: "<=", isString: false, isBool: false },
+
                 "power": { name: "power", sign: ">=", isString: false, isBool: false },
                 "power_up": { name: "power", sign: ">=", isString: false, isBool: false },
                 "power_down": { name: "power", sign: "<=", isString: false, isBool: false },
