@@ -21,7 +21,7 @@ const express = require("express");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["lang", "help", "settings"];
+        this.commands = ["lang", "settings"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
@@ -57,14 +57,6 @@ class OtherModule extends GModule {
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "languages_lang_dont_exist");
             }
-            await next();
-            return res.json(data);
-        });
-
-        this.router.get("/help/:page?", async (req, res, next) => {
-            let data;
-            data = this.helpPanel(res.locals.lang, parseInt(req.params.page, 10));
-            data.lang = res.locals.lang;
             await next();
             return res.json(data);
         });
