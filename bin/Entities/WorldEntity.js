@@ -275,7 +275,11 @@ class WorldEntity {
     }
 
     prepareCast() {
-        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += 1 + this.getCastSkillBonus(skill));
+        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getCastPreparationPerTurn(skill));
+    }
+
+    getCastPreparationPerTurn(skill) {
+        return 1 + this.getCastSkillBonus(skill);
     }
 
     /**
