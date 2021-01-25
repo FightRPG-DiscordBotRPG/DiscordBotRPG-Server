@@ -354,6 +354,24 @@ class User {
         return infos;
     }
 
+    async toApiToRebirth() {
+        return {
+            level: this.character.getLevel(),
+            rebirthLevel: this.character.getRebirthLevel(),
+            maxLevel: Globals.maxLevel,
+            maxRebirthLevel: Globals.maxRebirthLevel,
+            craft: {
+                level: this.character.getCraftLevel(),
+                rebirthLevel: this.character.getCraftRebirthLevel(),
+                curentRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel()],
+                nextRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel() + 1]
+            },
+            lang: this.getLang(),
+            curentRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getRebirthLevel()],
+            nextRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getRebirthLevel()+1]
+        }
+    }
+
     canBeUnstuck() {
         return Date.now() - this.lastCommandTime >= 5000;
     }

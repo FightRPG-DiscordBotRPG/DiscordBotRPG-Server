@@ -185,6 +185,14 @@ class CharacterModule extends GModule {
             );
         });
 
+        this.router.get("/rebirth", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].toApiToRebirth();
+            await next();
+            return res.json(
+                data
+            );
+        });
+
         this.router.get("/isTrading", async (req, res, next) => {
             let data = {
                 isTrading: Globals.connectedUsers[res.locals.id].character.isTrading()
