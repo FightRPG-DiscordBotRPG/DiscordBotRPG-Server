@@ -33,13 +33,14 @@ class CraftingBuilding {
     async getNumberOfItems(params, lang = "en") {
         let searchParamsResult = Globals.getSearchParams(params, false, true, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.minRebirthLevel, this.maxRebirthLevel, lang], 7);
+        let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.getMaxRebirthLevel(), this.minRebirthLevel, lang], 7);
 
-        let res = await conn.query(`SELECT COUNT(*) FROM craftitem
-                                INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
-                                INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
-                                INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem 
-                                WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND craftitem.minRebirthLevel <= ? AND craftitem.maxRebirthLevel >= ? AND lang = ? ${paramsCount.more};`, paramsCount.sqlParams
+        let res = await conn.query(`SELECT COUNT(*) FROM (SELECT * FROM craftitem
+                                    INNER JOIN itemsbase USING(idBaseItem)
+                                    INNER JOIN itemstypes USING(idType)
+                                    INNER JOIN itemssoustypes USING(idSousType)
+                                    INNER JOIN localizationitems USING(idBaseItem)
+                                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND craftitem.minRebirthLevel <= ? AND craftitem.maxRebirthLevel >= ? AND lang = ?) craftlist ${paramsCount.more};`, paramsCount.sqlParams
         );
 
         return res[0]["COUNT(*)"];
@@ -50,13 +51,13 @@ class CraftingBuilding {
         page = page ? (page <= 0 || !Number.isInteger(page) ? 1 : page) : 1;
         let perPage = 10;
 
-        let maxPage = await this.getNumberOfItems(params, lang);
+        let maxPage = Math.ceil(await this.getNumberOfItems(params, lang) / perPage);
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
 
         let searchParamsResult = Globals.getSearchParams(params, true, false, { "name": true, "rarity": true, "type": true, "subtype": true });
 
-        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.minRebirthLevel, this.maxRebirthLevel, lang, perPage, (page - 1) * perPage], 7);
+        let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.getMaxRebirthLevel(), this.minRebirthLevel, lang, perPage, (page - 1) * perPage], 7);
 
         let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, 
                                 (SELECT * FROM craftitem 
@@ -104,8 +105,8 @@ class CraftingBuilding {
         return toApi;
     }
 
-    async getCraft(idCraft) {
-        idCraft = await this.getRealIdCraft(idCraft);
+    async getCraft(idCraft, lang="en") {
+        idCraft = await this.getRealIdCraft(idCraft, lang);
 
         if (idCraft > 0) {
             let craft = new Craft(idCraft);
@@ -130,11 +131,21 @@ class CraftingBuilding {
         return null;
     }
 
-    async getRealIdCraft(idCraft) {
+    async getRealIdCraft(idCraft, lang="en") {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
+        console.log([this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.maxRebirthLevel, this.minRebirthLevel, idCraft - 1]);
         let res;
         if (idCraft > 0) {
-            res = await conn.query("SELECT * FROM craftitem INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem LIMIT 1 OFFSET ?", [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, idCraft - 1]);
+            res = await conn.query(
+                `SELECT * 
+                FROM craftitem 
+                                    INNER JOIN itemsbase USING(idBaseItem)
+                                    INNER JOIN itemstypes USING(idType)
+                                    INNER JOIN itemssoustypes USING(idSousType)
+                                    INNER JOIN localizationitems USING(idBaseItem)
+                                    WHERE itemsbase.idRarity >= ? AND itemsbase.idRarity <= ? AND craftitem.minLevel <= ? AND craftitem.maxLevel >= ? AND craftitem.minRebirthLevel <= ? AND craftitem.maxRebirthLevel >= ? AND lang = ?
+                ORDER BY craftitem.minLevel ASC, craftitem.idCraftItem
+                LIMIT 1 OFFSET ?`, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.getMaxRebirthLevel(), this.minRebirthLevel, lang, idCraft - 1]);
         }
 
         return res != null && res[0] != null ? res[0].idCraftItem : 0;
@@ -153,7 +164,7 @@ class CraftingBuilding {
     }
 
     getMaxRebirthLevel() {
-        return this.maxRebirthLevel;
+        return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.maxRebirthLevel;
     }
 }
 

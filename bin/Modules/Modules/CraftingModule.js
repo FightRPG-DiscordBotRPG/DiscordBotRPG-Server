@@ -53,7 +53,7 @@ class CraftingModule extends GModule {
             let data = {};
 
             if (res.locals.craftingbuilding != null) {
-                let craft = await res.locals.craftingbuilding.getCraft(req.params.idCraft);
+                let craft = await res.locals.craftingbuilding.getCraft(req.params.idCraft, res.locals.lang);
                 if (craft != null) {
                     craft = await Globals.connectedUsers[res.locals.id].character.inv.getMissingComponent(craft);
                     data.craft = await craft.toApi(res.locals.lang);
@@ -78,7 +78,7 @@ class CraftingModule extends GModule {
                     /**
                      * @type {Craft}
                      */
-                    let toCraft = await res.locals.craftingbuilding.getCraft(req.body.idCraft);
+                    let toCraft = await res.locals.craftingbuilding.getCraft(req.body.idCraft, res.locals.lang);
                     if (toCraft) {
                         if (Globals.connectedUsers[res.locals.id].character.isCraftable(toCraft)) {
                             if (req.body.level == null || (req.body.level != null && res.locals.craftingbuilding.getMinLevel() <= req.body.level && res.locals.craftingbuilding.getMaxLevel() >= req.body.level)) {
