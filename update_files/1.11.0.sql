@@ -52,6 +52,24 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `rebirthspossiblesitemsneeded` (
+  `rebirthLevel` INT UNSIGNED NOT NULL,
+  `idBaseItem` INT UNSIGNED NOT NULL,
+  `number` INT NOT NULL DEFAULT 1,
+  PRIMARY KEY (`rebirthLevel`, `idBaseItem`),
+  INDEX `fk_RebirthsPossiblesItemsNeeded_ItemsBase1_idx` (`idBaseItem` ASC) VISIBLE,
+  CONSTRAINT `fk_RebirthsPossiblesItemsNeeded_RebirthsPossibles1`
+    FOREIGN KEY (`rebirthLevel`)
+    REFERENCES `rebirthspossibles` (`rebirthLevel`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_RebirthsPossiblesItemsNeeded_ItemsBase1`
+    FOREIGN KEY (`idBaseItem`)
+    REFERENCES `itemsbase` (`idBaseItem`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 REPLACE INTO rebirthspossibles VALUES
 (0, 5, 0,   0, 0),
 (1, 6, 5,   10, 8),
@@ -124,14 +142,14 @@ ADD CONSTRAINT `fk_AreasMonstersLevels_RebirthsPossibles2`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-ALTER TABLE `discord_bot_rpg`.`SellableItems` 
+ALTER TABLE `sellableitems` 
 ADD COLUMN `rebirthLevel` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `price`,
 ADD INDEX `fk_SellableItems_RebirthsPossibles1_idx` (`rebirthLevel` ASC) VISIBLE;
 
-ALTER TABLE `discord_bot_rpg`.`SellableItems` 
+ALTER TABLE `sellableitems` 
 ADD CONSTRAINT `fk_SellableItems_RebirthsPossibles1`
   FOREIGN KEY (`rebirthLevel`)
-  REFERENCES `discord_bot_rpg`.`RebirthsPossibles` (`rebirthLevel`)
+  REFERENCES `rebirthspossibles` (`rebirthLevel`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
