@@ -193,6 +193,14 @@ class CharacterModule extends GModule {
             );
         });
 
+        this.router.post("/rebirth", async (req, res, next) => {
+            console.log(req.body);
+            await next();
+            return res.json(
+                { error: "Not implemented" }
+            );
+        });
+
         this.router.get("/isTrading", async (req, res, next) => {
             let data = {
                 isTrading: Globals.connectedUsers[res.locals.id].character.isTrading()
