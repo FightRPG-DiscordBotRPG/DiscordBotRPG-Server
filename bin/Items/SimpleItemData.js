@@ -20,7 +20,7 @@ class SimpleItemData {
         return Object.assign(new SimpleItemData(), data);
     }
 
-    async toApi(lang = "en") {
+    toApi(lang = "en") {
         return {
             name: Item.getName(this.idBase, lang),
             type: Translator.getString(lang, "item_types", this.typename),
