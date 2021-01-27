@@ -4,7 +4,10 @@ const Translator = require("../Translator/Translator");
 const Craft = require("./Craft");
 const Utils = require("../Utilities/Utils");
 
+const searchParamsFiltersAuthorized = { "name": true, "rarity": true, "type": true, "subtype": true};
+
 class CraftingBuilding {
+
     constructor() {
         this.id = 0;
         this.minRarity = 1;
@@ -31,7 +34,7 @@ class CraftingBuilding {
     }
 
     async getNumberOfItems(params, lang = "en") {
-        let searchParamsResult = Globals.getSearchParams(params, false, true, { "name": true, "rarity": true, "type": true, "subtype": true });
+        let searchParamsResult = Globals.getSearchParams(params, true, false, searchParamsFiltersAuthorized);
 
         let paramsCount = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.getMaxRebirthLevel(), this.minRebirthLevel, lang], 7);
 
@@ -55,7 +58,7 @@ class CraftingBuilding {
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
 
-        let searchParamsResult = Globals.getSearchParams(params, true, false, { "name": true, "rarity": true, "type": true, "subtype": true });
+        let searchParamsResult = Globals.getSearchParams(params, true, false, searchParamsFiltersAuthorized);
 
         let paramsSearch = Utils.getParamsAndSqlMore(searchParamsResult, [this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.getMaxRebirthLevel(), this.minRebirthLevel, lang, perPage, (page - 1) * perPage], 7);
 
@@ -133,7 +136,6 @@ class CraftingBuilding {
 
     async getRealIdCraft(idCraft, lang="en") {
         idCraft = idCraft && Number.isInteger(Number.parseInt(idCraft)) ? idCraft : 1;
-        console.log([this.minRarity, this.maxRarity, this.maxLevel, this.minLevel, this.maxRebirthLevel, this.minRebirthLevel, idCraft - 1]);
         let res;
         if (idCraft > 0) {
             res = await conn.query(
