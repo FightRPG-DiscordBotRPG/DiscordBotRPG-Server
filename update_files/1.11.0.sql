@@ -56,8 +56,10 @@ CREATE TABLE IF NOT EXISTS `rebirthspossiblesitemsneeded` (
   `rebirthLevel` INT UNSIGNED NOT NULL,
   `idBaseItem` INT UNSIGNED NOT NULL,
   `number` INT NOT NULL DEFAULT 1,
+  `minRebirthLevel` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`rebirthLevel`, `idBaseItem`),
   INDEX `fk_RebirthsPossiblesItemsNeeded_ItemsBase1_idx` (`idBaseItem` ASC) VISIBLE,
+  INDEX `fk_RebirthsPossiblesItemsNeeded_RebirthsPossibles2_idx` (`minRebirthLevel` ASC) VISIBLE,
   CONSTRAINT `fk_RebirthsPossiblesItemsNeeded_RebirthsPossibles1`
     FOREIGN KEY (`rebirthLevel`)
     REFERENCES `rebirthspossibles` (`rebirthLevel`)
@@ -66,6 +68,11 @@ CREATE TABLE IF NOT EXISTS `rebirthspossiblesitemsneeded` (
   CONSTRAINT `fk_RebirthsPossiblesItemsNeeded_ItemsBase1`
     FOREIGN KEY (`idBaseItem`)
     REFERENCES `itemsbase` (`idBaseItem`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_RebirthsPossiblesItemsNeeded_RebirthsPossibles2`
+    FOREIGN KEY (`minRebirthLevel`)
+    REFERENCES `rebirthspossibles` (`rebirthLevel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
