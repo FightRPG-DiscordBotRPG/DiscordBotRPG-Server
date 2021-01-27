@@ -1,20 +1,14 @@
 const conn = require("../../conf/mysql");
 const Translator = require("../Translator/Translator");
 const Item = require("../Items/Item");
+const SimpleItemData = require("../Items/SimpleItemData");
 
 class Craft {
     constructor(id) {
         this.id = id;
         this.exist = false;
         /**
-         * @type {Array<{
-                    idBase:     number,
-                    typename:   string,
-                    stypename:  string,
-                    rarity:     string,
-                    number:     number,
-                    minRebirthLevel: number,
-                }>}
+         * @type {Array<SimpleItemData>}
          **/
         this.requiredItems = [];
         /**
@@ -72,14 +66,14 @@ class Craft {
             WHERE craftitemsneeded.IdCraftItem = ?;`, [this.id]);
 
             for (let item of res) {
-                this.requiredItems.push({
+                this.requiredItems.push(SimpleItemData.createFromData({
                     idBase: item.idBaseItem,
                     typename: item.nomType,
                     stypename: item.nomSousType,
                     rarity: item.nomRarity,
                     number: item.number,
                     minRebirthLevel: item.minRebirthLevel,
-                });
+                }));
             }
         }
     }
@@ -104,17 +98,7 @@ class Craft {
         craft.requiredItems = [];
 
         for (let item of this.requiredItems) {
-            craft.requiredItems.push({
-                name: Item.getName(item.idBase, lang),
-                type: Translator.getString(lang, "item_types", item.typename),
-                type_shorthand: item.typename,
-                subType: Translator.getString(lang, "item_sous_types", item.stypename),
-                subType_shorthand: item.stypename,
-                rarity: Translator.getString(lang, "rarities", item.rarity),
-                rarity_shorthand: item.rarity,
-                number: item.number,
-                missing: item.missing,
-            });
+            craft.requiredItems.push(item.toApi(lang));
         }
         return craft;
     }
