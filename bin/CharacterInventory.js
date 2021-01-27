@@ -6,6 +6,8 @@ const Consumable = require("./Items/Consumable");
 const Translator = require("./Translator/Translator");
 const Stats = require("./Stats/Stats");
 const Utils = require("./Utilities/Utils.js");
+const SimpleItemData = require("./Items/SimpleItemData.js");
+const RebirthData = require("./Rebirths/RebirthData.js");
 
 class CharacterInventory {
     // Discord User Info
@@ -191,25 +193,48 @@ class CharacterInventory {
      * 
      * @param {Craft} craft
      */
-    async getMissingComponent(craft) {
-        // idBase, typename, stypename, rarity, number
+    async getCraftMissingComponents(craft) {
+        await this.getMissingComponents(craft.requiredItems);
+        return craft;
+    }
+
+    /**
+     * 
+     * @param {RebirthData} rebirth
+     */
+    async getRebirthRequiredItems(rebirth) {
+        await this.getMissingComponents(rebirth.requiredItems);
+        return rebirth;
+    }
+
+    /**
+     * Update required items with the missing data
+     * Returns the required items object
+     * @param {SimpleItemData[]} requiredItems
+     */
+    async getMissingComponents(requiredItems) {
+
+        if (requiredItems == null || requiredItems.length === 0) {
+            return requiredItems;
+        }
         let idArr = [];
         let keys = {};
-        for (let i in craft.requiredItems) {
-            let item = craft.requiredItems[i];
+        for (let i in requiredItems) {
+            let item = requiredItems[i];
             let idBase = item.idBase;
             keys[idBase] = i;
             idArr.push(idBase);
             item.missing = item.number;
         }
+
         let resources = await this.getNumbersOfThoseItemsByIDBase(idArr);
 
         for (let resource of resources) {
-            craft.requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
-            craft.requiredItems[keys[resource.idBaseItem]].missing = craft.requiredItems[keys[resource.idBaseItem]].missing >= 0 ? craft.requiredItems[keys[resource.idBaseItem]].missing : 0
+            requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
+            requiredItems[keys[resource.idBaseItem]].missing = requiredItems[keys[resource.idBaseItem]].missing >= 0 ? requiredItems[keys[resource.idBaseItem]].missing : 0
         }
 
-        return craft;
+        return requiredItems;
     }
 
     /**

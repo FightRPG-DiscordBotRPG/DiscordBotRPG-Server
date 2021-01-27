@@ -166,7 +166,7 @@ class CraftingBuilding {
     }
 
     getMaxRebirthLevel() {
-        return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.maxRebirthLevel;
+        return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel;
     }
 }
 

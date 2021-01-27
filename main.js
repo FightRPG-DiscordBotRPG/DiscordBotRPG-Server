@@ -11,6 +11,7 @@ const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
 const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
 const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
+const RebirthManager = require("./bin/Rebirths/RebirthManager.js");
 const axios = require("axios").default;
 const options = {
     webhookPort: 5000,
@@ -63,6 +64,12 @@ let startUp = async () => {
     console.log("Initializing Database ...");
     await DatabaseInitializer.initialize();
     console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+    syncStartWith = Date.now();
+    console.log("Loading Rebirth Manager ...");
+    Globals.rebirthManager = new RebirthManager();
+    await Globals.rebirthManager.load();
+    console.log("Rebirth Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     syncStartWith = Date.now();
     console.log("Loading Areas...");

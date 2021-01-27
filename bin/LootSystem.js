@@ -168,7 +168,7 @@ class LootSystem {
             let equipable = res[0]["equipable"];
 
             if (equipable == true && Item.canHaveStats(objectType)) {
-                let newlyGeneratedStats = Item.generateItemsStats(rarity, objectType, objectSubtype, level, 100 + (Globals.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats));
+                let newlyGeneratedStats = Item.generateItemsStats(rarity, objectType, objectSubtype, level, 100 + (Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats));
                 stats = newlyGeneratedStats.stats;
                 secondaryStats = newlyGeneratedStats.secondaryStats;
             }

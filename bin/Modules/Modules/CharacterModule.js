@@ -186,7 +186,7 @@ class CharacterModule extends GModule {
         });
 
         this.router.get("/rebirth", async (req, res, next) => {
-            let data = await Globals.connectedUsers[res.locals.id].toApiToRebirth();
+            let data = await Globals.connectedUsers[res.locals.id].toApiToRebirth(res.locals.lang);
             await next();
             return res.json(
                 data

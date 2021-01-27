@@ -1,4 +1,5 @@
 const conn = require("../conf/mysql.js");
+const RebirthManager = require("./Rebirths/RebirthManager.js");
 
 let rarityChances = {
     commun: 30 / 100,
@@ -106,10 +107,9 @@ var Globals = {
     "fightManager": {},
     "lockedMembers": {},
     /**
-     * @type {Object<number, {nbrOfStatsPointsPerLevel:number, nbrOfTalentPointsBonus:number, percentageBonusToMonstersStats:number, percentageBonusToItemsStats:number}>}
-     */
-    "rebirthsLevelsModifiers": {},
-    "maxRebirthLevel": 0,
+    * @type {RebirthManager}
+    */
+    "rebirthManager": null,
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
@@ -237,16 +237,8 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
-
-        res = await conn.query("SELECT * FROM rebirthspossibles;");
-        for (let rebirth of res) {
-            Globals.rebirthsLevelsModifiers[rebirth.rebirthLevel] = rebirth;
-            if (rebirth.rebirthLevel > Globals.maxRebirthLevel) {
-                Globals.maxRebirthLevel = rebirth.rebirthLevel;
-            }
-        }
     },
-    getSearchParams: (params, withWhere = true, withAndBefore = false, includeList=null) => {
+    getSearchParams: (params, withWhere = true, withAndBefore = false, includeList = null) => {
         let values = [];
         let more = "";
 
@@ -274,7 +266,7 @@ var Globals = {
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && equivalent[param] != null && (includeList ===null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
+                if (params[param] != null && equivalent[param] != null && (includeList === null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
                     if (more.length > 0) {
                         more += " AND ";
                     }

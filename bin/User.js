@@ -323,7 +323,7 @@ class User {
                 physicalDefense: this.character.getPhysicalDefense(this.character.getLevel()),
             },
             maxLevel: Globals.maxLevel,
-            maxRebirthLevel: Globals.maxRebirthLevel,
+            maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
             secondaryStatsEquipment: this.character.equipement.secondaryStats.toApi(),
             currentHp: this.character.actualHP,
@@ -354,22 +354,32 @@ class User {
         return infos;
     }
 
-    async toApiToRebirth() {
-        return {
+    async toApiToRebirth(lang = "en") {
+
+        let currentRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel()];
+        let nexRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel() + 1];
+
+        let currentRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getRebirthLevel()];
+        let nextRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getRebirthLevel() + 1];
+
+
+        let data = {
             level: this.character.getLevel(),
             rebirthLevel: this.character.getRebirthLevel(),
             maxLevel: Globals.maxLevel,
-            maxRebirthLevel: Globals.maxRebirthLevel,
+            maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
             craft: {
                 level: this.character.getCraftLevel(),
                 rebirthLevel: this.character.getCraftRebirthLevel(),
-                curentRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel()],
-                nextRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel() + 1]
+                curentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this.character, lang),
+                nextRebirthsLevelsModifiers: await nexRebirthCraft.toApi(this.character, lang),
             },
             lang: this.getLang(),
-            curentRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getRebirthLevel()],
-            nextRebirthsLevelsModifiers: Globals.rebirthsLevelsModifiers[this.character.getRebirthLevel()+1]
+            curentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this.character, lang),
+            nextRebirthsLevelsModifiers: await nextRebirthLevel.toApi(this.character, lang)
         }
+
+        return data;
     }
 
     canBeUnstuck() {

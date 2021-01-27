@@ -27,7 +27,7 @@ class StatsMonstres extends Stats {
             let percentage = parseInt(res[stat].percentage, 10) / 100;
 
             if (res[stat].nom != "armor") {
-                this[res[stat].nom] = Math.ceil(percentage * totalStats * (1 + Globals.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToMonstersStats / 100));
+                this[res[stat].nom] = Math.ceil(percentage * totalStats * (1 + Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToMonstersStats / 100));
             } else {
                 this[res[stat].nom] = Math.ceil(percentage * optimalArmor);
             }

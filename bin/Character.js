@@ -356,11 +356,11 @@ class Character extends CharacterEntity {
     }
 
     getStatsPointsPerLevel() {
-        return Globals.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfStatsPointsPerLevel;
+        return Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfStatsPointsPerLevel;
     }
 
     getRebirthTalentBonus() {
-        return Globals.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfTalentPointsBonus;
+        return Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel()].nbrOfTalentPointsBonus;
     }
 
     /**

@@ -55,7 +55,7 @@ class CraftingModule extends GModule {
             if (res.locals.craftingbuilding != null) {
                 let craft = await res.locals.craftingbuilding.getCraft(req.params.idCraft, res.locals.lang);
                 if (craft != null) {
-                    craft = await Globals.connectedUsers[res.locals.id].character.inv.getMissingComponent(craft);
+                    craft = await Globals.connectedUsers[res.locals.id].character.inv.getCraftMissingComponents(craft);
                     data.craft = await craft.toApi(res.locals.lang);
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "craft_dont_exist");
