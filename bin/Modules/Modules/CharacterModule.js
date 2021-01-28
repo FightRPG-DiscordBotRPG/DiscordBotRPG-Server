@@ -200,7 +200,7 @@ class CharacterModule extends GModule {
             if (req.body.rebirthType === "level") {
                 data = await this.rebirthCharacter(res.locals.character, res.locals.lang);
             } else {
-                data = this.asError("Not Implemented For Craft");
+                data = await this.rebirthCraft(res.locals.character, res.locals.lang);
             }
 
             await next();
@@ -538,6 +538,23 @@ class CharacterModule extends GModule {
         }
 
         await character.rebirth();
+
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
+    }
+
+    /**
+     *
+     * @param {Character} character
+     * @param {string} lang
+     */
+    async rebirthCraft(character, lang = "en") {
+        let errors = this.getRebirthErrors(await character.getRebirthDataCraftToApi(lang), lang);
+
+        if (errors.error) {
+            return errors;
+        }
+
+        await character.rebirthCraft();
 
         return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
     }

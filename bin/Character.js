@@ -265,6 +265,10 @@ class Character extends CharacterEntity {
         await this.resetTalents(true);
     }
 
+    async rebirthCraft() {
+        await this.craftSystem.rebirth();
+    }
+
     /**
      * Exhaust time in seconds
      * @returns {number} Exhuast time in seconds
