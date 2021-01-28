@@ -555,6 +555,24 @@ class Character extends CharacterEntity {
         return item;
     }
 
+    async setFilteredItemsFavorite(params, lang = "en", fav = true) {
+        let searchParamsResult = Globals.getSearchParams(params, false, true);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang, fav], 2);
+
+        let res = await conn.query(`UPDATE items, (SELECT idItem
+                                    FROM charactersinventory
+                                    INNER JOIN items USING(idItem)
+                                    INNER JOIN itemsbase USING(idBaseItem)
+                                    INNER JOIN itemssoustypes USING(idSousType)
+                                    INNER JOIN itemstypes USING(idType)
+                                    INNER JOIN itemspower USING(idItem)
+                                    INNER JOIN localizationitems USING(idBaseItem)
+                                    WHERE idCharacter = ? AND lang = ? ${paramsResult.more}) as ci
+                                    SET items.favorite = ? WHERE items.idItem = ci.idItem`, paramsResult.sqlParams);
+
+        return res;
+    }
+
     async getItemFromAllInventories(idItem) {
         let item = await this.getInv().getItemOfThisIDItem(idItem);
         if (item == null)
@@ -1028,6 +1046,7 @@ module.exports = Character;
 const Area = require("./Areas/Area");
 const Stats = require("./Stats/Stats.js");
 const Craft = require("./CraftSystem/Craft.js");
+const Utils = require("./Utilities/Utils.js");
 
 /**
  * @typedef {import("./Trades/Trade")} Trade
