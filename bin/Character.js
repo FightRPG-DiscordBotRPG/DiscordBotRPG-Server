@@ -6,7 +6,7 @@ const CharacterEntity = require("./Entities/CharacterEntity.js");
 const MarketplaceOrder = require("./Marketplace/MarketplaceOrder.js");
 const Item = require("./Items/Item.js");
 const Consumable = require("./Items/Consumable.js");
-const PlayerCraft = require("./CraftSystem/PlayerCraft.js");
+const PlayerCraft = require("./Character/LevelSystem/PlayerCraft.js");
 const LootSystem = require("./LootSystem.js");
 const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
@@ -20,7 +20,7 @@ class Character extends CharacterEntity {
         this.id = null;
         this.idUser = idUser != null ? idUser : null;
         this.inv = new CharacterInventory();
-        this.craftSystem = new PlayerCraft(this.idUser);
+        this.craftSystem = new PlayerCraft();
         this.achievements = new CharacterAchievement();
         this.statPoints = 0;
         this.money = 0;
@@ -63,7 +63,7 @@ class Character extends CharacterEntity {
         //Init level system
         await Promise.all([
             this.levelSystem.init(this.id, this.idUser),
-            this.craftSystem.init(this.id),
+            this.craftSystem.init(this.id, this.idUser),
             this.stats.init(this.id),
             this.getInv().loadInventory(this.id),
             this.equipement.loadEquipements(this.id),
@@ -91,8 +91,8 @@ class Character extends CharacterEntity {
         this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id, this.idUser),
-            this.craftSystem.load(id),
+            this.levelSystem.load(id, this.idUser),
+            this.craftSystem.load(id, this.idUser),
             this.getInv().loadInventory(id),
             this.equipement.loadEquipements(id),
             this.achievements.load(id),
@@ -123,7 +123,7 @@ class Character extends CharacterEntity {
         this.uuid = this.id.toString();
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id, this.idUser),
+            this.levelSystem.load(id, this.idUser),
             this.equipement.loadEquipements(id),
             this.talents.load(this, id),
             this.skillBuild.load(id),
@@ -227,21 +227,42 @@ class Character extends CharacterEntity {
             await this.getInv().addToInventory(swapItem);
         }
         this.checkEquipmentAchievements();
-        this.updateMaxStats();
-        this.healIfAreaIsSafe();
+        await this.updateStatsAndHeal();
     }
 
     /**
      * 
-     * @param {Item} itemToUnequip
+     * @param {Item|number} itemToUnequip Item or IdType
      */
-    async unEquipThisItem(itemToUnequip) {
-        let itemToInventory = await this.equipement.unEquip(itemToUnequip.getEquipTypeID());
+    async unEquipThisItem(itemToUnequip, update = true) {
+        itemToUnequip = itemToUnequip.constructor === Number ? itemToUnequip : itemToUnequip.getEquipTypeID();
+        let itemToInventory = await this.equipement.unEquip(itemToUnequip);
         if (itemToInventory !== -1) {
             await this.getInv().addToInventory(itemToInventory);
-            this.updateMaxStats();
-            this.healIfAreaIsSafe();
+            if (update) {
+                await this.updateStatsAndHeal();
+            }
         }
+    }
+
+    async unEquipAllItems(update = true) {
+        let promises = [];
+        for (let idType of Globals.equipsPossible) {
+            promises.push(this.unEquipThisItem(idType, false));
+        }
+
+        await Promise.all(promises);
+
+        if (update) {
+            await this.updateStatsAndHeal();
+        }
+    }
+
+    async rebirth() {
+        await this.levelSystem.rebirth();
+        await this.unEquipAllItems(false);
+        await this.resetStats(true);
+        await this.resetTalents(true);
     }
 
     /**
@@ -340,19 +361,19 @@ class Character extends CharacterEntity {
     }
 
     // Call for reseting stats
-    async resetStats() {
+    async resetStats(ignoreCost = false) {
         return this.genericReset(async () => {
             await this.stats.reset();
             await this.setStatPoints(this.levelSystem.actualLevel * this.getStatsPointsPerLevel());
-        });
+        }, ignoreCost);
     }
 
-    async resetTalents() {
+    async resetTalents(ignoreCost = false) {
         return this.genericReset(async () => {
             await this.setTalentPoints(this.levelSystem.actualLevel + this.getRebirthTalentBonus());
             await this.talents.reset();
             await this.skillBuild.reset();
-        });
+        }, ignoreCost);
     }
 
     getStatsPointsPerLevel() {
@@ -366,17 +387,27 @@ class Character extends CharacterEntity {
     /**
      * Common tests with reset stats/talents
      * @param {Function} resetFunction
+     * @param {boolean} ignoreCost
      */
-    async genericReset(resetFunction) {
-        let resetValue = this.getResetStatsValue();
-        if (await this.doIHaveEnoughMoney(resetValue)) {
-            await this.removeMoney(resetValue);
-            await resetFunction();
-            this.updateMaxStats();
-            this.healIfAreaIsSafe();
-            return true;
+    async genericReset(resetFunction, ignoreCost = false) {
+
+        if (!ignoreCost) {
+            let resetValue = this.getResetStatsValue();
+            if (await this.doIHaveEnoughMoney(resetValue)) {
+                await this.removeMoney(resetValue);
+            } else {
+                return false;
+            }
         }
-        return false;
+
+        await resetFunction();
+        await this.updateStatsAndHeal();
+        return true;
+    }
+
+    async updateStatsAndHeal() {
+        this.updateMaxStats();
+        await this.healIfAreaIsSafe();
     }
 
     getResetStatsValue() {
@@ -391,11 +422,8 @@ class Character extends CharacterEntity {
         if (startingLevel < this.levelSystem.actualLevel) {
             await Promise.all([
                 this.addStatPoints(this.getStatsPointsPerLevel() * (this.levelSystem.actualLevel - startingLevel)),
-                this.addTalentPoints(this.levelSystem.actualLevel -  startingLevel),
-                this.levelSystem.saveMyLevel()
+                this.addTalentPoints(this.levelSystem.actualLevel - startingLevel),
             ]);
-        } else {
-            await this.levelSystem.saveMyExp();
         }
     }
 
@@ -501,7 +529,7 @@ class Character extends CharacterEntity {
         return value;
     }
 
-    async sellAllInventory(params, lang="en") {
+    async sellAllInventory(params, lang = "en") {
         let value = (await this.getInv().getAllInventoryValue(params, lang)).value;
         await Promise.all([
             this.getInv().deleteAllFromInventory(params, lang),
@@ -800,7 +828,7 @@ class Character extends CharacterEntity {
 
     async checkEquipmentAchievements() {
         let nbrOfMythics = 0;
-        
+
         for (let item of await this.equipement.getAllItems()) {
             // test everything except mount
             if (item.type != 8) {
@@ -926,7 +954,7 @@ class Character extends CharacterEntity {
             level: this.getCraftLevel(),
             rebirthLevel: this.getCraftRebirthLevel(),
             curentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this, lang),
-            nextRebirthsLevelsModifiers: await nexRebirthCraft.toApi(this, lang),
+            nextRebirthsLevelsModifiers: await nexRebirthCraft?.toApi(this, lang),
             maxLevel: Globals.maxLevel,
         };
     }
@@ -942,7 +970,7 @@ class Character extends CharacterEntity {
             maxLevel: Globals.maxLevel,
             maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
             curentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this, lang),
-            nextRebirthsLevelsModifiers: await nextRebirthLevel.toApi(this, lang)
+            nextRebirthsLevelsModifiers: await nextRebirthLevel?.toApi(this, lang)
         };
 
     }
@@ -952,7 +980,7 @@ class Character extends CharacterEntity {
      * 
      * @param {string} lang
      */
-    async toApiSimple(lang="en") {
+    async toApiSimple(lang = "en") {
         return {
             name: this.getName(),
             level: this.getLevel(),

@@ -37,10 +37,10 @@ class CharacterTalents {
             this.talents[item.idNode] = Globals.pstreenodes.getNode(item.idNode);
         }
 
-        this.reloadStats();
+        await this.reloadStats();
     }
 
-    reloadStats() {
+    async reloadStats() {
         this.stats = new Stats();
         this.secondaryStats = new SecondaryStats();
         this.unlockedSkillsIds = {};
@@ -53,8 +53,7 @@ class CharacterTalents {
                 this.unlockedSkillsIds[id] = true;
             }
         }
-        this.character.updateMaxStats();
-        this.character.healIfAreaIsSafe();
+        await this.character.updateStatsAndHeal();
     }
 
     isTalentUnlocked(idNode) {
@@ -76,7 +75,7 @@ class CharacterTalents {
     async reset() {
         await conn.query("DELETE FROM characterstalents WHERE idCharacter = ?;", [this.id]);
         this.talents = {};
-        this.reloadStats();
+        await this.reloadStats();
     }
 
     /**
@@ -113,7 +112,7 @@ class CharacterTalents {
                 conn.query("INSERT INTO characterstalents VALUES (?, ?);", [this.id, idNode]),
                 this.character.removeTalentPoints(this.talents[idNode].getRealCost()),
             ]);
-            this.reloadStats();
+            await this.reloadStats();
             return true;
         }
         return false;

@@ -24,6 +24,7 @@ const Emojis = require("../../Emojis");
 const express = require("express");
 const Skill = require("../../SkillsAndStatus/Skill");
 const Character = require("../../Character");
+const RebirthApiData = require("../../Rebirths/RebirthApiData");
 
 
 
@@ -194,10 +195,17 @@ class CharacterModule extends GModule {
         });
 
         this.router.post("/rebirth", async (req, res, next) => {
-            console.log(req.body);
+
+            let data;
+            if (req.body.rebirthType === "level") {
+                data = await this.rebirthCharacter(res.locals.character, res.locals.lang);
+            } else {
+                data = this.asError("Not Implemented For Craft");
+            }
+
             await next();
             return res.json(
-                { error: "Not implemented" }
+                data
             );
         });
 
@@ -483,7 +491,7 @@ class CharacterModule extends GModule {
      * @param {number} idNode
      * @param {string} lang
      */
-    async tryUnlockTalent(character, idNode, lang="en") {
+    async tryUnlockTalent(character, idNode, lang = "en") {
         if (isNaN(idNode)) {
             return this.asError(Translator.getString(lang, "errors", "talents_show_missing_id"));
         }
@@ -515,6 +523,45 @@ class CharacterModule extends GModule {
             node: await node.toApi(lang),
             pointsLeft: await character.getTalentPoints(),
         };
+    }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {string} lang
+     */
+    async rebirthCharacter(character, lang = "en") {
+        let errors = this.getRebirthErrors(await character.getRebirthDataCharacterToApi(lang), lang);
+
+        if (errors.error) {
+            return errors;
+        }
+
+        await character.rebirth();
+
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
+    }
+
+    /**
+     * 
+     * @param {RebirthApiData} data
+     */
+    getRebirthErrors(data, lang = "en") {
+        if (data.rebirthLevel == data.maxRebirthLevel) {
+            return this.asError(Translator.getString(lang, "errors", "rebirth_cant_rebirth_max_level"));
+        }
+
+        if (data.level < data.maxLevel) {
+            return this.asError(Translator.getString(lang, "errors", "rebirth_not_max_level"));
+        }
+
+        for (let item of data.nextRebirthsLevelsModifiers.requiredItems) {
+            if (item.missing > 0) {
+                return this.asError(Translator.getString(lang, "errors", "rebirth_dont_have_required_items"));
+            }
+        }
+
+        return {};
     }
 
 }
