@@ -356,31 +356,19 @@ class User {
 
     async toApiToRebirth(lang = "en") {
 
-        let currentRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel()];
-        let nexRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getCraftRebirthLevel() + 1];
-
-        let currentRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getRebirthLevel()];
-        let nextRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.character.getRebirthLevel() + 1];
-
+        let promises = [this.character.getRebirthDataCharacterToApi(lang), this.character.getRebirthDataCraftToApi(lang)];
 
         let data = {
-            level: this.character.getLevel(),
-            rebirthLevel: this.character.getRebirthLevel(),
-            maxLevel: Globals.maxLevel,
-            maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
-            craft: {
-                level: this.character.getCraftLevel(),
-                rebirthLevel: this.character.getCraftRebirthLevel(),
-                curentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this.character, lang),
-                nextRebirthsLevelsModifiers: await nexRebirthCraft.toApi(this.character, lang),
-            },
             lang: this.getLang(),
-            curentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this.character, lang),
-            nextRebirthsLevelsModifiers: await nextRebirthLevel.toApi(this.character, lang)
         }
+
+        promises = await Promise.all(promises);
+        data = {...promises[0], craft:promises[1]} 
 
         return data;
     }
+
+    
 
     canBeUnstuck() {
         return Date.now() - this.lastCommandTime >= 5000;

@@ -919,6 +919,34 @@ class Character extends CharacterEntity {
         return res[0] != null ? res[0].idGuild : 0;
     }
 
+    async getRebirthDataCraftToApi(lang = "en") {
+        let currentRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.getCraftRebirthLevel()];
+        let nexRebirthCraft = Globals.rebirthManager.rebirthsLevelsModifiers[this.getCraftRebirthLevel() + 1];
+        return {
+            level: this.getCraftLevel(),
+            rebirthLevel: this.getCraftRebirthLevel(),
+            curentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this, lang),
+            nextRebirthsLevelsModifiers: await nexRebirthCraft.toApi(this, lang),
+            maxLevel: Globals.maxLevel,
+        };
+    }
+
+    async getRebirthDataCharacterToApi(lang = "en") {
+
+        let currentRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel()];
+        let nextRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel() + 1];
+
+        return {
+            level: this.getLevel(),
+            rebirthLevel: this.getRebirthLevel(),
+            maxLevel: Globals.maxLevel,
+            maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
+            curentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this, lang),
+            nextRebirthsLevelsModifiers: await nextRebirthLevel.toApi(this, lang)
+        };
+
+    }
+
 
     /**
      * 
