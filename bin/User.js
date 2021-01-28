@@ -357,18 +357,13 @@ class User {
     async toApiToRebirth(lang = "en") {
 
         let promises = [this.character.getRebirthDataCharacterToApi(lang), this.character.getRebirthDataCraftToApi(lang)];
-
-        let data = {
-            lang: this.getLang(),
-        }
-
         promises = await Promise.all(promises);
-        data = {...promises[0], craft:promises[1]} 
+        let data = { ...promises[0], craft: promises[1], lang: this.getLang() }
 
         return data;
     }
 
-    
+
 
     canBeUnstuck() {
         return Date.now() - this.lastCommandTime >= 5000;
