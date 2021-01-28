@@ -27,7 +27,7 @@ class StatsMonstres extends Stats {
             let percentage = parseInt(res[stat].percentage, 10) / 100;
 
             if (res[stat].nom != "armor") {
-                this[res[stat].nom] = Math.ceil(percentage * totalStats * (1 + Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToMonstersStats / 100));
+                this[res[stat].nom] = Math.ceil(percentage * totalStats * this.getMultiplerRebirth(rebirthLevel));
             } else {
                 this[res[stat].nom] = Math.ceil(percentage * optimalArmor);
             }
@@ -37,6 +37,18 @@ class StatsMonstres extends Stats {
 
     getMultiplier(difficulty) {
         return 1 + ((difficulty - 1) * 8);
+    }
+
+    getOptimalArmor(level = 1, rebirthLevel = 0) {
+        return ((8 * (Math.pow(level, 2))) / 7 + 5) * this.getMultiplerRebirth(rebirthLevel);
+    }
+
+    getMaximumStat(level = 1, rebirthLevel = 0) {
+        return super.getMaximumStat(level) * this.getMultiplerRebirth(rebirthLevel);
+    }
+
+    getMultiplerRebirth(rebirthLevel = 0) {
+        return 1 + Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToMonstersStats / 100;
     }
 
 }

@@ -181,19 +181,15 @@ class Stats {
         return r;
     }
 
-    getOptimalArmor(level = 1) {
+    getOptimalArmor(level = 1, rebirthLevel = 0) {
         return ((8 * (Math.pow(level, 2))) / 7 + 5);
     }
 
-    getOptimalCrit(level = 1) {
-        return level * 8;
+    getOptimalStun(level = 1, rebirthLevel = 0) {
+        return this.getMaximumStat(level, rebirthLevel);
     }
 
-    getOptimalStun(level = 1) {
-        return level * 8;
-    }
-
-    getMaximumStat(level = 1) {
+    getMaximumStat(level = 1, rebirthLevel = 0) {
         return level * 8;
     }
 
