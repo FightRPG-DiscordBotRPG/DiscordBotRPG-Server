@@ -100,7 +100,6 @@ class LootSystem {
         number = Number.parseInt(number);
         number = number > 0 ? number : 1;
         let res = await conn.query("SELECT * FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idBaseItem = ?", [idBase]);
-        let idToAdd;
         let idsToFavorites = [];
 
         if (res[0]) {
@@ -111,7 +110,7 @@ class LootSystem {
             }
             if (res.stackable == true) {
                 // C'est un objet stackable
-                idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
+                let idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
                 if (idToAdd == null) {
                     idToAdd = await this.newItem(idBase, level, rebirthLevel);
                 }
@@ -166,6 +165,9 @@ class LootSystem {
             let objectType = res[0]["nomType"];
             let objectSubtype = res[0]["nomSousType"];
             let equipable = res[0]["equipable"];
+
+            rebirthLevel = Number.parseInt(rebirthLevel);
+            rebirthLevel = rebirthLevel >= 0 && rebirthLevel <= Globals.rebirthManager.maxRebirthLevel ? rebirthLevel : 0;
 
             if (equipable == true && Item.canHaveStats(objectType)) {
                 let newlyGeneratedStats = Item.generateItemsStats(rarity, objectType, objectSubtype, level, 100 + (Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats));
