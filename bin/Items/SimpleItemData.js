@@ -22,6 +22,7 @@ class SimpleItemData {
 
     toApi(lang = "en") {
         return {
+            idBase: this.idBase,
             name: Item.getName(this.idBase, lang),
             type: Translator.getString(lang, "item_types", this.typename),
             type_shorthand: this.typename,

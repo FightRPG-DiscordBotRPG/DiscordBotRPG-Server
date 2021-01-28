@@ -531,12 +531,15 @@ class CharacterModule extends GModule {
      * @param {string} lang
      */
     async rebirthCharacter(character, lang = "en") {
-        let errors = this.getRebirthErrors(await character.getRebirthDataCharacterToApi(lang), lang);
+        let rebirthData = await character.getRebirthDataCharacterToApi(lang);
+
+        let errors = this.getRebirthErrors(rebirthData, lang);
 
         if (errors.error) {
             return errors;
         }
 
+        await this.removeRebirthNeedItems(character, rebirthData);
         await character.rebirth();
 
         return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
@@ -548,15 +551,32 @@ class CharacterModule extends GModule {
      * @param {string} lang
      */
     async rebirthCraft(character, lang = "en") {
-        let errors = this.getRebirthErrors(await character.getRebirthDataCraftToApi(lang), lang);
+        let rebirthData = await character.getRebirthDataCraftToApi(lang);
+        let errors = this.getRebirthErrors(rebirthData, lang);
 
         if (errors.error) {
             return errors;
         }
 
+        await this.removeRebirthNeedItems(character, rebirthData);
         await character.rebirthCraft();
 
         return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
+    }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {RebirthApiData} apiData
+     * @param {string} lang
+     */
+    async removeRebirthNeedItems(character, apiData) {
+        let promises = [];
+        for (let item of apiData.nextRebirthsLevelsModifiers.requiredItems) {
+            console.log(item);
+            promises.push(character.getInv().removeSomeFromInventoryIdBase(item.idBase, item.number, true));
+        }
+        await Promise.all(promises);
     }
 
     /**
