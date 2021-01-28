@@ -336,7 +336,7 @@ class Area {
     }
 
     /**
-     * @returns {Array<AreaBonus>} More like an object with name of bonus as key
+     * @returns {Promise<Array<AreaBonus>>} More like an object with name of bonus as key
      */
     async getAllBonuses() {
         let bonuses = {};
@@ -365,7 +365,7 @@ class Area {
     }
 
     /**
-     * @return {number}
+     * @return {Promise<number>}
      */
     async getLevel() {
         let res = await conn.query("SELECT AreaLevel as level FROM areas WHERE idArea = ?;", [this.id]);
@@ -500,7 +500,7 @@ class Area {
     }
 
     /**
-     * @returns {number} Null if no guilds
+     * @returns {Promise<number>} Null if no guilds
      */
     async getOwnerID() {
         let res = await conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [this.id]);
@@ -521,7 +521,7 @@ class Area {
     /**
      * 
      * @param {string} lang 
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     async getOwner(lang) {
         let res = await conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?", [this.id]);
