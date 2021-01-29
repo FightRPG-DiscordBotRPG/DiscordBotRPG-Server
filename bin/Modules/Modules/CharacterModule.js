@@ -168,7 +168,7 @@ class CharacterModule extends GModule {
 
             if (req.body.avatar != null) {
                 try {
-                    await conn.query("UPDATE users SET avatar = ? WHERE idUser = ?;", [req.body.avatar]);
+                    await conn.query("UPDATE users SET avatar = ? WHERE idUser = ?;", [req.body.avatar, res.locals.id]);
                 } catch (ex) {
                     console.log("Exception on avatar set: " + ex);
                 }
