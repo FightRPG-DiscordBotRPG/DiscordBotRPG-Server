@@ -26,6 +26,7 @@ class Character extends CharacterEntity {
         this.money = 0;
         this.talentPoints = 0;
         this.canFightAt = 0;
+        this.canArenaAt = 0;
         this.idArea = 1;
         this.area = new Area();
         this.idGuild = 0;
@@ -277,12 +278,24 @@ class Character extends CharacterEntity {
         return Math.ceil((this.getWaitTime() - Date.now()) / 1000);
     }
 
+    getExhaustPvp() {
+        return Math.ceil((this.canArenaAt - Date.now()) / 1000); 
+    }
+
     getExhaustMillis() {
         return this.getWaitTime() - Date.now();
     }
 
+    getExhaustMillisPvp() {
+        return this.canArenaAt - Date.now();
+    }
+
     canDoAction() {
-        return conf.env == "dev" ? true : (this.getWaitTime() <= Date.now());;
+        return conf.env == "dev" ? true : (this.getWaitTime() <= Date.now());
+    }
+
+    canDoPvp() {
+        return conf.env == "dev" ? true : (this.canArenaAt <= Date.now());
     }
 
     // Group System
@@ -777,7 +790,7 @@ class Character extends CharacterEntity {
     waitForNextPvPFight(more = 0) {
         let waitTime = this.getWaitTimePvPFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + waitTime);
+        this.canArenaAt = Date.now() + waitTime;
         return waitTime;
     }
 

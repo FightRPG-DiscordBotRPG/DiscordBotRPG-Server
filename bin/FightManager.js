@@ -38,6 +38,20 @@ class FightManager {
         return -1;
     }
 
+    // PvpFight
+    /**
+     * 
+     * @param {Array<Character>} users
+     */
+    timeToFightPvp(users) {
+        for (let i in users) {
+            if (!users[i].canDoPvp()) {
+                return users[i].getExhaustMillisPvp();
+            }
+        }
+        return -1;
+    }
+
     /**
      * 
      * @param {Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>} monsters
@@ -199,7 +213,7 @@ class FightManager {
 
         let alreadyInBattle = attackers.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
 
-        let timeToFight = this.timeToFight(attackers);
+        let timeToFight = this.timeToFightPvp(attackers);
 
         if (timeToFight < 0 && !alreadyInBattle) {
 

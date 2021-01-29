@@ -214,6 +214,7 @@ class AdminModule extends GModule {
             let data = {};
 
             Globals.connectedUsers[res.locals.id].character.canFightAt = 0;
+            Globals.connectedUsers[res.locals.id].character.canArenaAt = 0;
             data.success = "Reset Done";
 
             data.lang = res.locals.lang;
