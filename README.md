@@ -44,6 +44,8 @@ Next with nodejs run "init.js" and follow the instructions
 - Travel system with paths and different time to travel
 - Achievment system
 - World Boss system
+- Skill and Talent System
+- Rebirth when you are at max level to get more powerful!
 
 ## Support
 
