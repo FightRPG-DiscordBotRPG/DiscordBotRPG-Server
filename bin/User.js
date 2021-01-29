@@ -299,7 +299,7 @@ class User {
     // Info pannel API
     async apiInfoPanel() {
 
-        let allPromises = [this.character.getStatPoints(), this.character.getTalentPoints(), this.character.talents.toApi(), this.character.getMoney(), this.character.getHonor(), this.character.getPower(), this.character.getAchievements().getCountsAchievements()];
+        let allPromises = [this.character.getStatPoints(), this.character.getTalentPoints(), this.character.talents.toApi(), this.character.getMoney(), this.character.getHonor(), this.character.getPower(), this.character.getAchievements().getCountsAchievements(), this.toApiToRebirth()];
 
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
@@ -312,7 +312,6 @@ class User {
             secondaryStats: this.character.secondaryStats.toApi(),
 
             level: this.character.getLevel(),
-            rebirthLevel: this.character.getRebirthLevel(),
 
             attributesResults: {
                 magicalCriticalEvasionRate: this.character.getMagicalCriticalEvasionRate(this.character.getLevel()),
@@ -323,7 +322,6 @@ class User {
                 physicalDefense: this.character.getPhysicalDefense(this.character.getLevel()),
             },
             maxLevel: Globals.maxLevel,
-            maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
             statsEquipment: this.character.equipement.stats.toApi(),
             secondaryStatsEquipment: this.character.equipement.secondaryStats.toApi(),
             currentHp: this.character.actualHP,
@@ -332,12 +330,6 @@ class User {
             maxMp: this.character.maxMP,
             currentEnergy: this.character.actualEnergy,
             maxEnergy: this.character.maxEnergy,
-            craft: {
-                level: this.character.getCraftLevel(),
-                rebirthLevel: this.character.getCraftRebirthLevel(),
-                xp: this.character.getCratfXP(),
-                xpNextLevel: this.character.getCraftNextLevelXP(),
-            },
             lang: this.getLang(),
         };
 
@@ -351,7 +343,17 @@ class User {
         infos.power = allPromises[5];
         infos.achievements = allPromises[6];
 
+        infos = { ...infos, ...allPromises[7] };
+
+        infos.craft = {
+            level: this.character.getCraftLevel(),
+            xp: this.character.getCratfXP(),
+            xpNextLevel: this.character.getCraftNextLevelXP(),
+            ...infos.craft
+        }
+
         return infos;
+
     }
 
     async toApiToRebirth(lang = "en") {
