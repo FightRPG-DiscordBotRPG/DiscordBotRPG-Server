@@ -56,7 +56,7 @@ Reach out to me at one of the following places!
 
 ## Contrinbutors
 - <a href="https://github.com/Roncarlos" target="_blank">Roncarlos</a> - Everything ? :D
-- <a href="https://github.com/AstragorG" target="_blank">TBlazeWarriorT</a> - Developer 
+- <a href="https://github.com/TBlazeWarriorT" target="_blank">TBlazeWarriorT</a> - Developer 
 - <a href="https://github.com/AstragorG" target="_blank">AstragorG</a> - Content Maker
 
 
