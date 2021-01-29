@@ -79,11 +79,11 @@ ENGINE = InnoDB;
 
 REPLACE INTO rebirthspossibles VALUES
 (0, 5, 0,   0, 0),
-(1, 6, 5,   10, 8),
-(2, 7, 10,  20, 16),
-(3, 8, 15,  30, 24),
-(4, 9, 20,  40, 32),
-(5, 10, 25, 50, 40);
+(1, 6, 5,   10, 5),
+(2, 7, 10,  20, 10),
+(3, 8, 15,  30, 15),
+(4, 9, 20,  40, 20),
+(5, 10, 25, 50, 25);
 
 ALTER TABLE `levels`
 ADD CONSTRAINT `fk_Levels_RebirthsPossibles1`
