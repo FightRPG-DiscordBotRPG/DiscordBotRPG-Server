@@ -25,6 +25,7 @@ const express = require("express");
 const Skill = require("../../SkillsAndStatus/Skill");
 const Character = require("../../Character");
 const RebirthApiData = require("../../Rebirths/RebirthApiData");
+const State = require("../../SkillsAndStatus/State");
 
 
 
@@ -363,6 +364,30 @@ class CharacterModule extends GModule {
             } else {
                 data = {
                     skill: skill.toApi(res.locals.character, res.locals.lang),
+                    lang: res.locals.lang
+                };
+            }
+
+
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/states/show/:idState", async (req, res, next) => {
+            // Temp
+            let err;
+            let data;
+            let state = new State();
+            let idState = parseInt(req.params.idState, 10);
+            if (isNaN(idState) || !await state.loadWithID(idState)) {
+                err = Translator.getString(res.locals.lang, "errors", "state_show_dont_exist");
+            }
+
+            if (err != null) {
+                data = { error: err };
+            } else {
+                data = {
+                    state: state.toApi(res.locals.character, res.locals.lang),
                     lang: res.locals.lang
                 };
             }

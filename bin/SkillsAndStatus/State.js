@@ -28,6 +28,9 @@ class State {
         this.id = id;
 
         let res = await conn.query("SELECT * FROM states INNER JOIN statesremovalconditions ON statesremovalconditions.idState = states.idState WHERE states.idState = ?;", [this.id]);
+        if (res[0] == null) {
+            return false;
+        }
         this.shorthand = res[0].shorthand;
         this.roundMin = res[0].roundMin;
         this.roundMax = res[0].roundMax;
@@ -49,6 +52,8 @@ class State {
         await Promise.all(promises);
 
         this.resetCounts();
+
+        return true;
     }
 
     resetCounts() {
@@ -67,11 +72,11 @@ class State {
         return this.idStateRestriction != null;
     }
 
-    getName(lang="en") {
+    getName(lang = "en") {
         return Translator.getString(lang, "statesNames", this.id);
     }
 
-    toApi(lang="en") {
+    toApi(lang = "en") {
         return {
             id: this.id,
             name: this.getName(lang),
@@ -79,7 +84,12 @@ class State {
             afterDamage: this.afterDamage,
             afterFight: this.afterFight,
             afterRounds: this.afterRounds,
-            roundsLeft: this.roundEnd - this.currentRound
+            roundsLeft: this.roundEnd - this.currentRound,
+            roundMin: this.roundMin,
+            roundMax: this.roundMax,
+            roundEnd: this.roundEnd,
+            damageProbability: this.damageProbability,
+            idStateRestriction: this.idStateRestriction,
         }
     }
 
