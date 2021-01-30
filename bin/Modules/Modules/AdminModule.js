@@ -156,12 +156,12 @@ class AdminModule extends GModule {
         this.router.post("/give/xp", async (req, res, next) => {
             let data = {};
 
-            if (Globals.connectedUsers[res.locals.id].character.getLevel() < Globals.maxLevel) {
-                let value = parseInt(req.body.xp, 10);
-                if (!value && !Number.isInteger(value)) {
-                    value = 1;
-                }
+            let value = parseInt(req.body.xp, 10);
+            if (!value && !Number.isInteger(value)) {
+                value = 1;
+            }
 
+            if (Globals.connectedUsers[res.locals.id].character.getLevel() < Globals.maxLevel) {
                 let str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " XP tombent du ciel rien que pour vous !\n";
                 let actualLevel = Globals.connectedUsers[res.locals.id].character.getLevel();
                 await Globals.connectedUsers[res.locals.id].character.addExp(value);
@@ -173,6 +173,10 @@ class AdminModule extends GModule {
                 data.success = str;
             } else {
                 data.error = "Vous êtes déjà au niveau maximum !";
+            }
+
+            if (res.locals.character.getCraftLevel() < Globals.maxLevel) {
+                await res.locals.character.addCraftXP(value);
             }
 
             data.lang = res.locals.lang;
