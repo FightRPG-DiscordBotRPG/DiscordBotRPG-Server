@@ -598,7 +598,6 @@ class CharacterModule extends GModule {
     async removeRebirthNeedItems(character, apiData) {
         let promises = [];
         for (let item of apiData.nextRebirthsLevelsModifiers.requiredItems) {
-            console.log(item);
             promises.push(character.getInv().removeSomeFromInventoryIdBase(item.idBase, item.number, true));
         }
         await Promise.all(promises);
