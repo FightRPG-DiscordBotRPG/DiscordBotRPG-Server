@@ -275,7 +275,7 @@ class InventoryModule extends GModule {
         let data = {};
         data.lang = res.locals.lang;
         let favoriteTextKey = toFavorite === true ? "item_tag_as_favorite" : "item_untag_as_favorite";
-        if (req.body.idItem == null) {
+        if (req.body.idItem == null && req.body.filter != null) {
             await res.locals.character.setFilteredItemsFavorite(this.getSearchParams(req), res.locals.lang, toFavorite);
             data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey + "_filtered");
         } else {
