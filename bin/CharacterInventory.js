@@ -319,8 +319,8 @@ class CharacterInventory {
         return res[0] != null;
     }
 
-    async getIdOfThisIdBase(idBaseItem, level = 1) {
-        return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level);
+    async getIdOfThisIdBase(idBaseItem, level = 1, rebirthLevel=0) {
+        return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level, rebirthLevel);
     }
 
     static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1, rebirthLevel = 0) {

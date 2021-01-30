@@ -110,7 +110,7 @@ class LootSystem {
             }
             if (res.stackable == true) {
                 // C'est un objet stackable
-                let idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level);
+                let idToAdd = await CharacterInventory.getIdOfThisIdBase(idCharacter, idBase, level, rebirthLevel);
                 if (idToAdd == null) {
                     idToAdd = await this.newItem(idBase, level, rebirthLevel);
                 }

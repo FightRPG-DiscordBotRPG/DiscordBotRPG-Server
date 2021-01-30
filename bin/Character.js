@@ -968,8 +968,8 @@ class Character extends CharacterEntity {
         return item != null ? item.number : 0;
     }
 
-    async getIdOfThisIdBase(idBaseItem, level = 1) {
-        return await this.getInv().getIdOfThisIdBase(idBaseItem, level);
+    async getIdOfThisIdBase(idBaseItem, level = 1, rebirthLevel = 0) {
+        return await this.getInv().getIdOfThisIdBase(idBaseItem, level, rebirthLevel);
     }
 
     async isItemFavorite(idEmplacement) {

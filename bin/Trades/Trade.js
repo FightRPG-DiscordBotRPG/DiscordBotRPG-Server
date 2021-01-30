@@ -95,7 +95,11 @@ class Trade {
         /**
          * @type {User}
          */
-        let playerLeft, playerRight;
+        let playerLeft;
+        /**
+        * @type {User}
+        */
+        let playerRight;
         /**
          * @type {Array<TradeItem>}
          */
@@ -129,7 +133,7 @@ class Trade {
                     await leftInventory.removeSomeFromInventoryItem(itemFromLeftPlayer, tradeItem.number);
                     await rightInventory.addToInventory(tradeItem.id, tradeItem.number);
                 } else {
-                    let rightInventoryItemID = await rightInventory.getIdOfThisIdBase(itemFromLeftPlayer.idBaseItem, itemFromLeftPlayer.getLevel());
+                    let rightInventoryItemID = await rightInventory.getIdOfThisIdBase(itemFromLeftPlayer.idBaseItem, itemFromLeftPlayer.getLevel(), itemFromLeftPlayer.getRebirthLevel());
                     if (rightInventoryItemID != null) {
                         // The guy already have a similar item so delete if the left inventory have no more items
                         await leftInventory.removeSomeFromInventoryItem(itemFromLeftPlayer, tradeItem.number, true);
