@@ -662,7 +662,7 @@ class Character extends CharacterEntity {
                 let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel);
                 let levelItem = level != null && level > 0 && level <= maxLevel ? level : maxLevel;
 
-                let maxRebirthLevel = this.itemCraftRebirthLevel(craft.itemInfo.maxRebirthLevel);
+                let maxRebirthLevel = this.itemCraftRebirthLevel(craft.itemInfo);
                 let rebirthLevelItem = rebirthLevel != null && rebirthLevel > 0 && rebirthLevel <= maxRebirthLevel ? rebirthLevel : maxRebirthLevel;
 
                 await ls.giveToPlayer(this, craft.itemInfo.idBase, levelItem, 1, true, rebirthLevelItem);

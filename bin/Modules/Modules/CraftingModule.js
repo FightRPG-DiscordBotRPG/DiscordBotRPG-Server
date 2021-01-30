@@ -83,10 +83,10 @@ class CraftingModule extends GModule {
                         if (Globals.connectedUsers[res.locals.id].character.isCraftable(toCraft)) {
                             if (req.body.level == null || (req.body.level != null && res.locals.craftingbuilding.getMinLevel() <= req.body.level && res.locals.craftingbuilding.getMaxLevel() >= req.body.level)) {
 
-                                let rebirhtLevel = req.body.rebirthLevel == null ? Globals.connectedUsers[res.locals.id].character.getRebirthLevel() : req.body.rebirthLevel;
+                                let rebirhtLevel = req.body.rebirthLevel == null ? Globals.connectedUsers[res.locals.id].character.getCraftRebirthLevel() : req.body.rebirthLevel;
 
                                 if ((rebirhtLevel != null && res.locals.craftingbuilding.getMinRebirthLevel() <= rebirhtLevel && res.locals.craftingbuilding.getMaxRebirthLevel() >= rebirhtLevel)) {
-                                    if (await Globals.connectedUsers[res.locals.id].character.craft(toCraft, req.body.level)) {
+                                    if (await Globals.connectedUsers[res.locals.id].character.craft(toCraft, req.body.level, rebirhtLevel)) {
                                         data.success = Translator.getString(res.locals.lang, "craft", "craft_done", [Translator.getString(res.locals.lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n";
 
                                         Globals.connectedUsers[res.locals.id].character.waitForNextCraft(toCraft.itemInfo.idRarity);

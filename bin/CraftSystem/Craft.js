@@ -2,6 +2,7 @@ const conn = require("../../conf/mysql");
 const Translator = require("../Translator/Translator");
 const Item = require("../Items/Item");
 const SimpleItemData = require("../Items/SimpleItemData");
+const Globals = require("../Globals");
 
 class Craft {
     constructor(id) {
@@ -54,7 +55,7 @@ class Craft {
                 minLevel: res.minLevel,
                 stackable: res.stackable,
                 minRebirthLevel: res.minRebirthLevel,
-                maxRebirthLevel: res.maxRebirthLevel,
+                maxRebirthLevel: res.maxRebirthLevel > 0 ? res.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel,
             }
 
             res = await conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem, craftitemsneeded.minRebirthLevel FROM craftitemsneeded 
