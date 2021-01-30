@@ -50,8 +50,17 @@ class RebirthData {
      * @param {any} lang
      */
     async toApi(character, lang = "en") {
+        const SimpleItemData = require("../Items/SimpleItemData");
+
         let data = Object.assign(new RebirthData(), this);
+
+        // Recreate a object since we have a direct reference to orignal
+        // and we want to work on copy
+        data.requiredItems = data.requiredItems.map(e => { return SimpleItemData.createFromData(e) });
+
+        // Get missing needed items
         data = await character.inv.getRebirthRequiredItems(data);
+
         let tempRequiredItems = [];
 
         for (let item of data.requiredItems) {

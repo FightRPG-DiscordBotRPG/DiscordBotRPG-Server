@@ -995,7 +995,6 @@ class Character extends CharacterEntity {
     }
 
     async getRebirthDataCharacterToApi(lang = "en") {
-
         let currentRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel()];
         let nextRebirthLevel = Globals.rebirthManager.rebirthsLevelsModifiers[this.getRebirthLevel() + 1];
 

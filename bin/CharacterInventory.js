@@ -121,9 +121,9 @@ class CharacterInventory {
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " +  paramsResult.more + ";", paramsResult.sqlParams);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
         let ids = [];
-        for (let i in res) { 
+        for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
@@ -231,7 +231,7 @@ class CharacterInventory {
 
         for (let resource of resources) {
             requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
-            requiredItems[keys[resource.idBaseItem]].missing = requiredItems[keys[resource.idBaseItem]].missing >= 0 ? requiredItems[keys[resource.idBaseItem]].missing : 0
+            requiredItems[keys[resource.idBaseItem]].missing = requiredItems[keys[resource.idBaseItem]].missing >= 0 ? requiredItems[keys[resource.idBaseItem]].missing : 0;
         }
 
         return requiredItems;
