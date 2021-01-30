@@ -170,7 +170,7 @@ class LootSystem {
             rebirthLevel = rebirthLevel >= 0 && rebirthLevel <= Globals.rebirthManager.maxRebirthLevel ? rebirthLevel : 0;
 
             if (equipable == true && Item.canHaveStats(objectType)) {
-                let newlyGeneratedStats = Item.generateItemsStats(rarity, objectType, objectSubtype, level, 100 + (Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats));
+                let newlyGeneratedStats = Item.generateItemsStats(rarity, objectType, objectSubtype, level, rebirthLevel);
                 stats = newlyGeneratedStats.stats;
                 secondaryStats = newlyGeneratedStats.secondaryStats;
             }

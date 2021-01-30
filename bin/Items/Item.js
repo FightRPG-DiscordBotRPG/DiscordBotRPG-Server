@@ -129,13 +129,13 @@ class Item {
         return maxStats;
     }
 
-    static getRandomStatRatio(rarity, maxToPerfection = 100) {
+    static getRandomStatRatio(rarity, modifier = 1) {
         if (rarity < 6) {
             let min = (rarity - 1) / 5;
             let max = rarity / 5;
-            return Math.random() * (max - min) + min;
+            return (Math.random() * (max - min) + min) * modifier;
         } else {
-            return 1;
+            return 1 * modifier;
         }
     }
 
@@ -257,9 +257,9 @@ class Item {
      * @param {string} objectType
      * @param {string} objectSubtype
      * @param {number} level
-     * @param {any} maxStatsPercentage
+     * @param {number} modifier
      */
-    static generateItemsStats(rarity, objectType, objectSubtype, level, maxStatsPercentage = 100) {
+    static generateItemsStats(rarity, objectType, objectSubtype, level, rebirthLevel = 0) {
         let stats = new Stats(0);
         let secondaryStats = new SecondaryStats(0);
 
@@ -268,7 +268,9 @@ class Item {
         let numberOfStats = this.getStatsNumber(rarity);
         let numberOfSecondaryStats = this.getSecondaryStatsNumber(rarity);
 
-        let ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+        let modifier = 1 + (Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats / 100);
+
+        let ratio = this.getRandomStatRatio(rarity, modifier);
 
         if (objectType == "weapon") {
             //Une arme
@@ -280,7 +282,7 @@ class Item {
         }
 
         while (numberOfStats > 0 && statsPossible.length > 0) {
-            ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+            ratio = this.getRandomStatRatio(rarity, modifier);
             let r = statsPossible[Math.floor(Math.random() * statsPossible.length)];
 
             stats[r] = this.getStatValue(objectSubtype, r, level, ratio);
@@ -290,7 +292,7 @@ class Item {
         }
 
         while (numberOfSecondaryStats > 0 && secondaryStatsPossible.length > 0) {
-            ratio = this.getRandomStatRatio(rarity, maxStatsPercentage);
+            ratio = this.getRandomStatRatio(rarity, 1);
 
             let r = secondaryStatsPossible[Math.floor(Math.random() * secondaryStatsPossible.length)];
 
