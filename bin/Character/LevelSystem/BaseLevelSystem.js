@@ -76,15 +76,11 @@ class BaseLevelSystem {
             if (this.achievementsToUnlocksForLevels[this.actualLevel]) {
                 CharacterAchievements.unlock(this.achievementsToUnlocksForLevels[this.actualLevel], this.idUser);
             }
-
-            if (this.achievementsToUnlocksForRebirthLevels[this.rebirthLevel]) {
-                CharacterAchievements.unlock(this.achievementsToUnlocksForRebirthLevels[this.rebirthLevel], this.idUser);
-            }
         }
     }
 
     async save() {
-        await conn.query("UPDATE "+ this.databaseTable +" SET actualExp = ?, actualLevel = ?, rebirthLevel = ? WHERE idCharacter = ?", [this.actualXP, this.actualLevel, this.rebirthLevel, this.id]);
+        await conn.query("UPDATE " + this.databaseTable + " SET actualExp = ?, actualLevel = ?, rebirthLevel = ? WHERE idCharacter = ?", [this.actualXP, this.actualLevel, this.rebirthLevel, this.id]);
     }
 
     async updateExpNextLevel() {
@@ -107,6 +103,10 @@ class BaseLevelSystem {
         this.rebirthLevel += 1;
         await this.save();
         await this.updateExpNextLevel();
+
+        if (this.idUser != null && this.achievementsToUnlocksForRebirthLevels[this.rebirthLevel]) {
+            CharacterAchievements.unlock(this.achievementsToUnlocksForRebirthLevels[this.rebirthLevel], this.idUser);
+        }
     }
 
 }

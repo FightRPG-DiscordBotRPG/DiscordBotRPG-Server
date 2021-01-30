@@ -10,7 +10,12 @@ class LevelSystem extends BaseLevelSystem {
             20: 8,
             100: 9
         };
-        this.achievementsToUnlocksForRebirthLevels = {};
+        this.achievementsToUnlocksForRebirthLevels = {
+            1: 21,
+            2: 22,
+            5: 24,
+        };
+
     }
 
 }

@@ -10,7 +10,11 @@ class PlayerCraft extends BaseLevelSystem {
             20: 14,
             100: 15
         };
-        this.achievementsToUnlocksForRebirthLevels = {};
+        this.achievementsToUnlocksForRebirthLevels = {
+            1: 21,
+            2: 23,
+            5: 25,
+        };
     }
 
 }
