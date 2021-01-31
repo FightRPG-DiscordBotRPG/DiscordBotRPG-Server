@@ -134,7 +134,7 @@ class WorldBossSpawner {
     async announceWorldBossSpawn() {
         let binfo = await WorldBossSpawner.instance.getBossesInfos();
         binfo = binfo.bosses[0];
-        let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName;
+        let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName + " (" + binfo.idArea + ")";
         WorldBossSpawner.wbTell(str);
     }
 

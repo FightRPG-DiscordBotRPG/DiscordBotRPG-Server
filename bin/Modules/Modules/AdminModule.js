@@ -21,7 +21,6 @@ const Skill = require("../../SkillsAndStatus/Skill");
 const Effect = require("../../SkillsAndStatus/Effect");
 const Utils = require("../../Utilities/Utils");
 const Character = require("../../Character");
-const { maximumSkillsPerBuild } = require("../../Globals");
 
 class AdminModule extends GModule {
     constructor() {
@@ -314,8 +313,6 @@ class AdminModule extends GModule {
             //}
 
             //await res.locals.character.addStatPoints(10);
-
-
 
             await next();
             return res.json({ succes: "done" });
