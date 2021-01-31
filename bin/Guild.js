@@ -287,7 +287,7 @@ class Guild {
             if (territories[territory.nameRegion] == null) {
                 territories[territory.nameRegion] = [];
             }
-            territories[territory.nameRegion].push({ name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
+            territories[territory.nameRegion].push({ idArea: territory.idArea, name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
 
             actualIndex++
         }
