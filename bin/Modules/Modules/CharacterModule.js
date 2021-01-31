@@ -566,8 +566,9 @@ class CharacterModule extends GModule {
 
         await this.removeRebirthNeedItems(character, rebirthData);
         await character.rebirth();
+        await character.travel(Globals.areasManager.getArea(1));
 
-        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful_level"));
     }
 
     /**
@@ -586,7 +587,7 @@ class CharacterModule extends GModule {
         await this.removeRebirthNeedItems(character, rebirthData);
         await character.rebirthCraft();
 
-        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful"));
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful_craft_level"));
     }
 
     /**

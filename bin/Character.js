@@ -152,11 +152,18 @@ class Character extends CharacterEntity {
 
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + (baseTimeToWait * 1000));
+        await this.travel(area);
+    }
+
+    /***
+     * Direct travel to area without fatigue time
+     * @param {Area} area
+     **/
+    async travel(area) {
         this.area = area;
         await this.saveArea();
         PStatistics.incrStat(this.id, "travels", 1);
         this.healIfAreaIsSafe();
-
     }
 
     async healIfAreaIsSafe() {
