@@ -1,6 +1,6 @@
 const WorldEntity = require("./WorldEntity");
 const StatsPlayer = require("../Stats/StatsPlayer");
-const LevelSystem = require("../LevelSystem");
+const LevelSystem = require("../Character/LevelSystem/LevelSystem");
 const CharacterEquipement = require("../CharacterEquipement");
 const CharacterTalents = require("../CharacterTalents");
 const SkillBuildCharacter = require("../EntitiesBuilds/SkillBuildCharacter");
@@ -31,7 +31,7 @@ class CharacterEntity extends WorldEntity {
         this.uuid = id.toString();
         await Promise.all([
             this.stats.loadStat(id),
-            this.levelSystem.loadLevelSystem(id),
+            this.levelSystem.load(id),
             this.equipement.loadEquipements(id),
             this.talents.load(null, id),
             this.skillBuild.load(id),
@@ -43,6 +43,10 @@ class CharacterEntity extends WorldEntity {
      */
     getLevel() {
         return this.levelSystem.actualLevel;
+    }
+
+    getRebirthLevel() {
+        return this.levelSystem.rebirthLevel;
     }
 
     /**

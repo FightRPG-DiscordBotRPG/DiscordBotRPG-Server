@@ -38,6 +38,20 @@ class FightManager {
         return -1;
     }
 
+    // PvpFight
+    /**
+     * 
+     * @param {Array<Character>} users
+     */
+    timeToFightPvp(users) {
+        for (let i in users) {
+            if (!users[i].canDoPvp()) {
+                return users[i].getExhaustMillisPvp();
+            }
+        }
+        return -1;
+    }
+
     /**
      * 
      * @param {Array<{id: number,needToBeMaxLevel: boolean, number: number,level: number}>} monsters
@@ -45,11 +59,14 @@ class FightManager {
      */
     async loadMonsters(monsters, characters) {
         let level = 0;
+        let rebirthLevel = 0;
         let area = characters[0].getArea();
         if (characters.length > 1 && characters[0].group != null) {
             level = characters[0].group.getHighestLevel();
+            rebirthLevel = characters[0].group.getHighestRebirthLevel();
         } else {
             level = characters[0].getLevel();
+            rebirthLevel = characters[0].getRebirthLevel();
         }
 
         if (area.minLevel > level) {
@@ -58,7 +75,13 @@ class FightManager {
             level = area.maxLevel;
         }
 
+        if (area.getMinRebirthLevel() > rebirthLevel) {
+            rebirthLevel = area.getMinRebirthLevel();
+        } else if (area.getMaxRebirthLevel() < rebirthLevel) {
+            rebirthLevel = area.getMaxRebirthLevel();
+        }
 
+        // TODO Rebirth
         /**
          * @type {Monstre[]}
          **/
@@ -74,7 +97,7 @@ class FightManager {
                 let ms = new Monstre(monsters[i].id);
                 ms.uuid = i + j + ms.id + "";
                 ms.decoratedId = monsters[i].number > 1 ? (j + 1) : null;
-                await ms.loadMonster(realLevel);
+                await ms.loadMonster(realLevel, rebirthLevel);
                 arr.push(ms);
             }
         }
@@ -190,7 +213,7 @@ class FightManager {
 
         let alreadyInBattle = attackers.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
 
-        let timeToFight = this.timeToFight(attackers);
+        let timeToFight = this.timeToFightPvp(attackers);
 
         if (timeToFight < 0 && !alreadyInBattle) {
 

@@ -20,7 +20,7 @@ class EquipmentLootBox extends LootBox {
                 let promises = [];
                 for (let i = 0; i < numberOfUse; i++) {
                     promises.push((async () => {
-                        if (await ls.giveToPlayer(character, possibleItems[randomIndex].idBaseItem, this.getLevel(), 1)) {
+                        if (await ls.giveToPlayer(character, possibleItems[randomIndex].idBaseItem, this.getLevel(), 1, false, this.getRebirthLevel())) {
                             this.addItem(possibleItems[randomIndex].idBaseItem, 1);
                         }
                     })());

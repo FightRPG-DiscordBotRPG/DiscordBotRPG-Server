@@ -19,6 +19,7 @@ class WorldEntity {
         this.actualEnergy = 0;
         this.maxEnergy = 0;
         this.level = 0;
+        this.rebirthLevel = 0;
         this.stats = new Stats();
         this.secondaryStats = new SecondaryStats();
 
@@ -189,6 +190,10 @@ class WorldEntity {
         return this.level;
     }
 
+    getRebirthLevel() {
+        return this.rebirthLevel;
+    }
+
     getName(_lang = "en") {
         return this.name;
     }
@@ -270,7 +275,11 @@ class WorldEntity {
     }
 
     prepareCast() {
-        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += 1 + this.getCastSkillBonus(skill));
+        this.getSkillsArray().forEach((skill) => skill.currentCastPreparation += this.getCastPreparationPerTurn(skill));
+    }
+
+    getCastPreparationPerTurn(skill) {
+        return 1 + this.getCastSkillBonus(skill);
     }
 
     /**
@@ -278,11 +287,11 @@ class WorldEntity {
      * @param {Skill} skill
      */
     getCastSkillBonus(skill) {
-        return this.getStat(skill.isPhysical() || skill.isRawDamage() ? Stats.possibleStats.Dexterity : Stats.possibleStats.Wisdom) / this.stats.getMaximumStat() * 2
+        return this.getStat(skill.isPhysical() || skill.isRawDamage() ? Stats.possibleStats.Dexterity : Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 2
     }
 
     stun(advWill) {
-        let max = this.stats.getOptimalStun(this.getLevel());
+        let max = this.stats.getOptimalStun(this.getLevel(), this.getRebirthLevel());
         let otherResist = (advWill) / max;
         // Cap to 50%;
         let stun = this.getRawStunChance();
@@ -293,7 +302,7 @@ class WorldEntity {
     }
 
     getRawStunChance() {
-        let max = this.stats.getOptimalStun(this.getLevel());
+        let max = this.stats.getOptimalStun(this.getLevel(), this.getRebirthLevel());
         // Calcul of chance
         let stun = this.getStat(Stats.possibleStats.Charisma) / max;
         // Cap to 50%;
@@ -624,7 +633,7 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getPhysicalDefense(enemyLevel = 1) {
-        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .3) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel()) * 0.1);
+        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel(), this.getRebirthLevel()) * .3) + (this.getStat(Stats.possibleStats.Constitution) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 0.1);
         reduction *= this.getDiffLevelModifier(enemyLevel);
         return reduction > 0.8 ? 0.8 : 1 - reduction;
     }
@@ -634,7 +643,7 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getMagicalDefense(enemyLevel = 1) {
-        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel()) * 0.35);
+        let reduction = (this.getStat(Stats.possibleStats.Armor) / this.stats.getOptimalArmor(this.getLevel(), this.getRebirthLevel()) * .15) + (this.getStat(Stats.possibleStats.Wisdom) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 0.35);
         reduction *= this.getDiffLevelModifier(enemyLevel);
         return reduction > 0.8 ? 0.8 : 1 - reduction;
     }
@@ -644,7 +653,7 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getPhysicalCriticalRate(enemyLevel = 1) {
-        let critique = (this.getStat(Stats.possibleStats.Dexterity) / this.stats.getMaximumStat(this.getLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.035);
+        let critique = (this.getStat(Stats.possibleStats.Dexterity) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 0.035);
         critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getRawCriticalRate(enemyLevel);
         return critique > .75 ? .75 : critique;
     }
@@ -654,7 +663,7 @@ class WorldEntity {
     * @param {number} enemyLevel
     */
     getMagicalCriticalRate(enemyLevel = 1) {
-        let critique = (this.getStat(Stats.possibleStats.Intellect) / this.stats.getMaximumStat(this.getLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel()) * 0.035);
+        let critique = (this.getStat(Stats.possibleStats.Intellect) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * .04) + (this.getStat(Stats.possibleStats.Luck) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 0.035);
         critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getRawCriticalRate(enemyLevel);
         return critique > .75 ? .75 : critique;
     }
@@ -672,7 +681,7 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getPhysicalCriticalEvasionRate(enemyLevel = 1) {
-        let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * 0.015);
+        let critique = (this.getStat(Stats.possibleStats.Will) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * 0.015);
         critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.CritcalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }
@@ -682,7 +691,7 @@ class WorldEntity {
      * @param {number} enemyLevel
      */
     getMagicalCriticalEvasionRate(enemyLevel = 1) {
-        let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel()) * .015);
+        let critique = (this.getStat(Stats.possibleStats.Charisma) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * .035) + (this.getStat(Stats.possibleStats.Perception) / this.stats.getMaximumStat(this.getLevel(), this.getRebirthLevel()) * .015);
         critique += critique * this.getDiffLevelModifier(enemyLevel) + this.getSecondaryStat(SecondaryStats.possibleStats.CritcalEvadeRate) / 100;
         return critique > .75 ? .75 : critique;
     }

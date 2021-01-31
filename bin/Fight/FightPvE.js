@@ -43,6 +43,14 @@ class FightPvE extends Fight {
         return Math.round(avg / this.entities[idTeam].length);
     }
 
+    getAvgRebirthLevelTeam(idTeam) {
+        let avg = 0;
+        for (let i in this.entities[idTeam]) {
+            avg += this.entities[idTeam][i].getRebirthLevel();
+        }
+        return Math.round(avg / this.entities[idTeam].length);
+    }
+
     getAvgLuckBonus() {
         let avg = 0;
         for (let i in this.entities[1]) {
@@ -59,6 +67,7 @@ class FightPvE extends Fight {
             let rawMoney = this.getRawMoneyOfAllEnemies();
             let rawXp = this.getRawXpOfAllEnemies();
             let avgLevelEnemies = this.getAvgLevelTeam(1);
+            let avgRebirthLevelEnemies = this.getAvgRebirthLevelTeam(1);
             /**
              * @type {Area}
              */
@@ -98,7 +107,7 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.2 ? 1.2 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel()) + areaBonuses["xp_fight"].getPercentageValue() + 1));
+                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel()) + areaBonuses["xp_fight"].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[entity.name] = xp;
                     promises.push(entity.addExp(xp));
@@ -126,7 +135,7 @@ class FightPvE extends Fight {
                 totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
 
                 promises.push((async () => {
-                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies);
+                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
                     if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
                         this.summary.drops.push({
                             name: entity.name,

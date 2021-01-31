@@ -55,7 +55,7 @@ class CityArea extends Area {
         }
 
         apiObj.marketplace = {
-            tax: await this.services.marketplace.getTax() * 100,
+            tax: this.services.marketplace.getTax() * 100,
             isActive: true,
         }
 

@@ -24,10 +24,13 @@ class CharacterAchievements {
         return res;
     }
 
+    async getCountsAchievements() {
+        return await CharacterAchievements.getCountsAchievements(this.id);
+    }
+
     async getAchievementList(page, lang = "en") {
         page = page > 0 ? page : 1;
-        let counts = (await conn.query("SELECT * FROM ((SELECT COUNT(*) as totalAchievements FROM achievement) ta JOIN (SELECT COUNT(*) as totalAchievementsEarned, SUM(points) as totalPoints FROM charactersachievements INNER JOIN achievement ON achievement.idAchievement = charactersachievements.idAchievement WHERE idCharacter = ?) tae);",
-            [this.id]))[0];
+        let counts = await this.getCountsAchievements();
 
         let perPage = 5;
         let maxPage = Math.ceil(counts.totalAchievements / perPage);
@@ -38,7 +41,7 @@ class CharacterAchievements {
         return {
             totalAchievements: counts.totalAchievements,
             totalAchievementsEarned: counts.totalAchievementsEarned,
-            totalPoints: counts.totalPoints != null ? counts.totalPoints : 0,
+            totalPoints: counts.totalPoints,
             achievements: res,
             maxPage: maxPage,
             page: page
@@ -92,6 +95,16 @@ class CharacterAchievements {
             let lang = charAndLang.lang;
             let achievement = await this.getSpecificAchievement(idAchievement, idCharacter, lang);
             User.tell(idUser, Translator.getString(lang, "character", "achievement_earned", [achievement.nameAchievement]))
+        }
+    }
+
+    static async getCountsAchievements(idCharacter) {
+        let counts = (await conn.query("SELECT * FROM ((SELECT COUNT(*) as totalAchievements FROM achievement) ta JOIN (SELECT COUNT(*) as totalAchievementsEarned, SUM(points) as totalPoints FROM charactersachievements INNER JOIN achievement ON achievement.idAchievement = charactersachievements.idAchievement WHERE idCharacter = ?) tae);",
+            [idCharacter]))[0];
+        return {
+            totalAchievements: counts.totalAchievements,
+            totalAchievementsEarned: counts.totalAchievementsEarned,
+            totalPoints: counts.totalPoints != null ? counts.totalPoints : 0,
         }
     }
 }

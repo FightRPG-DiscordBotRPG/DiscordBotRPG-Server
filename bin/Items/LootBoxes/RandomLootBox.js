@@ -54,7 +54,7 @@ class RandomLootBox extends LootBox {
                 let luck = Math.random();
                 if (luck <= dropRate * character.getLuckEffectRateRaw()) {
                     //Drop
-                    if (await ls.giveToPlayer(character, item.id, this.getLevel(), item.amount)) {
+                    if (await ls.giveToPlayer(character, item.id, this.getLevel(), item.amount, false, this.getRebirthLevel())) {
                         this.addItem(item.id, item.amount);
                     }
                     totalDrop++;

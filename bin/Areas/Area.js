@@ -9,6 +9,7 @@ const AreaClimate = require("../Climate/AreaClimate");
 const Marketplace = require("../Marketplace/Marketplace");
 const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const Shop = require("../Shops/Shop");
+const Globals = require("../Globals.js");
 
 class Area {
 
@@ -65,13 +66,15 @@ class Area {
     }
 
     async loadArea() {
-        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
+        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel, minRebirthLevel, maxRebirthLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
         res = res[0];
         this.idRegion = res["idRegion"];
         this.image = res["AreaImage"];
         this.areaType = res["NomAreaType"];
         this.minLevel = res["minLevel"];
         this.maxLevel = res["maxLevel"];
+        this.minRebirthLevel = res["minRebirthLevel"];
+        this.maxRebirthLevel = res["maxRebirthLevel"];
 
         res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity " +
             "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
@@ -140,6 +143,14 @@ class Area {
         return this.possibleLoots;
     }
 
+    getMinRebirthLevel() {
+        return this.minRebirthLevel;
+    }
+
+    getMaxRebirthLevel() {
+        return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel;
+    }
+
     async loadItemsLootTable() {     
 
 
@@ -185,13 +196,15 @@ class Area {
     }
 
     async lightLoad() {
-        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
+        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel, minRebirthLevel, maxRebirthLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
         res = res[0];
         this.idRegion = res["idRegion"];
         this.image = res["AreaImage"];
         this.areaType = res["NomAreaType"];
         this.minLevel = res["minLevel"];
         this.maxLevel = res["maxLevel"];
+        this.minRebirthLevel = res["minRebirthLevel"];
+        this.maxRebirthLevel = res["maxRebirthLevel"];
     }
 
     getMonstersToApiLight(lang) {
@@ -323,7 +336,7 @@ class Area {
     }
 
     /**
-     * @returns {Array<AreaBonus>} More like an object with name of bonus as key
+     * @returns {Promise<Array<AreaBonus>>} More like an object with name of bonus as key
      */
     async getAllBonuses() {
         let bonuses = {};
@@ -352,7 +365,7 @@ class Area {
     }
 
     /**
-     * @return {number}
+     * @return {Promise<number>}
      */
     async getLevel() {
         let res = await conn.query("SELECT AreaLevel as level FROM areas WHERE idArea = ?;", [this.id]);
@@ -487,7 +500,7 @@ class Area {
     }
 
     /**
-     * @returns {number} Null if no guilds
+     * @returns {Promise<number>} Null if no guilds
      */
     async getOwnerID() {
         let res = await conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?;", [this.id]);
@@ -508,7 +521,7 @@ class Area {
     /**
      * 
      * @param {string} lang 
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     async getOwner(lang) {
         let res = await conn.query("SELECT idGuild FROM areasowners WHERE idArea = ?", [this.id]);
@@ -608,6 +621,8 @@ class Area {
             name: this.name,
             image: this.image,
             levels: this.minMaxLevelToString(),
+            minRebirthLevel: this.getMinRebirthLevel(),
+            maxRebirthLevel: this.getMaxRebirthLevel(),
             nbrPlayers: this.players.length,
         }
     }
@@ -619,6 +634,8 @@ class Area {
             id: this.id,
             name: this.getName(lang),
             levels: this.minMaxLevelToString(),
+            minRebirthLevel: this.getMinRebirthLevel(),
+            maxRebirthLevel: this.getMaxRebirthLevel(),
             type: this.areaType,
             owner: await this.getOwner(lang),
             haveOwner: await this.haveOwner(),

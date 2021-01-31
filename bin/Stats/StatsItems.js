@@ -39,6 +39,18 @@ class StatsItems extends Stats {
         }
     }
 
+    getOptimalArmor(level = 1, rebirthLevel = 0) {
+        return ((8 * (Math.pow(level, 2))) / 7 + 5) * this.getMultiplerRebirth(rebirthLevel);
+    }
+
+    getMaximumStat(level = 1, rebirthLevel = 0) {
+        return super.getMaximumStat(level) * this.getMultiplerRebirth(rebirthLevel);
+    }
+
+    getMultiplerRebirth(rebirthLevel = 0) {
+        return 1 + Globals.rebirthManager.rebirthsLevelsModifiers[rebirthLevel].percentageBonusToItemsStats / 100;
+    }
+
 }
 
 module.exports = StatsItems;

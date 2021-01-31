@@ -65,7 +65,7 @@ class FightModule extends GModule {
             if (mId != -1 && await User.exist(mId)) {
                 if (res.locals.id !== mId) {
                     if (await Globals.connectedUsers[res.locals.id].character.getArea().isFirstFloor()) {
-                        if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+                        if (Globals.connectedUsers[res.locals.id].character.canDoPvp()) {
                             let userToAttack = new User(mId);
                             await userToAttack.lightLoad();
 
@@ -81,7 +81,7 @@ class FightModule extends GModule {
                                 userWhoAttack.character.healIfAreaIsSafe();
                             }
                         } else {
-                            data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                            data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaustPvp()]);
                         }
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "fight_pvp_cant_fight_here");

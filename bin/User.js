@@ -151,8 +151,13 @@ class User {
         return res[0] != null ? res[0].idUser : null;
     }
 
+    /**
+     * 
+     * @param {number} idCharacter
+     * @returns {Promise<{idUser:string, lang: string}>}
+     */
     static async getIDByIDCharacterAndLang(idCharacter) {
-        let res = await conn.query("SELECT idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
+        let res = await conn.query("SELECT users.idUser, lang FROM users INNER JOIN userspreferences ON userspreferences.idUser = users.idUser WHERE idCharacter = ?;", [idCharacter]);
         return res[0];
     }
 
@@ -293,21 +298,21 @@ class User {
 
     // Info pannel API
     async apiInfoPanel() {
+
+        let allPromises = [this.character.getStatPoints(), this.character.getTalentPoints(), this.character.talents.toApi(), this.character.getMoney(), this.character.getHonor(), this.character.getPower(), this.character.getAchievements().getCountsAchievements(), this.toApiToRebirth()];
+
         let infos = {
             actualXp: this.character.levelSystem.actualXP,
             xpNextLevel: this.character.levelSystem.expToNextLevel,
             username: this.character.name,
             avatar: this.avatar,
-            statPoints: await this.character.getStatPoints(),
-            talentPoints: await this.character.getTalentPoints(),
+
             resetValue: this.character.getResetStatsValue(),
             stats: this.character.stats.toApi(),
             secondaryStats: this.character.secondaryStats.toApi(),
-            talents: await this.character.talents.toApi(),
+
             level: this.character.getLevel(),
-            money: await this.character.getMoney(),
-            honor: await this.character.getHonor(),
-            power: await this.character.getPower(),
+
             attributesResults: {
                 magicalCriticalEvasionRate: this.character.getMagicalCriticalEvasionRate(this.character.getLevel()),
                 magicalCriticalRate: this.character.getMagicalCriticalRate(this.character.getLevel()),
@@ -325,16 +330,42 @@ class User {
             maxMp: this.character.maxMP,
             currentEnergy: this.character.actualEnergy,
             maxEnergy: this.character.maxEnergy,
-            craft: {
-                level: this.character.getCraftLevel(),
-                xp: this.character.getCratfXP(),
-                xpNextLevel: this.character.getCraftNextLevelXP(),
-            },
             lang: this.getLang(),
-
         };
+
+        allPromises = await Promise.all(allPromises);
+
+        infos.statPoints = allPromises[0];
+        infos.talentPoints = allPromises[1];
+        infos.talents = allPromises[2];
+        infos.money = allPromises[3];
+        infos.honor = allPromises[4];
+        infos.power = allPromises[5];
+        infos.achievements = allPromises[6];
+
+        infos = { ...infos, ...allPromises[7] };
+
+        infos.craft = {
+            level: this.character.getCraftLevel(),
+            xp: this.character.getCratfXP(),
+            xpNextLevel: this.character.getCraftNextLevelXP(),
+            ...infos.craft
+        }
+
         return infos;
+
     }
+
+    async toApiToRebirth(lang = "en") {
+
+        let promises = [this.character.getRebirthDataCharacterToApi(lang), this.character.getRebirthDataCraftToApi(lang)];
+        promises = await Promise.all(promises);
+        let data = { ...promises[0], craft: promises[1], lang: this.getLang() }
+
+        return data;
+    }
+
+
 
     canBeUnstuck() {
         return Date.now() - this.lastCommandTime >= 5000;

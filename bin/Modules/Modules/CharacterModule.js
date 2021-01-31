@@ -24,6 +24,8 @@ const Emojis = require("../../Emojis");
 const express = require("express");
 const Skill = require("../../SkillsAndStatus/Skill");
 const Character = require("../../Character");
+const RebirthApiData = require("../../Rebirths/RebirthApiData");
+const State = require("../../SkillsAndStatus/State");
 
 
 
@@ -165,12 +167,43 @@ class CharacterModule extends GModule {
                 err = "InvalidUsername (No username entered)";
             }
 
+            if (req.body.avatar != null) {
+                try {
+                    await conn.query("UPDATE users SET avatar = ? WHERE idUser = ?;", [req.body.avatar, res.locals.id]);
+                } catch (ex) {
+                    console.log("Exception on avatar set: " + ex);
+                }
+            }
+
             await next();
             return err != null ? res.json({ error: err }) : res.json({ done: true });
         });
 
         this.router.get("/info", async (req, res, next) => {
             let data = await Globals.connectedUsers[res.locals.id].apiInfoPanel(res.locals.lang);
+            await next();
+            return res.json(
+                data
+            );
+        });
+
+        this.router.get("/rebirth", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].toApiToRebirth(res.locals.lang);
+            await next();
+            return res.json(
+                data
+            );
+        });
+
+        this.router.post("/rebirth", async (req, res, next) => {
+
+            let data;
+            if (req.body.rebirthType === "level") {
+                data = await this.rebirthCharacter(res.locals.character, res.locals.lang);
+            } else {
+                data = await this.rebirthCraft(res.locals.character, res.locals.lang);
+            }
+
             await next();
             return res.json(
                 data
@@ -340,6 +373,30 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/states/show/:idState", async (req, res, next) => {
+            // Temp
+            let err;
+            let data;
+            let state = new State();
+            let idState = parseInt(req.params.idState, 10);
+            if (isNaN(idState) || !await state.loadWithID(idState)) {
+                err = Translator.getString(res.locals.lang, "errors", "state_show_dont_exist");
+            }
+
+            if (err != null) {
+                data = { error: err };
+            } else {
+                data = {
+                    state: state.toApi(res.locals.character, res.locals.lang),
+                    lang: res.locals.lang
+                };
+            }
+
+
+            await next();
+            return res.json(data);
+        });
+
         this.router.get("/build/show", async (req, res, next) => {
             await next();
             return res.json(res.locals.character.skillBuild.toApi(res.locals.lang));
@@ -459,7 +516,7 @@ class CharacterModule extends GModule {
      * @param {number} idNode
      * @param {string} lang
      */
-    async tryUnlockTalent(character, idNode, lang="en") {
+    async tryUnlockTalent(character, idNode, lang = "en") {
         if (isNaN(idNode)) {
             return this.asError(Translator.getString(lang, "errors", "talents_show_missing_id"));
         }
@@ -491,6 +548,82 @@ class CharacterModule extends GModule {
             node: await node.toApi(lang),
             pointsLeft: await character.getTalentPoints(),
         };
+    }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {string} lang
+     */
+    async rebirthCharacter(character, lang = "en") {
+        let rebirthData = await character.getRebirthDataCharacterToApi(lang);
+
+        let errors = this.getRebirthErrors(rebirthData, lang);
+
+        if (errors.error) {
+            return errors;
+        }
+
+        await this.removeRebirthNeedItems(character, rebirthData);
+        await character.rebirth();
+        await character.travel(Globals.areasManager.getArea(1));
+
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful_level"));
+    }
+
+    /**
+     *
+     * @param {Character} character
+     * @param {string} lang
+     */
+    async rebirthCraft(character, lang = "en") {
+        let rebirthData = await character.getRebirthDataCraftToApi(lang);
+        let errors = this.getRebirthErrors(rebirthData, lang);
+
+        if (errors.error) {
+            return errors;
+        }
+
+        await this.removeRebirthNeedItems(character, rebirthData);
+        await character.rebirthCraft();
+
+        return this.asSuccess(Translator.getString(lang, "character", "rebirth_successful_craft_level"));
+    }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {RebirthApiData} apiData
+     * @param {string} lang
+     */
+    async removeRebirthNeedItems(character, apiData) {
+        let promises = [];
+        for (let item of apiData.nextRebirthsLevelsModifiers.requiredItems) {
+            promises.push(character.getInv().removeSomeFromInventoryIdBase(item.idBase, item.number, true));
+        }
+        await Promise.all(promises);
+    }
+
+    /**
+     * 
+     * @param {RebirthApiData} data
+     */
+    getRebirthErrors(data, lang = "en") {
+        if (data.rebirthLevel == data.maxRebirthLevel) {
+            return this.asError(Translator.getString(lang, "errors", "rebirth_cant_rebirth_max_level"));
+        }
+
+        if (data.level < data.maxLevel) {
+            return this.asError(Translator.getString(lang, "errors", "rebirth_not_max_level"));
+        }
+
+        for (let item of data.nextRebirthsLevelsModifiers.requiredItems) {
+            if (item.missing > 0) {
+                return this.asError(Translator.getString(lang, "errors", "rebirth_dont_have_required_items"));
+            }
+        }
+
+        return {};
     }
 
 }

@@ -6,6 +6,8 @@ const Consumable = require("./Items/Consumable");
 const Translator = require("./Translator/Translator");
 const Stats = require("./Stats/Stats");
 const Utils = require("./Utilities/Utils.js");
+const SimpleItemData = require("./Items/SimpleItemData.js");
+const RebirthData = require("./Rebirths/RebirthData.js");
 
 class CharacterInventory {
     // Discord User Info
@@ -119,9 +121,9 @@ class CharacterInventory {
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " +  paramsResult.more + ";", paramsResult.sqlParams);
+        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
         let ids = [];
-        for (let i in res) { 
+        for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
@@ -162,7 +164,7 @@ class CharacterInventory {
 
         let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang, perPage, offset], 2);
 
-        let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, localizationitems.nameItem, items.favorite FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered ${paramsResult.more} LIMIT ? OFFSET ?;`, paramsResult.sqlParams);
+        let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, localizationitems.nameItem, items.favorite, items.rebirthLevel FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered ${paramsResult.more} LIMIT ? OFFSET ?;`, paramsResult.sqlParams);
 
         let promises = [];
 
@@ -191,25 +193,48 @@ class CharacterInventory {
      * 
      * @param {Craft} craft
      */
-    async getMissingComponent(craft) {
-        // idBase, typename, stypename, rarity, number
+    async getCraftMissingComponents(craft) {
+        await this.getMissingComponents(craft.requiredItems);
+        return craft;
+    }
+
+    /**
+     * 
+     * @param {RebirthData} rebirth
+     */
+    async getRebirthRequiredItems(rebirth) {
+        await this.getMissingComponents(rebirth.requiredItems);
+        return rebirth;
+    }
+
+    /**
+     * Update required items with the missing data
+     * Returns the required items object
+     * @param {SimpleItemData[]} requiredItems
+     */
+    async getMissingComponents(requiredItems) {
+
+        if (requiredItems == null || requiredItems.length === 0) {
+            return requiredItems;
+        }
         let idArr = [];
         let keys = {};
-        for (let i in craft.requiredItems) {
-            let item = craft.requiredItems[i];
+        for (let i in requiredItems) {
+            let item = requiredItems[i];
             let idBase = item.idBase;
             keys[idBase] = i;
             idArr.push(idBase);
             item.missing = item.number;
         }
+
         let resources = await this.getNumbersOfThoseItemsByIDBase(idArr);
 
         for (let resource of resources) {
-            craft.requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
-            craft.requiredItems[keys[resource.idBaseItem]].missing = craft.requiredItems[keys[resource.idBaseItem]].missing >= 0 ? craft.requiredItems[keys[resource.idBaseItem]].missing : 0
+            requiredItems[keys[resource.idBaseItem]].missing -= resource.number;
+            requiredItems[keys[resource.idBaseItem]].missing = requiredItems[keys[resource.idBaseItem]].missing >= 0 ? requiredItems[keys[resource.idBaseItem]].missing : 0;
         }
 
-        return craft;
+        return requiredItems;
     }
 
     /**
@@ -294,13 +319,13 @@ class CharacterInventory {
         return res[0] != null;
     }
 
-    async getIdOfThisIdBase(idBaseItem, level = 1) {
-        return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level);
+    async getIdOfThisIdBase(idBaseItem, level = 1, rebirthLevel=0) {
+        return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level, rebirthLevel);
     }
 
-    static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1) {
+    static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1, rebirthLevel = 0) {
         level = level >= 1 ? level : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, idCharacter]);
+        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND items.rebirthLevel = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, rebirthLevel, idCharacter]);
         if (res[0]) {
             return res[0].idItem;
         }

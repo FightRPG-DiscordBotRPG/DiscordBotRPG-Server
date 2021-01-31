@@ -1,4 +1,5 @@
 const conn = require("../conf/mysql.js");
+const RebirthManager = require("./Rebirths/RebirthManager.js");
 
 let rarityChances = {
     commun: 30 / 100,
@@ -22,6 +23,7 @@ let collectChances = {
  * A song
  * @typedef {Object} Globals
  * @property {Array<User>} connectedUsers - Users
+ * @property {Array<Guild>} connectedGuilds - Guilds
  */
 var Globals = {
     "maintenance_message": null,
@@ -92,7 +94,7 @@ var Globals = {
      */
     "connectedUsers": [],
     /**
-     * @type {Object<any, Guild>}
+     * @type {Object<string, Guild>}
      */
     "connectedGuilds": {},
     /**
@@ -104,6 +106,10 @@ var Globals = {
      */
     "fightManager": {},
     "lockedMembers": {},
+    /**
+    * @type {RebirthManager}
+    */
+    "rebirthManager": null,
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
@@ -232,7 +238,7 @@ var Globals = {
         }
         Globals.equipableCorresponds = equipableCorresponds;
     },
-    getSearchParams: (params, withWhere = true, withAndBefore = false, includeList=null) => {
+    getSearchParams: (params, withWhere = true, withAndBefore = false, includeList = null) => {
         let values = [];
         let more = "";
 
@@ -247,6 +253,10 @@ var Globals = {
                 "level": { name: "level", sign: ">=", isString: false, isBool: false },
                 "level_down": { name: "level", sign: "<=", isString: false, isBool: false },
 
+                "rebirth_up": { name: "rebirthLevel", sign: ">=", isString: false, isBool: false },
+                "rebirth": { name: "rebirthLevel", sign: ">=", isString: false, isBool: false },
+                "rebirth_down": { name: "rebirthLevel", sign: "<=", isString: false, isBool: false },
+
                 "power": { name: "power", sign: ">=", isString: false, isBool: false },
                 "power_up": { name: "power", sign: ">=", isString: false, isBool: false },
                 "power_down": { name: "power", sign: "<=", isString: false, isBool: false },
@@ -256,7 +266,7 @@ var Globals = {
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && equivalent[param] != null && (includeList ===null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
+                if (params[param] != null && equivalent[param] != null && (includeList === null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
                     if (more.length > 0) {
                         more += " AND ";
                     }
@@ -268,7 +278,7 @@ var Globals = {
                     }
 
                     if (equivalent[param].isBool) {
-                        params[param] = params[param] === "true" ? 1 : 0;
+                        params[param] = params[param] == "true" || params[param] == true ? 1 : 0;
                     }
 
                     values.push(params[param]);

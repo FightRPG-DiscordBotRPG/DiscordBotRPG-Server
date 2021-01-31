@@ -6,6 +6,7 @@ class ShopItem {
     constructor(id) {
         this.id = id;
         this.level = 0;
+        this.rebirthLevel = 0;
         this.name = "";
         this.number = 0;
         this.price = 0;
@@ -17,11 +18,12 @@ class ShopItem {
     }
 
     async load() {
-        let res = await conn.query("SELECT level, number, price, itemstypes.nomType, itemssoustypes.nomSousType, itemsrarities.nomRarity, sellableitems.idBaseItem FROM sellableitems INNER JOIN itemsbase ON itemsbase.idBaseItem = sellableitems.idBaseItem INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idSellableItems = ?;", [this.id]);
+        let res = await conn.query("SELECT level, number, price, itemstypes.nomType, itemssoustypes.nomSousType, itemsrarities.nomRarity, sellableitems.idBaseItem, rebirthLevel FROM sellableitems INNER JOIN itemsbase ON itemsbase.idBaseItem = sellableitems.idBaseItem INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType WHERE idSellableItems = ?;", [this.id]);
         if (res[0] != null) {
             this.level = res[0].level;
             this.number = res[0].number;
             this.price = res[0].price;
+            this.rebirthLevel = res[0].rebirthLevel;
 
             this.idBase = res[0].idBaseItem;
 
@@ -51,6 +53,7 @@ class ShopItem {
             subType: Translator.getString(lang, "item_sous_types", this.subType),
             subType_shorthand: this.subType,
             level: this.level,
+            rebirthLevel: this.rebirthLevel,
             number: this.number,
             price: this.price,
             priceWithTax: Math.round(this.price * this.tax),

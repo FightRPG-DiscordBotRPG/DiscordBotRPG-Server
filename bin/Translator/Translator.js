@@ -111,8 +111,9 @@ class Translator {
     }
 
     static async loadFromJson() {
+        let conf;
         try {
-            var conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
+            conf = await axios.get(TranslatorConf.cdn_translator_url + 'config.json', { timeout: 2000 });
             conf = conf.data;
         } catch (e) {
             console.log("ERROR WHEN READING CONFIG FILE:\n");
@@ -123,7 +124,7 @@ class Translator {
                 fs.mkdirSync(__dirname + "/locale");
             }
             let localeList = await fs.readdirSync(__dirname + "/locale/");
-            var conf = { published_langs: [] };
+            conf = { published_langs: [] };
             for (let item of localeList) {
                 conf.published_langs.push(item.split(".")[0]);
             }

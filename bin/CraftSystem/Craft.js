@@ -1,17 +1,38 @@
 const conn = require("../../conf/mysql");
 const Translator = require("../Translator/Translator");
 const Item = require("../Items/Item");
+const SimpleItemData = require("../Items/SimpleItemData");
+const Globals = require("../Globals");
 
 class Craft {
     constructor(id) {
         this.id = id;
         this.exist = false;
+        /**
+         * @type {Array<SimpleItemData>}
+         **/
         this.requiredItems = [];
+        /**
+         * @type {{
+                idBase: number,
+                image: string,
+                typename: string,
+                stypename:  string,
+                rarity:     string,
+                idRarity: number,
+                rarityColor: string,
+                maxLevel: number,
+                minLevel: number,
+                stackable: boolean,
+                minRebirthLevel: number,
+                maxRebirthLevel: number,
+            }}
+         **/
         this.itemInfo = {};
     }
 
     async load() {
-        let res = await conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, stackable, itemsbase.idBaseItem FROM craftitemsneeded 
+        let res = await conn.query(`SELECT DISTINCT itemsbase.idRarity, imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, stackable, itemsbase.idBaseItem, craftitem.minRebirthLevel, craftitem.maxRebirthLevel FROM craftitemsneeded 
         INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
         INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitem.idBaseItem
         INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -33,9 +54,11 @@ class Craft {
                 maxLevel: res.maxLevel,
                 minLevel: res.minLevel,
                 stackable: res.stackable,
+                minRebirthLevel: res.minRebirthLevel,
+                maxRebirthLevel: res.maxRebirthLevel > 0 ? res.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel,
             }
 
-            res = await conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem FROM craftitemsneeded 
+            res = await conn.query(`SELECT imageItem, nomType, nomRarity, couleurRarity, nomSousType, maxLevel, minLevel, number, itemsbase.idBaseItem, craftitemsneeded.minRebirthLevel FROM craftitemsneeded 
             INNER JOIN craftitem ON craftitem.idCraftItem = craftitemsneeded.IdCraftItem
             INNER JOIN itemsbase ON itemsbase.idBaseItem = craftitemsneeded.NeededItem
             INNER JOIN itemstypes ON itemsbase.idType = itemstypes.idType 
@@ -44,13 +67,14 @@ class Craft {
             WHERE craftitemsneeded.IdCraftItem = ?;`, [this.id]);
 
             for (let item of res) {
-                this.requiredItems.push({
+                this.requiredItems.push(SimpleItemData.createFromData({
                     idBase: item.idBaseItem,
                     typename: item.nomType,
                     stypename: item.nomSousType,
                     rarity: item.nomRarity,
-                    number: item.number
-                });
+                    number: item.number,
+                    minRebirthLevel: item.minRebirthLevel,
+                }));
             }
         }
     }
@@ -69,20 +93,13 @@ class Craft {
         craft.subType_shorthand = this.itemInfo.stypename;
         craft.minLevel = this.itemInfo.minLevel;
         craft.maxLevel = this.itemInfo.maxLevel;
+        craft.minRebirthLevel = this.itemInfo.minRebirthLevel;
+        craft.maxRebirthLevel = this.itemInfo.maxRebirthLevel;
+        craft.maxLevel = this.itemInfo.maxLevel;
         craft.requiredItems = [];
 
         for (let item of this.requiredItems) {
-            craft.requiredItems.push({
-                name: Item.getName(item.idBase, lang),
-                type: Translator.getString(lang, "item_types", item.typename),
-                type_shorthand: item.typename,
-                subType: Translator.getString(lang, "item_sous_types", item.stypename),
-                subType_shorthand: item.stypename,
-                rarity: Translator.getString(lang, "rarities", item.rarity),
-                rarity_shorthand: item.rarity,
-                number: item.number,
-                missing: item.missing,
-            });
+            craft.requiredItems.push(item.toApi(lang));
         }
         return craft;
     }

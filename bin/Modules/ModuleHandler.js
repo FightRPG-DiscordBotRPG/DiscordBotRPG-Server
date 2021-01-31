@@ -116,6 +116,14 @@ class ModuleHandler extends GModule {
             let parameters = urlParts.query;
             res.send(new TournamentViewer().toHtml(parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en" ));
         });
+
+        helpersRouter.get("/help/", async (req, res, next) => {
+            await next();
+            return res.json({
+                guildsBasePriceLevel: Globals.guilds.basePriceLevel,
+                collectTriesOnce: Globals.collectTriesOnce,
+            });
+        });
         app.use("/helpers", helpersRouter);
     }
 

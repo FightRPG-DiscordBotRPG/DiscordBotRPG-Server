@@ -14,7 +14,7 @@ class LeaderboardWBAttacks extends LeaderboardWB {
     }
 
     async dbGetLeaderboard(offset) {
-        return await conn.query("SELECT charactersattacks.idCharacter, users.userName, users.isConnected, charactersattacks.attackCount, levels.actualLevel FROM charactersattacks INNER JOIN users ON users.idCharacter = charactersattacks.idCharacter INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY charactersattacks.attackCount DESC, charactersattacks.damage DESC LIMIT ?, 11", [await this.getBossID(), offset]);
+        return await conn.query("SELECT charactersattacks.idCharacter, users.userName, users.isConnected, charactersattacks.attackCount, levels.actualLevel, levels.rebirthLevel FROM charactersattacks INNER JOIN users ON users.idCharacter = charactersattacks.idCharacter INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY charactersattacks.attackCount DESC, charactersattacks.damage DESC LIMIT ?, 11", [await this.getBossID(), offset]);
     }
 
 }

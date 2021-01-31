@@ -47,12 +47,13 @@ class Guild {
         await conn.query("INSERT INTO guildsmembers VALUES(?, ?, 3)", [idCharacter, res]);
 
         // Add To MemberList
-        res = (await conn.query("SELECT users.userName, users.idUser, levels.actualLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter]))[0];
+        res = (await conn.query("SELECT users.userName, users.idUser, levels.actualLevel, levels.rebirthLevel FROM users INNER JOIN levels ON levels.idCharacter = users.idCharacter WHERE users.idCharacter = ?;", [idCharacter]))[0];
         this.members[idCharacter] = {
             name: res["userName"],
             rank: 3,
             idUser: res["idUser"],
             level: res["actualLevel"],
+            rebirthLevel: res["rebirthLevel"],
         }
         this.nbrMembers++;
 
@@ -106,7 +107,9 @@ class Guild {
                 await conn.query("INSERT INTO guildsmembers VALUES(?,?,?);", [idOther, this.id, rank]);
 
                 // Don't need to wait it
-                CharacterAchievements.unlock(11, await User.getIDByIDCharacter(idOther));
+                let idAndLang = await User.getIDByIDCharacterAndLang(idOther);
+                CharacterAchievements.unlock(11, idAndLang.idUser);
+                User.tell(idAndLang.idUser, Translator.getString(idAndLang.lang, "guild", "you_ve_been_accepted", [this.name]));
             } else {
                 err.push(Translator.getString(lang, "errors", "guild_maximum_members"));
             }
@@ -124,6 +127,8 @@ class Guild {
             if (meRank > otherRank || idAsk == idOther) {
                 if (otherRank < 3) {
                     await conn.query("DELETE FROM guildsmembers WHERE idCharacter = ?;", [idOther]);
+                    let idAndLang = await User.getIDByIDCharacterAndLang(idOther);
+                    User.tell(idAndLang.idUser, Translator.getString(idAndLang.lang, "guild", "you_ve_been_kicked"));
                 } else {
                     err.push(Translator.getString(lang, "errors", "guild_cant_leave_guild_as_gm"));
                 }
@@ -136,7 +141,7 @@ class Guild {
 
         return err;
     }
-
+    
     async updateMember(idAsk, idOther, rank, lang) {
         let err = [];
         if (await this.isMember(idOther)) {
@@ -242,7 +247,7 @@ class Guild {
         this.nbrMembers = 0;
 
         // Members
-        res = await conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);
+        res = await conn.query("SELECT guildsmembers.idGuildRank, guildsmembers.idCharacter, users.userName, users.idUser, levels.actualLevel, levels.rebirthLevel FROM guildsmembers INNER JOIN users ON users.idCharacter = guildsmembers.idCharacter INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = ?;", [id]);
 
         for (let i in res) {
             this.members[res[i]["idCharacter"]] = {
@@ -250,6 +255,7 @@ class Guild {
                 rank: res[i]["idGuildRank"],
                 idUser: res[i]["idUser"],
                 level: res[i]["actualLevel"],
+                rebirthLevel: res[i]["rebirthLevel"],
             };
             this.nbrMembers++;
         }
@@ -281,7 +287,7 @@ class Guild {
             if (territories[territory.nameRegion] == null) {
                 territories[territory.nameRegion] = [];
             }
-            territories[territory.nameRegion].push({ name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
+            territories[territory.nameRegion].push({ idArea: territory.idArea, name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
 
             actualIndex++
         }
@@ -306,6 +312,7 @@ class Guild {
             currentTerritoryEnroll: idOfAreaEnroll !== null ? Globals.areasManager.getNameOf(await this.getTournamentAreaEnrolled(), lang) : null,
             totalLevel: stats.totalLevel,
             totalPower: stats.totalPower,
+            totalRebirthLevel: stats.totalRebirthLevel,
         }
         return toApi;
     }
@@ -314,7 +321,7 @@ class Guild {
      * @returns {Promise<{totalPower: Number, totalLevel: Number}>}
      */
     async getGuildStats() {
-        return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers LEFT JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
+        return (await conn.query("SELECT SUM(levels.actualLevel) as totalLevel, SUM(levels.rebirthLevel) as totalRebirthLevel, (SELECT IfNull(SUM(power), 0) FROM guildsmembers LEFT JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter LEFT JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE GD.idGuild = ?;", [this.id]))[0];
     }
 
     async isMaxMembersLimitReached() {
@@ -499,7 +506,7 @@ class Guild {
         maxPage = maxPage <= 0 ? 1 : maxPage;
         page = page <= maxPage ? page : maxPage;
 
-        let res = await conn.query("SELECT GA.idCharacter as id, users.userName as name, levels.actualLevel as level, (SELECT IfNull(SUM(power), 0) FROM guildsappliances INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsappliances.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idCharacter = GA.idCharacter ) as power FROM guildsappliances GA INNER JOIN users ON users.idCharacter = GA.idCharacter INNER JOIN levels ON levels.idCharacter = GA.idCharacter WHERE GA.idGuild = ? ORDER BY power DESC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
+        let res = await conn.query("SELECT GA.idCharacter as id, users.userName as name, levels.actualLevel as level, levels.rebirthLevel, (SELECT IfNull(SUM(power), 0) FROM guildsappliances INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsappliances.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsappliances.idCharacter WHERE guildsappliances.idCharacter = GA.idCharacter ) as power FROM guildsappliances GA INNER JOIN users ON users.idCharacter = GA.idCharacter INNER JOIN levels ON levels.idCharacter = GA.idCharacter WHERE GA.idGuild = ? ORDER BY power DESC LIMIT 10 OFFSET ?;", [this.id, (page - 1) * 10]);
         return {
             appliances: res,
             page: page,
@@ -642,7 +649,7 @@ class Guild {
 
         page = page > maxPage || page <= 0 ? 1 : page;
 
-        let res = await conn.query("SELECT GD.idGuild as id, GD.nom as name, GD.level, count(*) as nbMembers, SUM(levels.actualLevel) as totalLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter GROUP BY GD.idGuild ORDER BY totalPower DESC, totalLevel DESC, level DESC LIMIT 10 OFFSET ?", [((page - 1) * 10)]);
+        let res = await conn.query("SELECT GD.idGuild as id, GD.nom as name, GD.level, count(*) as nbMembers, SUM(levels.actualLevel) as totalLevel, SUM(levels.rebirthLevel) as totalRebirthLevel, (SELECT IfNull(SUM(power), 1) FROM guildsmembers INNER JOIN charactersequipements ON charactersequipements.idCharacter = guildsmembers.idCharacter INNER JOIN itemspower ON itemspower.idItem = charactersequipements.idItem INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter WHERE guildsmembers.idGuild = GD.idGuild ) as totalPower FROM guilds GD INNER JOIN guildsmembers ON guildsmembers.idGuild = GD.idGuild INNER JOIN levels ON levels.idCharacter = guildsmembers.idCharacter GROUP BY GD.idGuild ORDER BY totalPower DESC, totalLevel DESC, level DESC LIMIT 10 OFFSET ?", [((page - 1) * 10)]);
 
         for (let i in res) {
             res[i].maxMembers = (Globals.guilds.baseMembers + (Globals.guilds.membersPerLevels * res[i].level));

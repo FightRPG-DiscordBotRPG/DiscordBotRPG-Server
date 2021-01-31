@@ -96,7 +96,6 @@ class InventoryModule extends GModule {
 
         this.router.post("/itemunfav", async (req, res, next) => {
             let data = await this.setFavoriteValueItem(req, res, false);
-
             await next();
             return res.json(data);
         });
@@ -268,47 +267,50 @@ class InventoryModule extends GModule {
 
     /**
      * 
-     * @param {any} req
-     * @param {any} res
+     * @param {express.Request} req
+     * @param {express.Response} res
      * @param {boolean} toFavorite True if you fav the item, false if unfav it
      */
     async setFavoriteValueItem(req, res, toFavorite) {
-
         let data = {};
         data.lang = res.locals.lang;
-
-        let idItemFav = parseInt(req.body.idItem, 10);
-        let isRealID = req.body.isRealID;
-
         let favoriteTextKey = toFavorite === true ? "item_tag_as_favorite" : "item_untag_as_favorite";
-        if (idItemFav != null && Number.isInteger(idItemFav)) {
-            if (isRealID == null || isRealID == false) {
-                if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemFav)) {
-                    let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemFav, toFavorite);
-                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                }
-            } else {
-                let itemFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemFav);
-                if (itemFav != null) {
-                    await itemFav.setFavorite(toFavorite);
-                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [itemFav.getName(data.lang)]);
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
-                }
-            }
+        if (req.body.idItem == null && req.body.filter != null) {
+            await res.locals.character.setFilteredItemsFavorite(this.getSearchParams(req), res.locals.lang, toFavorite);
+            data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey + "_filtered");
         } else {
-            idItemFav = this.getEquipableIDType(req.body.idItem);
-            if (idItemFav > 0) {
-                if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemFav) != null) {
-                    let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemFav, toFavorite);
-                    data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
+            let idItemFav = parseInt(req.body.idItem, 10);
+            let isRealID = req.body.isRealID;
+            
+            if (idItemFav != null && Number.isInteger(idItemFav)) {
+                if (isRealID == null || isRealID == false) {
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemFav)) {
+                        let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteInv(idItemFav, toFavorite);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
+                } else {
+                    let itemFav = await Globals.connectedUsers[res.locals.id].character.getItemFromAllInventories(idItemFav);
+                    if (itemFav != null) {
+                        await itemFav.setFavorite(toFavorite);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [itemFav.getName(data.lang)]);
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
+                }
+            } else {
+                idItemFav = this.getEquipableIDType(req.body.idItem);
+                if (idItemFav > 0) {
+                    if (await Globals.connectedUsers[res.locals.id].character.haveThisObjectEquipped(idItemFav) != null) {
+                        let item = await Globals.connectedUsers[res.locals.id].character.setItemFavoriteEquip(idItemFav, toFavorite);
+                        data.success = Translator.getString(res.locals.lang, "inventory_equipment", favoriteTextKey, [item.getName(data.lang)]);
+                    } else {
+                        data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
+                    }
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
                 }
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "item_you_dont_have_this_item");
             }
         }
 

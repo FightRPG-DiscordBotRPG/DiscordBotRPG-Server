@@ -11,6 +11,7 @@ const LootSystem = require("./bin/LootSystem");
 const DBL = require("dblapi.js");
 const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
 const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
+const RebirthManager = require("./bin/Rebirths/RebirthManager.js");
 const axios = require("axios").default;
 const options = {
     webhookPort: 5000,
@@ -27,7 +28,7 @@ if (conf.env === "prod") {
         let idAndLang = await User.getIdAndLang(vote.user);
         if (idAndLang != null) {
             let ls = new LootSystem();
-            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true);
+            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true, 0);
             let lang = idAndLang.lang;
             let msg = Translator.getString(lang, "vote_daily", "you_voted");
             if (vote.isWeekend) {
@@ -63,6 +64,12 @@ let startUp = async () => {
     console.log("Initializing Database ...");
     await DatabaseInitializer.initialize();
     console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+    syncStartWith = Date.now();
+    console.log("Loading Rebirth Manager ...");
+    Globals.rebirthManager = new RebirthManager();
+    await Globals.rebirthManager.load();
+    console.log("Rebirth Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     syncStartWith = Date.now();
     console.log("Loading Areas...");

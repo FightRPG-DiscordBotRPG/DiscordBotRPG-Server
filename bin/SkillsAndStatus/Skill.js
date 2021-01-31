@@ -348,6 +348,7 @@ class Skill {
             repeat: this.repeat,
             successRate: this.successRate,
             timeToCast: this.timeToCast,
+            timeToCastPerTurn: entity.getCastPreparationPerTurn(this),
             idAttackType: this.idAttackType,
             effects: this.effects.map(e => e.toApi(lang)),
         }

@@ -21,7 +21,6 @@ const Skill = require("../../SkillsAndStatus/Skill");
 const Effect = require("../../SkillsAndStatus/Effect");
 const Utils = require("../../Utilities/Utils");
 const Character = require("../../Character");
-const { maximumSkillsPerBuild } = require("../../Globals");
 
 class AdminModule extends GModule {
     constructor() {
@@ -42,7 +41,7 @@ class AdminModule extends GModule {
             let data = {};
             req.body.idItem = parseInt(req.body.idItem);
             if (req.body.idItem && Number.isInteger(req.body.idItem)) {
-                if (await res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number)) {
+                if (await res.locals.tLootSystem.adminGetItem(Globals.connectedUsers[res.locals.id].character, req.body.idItem, req.body.number, req.body.level, req.body.rebirthLevel)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";
@@ -58,8 +57,9 @@ class AdminModule extends GModule {
             req.body.idItem = parseInt(req.body.idItem); // idItem
             req.body.level = parseInt(req.body.level); // level
             req.body.number = parseInt(req.body.number); // nbr
+            req.body.rebirthLevel = parseInt(req.body.rebirthLevel); // nbr
             if (req.body.idUser && Globals.connectedUsers[req.body.idUser] != null) {
-                if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number)) {
+                if (await res.locals.tLootSystem.giveToPlayer(Globals.connectedUsers[req.body.idUser].character, req.body.idItem, isNaN(req.body.level) ? 1 : req.body.level, req.body.number, false, isNaN(req.body.rebirthLevel) ? 1 : req.body.rebirthLevel)) {
                     data.success = "Done";
                 } else {
                     data.error = "Something goes wrong !";
@@ -155,12 +155,12 @@ class AdminModule extends GModule {
         this.router.post("/give/xp", async (req, res, next) => {
             let data = {};
 
-            if (Globals.connectedUsers[res.locals.id].character.getLevel() < Globals.maxLevel) {
-                let value = parseInt(req.body.xp, 10);
-                if (!value && !Number.isInteger(value)) {
-                    value = 1;
-                }
+            let value = parseInt(req.body.xp, 10);
+            if (!value && !Number.isInteger(value)) {
+                value = 1;
+            }
 
+            if (Globals.connectedUsers[res.locals.id].character.getLevel() < Globals.maxLevel) {
                 let str = "Tenez c'est le bon dieu qui vous l'offre ! \n" + value + " XP tombent du ciel rien que pour vous !\n";
                 let actualLevel = Globals.connectedUsers[res.locals.id].character.getLevel();
                 await Globals.connectedUsers[res.locals.id].character.addExp(value);
@@ -172,6 +172,10 @@ class AdminModule extends GModule {
                 data.success = str;
             } else {
                 data.error = "Vous êtes déjà au niveau maximum !";
+            }
+
+            if (res.locals.character.getCraftLevel() < Globals.maxLevel) {
+                await res.locals.character.addCraftXP(value);
             }
 
             data.lang = res.locals.lang;
@@ -213,6 +217,7 @@ class AdminModule extends GModule {
             let data = {};
 
             Globals.connectedUsers[res.locals.id].character.canFightAt = 0;
+            Globals.connectedUsers[res.locals.id].character.canArenaAt = 0;
             data.success = "Reset Done";
 
             data.lang = res.locals.lang;
@@ -308,8 +313,6 @@ class AdminModule extends GModule {
             //}
 
             //await res.locals.character.addStatPoints(10);
-
-
 
             await next();
             return res.json({ succes: "done" });

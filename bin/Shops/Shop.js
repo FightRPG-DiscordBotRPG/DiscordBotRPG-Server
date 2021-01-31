@@ -49,7 +49,7 @@ class Shop {
             let as = async () => {
                 await item.load();
                 item.setTax(tax);
-                return await item.toApi(lang);
+                return item.toApi(lang);
             }
             itemsLoadForPromise.push(as());
         }

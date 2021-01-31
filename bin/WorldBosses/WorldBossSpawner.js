@@ -134,7 +134,7 @@ class WorldBossSpawner {
     async announceWorldBossSpawn() {
         let binfo = await WorldBossSpawner.instance.getBossesInfos();
         binfo = binfo.bosses[0];
-        let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName;
+        let str = "Boss: " + binfo.worldBoss.name + " has spawned!\nRegion: " + binfo.regionName + "\nArea: " + binfo.areaName + " (" + binfo.idArea + ")";
         WorldBossSpawner.wbTell(str);
     }
 
@@ -208,24 +208,24 @@ class WorldBossSpawner {
     static async giveToRewardsToPlayers(worldBossId, type) {
         let connQueryText;
         if (type == 1) {
-            connQueryText = "SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC";
+            connQueryText = "SELECT charactersattacks.idCharacter, attackCount, levels.actualLevel, levels.rebirthLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY attackCount DESC, damage DESC";
         } else {
-            connQueryText = "SELECT charactersattacks.idCharacter, damage, levels.actualLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC";
+            connQueryText = "SELECT charactersattacks.idCharacter, damage, levels.actualLevel, levels.rebirthLevel FROM charactersattacks INNER JOIN levels ON levels.idCharacter = charactersattacks.idCharacter WHERE idSpawnedBoss = ? ORDER BY damage DESC, attackCount DESC";
         }
 
         let res = await conn.query(connQueryText, [worldBossId]);
         let rank = 1
         let lt = new LootSystem();
         for (let info of res) {
-            let items = WorldBossSpawner.getRewardsByRank(rank, info.actualLevel);
+            let items = WorldBossSpawner.getRewardsByRank(rank, info.actualLevel, info.rebirthLevel);
             for (let item of items) {
-                await lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number, true);
+                await lt.giveToPlayerDatabase(info.idCharacter, item.id, item.level, item.number, true, item.rebirthLevel);
             }
             rank++;
         }
     }
 
-    static getRewardsByRank(rank, level) {
+    static getRewardsByRank(rank, level, rebirthLevel) {
         let crystals = 1;
         let items = [];
         if (rank == 1) {
@@ -233,165 +233,195 @@ class WorldBossSpawner {
             items.push({
                 id: 44,
                 number: 50,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 41,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank == 2) {
             crystals = 85;
             items.push({
                 id: 44,
                 number: 40,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 55,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 3 && rank <= 5) {
             crystals = 70;
             items.push({
                 id: 44,
                 number: 30,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 54,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 6 && rank <= 25) {
             crystals = 50;
             items.push({
                 id: 44,
                 number: 20,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 53,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 26 && rank <= 50) {
             crystals = 30;
             items.push({
                 id: 44,
                 number: 15,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 52,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 51 && rank <= 250) {
             crystals = 20;
             items.push({
                 id: 44,
                 number: 12,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 51,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 251 && rank <= 500) {
             crystals = 10;
             items.push({
                 id: 43,
                 number: 16,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 10,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 501 && rank <= 1000) {
             crystals = 8;
             items.push({
                 id: 43,
                 number: 14,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 8,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 1001 && rank <= 2000) {
             crystals = 7;
             items.push({
                 id: 43,
                 number: 12,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 7,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 2001 && rank <= 3000) {
             crystals = 6;
             items.push({
                 id: 43,
                 number: 10,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 6,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 3001 && rank <= 4000) {
             crystals = 5;
             items.push({
                 id: 43,
                 number: 8,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 5,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 4001 && rank <= 5000) {
             crystals = 4;
             items.push({
                 id: 43,
                 number: 6,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 4,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 5001 && rank <= 7500) {
             crystals = 3;
             items.push({
                 id: 43,
                 number: 4,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 3,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else if (rank >= 7501 && rank <= 10000) {
             crystals = 2;
             items.push({
                 id: 43,
                 number: 2,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 2,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
         } else {
             crystals = 1;
             items.push({
                 id: 43,
                 number: 1,
-                level: level
+                level: level,
+                rebirthLevel: rebirthLevel,
             }, {
                 id: 50,
                 number: 1,
-                level: 1
+                level: 1,
+                rebirthLevel: 1,
             });
 
         }
@@ -409,7 +439,7 @@ class WorldBossSpawner {
      * @param {Character} character 
      * @param {WorldBoss} wb 
      */
-    async userAttack(character, wb, lang="en") {
+    async userAttack(character, wb, lang = "en") {
 
         let higestEvaluation = null;
         wb.level = character.getLevel();
@@ -425,7 +455,7 @@ class WorldBossSpawner {
         let isCriticalHit = higestEvaluation.isCritical;
 
         await wb.wound(damage);
-        WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
+        await WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
         let wbs = WorldBossSpawner.instance;
 
         // pourquoi j'ai remove wb.load() ?!
@@ -456,7 +486,15 @@ class WorldBossSpawner {
     }
 
     static async getLastBossCharacterStats(idCharacter, lang = "en") {
-        let res = await conn.query("SELECT * FROM charactersattacks WHERE charactersattacks.idCharacter = ? AND charactersattacks.idSpawnedBoss NOT IN (SELECT bossspawninfo.idSpawnedBoss FROM bossspawninfo WHERE bossspawninfo.idSpawnedBoss != NULL) ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;", [idCharacter]);
+        let res = await conn.query(`
+                    SELECT * FROM charactersattacks
+                    WHERE charactersattacks.idCharacter = ?
+                    AND charactersattacks.idSpawnedBoss
+                    NOT IN
+                        (SELECT bossspawninfo.idSpawnedBoss
+                         FROM bossspawninfo
+                         WHERE bossspawninfo.idSpawnedBoss != NULL)
+                    ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;`, [idCharacter]);
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();
