@@ -455,7 +455,7 @@ class WorldBossSpawner {
         let isCriticalHit = higestEvaluation.isCritical;
 
         await wb.wound(damage);
-        WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
+        await WorldBossSpawner.logDamageUser(character.id, wb.id, damage, 1);
         let wbs = WorldBossSpawner.instance;
 
         // pourquoi j'ai remove wb.load() ?!
@@ -486,7 +486,15 @@ class WorldBossSpawner {
     }
 
     static async getLastBossCharacterStats(idCharacter, lang = "en") {
-        let res = await conn.query("SELECT * FROM charactersattacks WHERE charactersattacks.idCharacter = ? AND charactersattacks.idSpawnedBoss NOT IN (SELECT bossspawninfo.idSpawnedBoss FROM bossspawninfo WHERE bossspawninfo.idSpawnedBoss != NULL) ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;", [idCharacter]);
+        let res = await conn.query(`
+                    SELECT * FROM charactersattacks
+                    WHERE charactersattacks.idCharacter = ?
+                    AND charactersattacks.idSpawnedBoss
+                    NOT IN
+                        (SELECT bossspawninfo.idSpawnedBoss
+                         FROM bossspawninfo
+                         WHERE bossspawninfo.idSpawnedBoss != NULL)
+                    ORDER BY charactersattacks.idSpawnedBoss DESC LIMIT 1;`, [idCharacter]);
         if (res[0]) {
             let wb = new WorldBoss(res[0].idSpawnedBoss);
             await wb.load();
