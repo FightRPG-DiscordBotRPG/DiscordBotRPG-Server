@@ -137,7 +137,7 @@ class FightManager {
         let toApi = {
             team1_number: characters.length,
             team2_number: monsters.length,
-            summary: new FightPvE([], []).summary,
+            summary: new FightPvE([], [], lang).summary,
             beingAttacked: !canIFightTheMonster
         }
         let alreadyInBattle = characters.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;

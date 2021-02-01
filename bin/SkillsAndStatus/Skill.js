@@ -319,7 +319,7 @@ class Skill {
      * @param {string} lang
      */
     getMessage(casterName, lang = "en") {
-        return `${casterName} ${Translator.getString(lang, "skillMessages", this.id, [this.getName()])}`;
+        return `${casterName} ${Translator.getString(lang, "skillMessages", this.id, [this.getName(lang)])}`;
     }
 
     toApiSimple(lang = "en") {
