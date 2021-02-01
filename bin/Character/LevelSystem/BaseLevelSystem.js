@@ -44,7 +44,7 @@ class BaseLevelSystem {
     async init(id, idUser) {
         this.idUser = idUser;
         this.id = id;
-        await conn.query("INSERT INTO " + this.databaseTable + " VALUES (?, 1, 0, 0)", [this.id]);
+        await conn.query("INSERT INTO " + this.databaseTable + " (idCharacter, actualExp, actualLevel, rebirthLevel) VALUES (?, 0, 1, 0)", [this.id]);
         this.actualLevel = 1;
         this.actualXP = 0;
         let res = await conn.query("SELECT * FROM levelsrequire WHERE level = 1");
