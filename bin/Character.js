@@ -183,22 +183,41 @@ class Character extends CharacterEntity {
         this.area = area;
     }
 
+    /**
+     * /!\ Resets all wait time (pvp && pve)
+     **/
     resetWaitTime() {
         this.setWaitTime(0);
+        this.setWaitTimePvP(0);
     }
 
     /**
-     * 
+     * /!\ Reduces all wait time (pvp && pve)
      * @param {Number} percentage 
      */
     reduceWaitTime(percentage = 0) {
+        this.reduceWaitTimePvP(percentage);
+        this.reduceWaitTimePvE(percentage);
+    }
+
+    reduceWaitTimePvP(percentage = 0) {
         percentage = percentage >= 0 && percentage <= 1 ? percentage : 0;
-        let reduce = this.getExhaustMillis() * percentage;
-        this.setWaitTime(this.getWaitTime() - reduce);
+        let reducePvP = this.getExhaustMillisPvp() * percentage;
+        this.setWaitTimePvP(reducePvP)
+    }
+
+    reduceWaitTimePvE(percentage = 0) {
+        percentage = percentage >= 0 && percentage <= 1 ? percentage : 0;
+        let reducePvE = this.getExhaustMillis() * percentage;
+        this.setWaitTime(this.getWaitTime() - reducePvE);
     }
 
     setWaitTime(time) {
         this.canFightAt = time;
+    }
+
+    setWaitTimePvP(time) {
+        this.canArenaAt = time;
     }
 
     getWaitTime() {
@@ -797,7 +816,7 @@ class Character extends CharacterEntity {
     waitForNextPvPFight(more = 0) {
         let waitTime = this.getWaitTimePvPFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.canArenaAt = Date.now() + waitTime;
+        this.canArenaAt = this.setWaitTimePvP(Date.now() + waitTime);
         return waitTime;
     }
 

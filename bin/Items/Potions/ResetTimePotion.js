@@ -6,6 +6,10 @@ class ResetTimePotion extends Potion {
         super(id);
     }
 
+    /**
+     * 
+     * @param {Character} character
+     */
     async use(character) {
         this.numberOfUse++;
         character.resetWaitTime();
@@ -19,3 +23,7 @@ class ResetTimePotion extends Potion {
 }
 
 module.exports = ResetTimePotion;
+
+/**
+ * @typedef {import("../../Character")} Character
+ **/
