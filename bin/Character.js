@@ -736,7 +736,7 @@ class Character extends CharacterEntity {
             if (item.isStackable() == false) {
                 await this.getInv().addToInventory(order.idItem, order.number);
             } else {
-                let inventoryItemID = await this.getIdOfThisIdBase(item.idBaseItem, item.getLevel());
+                let inventoryItemID = await this.getIdOfThisIdBase(item.idBaseItem, item.getLevel(), item.getRebirthLevel());
                 if (inventoryItemID != null) {
                     await this.getInv().addToInventory(inventoryItemID, number);
                 } else {

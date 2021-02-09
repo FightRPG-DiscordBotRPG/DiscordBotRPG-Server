@@ -266,7 +266,7 @@ var Globals = {
             };
 
             for (let param of Object.keys(params)) {
-                if (params[param] != null && equivalent[param] != null && (includeList === null || includeList !== null && includeList[param]) && (params[param] > 0 || equivalent[param].isString || equivalent[param].isBool)) {
+                if (params[param] != null && equivalent[param] != null && (includeList === null || includeList !== null && includeList[param]) && (params[param] >= 0 || equivalent[param].isString || equivalent[param].isBool)) {
                     if (more.length > 0) {
                         more += " AND ";
                     }
