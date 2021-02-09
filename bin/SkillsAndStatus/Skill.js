@@ -357,6 +357,7 @@ class Skill {
             apiObject.isUnlocked = entity.talents.isSkillUnlocked(this.id);
             apiObject.canEquip = entity.skillBuild.canEquip(this.id);
             apiObject.isEquipped = entity.skillBuild.isSkillEquipped(this.id);
+            apiObject.formulaResultVersusSelf = this.evalBaseDamageFormula(entity, entity);
         }
 
         return apiObject;
