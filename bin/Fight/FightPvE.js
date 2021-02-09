@@ -148,20 +148,24 @@ class FightPvE extends Fight {
                         newLevel: entity.getLevel(),
                     });
                 }
-                // Loot or Not
-                let lootSystem = new LootSystem();
-                let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
-                totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
 
-                promises.push((async () => {
-                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
-                    if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
-                        this.summary.drops.push({
-                            name: entity.name,
-                            drop: loot,
-                        });
-                    }
-                })());
+                // Only loot if it's a true victory
+                if (!this.summary.bothLost) {
+                    // Loot or Not
+                    let lootSystem = new LootSystem();
+                    let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
+                    totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
+
+                    promises.push((async () => {
+                        let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
+                        if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
+                            this.summary.drops.push({
+                                name: entity.name,
+                                drop: loot,
+                            });
+                        }
+                    })());
+                }
 
                 for (let monster of this.entities[1]) {
                     PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);
