@@ -467,7 +467,7 @@ class WorldBossSpawner {
             await wbs.startUp();
             WorldBossSpawner.instance.announceNextBoss(wb.id);
         }
-        character.waitForNextPvPFight();
+        character.waitForNextWorldBoss();
         return {
             damage: damage,
             isCriticalHit: isCriticalHit,

@@ -816,7 +816,13 @@ class Character extends CharacterEntity {
     waitForNextPvPFight(more = 0) {
         let waitTime = this.getWaitTimePvPFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.canArenaAt = this.setWaitTimePvP(Date.now() + waitTime);
+        this.setWaitTimePvP(Date.now() + waitTime);
+        return waitTime;
+    }
+
+    waitForNextWorldBoss() {
+        let waitTime = this.getWaitTimePvPFight(0);
+        this.setWaitTime(Date.now() + waitTime);
         return waitTime;
     }
 
