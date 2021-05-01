@@ -13,6 +13,7 @@ const WorldBossSpawner = require("./bin/WorldBosses/WorldBossSpawner");
 const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
 const RebirthManager = require("./bin/Rebirths/RebirthManager.js");
 const axios = require("axios").default;
+const EventsManager = require("./bin/Events/EventsManager.js");
 const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
@@ -70,6 +71,13 @@ let startUp = async () => {
     Globals.rebirthManager = new RebirthManager();
     await Globals.rebirthManager.load();
     console.log("Rebirth Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+    
+    syncStartWith = Date.now();
+    console.log("Loading Rebirth Manager ...");
+    Globals.eventsManager = new EventsManager();
+    await Globals.eventsManager.load();
+    console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     syncStartWith = Date.now();
     console.log("Loading Areas...");

@@ -110,6 +110,10 @@ var Globals = {
     * @type {RebirthManager}
     */
     "rebirthManager": null,
+    /**
+    * @type {EventsManager}
+    */
+    eventsManager: null,
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
@@ -306,5 +310,6 @@ module.exports = Globals;
  * @typedef {import("./User")} User
  * @typedef {import("./Guild")} Guild
  * @typedef {import("./FightManager")} FightManager
+ * @typedef {import("./Events/EventsManager")} EventsManager
  * @typedef {import("./PSTree/PSTreeNodes")} PSTreeNodes
  **/

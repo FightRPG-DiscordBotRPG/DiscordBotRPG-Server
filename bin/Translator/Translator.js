@@ -279,6 +279,7 @@ class Translator {
     }
 
     // IDEA: Use Promise.all ?
+    // TODO: Load events title and desc
     static async load() {
         this.translations = {};
         this.formaters = {};
