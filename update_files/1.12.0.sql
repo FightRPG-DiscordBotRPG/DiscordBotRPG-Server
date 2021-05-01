@@ -148,6 +148,19 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsareasdrops` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+REPLACE INTO eventstypes VALUES
+(1, "uncategorized"),
+(2, "reccuring"),
+(3, "special");
+
+REPLACE INTO events VALUES
+(1, 3, "https://freesvg.org/img/nicubunu_Chocolate_birthday_cake.png", "https://cdn.fight-rpg.com/images/events/anniversary_icon.png", 525600, 10080, "2021-06-11 00:00:00", null);
+
+REPLACE INTO eventsglobalmodifiers VALUES
+(1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20);
+
+
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
