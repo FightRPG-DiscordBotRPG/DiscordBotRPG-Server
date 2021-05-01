@@ -139,9 +139,9 @@ class GameEvent {
         let nextExecution = this.startDate;
 
         if (diffStart > 0) {
-            let momentWhereItShouldHaveStart = currentDate.clone().subtract(diffStart);
+            let momentWhenItShouldHaveStart = currentDate.clone().subtract(diffStart);
 
-            let momentWhenItShouldEnd = momentWhereItShouldHaveStart.clone().add(this.length, "minutes");
+            let momentWhenItShouldEnd = momentWhenItShouldHaveStart.clone().add(this.length, "minutes");
 
             if (momentWhenItShouldEnd > currentDate) {
                 // The event isn't finished yet so we start it for the amount of time remaining
@@ -149,7 +149,7 @@ class GameEvent {
                 return;
             }
 
-            nextExecution = momentWhereItShouldHaveStart.clone().add(this.occurence, "minutes");
+            nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
         }
 
         if (this.endDate != null && nextExecution > this.endDate) {
