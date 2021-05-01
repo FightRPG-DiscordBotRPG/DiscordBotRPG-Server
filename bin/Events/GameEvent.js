@@ -130,9 +130,7 @@ class GameEvent {
      * Should only be used once when loading
      */
     prepareStart() {
-        
         let currentDate = moment();
-
 
         let diffStart = (currentDate - this.startDate) % (this.occurence * 60000);
 
@@ -162,8 +160,6 @@ class GameEvent {
         // Directly using moment so it start at the precise date
         // And starting the timeout before the event is executed
         this.nextStartTimeout = setTimeout(this.start, nextExecution - moment());
-        console.log(nextExecution);
-        process.exit();
     }
 
     /**
