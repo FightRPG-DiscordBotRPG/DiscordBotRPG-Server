@@ -35,10 +35,12 @@ DROP TABLE IF EXISTS `discord_bot_rpg`.`events` ;
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`events` (
   `idEvent` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `idEventType` INT UNSIGNED NOT NULL,
-  `startDate` DATETIME NOT NULL,
-  `endDate` DATETIME NOT NULL,
   `backgroundImage` TEXT NOT NULL,
   `iconImage` TEXT NOT NULL,
+  `occurence` BIGINT UNSIGNED NOT NULL DEFAULT 86400,
+  `length` BIGINT UNSIGNED NOT NULL DEFAULT 43200,
+  `startDate` DATETIME NOT NULL,
+  `endDate` DATETIME,
   PRIMARY KEY (`idEvent`),
   INDEX `fk_Events_EventsTypes1_idx` (`idEventType` ASC) VISIBLE,
   CONSTRAINT `fk_Events_EventsTypes1`
