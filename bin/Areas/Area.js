@@ -10,6 +10,7 @@ const Marketplace = require("../Marketplace/Marketplace");
 const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const Shop = require("../Shops/Shop");
 const Globals = require("../Globals.js");
+const ItemLootData = require("../Loots/ItemLootData.js");
 
 class Area {
 
@@ -41,7 +42,7 @@ class Area {
         this.maxItemRarityId = 5;
         this.maxItemRarityName = "legendary";
         /**
-         * @type {Object<string,Array<{idBaseItem:number, percentage:number, min:number, max:number, idRarity:number, equipable:number}>>}
+         * @type {Object<string,Array<ItemLootData>>}
          */
         this.possibleLoots = {};
         this.timeBeforeNextClaim = 0;
@@ -136,7 +137,6 @@ class Area {
         }
 
         await this.areaClimate.load();
-
     }
 
     getPossibleLoots() {
@@ -164,10 +164,13 @@ class Area {
             if (!this.possibleLoots[item.idRarity]) {
                 this.possibleLoots[item.idRarity] = [];
             }
-            item.percentage = 0;
-            item.min = 1;
-            item.max = 1;
-            this.possibleLoots[item.idRarity].push(item);
+
+            let lootData = new ItemLootData();
+            lootData.equipable = item.equipable;
+            lootData.idBaseItem = item.idBaseItem;
+            lootData.idRarity = item.idRarity;
+
+            this.possibleLoots[item.idRarity].push(lootData);
         }
 
         // Load real loot table for this area
@@ -176,9 +179,14 @@ class Area {
 
         // Manually added loots
         // Should always be every items checked
-        this.possibleLoots["others"] = res;
+        let specificsLoot = [];
+        for (let item of res) {
+            specificsLoot.push(Object.assign(new ItemLootData(), item));
+        }
 
-        // Take real min/max rarity fro database (useful for displays)
+        this.possibleLoots["others"] = specificsLoot;
+
+        // Take real min/max rarity from database (useful for displays)
 
         let minQuality = await this.getMinItemQualityFromDatabase();
         let maxQuality = await this.getMaxItemQualityFromDatabase();
