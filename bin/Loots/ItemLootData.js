@@ -7,6 +7,18 @@ class ItemLootData {
         this.idRarity = 0;
         this.equipable = false;
     }
+
+    static mergeLootTables(lootTableA, lootTableB) {
+        let lootTableToReturn = {};
+        for (let i in lootTableA) {
+            if (lootTableB[i]) {
+                lootTableToReturn[i] = [...lootTableA[i], ...lootTableB[i]];
+            } else {
+                lootTableToReturn[i] = lootTableA[i];
+            }
+        }
+        return lootTableToReturn;
+    }
 }
 
 module.exports = ItemLootData;
