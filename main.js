@@ -74,7 +74,7 @@ let startUp = async () => {
 
     
     syncStartWith = Date.now();
-    console.log("Loading Rebirth Manager ...");
+    console.log("Loading Events Manager ...");
     Globals.eventsManager = new EventsManager();
     await Globals.eventsManager.load();
     console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
