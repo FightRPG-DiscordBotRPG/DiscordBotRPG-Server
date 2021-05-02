@@ -4,6 +4,8 @@ const moment = require("moment");
 const EventEmitter = require("events");
 const AreaBonus = require("../Areas/AreaBonus");
 const Translator = require("../Translator/Translator");
+const Timers = require("../Utilities/Timers");
+const setTimeout = Timers.setTimeout;
 
 class GameEvent {
     constructor(id) {
@@ -41,12 +43,12 @@ class GameEvent {
         this.globalModifiers = {};
 
         /**
-         * @type NodeJS.Timeout
+         * @type Timers.Timeout
          **/
         this.nextStartTimeout = null;
 
         /**
-         * @type NodeJS.Timeout
+         * @type Timers.Timeout
          **/
         this.endTimeout = null;
 
