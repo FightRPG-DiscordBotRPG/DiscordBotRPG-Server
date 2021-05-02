@@ -72,19 +72,17 @@ let startUp = async () => {
     await Globals.rebirthManager.load();
     console.log("Rebirth Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
-    
-    syncStartWith = Date.now();
-    console.log("Loading Events Manager ...");
-    Globals.eventsManager = new EventsManager();
-    await Globals.eventsManager.load();
-    console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
     syncStartWith = Date.now();
     console.log("Loading Areas...");
     Globals.areasManager = new AreasManager();
     await Globals.areasManager.loadAreasManager();
     console.log("Areas loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
+    syncStartWith = Date.now();
+    console.log("Loading Events Manager ...");
+    Globals.eventsManager = new EventsManager();
+    await Globals.eventsManager.load();
+    console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     syncStartWith = Date.now();
     console.log("Loading Fight Manager...");
