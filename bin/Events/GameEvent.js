@@ -103,8 +103,14 @@ class GameEvent {
         let res = await conn.query(`SELECT idBonusTypes, value FROM eventsglobalmodifiers WHERE idEvent = ?;`, [this.id]);
         let promises = [];
         for (let item of res) {
-            this.globalModifiers[AreaBonus.name] = new AreaBonus(item.idBonusTypes);
-            promises.push(this.globalModifiers[AreaBonus.name].load());
+            // Prevent async wrong value
+            let itemAsync = item;
+                promises.push((async () => {
+                    let areaBonus = new AreaBonus(itemAsync.idBonusTypes);
+                    areaBonus.value = itemAsync.value;
+                    await areaBonus.load();
+                    this.globalModifiers[areaBonus.name] = areaBonus;
+            })());
         }
         await Promise.all(promises);
     }
