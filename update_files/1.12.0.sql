@@ -159,6 +159,31 @@ REPLACE INTO events VALUES
 REPLACE INTO eventsglobalmodifiers VALUES
 (1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20);
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationevents` (
+  `idEvent` INT(10) UNSIGNED NOT NULL,
+  `lang` VARCHAR(5) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `desc` TEXT NOT NULL,
+  PRIMARY KEY (`idEvent`, `lang`),
+  INDEX `fk_LocalizationEvents_Events1_idx` (`idEvent` ASC) VISIBLE,
+  CONSTRAINT `fk_LocalizationEvents_Languages1`
+    FOREIGN KEY (`lang`)
+    REFERENCES `discord_bot_rpg`.`languages` (`lang`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_LocalizationEvents_Events1`
+    FOREIGN KEY (`idEvent`)
+    REFERENCES `discord_bot_rpg`.`events` (`idEvent`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+REPLACE INTO localizationevents VALUES
+(1, "en", "Fight RPG - Anniversary!", "One more year for FightRPG! Ah, how time flies. Let's celebrate together!"),
+(1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Célébrons ça ensemble !");
+
 
 
 

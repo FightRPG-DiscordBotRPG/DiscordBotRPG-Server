@@ -3,6 +3,7 @@ const ItemLootData = require("../Loots/ItemLootData");
 const moment = require("moment");
 const EventEmitter = require("events");
 const AreaBonus = require("../Areas/AreaBonus");
+const Translator = require("../Translator/Translator");
 
 class GameEvent {
     constructor(id) {
@@ -164,6 +165,7 @@ class GameEvent {
      * Should only be used once when loading
      */
     prepareStart() {
+        //this.startDate = moment("2021-01-01 00:00:00");
         let currentDate = moment();
 
         let diffStart = (currentDate - this.startDate) % (this.occurence * 60000);
@@ -212,6 +214,14 @@ class GameEvent {
     end() {
         this.prepareStart();
         this.eventEmitter.emit("ended", this);
+    }
+
+    async toApi(lang="en") {
+        return {
+            ...this,
+            title: Translator.getString(lang, "eventsTitle", this.id),
+            desc: Translator.getString(lang, "eventsDesc", this.id)
+        }
     }
 }
 
