@@ -10,11 +10,13 @@ class ItemLootData {
 
     static mergeLootTables(lootTableA, lootTableB) {
         let lootTableToReturn = {};
-        for (let i in lootTableA) {
-            if (lootTableB[i]) {
+        for (let i of [...Object.keys(lootTableA), ...Object.keys(lootTableB)]) {
+            if (lootTableB[i] && lootTableA[i]) {
                 lootTableToReturn[i] = [...lootTableA[i], ...lootTableB[i]];
-            } else {
+            } else if (lootTableA[i] && !lootTableB[i]) {
                 lootTableToReturn[i] = lootTableA[i];
+            } else {
+                lootTableToReturn[i] = lootTableB[i];
             }
         }
         return lootTableToReturn;
