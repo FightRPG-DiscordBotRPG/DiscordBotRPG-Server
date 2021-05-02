@@ -1,6 +1,8 @@
 const conn = require("../../conf/mysql");
 const ItemLootData = require("../Loots/ItemLootData");
 const moment = require("moment");
+const EventEmitter = require("events");
+const AreaBonus = require("../Areas/AreaBonus");
 
 class GameEvent {
     constructor(id) {
@@ -33,9 +35,23 @@ class GameEvent {
         this.areasTypesDrops = {};
 
         /**
+         * @type Object<string, AreaBonus>
+         **/
+        this.globalModifiers = {};
+
+        /**
          * @type NodeJS.Timeout
          **/
         this.nextStartTimeout = null;
+
+        /**
+         * @type NodeJS.Timeout
+         **/
+        this.endTimeout = null;
+
+        this.eventEmitter = new EventEmitter.EventEmitter();
+        this.start = this.start.bind(this);
+        this.end = this.end.bind(this);
     }
 
     async load() {
@@ -56,7 +72,8 @@ class GameEvent {
         // Specific areas drops
         await Promise.all([
             this.loadSpecificAreasDrops(),
-            this.loadTypesAreasDrops()
+            this.loadTypesAreasDrops(),
+            this.loadGlobalModifiers()
         ]);
 
     }
@@ -81,6 +98,17 @@ class GameEvent {
                                     WHERE idEvent = ?;`, [this.id]);
         this.areasTypesDrops = this.pGetLootTable(res, "idAreaType");
     }
+
+    async loadGlobalModifiers() {
+        let res = await conn.query(`SELECT idBonusTypes, value FROM eventsglobalmodifiers WHERE idEvent = ?;`, [this.id]);
+        let promises = [];
+        for (let item of res) {
+            this.globalModifiers[AreaBonus.name] = new AreaBonus(item.idBonusTypes);
+            promises.push(this.globalModifiers[AreaBonus.name].load());
+        }
+        await Promise.all(promises);
+    }
+
 
     pGetLootTable(res, firstIndexName) {
         let lootTable = {};
@@ -170,6 +198,14 @@ class GameEvent {
         if (!length) {
             length = this.length;
         }
+        let lengthInMs = length * 60000;
+        this.endTimeout = setTimeout(this.end, lengthInMs);
+        this.eventEmitter.emit("started", this);
+    }
+
+    end() {
+        this.prepareStart();
+        this.eventEmitter.emit("ended", this);
     }
 }
 
