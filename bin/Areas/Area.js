@@ -164,7 +164,7 @@ class Area {
 
 
         // For generic items drop based on default min and max rarity
-        let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idType IN (1,2,3,4) AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
+        let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.isInDefaultLootTable = 1 AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
 
         this.possibleLoots = {};
 

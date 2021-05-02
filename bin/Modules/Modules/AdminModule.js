@@ -314,11 +314,11 @@ class AdminModule extends GModule {
 
             //await res.locals.character.addStatPoints(10);
 
-            //let data = {};
-            //for (let item of Object.values(Globals.eventsManager.ongoingEvents)) {
-            //    data[item.id] = await item.toApi(res.locals.lang);
-            //}
-            //console.log(data);
+            let data = {};
+            for (let item of Object.values(Globals.eventsManager.ongoingEvents)) {
+                data[item.id] = await item.toApi(res.locals.lang);
+            }
+            console.log(data);
             await next();
             return res.json({ succes: "done" } );
         });

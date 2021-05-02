@@ -184,6 +184,10 @@ REPLACE INTO localizationevents VALUES
 (1, "en", "Fight RPG - Anniversary!", "One more year for FightRPG! Ah, how time flies. Let's celebrate together!"),
 (1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Célébrons ça ensemble !");
 
+ALTER TABLE `discord_bot_rpg`.`itemsbase` 
+ADD COLUMN `isInDefaultLootTable` TINYINT(4) NOT NULL DEFAULT 0 AFTER `idSousType`
+
+UPDATE itemsbase SET isInDefaultLootTable = 1 WHERE idType IN (1,2,3,4)
 
 
 
