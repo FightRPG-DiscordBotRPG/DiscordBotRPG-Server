@@ -4,6 +4,7 @@ const Area = require("./Area");
 const Marketplace = require("../Marketplace/Marketplace");
 const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const Shop = require("../Shops/Shop");
+const AreaBonus = require("./AreaBonus.js");
 
 class CityArea extends Area {
 
@@ -15,8 +16,7 @@ class CityArea extends Area {
             "shop": null,
         }
 
-        this.authorizedBonuses = ["xp_craft"];
-
+        this.authorizedBonuses = [AreaBonus.identifiers.xpCraft];
         this.minItemRarityId = 0;
         this.maxItemRarityId = 0;
     }

@@ -52,6 +52,14 @@ class AreaBonus {
         return this.value / 100;
     }
 
+    static identifiers = {
+        xpFight: "xp_fight",
+        xpCollect: "xp_collect",
+        xpCraft: "xp_craft",
+        goldDrop: "gold_drop",
+        itemDrop: "item_drop",
+        collectDrop: "collect_drop",
+    }
 
 }
 

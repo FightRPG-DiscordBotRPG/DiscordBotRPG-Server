@@ -53,7 +53,7 @@ class Area {
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
-        this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
+        this.authorizedBonuses = [AreaBonus.identifiers.xpFight, AreaBonus.identifiers.xpCollect, AreaBonus.identifiers.xpCraft, AreaBonus.identifiers.goldDrop, AreaBonus.identifiers.itemDrop, AreaBonus.identifiers.collectDrop];
         this.requiredAchievements = [];
 
         // Used to know idAreas from and to

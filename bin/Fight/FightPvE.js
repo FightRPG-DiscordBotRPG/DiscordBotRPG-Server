@@ -96,7 +96,7 @@ class FightPvE extends Fight {
                 let diffLevelEnemy = this.calMultDiffLevel(avgLevelEnemies, actualLevel);
 
                 let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
-                money = Math.round(money * (areaBonuses["gold_drop"].getPercentageValue() + 1));
+                money = Math.round(money * (areaBonuses[AreaBonus.identifiers.goldDrop].getPercentageValue() + 1));
                 this.summary.goldGained[entity.name] = money;
                 totalMoney += money;
 
@@ -107,7 +107,7 @@ class FightPvE extends Fight {
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.2 ? 1.2 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel()) + areaBonuses["xp_fight"].getPercentageValue() + 1));
+                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel()) + areaBonuses[AreaBonus.identifiers.xpFight].getPercentageValue() + 1));
                     totalXp += xp;
                     this.summary.xpGained[entity.name] = xp;
                     promises.push(entity.addExp(xp));
@@ -132,7 +132,7 @@ class FightPvE extends Fight {
                 // Loot or Not
                 let lootSystem = new LootSystem();
                 let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
-                totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
+                totalLuck = totalLuck * (1 + areaBonuses[AreaBonus.identifiers.itemDrop].getPercentageValue());
 
                 promises.push((async () => {
                     let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
@@ -196,3 +196,4 @@ const Character = require("../Character");
 const Monstre = require("../Entities/Monster");
 const Area = require("../Areas/Area");
 const Stats = require("../Stats/Stats");
+const AreaBonus = require("../Areas/AreaBonus");

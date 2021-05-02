@@ -17,6 +17,7 @@ const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
 const Stats = require("../../Stats/Stats");
+const AreaBonus = require("../../Areas/AreaBonus");
 
 class CraftingModule extends GModule {
     constructor() {
@@ -94,7 +95,7 @@ class CraftingModule extends GModule {
                                         PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
                                         // Seulement s'il n'est pas niveau max
                                         if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
-                                            let craftBonus = (await res.locals.currentArea.getAllBonuses()).xp_craft;
+                                            let craftBonus = (await res.locals.currentArea.getAllBonuses())[AreaBonus.identifiers.xpCraft];
                                             let craftXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
                                             let craftXPBonus = Math.round(craftBonus.getPercentageValue() * craftXP);
                                             let totalCraftXP = craftXP + craftXPBonus;
@@ -150,7 +151,7 @@ class CraftingModule extends GModule {
                         let collectBonuses = await res.locals.currentArea.getAllBonuses();
                         Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity, numberToCollect);
                         idToCollect = await Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Intellect) * (1 + collectBonuses.collect_drop.getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather, numberToCollect);
+                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Intellect) * (1 + collectBonuses[AreaBonus.identifiers.collectDrop].getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather, numberToCollect);
                         data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [numberToCollect]) + "\n";
                         if (numberItemsCollected > 0) {
                             if (idToCollect) {
@@ -169,7 +170,7 @@ class CraftingModule extends GModule {
                         // Si le joueur n'est pas max level en craft
                         if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
                             let collectXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.getCraftLevel(), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), resourceToCollect.idRarity, true) * numberToCollect;
-                            let collectXPBonus = collectBonuses.xp_collect.getPercentageValue() * collectXP;
+                            let collectXPBonus = collectBonuses[AreaBonus.identifiers.xpCollect].getPercentageValue() * collectXP;
                             let totalCollectXP = collectXP + collectXPBonus;
                             let collectCraftUP = await Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCollectXP);
                             data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
