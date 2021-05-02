@@ -45,6 +45,11 @@ class Area {
          * @type {Object<string,Array<ItemLootData>>}
          */
         this.possibleLoots = {};
+
+        /**
+         * @type {Object<string,Array<ItemLootData>>}
+         */
+        this.possibleLootsWithEvents = {};
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
@@ -144,7 +149,7 @@ class Area {
      * @returns {Object<string,Array<ItemLootData>>}
      **/
     getPossibleLoots() {
-        return this.possibleLoots;
+        return this.possibleLootsWithEvents;
     }
 
     getMinRebirthLevel() {
@@ -204,6 +209,8 @@ class Area {
             this.maxItemRarityId = maxQuality[0].idRarity;
             this.maxItemRarityName = maxQuality[0].nomRarity;
         }
+
+        this.possibleLootsWithEvents = this.possibleLoots;
 
     }
 
