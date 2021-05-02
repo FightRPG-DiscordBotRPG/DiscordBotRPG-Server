@@ -363,6 +363,12 @@ class Area {
         for (let o of res) {
             let bonus = new AreaBonus(o.idBonusTypes);
             await bonus.load();
+
+            // Load bonuses from events
+            if (Globals.eventsManager.currentBonuses[bonus.name]) {
+                o.value += Globals.eventsManager.currentBonuses[bonus.name].value;
+            }
+            
             bonus.setValue(o.value);
             bonuses[bonus.name] = bonus;
         }
