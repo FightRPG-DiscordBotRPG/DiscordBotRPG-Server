@@ -57,7 +57,7 @@ class EventsManager {
             event.prepareStart();
         }
 
-       // console.log("Oui");
+        // console.log("Oui");
     }
 
     getBonusesValue(name) {
@@ -135,7 +135,7 @@ class EventsManager {
 
         }
 
-        
+
     }
 
     /**
@@ -154,6 +154,21 @@ class EventsManager {
             // Else we adding the values
             bonuses[bonus.name].value += bonus.value;
         }
+    }
+
+    async getOngoingEventsToApi(lang = "en") {
+        let data = {};
+        for (let event of this.getOngoingEventsList()) {
+            data[event.id] = await event.toApi(lang);
+        }
+        return data;
+    }
+
+    /**
+     * @returns {GameEvent[]}
+     **/
+    getOngoingEventsList() {
+        return Object.values(this.ongoingEvents);
     }
 }
 

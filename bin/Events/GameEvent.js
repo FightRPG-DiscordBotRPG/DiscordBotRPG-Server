@@ -5,6 +5,7 @@ const EventEmitter = require("events");
 const AreaBonus = require("../Areas/AreaBonus");
 const Translator = require("../Translator/Translator");
 const Timers = require("../Utilities/Timers");
+const Globals = require("../Globals");
 const setTimeout = Timers.setTimeout;
 
 class GameEvent {
@@ -108,11 +109,11 @@ class GameEvent {
         for (let item of res) {
             // Prevent async wrong value
             let itemAsync = item;
-                promises.push((async () => {
-                    let areaBonus = new AreaBonus(itemAsync.idBonusTypes);
-                    areaBonus.value = itemAsync.value;
-                    await areaBonus.load();
-                    this.globalModifiers[areaBonus.name] = areaBonus;
+            promises.push((async () => {
+                let areaBonus = new AreaBonus(itemAsync.idBonusTypes);
+                areaBonus.value = itemAsync.value;
+                await areaBonus.load();
+                this.globalModifiers[areaBonus.name] = areaBonus;
             })());
         }
         await Promise.all(promises);
@@ -193,7 +194,7 @@ class GameEvent {
             // It won't trigger again
             return
         }
-        
+
 
         // Directly using moment so it start at the precise date
         // And starting the timeout before the event is executed
@@ -218,11 +219,24 @@ class GameEvent {
         this.eventEmitter.emit("ended", this);
     }
 
-    async toApi(lang="en") {
+    async toApi(lang = "en") {
         return {
-            ...this,
+            id: this.id,
+            type: this.typeName,
+            backgroundImage: this.backgroundImage,
+            iconImage: this.iconImage,
+            occurence: this.occurence,
+            length: this.length,
+            startDate: this.startDate,
+            // Date when the event will end not the same as this.endDate
+            endDate: this.endTimeout?.timestamp,
+            areasSpecificDrops: this.areasSpecificDrops,
+            areasTypesDrops: this.areasTypesDrops,
+            globalModifiers: this.globalModifiers,
+            nextOccurence: this.nextStartTimeout?.timestamp,
             title: Translator.getString(lang, "eventsTitle", this.id),
-            desc: Translator.getString(lang, "eventsDesc", this.id)
+            desc: Translator.getString(lang, "eventsDesc", this.id),
+            ongoing: Globals.eventsManager.ongoingEvents[this.id] ? true : false
         }
     }
 }

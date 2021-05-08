@@ -130,6 +130,7 @@ class ModuleHandler extends GModule {
     loadAllModules() {
 
         fs.readdirSync(__dirname + "/Modules/").forEach(file => {
+            console.log(file)
             this.loadModule(file);
         });
         this.getAllRoutes();
