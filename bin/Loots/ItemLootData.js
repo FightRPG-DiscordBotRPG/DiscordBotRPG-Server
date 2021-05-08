@@ -1,3 +1,6 @@
+const Globals = require("../Globals");
+const Item = require("../Items/Item");
+
 class ItemLootData {
     constructor() {
         this.percentage = 0;
@@ -20,6 +23,14 @@ class ItemLootData {
             }
         }
         return lootTableToReturn;
+    }
+
+    async toApi(lang="en") {
+        let data = { ...this, name: Item.getName(this.idBaseItem, lang) };
+        if (data.percentage === 0) {
+            data.percentage = Globals.getDropChances(this.idRarity);
+        }
+        return data;
     }
 }
 

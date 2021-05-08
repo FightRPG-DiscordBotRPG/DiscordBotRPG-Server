@@ -98,14 +98,14 @@ class EventsManager {
                 if (!areasSpecificDrops[i]) {
                     areasSpecificDrops[i] = {};
                 }
-                areasSpecificDrops[i] = ItemLootData.mergeLootTables(areasSpecificDrops[i], event.areasSpecificDrops[i]);
+                areasSpecificDrops[i] = ItemLootData.mergeLootTables(areasSpecificDrops[i], event.areasSpecificDrops[i].tables);
             }
 
             for (let i in event.areasTypesDrops) {
                 if (!areasTypesDrops[i]) {
                     areasTypesDrops[i] = {};
                 }
-                areasTypesDrops[i] = ItemLootData.mergeLootTables(areasTypesDrops[i], event.areasTypesDrops[i]);
+                areasTypesDrops[i] = ItemLootData.mergeLootTables(areasTypesDrops[i], event.areasTypesDrops[i].tables);
             }
         }
 

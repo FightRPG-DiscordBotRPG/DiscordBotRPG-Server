@@ -6,6 +6,7 @@ const AreaBonus = require("../Areas/AreaBonus");
 const Translator = require("../Translator/Translator");
 const Timers = require("../Utilities/Timers");
 const Globals = require("../Globals");
+const LootTables = require("../Loots/LootTables");
 const setTimeout = Timers.setTimeout;
 
 class GameEvent {
@@ -27,14 +28,14 @@ class GameEvent {
         this.endDate = null;
 
         /** 
-         *  {idArea, {<idRarity, Data[]>}}
-         * @type Object<string, Object<string, ItemLootData[]>
+         *  idArea
+         * @type Object<string, LootTables>
          **/
         this.areasSpecificDrops = {};
 
         /**
-         *  {idAreaType, {<idRarity, Data[]>}}
-         * @type Object<string, Object<string, ItemLootData[]>
+         *  idAreaType
+         * @type Object<string, LootTables>
          **/
         this.areasTypesDrops = {};
 
@@ -79,7 +80,6 @@ class GameEvent {
             this.loadTypesAreasDrops(),
             this.loadGlobalModifiers()
         ]);
-
     }
 
     async loadSpecificAreasDrops() {
@@ -121,36 +121,39 @@ class GameEvent {
 
 
     pGetLootTable(res, firstIndexName) {
-        let lootTable = {};
+        let lootTables = {};
 
         for (let item of res) {
 
-            if (!lootTable[item[firstIndexName]]) {
-                lootTable[item[firstIndexName]] = {};
+            if (!lootTables[item[firstIndexName]]) {
+                lootTables[item[firstIndexName]] = new LootTables();
             }
 
             let lootData = this.pGetLootDataFromResItem(item);
+            /**
+             * @type {ItemLootData}
+             **/
             let lootTableToAdd;
 
             if (lootData.percentage > 0) {
-                if (!lootTable[item[firstIndexName]]["others"]) {
-                    lootTable[item[firstIndexName]]["others"] = [];
+                if (!lootTables[item[firstIndexName]].tables["others"]) {
+                    lootTables[item[firstIndexName]].tables["others"] = [];
                 }
 
-                lootTableToAdd = lootTable[item[firstIndexName]]["others"];
+                lootTableToAdd = lootTables[item[firstIndexName]].tables["others"];
 
             } else {
-                if (!lootTable[item[firstIndexName]][item.idRarity]) {
-                    lootTable[item[firstIndexName]][item.idRarity] = [];
+                if (!lootTables[item[firstIndexName]].tables[item.idRarity]) {
+                    lootTables[item[firstIndexName]].tables[item.idRarity] = [];
                 }
 
-                lootTableToAdd = lootTable[item[firstIndexName]][item.idRarity];
+                lootTableToAdd = lootTables[item[firstIndexName]].tables[item.idRarity];
             }
 
             lootTableToAdd.push(lootData);
         }
-
-        return lootTable;
+       
+        return lootTables;
     }
 
     pGetLootDataFromResItem(item) {
