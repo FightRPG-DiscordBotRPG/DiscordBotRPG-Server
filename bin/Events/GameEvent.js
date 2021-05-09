@@ -57,6 +57,8 @@ class GameEvent {
         this.eventEmitter = new EventEmitter.EventEmitter();
         this.start = this.start.bind(this);
         this.end = this.end.bind(this);
+
+        this.willFireAgain = true;
     }
 
     async load() {
@@ -152,7 +154,7 @@ class GameEvent {
 
             lootTableToAdd.push(lootData);
         }
-       
+
         return lootTables;
     }
 
@@ -186,6 +188,7 @@ class GameEvent {
             if (momentWhenItShouldEnd > currentDate) {
                 // The event isn't finished yet so we start it for the amount of time remaining
                 this.start((momentWhenItShouldEnd - currentDate) / 60000);
+                this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf()}
                 return;
             }
 
@@ -195,6 +198,7 @@ class GameEvent {
         if (this.endDate != null && nextExecution > this.endDate) {
             // Date is past including length of the event
             // It won't trigger again
+            this.willFireAgain = false;
             return
         }
 
@@ -230,17 +234,34 @@ class GameEvent {
             iconImage: this.iconImage,
             occurence: this.occurence,
             length: this.length,
-            startDate: this.startDate,
-            // Date when the event will end not the same as this.endDate
+            startDate: this.nextStartTimeout?.timestamp,
             endDate: this.endTimeout?.timestamp,
-            areasSpecificDrops: this.areasSpecificDrops,
-            areasTypesDrops: this.areasTypesDrops,
+            areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops),
+            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops),
             globalModifiers: this.globalModifiers,
-            nextOccurence: this.nextStartTimeout?.timestamp,
             title: Translator.getString(lang, "eventsTitle", this.id),
             desc: Translator.getString(lang, "eventsDesc", this.id),
-            ongoing: Globals.eventsManager.ongoingEvents[this.id] ? true : false
+            ongoing: Globals.eventsManager.ongoingEvents[this.id] ? true : false,
+            willFireAgain : this.willFireAgain
         }
+    }
+
+    /**
+     * 
+     * @param {Object<string, LootTables>} lootTables
+     * @param {string} lang
+     */
+    async getLootTableLocalized(lootTables, lang = "en") {
+        let data = {};
+        let allPromises = [];
+        for (let i in lootTables) {
+            allPromises.push((async () => {
+                data[i] = await lootTables[i].toApi(lang);
+            })()
+            );
+        }
+        await Promise.all(allPromises);
+        return data;
     }
 }
 
