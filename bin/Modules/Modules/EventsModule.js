@@ -33,7 +33,7 @@ class EventsModule extends GModule {
     }
 
     loadRoutes() {
-        this.router.get("/show/ongoing", async (req, res, next) => {
+        this.router.get("/ongoing", async (req, res, next) => {
             let data = {
                 events: await Globals.eventsManager.getOngoingEventsToApi(res.locals.lang)
             };
