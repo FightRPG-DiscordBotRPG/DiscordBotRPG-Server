@@ -7,6 +7,7 @@ const Translator = require("../Translator/Translator");
 const Timers = require("../Utilities/Timers");
 const Globals = require("../Globals");
 const LootTables = require("../Loots/LootTables");
+const Area = require("../Areas/Area");
 const setTimeout = Timers.setTimeout;
 
 class GameEvent {
@@ -188,7 +189,7 @@ class GameEvent {
             if (momentWhenItShouldEnd > currentDate) {
                 // The event isn't finished yet so we start it for the amount of time remaining
                 this.start((momentWhenItShouldEnd - currentDate) / 60000);
-                this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf()}
+                this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf() }
                 return;
             }
 
@@ -236,27 +237,28 @@ class GameEvent {
             length: this.length,
             startDate: this.nextStartTimeout?.timestamp,
             endDate: this.endTimeout?.timestamp,
-            areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops, lang),
-            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops, lang),
+            areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops, (i, l) => { return Area.getName(i, l) }, lang),
+            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops, (i, l) => { return Globals.areasTypes[i-1] }, lang),
             globalModifiers: this.getBonusesLocalized(lang),
             title: Translator.getString(lang, "eventsTitle", this.id),
             desc: Translator.getString(lang, "eventsDesc", this.id),
             ongoing: Globals.eventsManager.ongoingEvents[this.id] ? true : false,
-            willFireAgain : this.willFireAgain
+            willFireAgain: this.willFireAgain
         }
     }
 
     /**
      * 
      * @param {Object<string, LootTables>} lootTables
+     * @param {function(oldIndex: number, lang:string) : string} indexGetNameCallback
      * @param {string} lang
      */
-    async getLootTableLocalized(lootTables, lang = "en") {
+    async getLootTableLocalized(lootTables, indexGetNameCallback, lang = "en") {
         let data = {};
         let allPromises = [];
         for (let i in lootTables) {
             allPromises.push((async () => {
-                data[i] = await lootTables[i].toApi(lang);
+                data[indexGetNameCallback(i, lang)] = await lootTables[i].toApi(lang);
             })()
             );
         }
@@ -264,7 +266,7 @@ class GameEvent {
         return data;
     }
 
-    getBonusesLocalized(lang="en") {
+    getBonusesLocalized(lang = "en") {
         let arr = [];
         for (let bonus of Object.values(this.globalModifiers)) {
             arr.push(bonus.toApi(lang));
