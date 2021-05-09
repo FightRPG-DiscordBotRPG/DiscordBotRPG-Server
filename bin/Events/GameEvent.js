@@ -174,26 +174,31 @@ class GameEvent {
      * Should only be used once when loading
      */
     prepareStart() {
-        //this.startDate = moment("2021-01-01 00:00:00");
         let currentDate = moment();
-
         let diffStart = (currentDate - this.startDate) % (this.occurence * 60000);
+
+        // Leap years
+        let diffDays = this.getDiffLeapBetweenDates(this.startDate, currentDate);
 
         let nextExecution = this.startDate;
 
         if (diffStart > 0) {
-            let momentWhenItShouldHaveStart = currentDate.clone().subtract(diffStart);
 
-            let momentWhenItShouldEnd = momentWhenItShouldHaveStart.clone().add(this.length, "minutes");
+            if (diffStart > 0) {
+                let momentWhenItShouldHaveStart = currentDate.clone().subtract(diffStart).add(diffDays, "days");
 
-            if (momentWhenItShouldEnd > currentDate) {
-                // The event isn't finished yet so we start it for the amount of time remaining
-                this.start((momentWhenItShouldEnd - currentDate) / 60000);
-                this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf() }
-                return;
+                let momentWhenItShouldEnd = momentWhenItShouldHaveStart.clone().add(this.length, "minutes");
+
+                if (momentWhenItShouldEnd > currentDate) {
+                    // The event isn't finished yet so we start it for the amount of time remaining
+                    this.start((momentWhenItShouldEnd - currentDate) / 60000);
+                    this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf() }
+                    return;
+                }
+
+                nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
             }
 
-            nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
         }
 
         if (this.endDate != null && nextExecution > this.endDate) {
@@ -203,10 +208,9 @@ class GameEvent {
             return
         }
 
-
         // Directly using moment so it start at the precise date
         // And starting the timeout before the event is executed
-        this.nextStartTimeout = setTimeout(this.start, nextExecution - moment());
+        this.nextStartTimeout = setTimeout(this.start, nextExecution - currentDate);
     }
 
     /**
@@ -238,7 +242,7 @@ class GameEvent {
             startDate: this.nextStartTimeout?.timestamp,
             endDate: this.endTimeout?.timestamp,
             areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops, (i, l) => { return Area.getName(i, l) }, lang),
-            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops, (i, l) => { return Globals.areasTypes[i-1] }, lang),
+            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops, (i, l) => { return Globals.areasTypes[i - 1] }, lang),
             globalModifiers: this.getBonusesLocalized(lang),
             title: Translator.getString(lang, "eventsTitle", this.id),
             desc: Translator.getString(lang, "eventsDesc", this.id),
@@ -272,6 +276,22 @@ class GameEvent {
             arr.push(bonus.toApi(lang));
         }
         return arr;
+    }
+
+    /**
+     * 
+     * @param {moment.Moment} startDate
+     * @param {moment.Moment} endDate
+     */
+    getDiffLeapBetweenDates(startDate, endDate) {
+        var diff = 0;
+        for (var year = startDate.year(); year <= endDate.year(); year++) {
+            var date = moment(year + '-02-29');
+            if (date.isBetween(startDate, endDate) && date.isLeapYear()) {
+                diff++;
+            }
+        }
+        return diff;
     }
 }
 
