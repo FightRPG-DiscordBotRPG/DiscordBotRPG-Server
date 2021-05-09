@@ -160,7 +160,7 @@ class Area {
         return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel;
     }
 
-    async loadItemsLootTable() {     
+    async loadItemsLootTable() {
 
 
         // For generic items drop based on default min and max rarity
@@ -368,7 +368,7 @@ class Area {
             if (Globals.eventsManager.currentBonuses[bonus.name]) {
                 o.value += Globals.eventsManager.currentBonuses[bonus.name].value;
             }
-            
+
             bonus.setValue(o.value);
             bonuses[bonus.name] = bonus;
         }
@@ -449,7 +449,11 @@ class Area {
     }
 
     getName(lang = "en") {
-        return Translator.getString(lang, "areasNames", this.id);
+        return Area.getName(this.id, lang);
+    }
+
+    static getName(id, lang = "en") {
+        return Translator.getString(lang, "areasNames", id);
     }
 
     getDesc(lang = "en") {
@@ -483,7 +487,7 @@ class Area {
         return this.bonusresetCooldown;
     }
 
-    getResetCooldownString(lang="en") {
+    getResetCooldownString(lang = "en") {
         lang = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
         return new Date(this.getResetCooldown()).toLocaleString(lang, { timeZone: 'UTC' }) + " GMT";
     }
