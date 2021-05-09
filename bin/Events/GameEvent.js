@@ -183,22 +183,18 @@ class GameEvent {
         let nextExecution = this.startDate;
 
         if (diffStart > 0) {
+            let momentWhenItShouldHaveStart = currentDate.clone().subtract(diffStart).add(diffDays, "days");
 
-            if (diffStart > 0) {
-                let momentWhenItShouldHaveStart = currentDate.clone().subtract(diffStart).add(diffDays, "days");
+            let momentWhenItShouldEnd = momentWhenItShouldHaveStart.clone().add(this.length, "minutes");
 
-                let momentWhenItShouldEnd = momentWhenItShouldHaveStart.clone().add(this.length, "minutes");
-
-                if (momentWhenItShouldEnd > currentDate) {
-                    // The event isn't finished yet so we start it for the amount of time remaining
-                    this.start((momentWhenItShouldEnd - currentDate) / 60000);
-                    this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf() }
-                    return;
-                }
-
-                nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
+            if (momentWhenItShouldEnd > currentDate) {
+                // The event isn't finished yet so we start it for the amount of time remaining
+                this.start((momentWhenItShouldEnd - currentDate) / 60000);
+                this.nextStartTimeout = { timestamp: momentWhenItShouldHaveStart.valueOf() }
+                return;
             }
 
+            nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
         }
 
         if (this.endDate != null && nextExecution > this.endDate) {
