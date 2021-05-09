@@ -236,9 +236,9 @@ class GameEvent {
             length: this.length,
             startDate: this.nextStartTimeout?.timestamp,
             endDate: this.endTimeout?.timestamp,
-            areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops),
-            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops),
-            globalModifiers: this.globalModifiers,
+            areasSpecificDrops: await this.getLootTableLocalized(this.areasSpecificDrops, lang),
+            areasTypesDrops: await this.getLootTableLocalized(this.areasTypesDrops, lang),
+            globalModifiers: this.getBonusesLocalized(lang),
             title: Translator.getString(lang, "eventsTitle", this.id),
             desc: Translator.getString(lang, "eventsDesc", this.id),
             ongoing: Globals.eventsManager.ongoingEvents[this.id] ? true : false,
@@ -262,6 +262,14 @@ class GameEvent {
         }
         await Promise.all(allPromises);
         return data;
+    }
+
+    getBonusesLocalized(lang="en") {
+        let arr = [];
+        for (let bonus of Object.values(this.globalModifiers)) {
+            arr.push(bonus.toApi(lang));
+        }
+        return arr;
     }
 }
 
