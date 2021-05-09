@@ -32,11 +32,11 @@ class AreaBonus {
      * 
      * @param {string} lang 
      */
-    toStr(lang) {
+    toStr(lang="en") {
         return Translator.getString(lang, "bonuses", this.name) + " : " + this.getPercentage() + "%";
     }
 
-    toApi(lang) {
+    toApi(lang="en") {
         return {
             bonus_identifier: this.name,
             name: Translator.getString(lang, "bonuses", this.name),
