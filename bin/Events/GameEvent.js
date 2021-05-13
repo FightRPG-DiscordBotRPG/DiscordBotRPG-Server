@@ -179,6 +179,7 @@ class GameEvent {
 
         // Leap years
         let diffDays = this.getDiffLeapBetweenDates(this.startDate, currentDate);
+        diffStart += diffDays * 24 * 60 * 60 * 1000;
 
         let nextExecution = this.startDate;
 
@@ -194,7 +195,13 @@ class GameEvent {
                 return;
             }
 
-            nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes");
+
+            nextExecution = momentWhenItShouldHaveStart.clone().add(this.occurence, "minutes").add(diffDays, "days");
+
+            if (nextExecution.isLeapYear && moment(nextExecution.year() + '-02-29') <= nextExecution) {
+                nextExecution.add(1, "days");
+            } 
+
         }
 
         if (this.endDate != null && nextExecution > this.endDate) {
