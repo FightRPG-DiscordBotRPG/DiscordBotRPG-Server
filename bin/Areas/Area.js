@@ -11,6 +11,7 @@ const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const Shop = require("../Shops/Shop");
 const Globals = require("../Globals.js");
 const ItemLootData = require("../Loots/ItemLootData.js");
+const CollectableResource = require("../CraftSystem/CollectableResource.js");
 
 class Area {
 
@@ -28,6 +29,9 @@ class Area {
         this.owner = 0;
         this.fightPossible = false;
 
+        /**
+         * @type {CollectableResource[]}
+         **/
         this.resources = [];
         /**
          * @type {Array<MonstreGroupe>}
@@ -83,13 +87,18 @@ class Area {
         this.minRebirthLevel = res["minRebirthLevel"];
         this.maxRebirthLevel = res["maxRebirthLevel"];
 
-        res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity " +
-            "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
-            "INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType " +
-            "INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType " +
-            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity WHERE idArea = " + this.id);
+        res = await conn.query(`SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity, idCollectableResource,  minLevel, minRebirthLevel, percentage
+                                FROM areasresources
+                                INNER JOIN collectableresources USING(idCollectableResource)
+                                INNER JOIN itemsbase USING(idBaseItem)
+                                INNER JOIN itemstypes USING(idType)
+                                INNER JOIN itemssoustypes USING(idSousType)
+                                INNER JOIN itemsrarities USING(idRarity)
+                                WHERE idArea = ?;`, [this.id]);
+
+
         for (let i in res) {
-            this.resources.push(res[i]);
+            this.resources.push(Object.assign(new CollectableResource(), res[i]));
         }
 
         // Load owner
@@ -249,7 +258,8 @@ class Area {
     getResourcesApiLight(lang) {
         let trees = [],
             ores = [],
-            plants = [];
+            plants = [],
+            animals = [];
         for (let i = 0; i < this.resources.length; i++) {
 
             let resource = {
@@ -267,7 +277,11 @@ class Area {
                     ores.push(resource);
                     break;
                 case "plant":
+                case "cloth":
                     plants.push(resource);
+                    break;
+                case "leather":
+                    animals.push(resource)
                     break;
 
             }
@@ -276,6 +290,7 @@ class Area {
             trees: trees,
             ores: ores,
             plants: plants,
+            animals: animals
         }
 
     }

@@ -93,7 +93,7 @@ class ModuleHandler extends GModule {
             let parameters = urlParts.query;
             let lang = "en";
             lang = parameters.lang != null ? (Translator.isLangExist(parameters.lang) ? parameters.lang : "en") : "en";
-            let ressources = await conn.query("SELECT localizationareas.nameArea, localizationitems.nameItem FROM areasresources INNER JOIN localizationareas ON areasresources.idArea = localizationareas.idArea INNER JOIN localizationitems ON areasresources.idBaseItem = localizationitems.idBaseItem WHERE localizationareas.lang = ? AND localizationitems.lang = ? ORDER BY localizationareas.idArea", [lang, lang]);
+            let ressources = await conn.query("SELECT localizationareas.nameArea, localizationitems.nameItem FROM areasresources INNER JOIN collectableresources USING(idCollectableResource) INNER JOIN localizationareas ON areasresources.idArea = localizationareas.idArea INNER JOIN localizationitems ON collectableresources.idBaseItem = localizationitems.idBaseItem WHERE localizationareas.lang = ? AND localizationitems.lang = ? ORDER BY localizationareas.idArea", [lang, lang]);
 
             let html = "<p>Res" + (lang == "fr" ? "s" : "") + "ources : ";
             let precedName = "";
