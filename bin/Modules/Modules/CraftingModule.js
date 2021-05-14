@@ -120,11 +120,14 @@ class CraftingModule extends GModule {
         let resourceToCollect = Globals.areasManager.getResource(character.getIdArea(), idToCollect);
 
         if (!resourceToCollect) {
-            return Translator.getString(res.locals.lang, "resources", "resource_dont_exist");
+            return this.asError(Translator.getString(res.locals.lang, "resources", "resource_dont_exist"));
+        }
+
+        if (resourceToCollect.minLevel > character.getCraftLevel() || resourceToCollect.minRebirthLevel > character.getCraftRebirthLevel()) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "collect_dont_have_required_level", [resourceToCollect.minLevel, resourceToCollect.minRebirthLevel]));
         }
 
         let collectBonuses = await res.locals.currentArea.getAllBonuses();
-
 
         character.waitForNextResource(resourceToCollect.idRarity, numberToCollect);
         idToCollect = await character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
