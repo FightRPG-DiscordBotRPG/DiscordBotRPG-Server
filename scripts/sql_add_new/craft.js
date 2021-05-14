@@ -81,7 +81,7 @@ async function start() {
 
             //console.log("Level: " + level);
             let res = await conn.query("SELECT * FROM collectableresources INNER JOIN itemsbase USING(idBaseItem) WHERE minLevel = ?", [level]);
-            craftItemsToAdd.push(`(${itemAddNumber}, ${maxLevels[level]}, ${level}, ${item.idBaseItem}, 0, 0)`);
+            craftItemsToAdd.push(`(${itemAddNumber}, ${maxLevels[level]}, ${level === 1 ? level : level+1}, ${item.idBaseItem}, 0, 0)`);
             let resourcesForThisLevelRange = {};
 
             for (let resource of res) {
