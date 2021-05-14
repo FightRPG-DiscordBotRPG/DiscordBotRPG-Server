@@ -259,7 +259,8 @@ class Area {
         let trees = [],
             ores = [],
             plants = [],
-            animals = [];
+            animals = [],
+            fabrics = [];
         for (let i = 0; i < this.resources.length; i++) {
 
             let resource = {
@@ -277,20 +278,22 @@ class Area {
                     ores.push(resource);
                     break;
                 case "plant":
-                case "cloth":
                     plants.push(resource);
+                    break;
+                case "cloth":
+                    fabrics.push(resource);
                     break;
                 case "leather":
                     animals.push(resource)
                     break;
-
             }
         }
         return {
             trees: trees,
             ores: ores,
             plants: plants,
-            animals: animals
+            animals: animals,
+            fabrics: fabrics
         }
 
     }
