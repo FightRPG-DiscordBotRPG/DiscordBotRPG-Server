@@ -78,7 +78,7 @@ class CraftingModule extends GModule {
         });
 
         this.router.post("/collect", async (req, res, next) => {
-            let data = await this.doCollect();
+            let data = await this.doCollect(req, res);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
