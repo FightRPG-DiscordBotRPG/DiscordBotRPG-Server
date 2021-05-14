@@ -78,59 +78,7 @@ class CraftingModule extends GModule {
         });
 
         this.router.post("/collect", async (req, res, next) => {
-            let data = {};
-
-            let idToCollect = parseInt(req.body.idResource, 10);
-            let numberToCollect = parseInt(req.body.number, 10);
-            numberToCollect = !isNaN(numberToCollect) && numberToCollect > 0 && numberToCollect <= Globals.collectTriesOnce ? numberToCollect : 1;
-
-            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
-                if (idToCollect && Number.isInteger(idToCollect)) {
-                    let resourceToCollect = Globals.areasManager.getResource(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
-                    //idToCollect = Globals.areasManager.getResourceId(Globals.connectedUsers[res.locals.id].character.getIdArea(), idToCollect);
-                    if (resourceToCollect) {
-                        let collectBonuses = await res.locals.currentArea.getAllBonuses();
-                        Globals.connectedUsers[res.locals.id].character.waitForNextResource(resourceToCollect.idRarity, numberToCollect);
-                        idToCollect = await Globals.connectedUsers[res.locals.id].character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
-                        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Intellect) * (1 + collectBonuses[AreaBonus.identifiers.collectDrop].getPercentage()), resourceToCollect.idRarity, Globals.connectedUsers[res.locals.id].character.getArea().areaClimate.currentWeather, numberToCollect);
-                        data.success = Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [numberToCollect]) + "\n";
-                        if (numberItemsCollected > 0) {
-                            if (idToCollect) {
-                                await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idToCollect, numberItemsCollected);
-                            } else {
-                                let idInsert = await Item.lightInsert(resourceToCollect.idBaseItem, 1);
-                                await Globals.connectedUsers[res.locals.id].character.inv.addToInventory(idInsert, numberItemsCollected);
-                            }
-
-                            PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
-
-                            data.success += Translator.getString(res.locals.lang, "resources", "collected_x_resource", [numberItemsCollected, Translator.getString(res.locals.lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
-                        } else {
-                            data.success += Translator.getString(res.locals.lang, "resources", "not_collected") + "\n";
-                        }
-                        // Si le joueur n'est pas max level en craft
-                        if (Globals.connectedUsers[res.locals.id].character.getCraftLevel() < Globals.maxLevel) {
-                            let collectXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.getCraftLevel(), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), resourceToCollect.idRarity, true) * numberToCollect;
-                            let collectXPBonus = collectBonuses[AreaBonus.identifiers.xpCollect].getPercentageValue() * collectXP;
-                            let totalCollectXP = collectXP + collectXPBonus;
-                            let collectCraftUP = await Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCollectXP);
-                            data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
-                            if (collectCraftUP > 0) {
-                                data.success += Translator.getString(res.locals.lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
-                            }
-                        }
-
-                    } else {
-                        // error object don't exist
-                        data.error = Translator.getString(res.locals.lang, "resources", "resource_dont_exist");
-                    }
-                } else {
-                    data.error = Translator.getString(res.locals.lang, "errors", "collect_enter_id_to_collect");
-                }
-            } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "collect_tired_wait_x_seconds", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
-            }
-
+            let data = await this.doCollect();
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
@@ -150,10 +98,78 @@ class CraftingModule extends GModule {
     }
 
     /**
-     * 
-     * @param {express.Request} req
-     * @param {express.Response} res
-     */
+    *
+    * @param {express.Request} req
+    * @param {express.Response} res
+    */
+    async doCollect(req, res) {
+        let idToCollect = parseInt(req.body.idResource, 10);
+        let numberToCollect = parseInt(req.body.number, 10);
+        numberToCollect = !isNaN(numberToCollect) && numberToCollect > 0 && numberToCollect <= Globals.collectTriesOnce ? numberToCollect : 1;
+
+        let character = Globals.connectedUsers[res.locals.id].character;
+
+        if (!character.canDoAction()) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "collect_tired_wait_x_seconds", [character.getExhaust()]));
+        }
+
+        if (!(idToCollect && Number.isInteger(idToCollect))) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "collect_enter_id_to_collect"));
+        }
+
+        let resourceToCollect = Globals.areasManager.getResource(character.getIdArea(), idToCollect);
+
+        if (!resourceToCollect) {
+            return Translator.getString(res.locals.lang, "resources", "resource_dont_exist");
+        }
+
+        let collectBonuses = await res.locals.currentArea.getAllBonuses();
+
+
+        character.waitForNextResource(resourceToCollect.idRarity, numberToCollect);
+        idToCollect = await character.getIdOfThisIdBase(resourceToCollect.idBaseItem);
+
+        let numberItemsCollected = CraftSystem.getNumberOfItemsCollected(character.getStat(Stats.possibleStats.Intellect) * (1 + collectBonuses[AreaBonus.identifiers.collectDrop].getPercentage()), resourceToCollect.idRarity, character.getArea().areaClimate.currentWeather, numberToCollect);
+
+        let data = this.asSuccess(Translator.getString(res.locals.lang, "resources", "tried_to_collect_x_times", [numberToCollect]) + "\n");
+
+        // Give to player items
+        if (numberItemsCollected > 0) {
+            if (idToCollect) {
+                await character.inv.addToInventory(idToCollect, numberItemsCollected);
+            } else {
+                let idInsert = await Item.lightInsert(resourceToCollect.idBaseItem, 1);
+                await character.inv.addToInventory(idInsert, numberItemsCollected);
+            }
+
+            PStatistics.incrStat(character.id, "items_" + resourceToCollect.nomRarity + "_collected", numberItemsCollected);
+
+            data.success += Translator.getString(res.locals.lang, "resources", "collected_x_resource", [numberItemsCollected, Translator.getString(res.locals.lang, "itemsNames", resourceToCollect.idBaseItem)]) + "\n";
+        } else {
+            data.success += Translator.getString(res.locals.lang, "resources", "not_collected") + "\n";
+        }
+
+        // If player is not max level give exp
+        if (character.getCraftLevel() < Globals.maxLevel) {
+            let collectXP = CraftSystem.getXP(character.getCraftLevel(), character.getCraftLevel(), resourceToCollect.idRarity, true) * numberToCollect;
+            let collectXPBonus = collectBonuses[AreaBonus.identifiers.xpCollect].getPercentageValue() * collectXP;
+            let totalCollectXP = collectXP + collectXPBonus;
+            let collectCraftUP = await character.addCraftXP(totalCollectXP);
+            data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
+            if (collectCraftUP > 0) {
+                data.success += Translator.getString(res.locals.lang, "resources", collectCraftUP > 1 ? "job_level_up_plur" : "job_level_up", [collectCraftUP]);
+            }
+        }
+
+        return data;
+
+    }
+
+    /**
+    *
+    * @param {express.Request} req
+    * @param {express.Response} res
+    */
     async doCraft(req, res) {
         if (res.locals.craftingbuilding == null) {
             return this.asError(Translator.getString(res.locals.lang, "errors", "craft_no_building"));
@@ -218,9 +234,9 @@ class CraftingModule extends GModule {
         }
 
         return data;
-
     }
 }
+
 
 
 
