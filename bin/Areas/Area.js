@@ -10,6 +10,8 @@ const Marketplace = require("../Marketplace/Marketplace");
 const CraftingBuilding = require("../CraftSystem/CraftingBuilding");
 const Shop = require("../Shops/Shop");
 const Globals = require("../Globals.js");
+const ItemLootData = require("../Loots/ItemLootData.js");
+const CollectableResource = require("../CraftSystem/CollectableResource.js");
 
 class Area {
 
@@ -27,6 +29,9 @@ class Area {
         this.owner = 0;
         this.fightPossible = false;
 
+        /**
+         * @type {CollectableResource[]}
+         **/
         this.resources = [];
         /**
          * @type {Array<MonstreGroupe>}
@@ -41,13 +46,18 @@ class Area {
         this.maxItemRarityId = 5;
         this.maxItemRarityName = "legendary";
         /**
-         * @type {Object<string,Array<{idBaseItem:number, percentage:number, min:number, max:number, idRarity:number, equipable:number}>>}
+         * @type {Object<string,Array<ItemLootData>>}
          */
         this.possibleLoots = {};
+
+        /**
+         * @type {Object<string,Array<ItemLootData>>}
+         */
+        this.possibleLootsWithEvents = {};
         this.timeBeforeNextClaim = 0;
         this.players = [];
         this.services = {};
-        this.authorizedBonuses = ["xp_fight", "xp_collect", "xp_craft", "gold_drop", "item_drop", "collect_drop"];
+        this.authorizedBonuses = [AreaBonus.identifiers.xpFight, AreaBonus.identifiers.xpCollect, AreaBonus.identifiers.xpCraft, AreaBonus.identifiers.goldDrop, AreaBonus.identifiers.itemDrop, AreaBonus.identifiers.collectDrop];
         this.requiredAchievements = [];
 
         // Used to know idAreas from and to
@@ -66,23 +76,29 @@ class Area {
     }
 
     async loadArea() {
-        let res = await conn.query("SELECT idRegion, AreaImage, NomAreaType, minLevel, maxLevel, minRebirthLevel, maxRebirthLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
+        let res = await conn.query("SELECT idRegion, areas.idAreaType, AreaImage, NomAreaType, minLevel, maxLevel, minRebirthLevel, maxRebirthLevel FROM areas INNER JOIN areastypes ON areastypes.idAreaType = areas.idAreaType INNER JOIN areasregions ON areasregions.idArea = areas.idArea INNER JOIN areasmonsterslevels ON areasmonsterslevels.idArea = areas.idArea WHERE areas.idArea = ?", [this.id]);
         res = res[0];
         this.idRegion = res["idRegion"];
         this.image = res["AreaImage"];
         this.areaType = res["NomAreaType"];
+        this.idAreaType = res["idAreaType"]
         this.minLevel = res["minLevel"];
         this.maxLevel = res["maxLevel"];
         this.minRebirthLevel = res["minRebirthLevel"];
         this.maxRebirthLevel = res["maxRebirthLevel"];
 
-        res = await conn.query("SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity " +
-            "FROM itemsbase INNER JOIN areasresources ON areasresources.idBaseItem = itemsbase.idBaseItem " +
-            "INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType " +
-            "INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType " +
-            "INNER JOIN itemsrarities ON itemsrarities.idRarity = itemsbase.idRarity WHERE idArea = " + this.id);
+        res = await conn.query(`SELECT DISTINCT itemsbase.idBaseItem, itemstypes.nomType, itemsrarities.nomRarity, itemssoustypes.nomSousType, itemsbase.idRarity, idCollectableResource,  minLevel, minRebirthLevel, percentage
+                                FROM areasresources
+                                INNER JOIN collectableresources USING(idCollectableResource)
+                                INNER JOIN itemsbase USING(idBaseItem)
+                                INNER JOIN itemstypes USING(idType)
+                                INNER JOIN itemssoustypes USING(idSousType)
+                                INNER JOIN itemsrarities USING(idRarity)
+                                WHERE idArea = ?;`, [this.id]);
+
+
         for (let i in res) {
-            this.resources.push(res[i]);
+            this.resources.push(Object.assign(new CollectableResource(), res[i]));
         }
 
         // Load owner
@@ -136,11 +152,13 @@ class Area {
         }
 
         await this.areaClimate.load();
-
     }
 
+    /**
+     * @returns {Object<string,Array<ItemLootData>>}
+     **/
     getPossibleLoots() {
-        return this.possibleLoots;
+        return this.possibleLootsWithEvents;
     }
 
     getMinRebirthLevel() {
@@ -151,11 +169,11 @@ class Area {
         return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel;
     }
 
-    async loadItemsLootTable() {     
+    async loadItemsLootTable() {
 
 
         // For generic items drop based on default min and max rarity
-        let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.idType IN (1,2,3,4) AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
+        let res = await conn.query("SELECT itemsbase.idBaseItem, itemsbase.idRarity, equipable FROM itemsbase INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE itemsbase.isInDefaultLootTable = 1 AND itemsbase.idRarity >= ? AND itemsbase.idRarity <= ?", [this.minItemRarityId, this.maxItemRarityId]);
 
         this.possibleLoots = {};
 
@@ -164,10 +182,13 @@ class Area {
             if (!this.possibleLoots[item.idRarity]) {
                 this.possibleLoots[item.idRarity] = [];
             }
-            item.percentage = 0;
-            item.min = 1;
-            item.max = 1;
-            this.possibleLoots[item.idRarity].push(item);
+
+            let lootData = new ItemLootData();
+            lootData.equipable = item.equipable;
+            lootData.idBaseItem = item.idBaseItem;
+            lootData.idRarity = item.idRarity;
+
+            this.possibleLoots[item.idRarity].push(lootData);
         }
 
         // Load real loot table for this area
@@ -176,9 +197,14 @@ class Area {
 
         // Manually added loots
         // Should always be every items checked
-        this.possibleLoots["others"] = res;
+        let specificsLoot = [];
+        for (let item of res) {
+            specificsLoot.push(Object.assign(new ItemLootData(), item));
+        }
 
-        // Take real min/max rarity fro database (useful for displays)
+        this.possibleLoots["others"] = specificsLoot;
+
+        // Take real min/max rarity from database (useful for displays)
 
         let minQuality = await this.getMinItemQualityFromDatabase();
         let maxQuality = await this.getMaxItemQualityFromDatabase();
@@ -192,6 +218,8 @@ class Area {
             this.maxItemRarityId = maxQuality[0].idRarity;
             this.maxItemRarityName = maxQuality[0].nomRarity;
         }
+
+        this.possibleLootsWithEvents = this.possibleLoots;
 
     }
 
@@ -230,7 +258,9 @@ class Area {
     getResourcesApiLight(lang) {
         let trees = [],
             ores = [],
-            plants = [];
+            plants = [],
+            animals = [],
+            fabrics = [];
         for (let i = 0; i < this.resources.length; i++) {
 
             let resource = {
@@ -250,13 +280,20 @@ class Area {
                 case "plant":
                     plants.push(resource);
                     break;
-
+                case "cloth":
+                    fabrics.push(resource);
+                    break;
+                case "leather":
+                    animals.push(resource)
+                    break;
             }
         }
         return {
             trees: trees,
             ores: ores,
             plants: plants,
+            animals: animals,
+            fabrics: fabrics
         }
 
     }
@@ -344,6 +381,12 @@ class Area {
         for (let o of res) {
             let bonus = new AreaBonus(o.idBonusTypes);
             await bonus.load();
+
+            // Load bonuses from events
+            if (Globals.eventsManager.currentBonuses[bonus.name]) {
+                o.value += Globals.eventsManager.currentBonuses[bonus.name].value;
+            }
+
             bonus.setValue(o.value);
             bonuses[bonus.name] = bonus;
         }
@@ -424,7 +467,11 @@ class Area {
     }
 
     getName(lang = "en") {
-        return Translator.getString(lang, "areasNames", this.id);
+        return Area.getName(this.id, lang);
+    }
+
+    static getName(id, lang = "en") {
+        return Translator.getString(lang, "areasNames", id);
     }
 
     getDesc(lang = "en") {
@@ -458,7 +505,7 @@ class Area {
         return this.bonusresetCooldown;
     }
 
-    getResetCooldownString(lang="en") {
+    getResetCooldownString(lang = "en") {
         lang = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
         return new Date(this.getResetCooldown()).toLocaleString(lang, { timeZone: 'UTC' }) + " GMT";
     }

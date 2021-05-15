@@ -2,7 +2,7 @@
   "requires": true,
   "lockfileVersion": 1,
   "name": "discordbotrpg-server",
-  "version": "1.11.4",
+  "version": "1.12.0",
   "description": "",
   "author": "Jean-Charles TECHER",
   "license": "SEE LICENCE IN LICENSE.md",
@@ -80,7 +80,7 @@
       "resolved": "https://registry.npmjs.org/get-port/-/get-port-3.2.0.tgz",
       "version": "3.2.0"
     },
-    "get-routes": "^2.0.15",
+    "get-routes": "^2.1.0",
     "graceful-fs": {
       "integrity": "sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=",
       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz",
@@ -119,6 +119,7 @@
       "resolved": "https://registry.npmjs.org/lowdb/-/lowdb-1.0.0.tgz",
       "version": "1.0.0"
     },
+    "moment": "^2.29.1",
     "mysql": "^2.16.0",
     "node-dijkstra": "^2.5.0",
     "pify": {

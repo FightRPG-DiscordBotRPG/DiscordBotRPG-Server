@@ -1,12 +1,13 @@
 ﻿'use strict';
 const Area = require("./Area");
+const AreaBonus = require("./AreaBonus");
 
 class WildArea extends Area {
 
     constructor(id) {
-        super(id, id);
+        super(id, id);        
         this.fightPossible = true;
-        this.authorizedBonuses = ["xp_fight", "xp_collect", "gold_drop", "item_drop", "collect_drop"];
+        this.authorizedBonuses = [AreaBonus.identifiers.xpFight, AreaBonus.identifiers.xpCollect, AreaBonus.identifiers.goldDrop, AreaBonus.identifiers.itemDrop, AreaBonus.identifiers.collectDrop];
     }
 
     async loadItemsLootTable() {

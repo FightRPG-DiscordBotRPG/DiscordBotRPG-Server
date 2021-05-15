@@ -278,7 +278,22 @@ class Translator {
         }
     }
 
+    static async loadEventsBases() {
+        let res = await conn.query("SELECT * FROM localizationevents");
+        let languages = await conn.query("SELECT * FROM languages");
+        for (let language of languages) {
+            this.translations[language.lang]["eventsTitle"] = {};
+            this.translations[language.lang]["eventsDesc"] = {};
+        }
+
+        for (let trad of res) {
+            this.translations[trad.lang]["eventsTitle"][trad.idEvent] = trad.title;
+            this.translations[trad.lang]["eventsDesc"][trad.idEvent] = trad.desc;
+        }
+    }
+
     // IDEA: Use Promise.all ?
+    // TODO: Load events title and desc
     static async load() {
         this.translations = {};
         this.formaters = {};
@@ -293,6 +308,7 @@ class Translator {
         await this.loadSkillBases();
         await this.loadStatesBases();
         await this.loadNodesVisuals();
+        await this.loadEventsBases();
     }
 }
 

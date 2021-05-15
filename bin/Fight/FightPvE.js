@@ -106,7 +106,7 @@ class FightPvE extends Fight {
                 let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
                 money = Math.round(
                     money *
-                    (areaBonuses["gold_drop"].getPercentageValue() + 1)
+                    (areaBonuses[AreaBonus.identifiers.goldDrop].getPercentageValue() + 1)
                     * goldModifier
                 );
                 this.summary.goldGained[entity.name] = money;
@@ -122,7 +122,7 @@ class FightPvE extends Fight {
                         xp *
                         (
                             entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel())
-                            + areaBonuses["xp_fight"].getPercentageValue() + 1
+                            + areaBonuses[AreaBonus.identifiers.xpFight].getPercentageValue() + 1
                         )
                         * xpModifier
                     );
@@ -154,7 +154,7 @@ class FightPvE extends Fight {
                     // Loot or Not
                     let lootSystem = new LootSystem();
                     let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
-                    totalLuck = totalLuck * (1 + areaBonuses["item_drop"].getPercentageValue());
+                    totalLuck = totalLuck * (1 + areaBonuses[AreaBonus.identifiers.itemDrop].getPercentageValue());
 
                     promises.push((async () => {
                         let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
@@ -219,3 +219,4 @@ const Character = require("../Character");
 const Monstre = require("../Entities/Monster");
 const Area = require("../Areas/Area");
 const Stats = require("../Stats/Stats");
+const AreaBonus = require("../Areas/AreaBonus");

@@ -168,6 +168,14 @@ class CraftingBuilding {
     getMaxRebirthLevel() {
         return this.maxRebirthLevel > 0 ? this.maxRebirthLevel : Globals.rebirthManager.maxRebirthLevel;
     }
+
+    isCraftLevelPossible(level=null) {
+        return (level !== null && this.getMinLevel() <= level && this.getMaxLevel() >= level)
+    }
+
+    isCraftRebirthLevelPossible(rebirthLevel=null) {
+        return rebirthLevel !== null && this.getMinRebirthLevel() <= rebirthLevel && this.getMaxRebirthLevel() >= rebirthLevel;
+    }
 }
 
 module.exports = CraftingBuilding;
