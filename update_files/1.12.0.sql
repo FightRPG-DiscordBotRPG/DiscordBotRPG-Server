@@ -156,10 +156,12 @@ REPLACE INTO eventstypes VALUES
 (3, "special");
 
 REPLACE INTO events VALUES
-(1, 3, "https://freesvg.org/img/nicubunu_Chocolate_birthday_cake.png", "https://cdn.fight-rpg.com/images/events/anniversary_icon.png", 525600, 10080, "2021-06-11 00:00:00", null);
+(1, 2, "https://freesvg.org/img/nicubunu_Chocolate_birthday_cake.png", "https://cdn.fight-rpg.com/images/events/anniversary_icon.png", 525600, 10080, "2021-06-11 00:00:00", null),
+(2, 3, "", "", 99999, 7200, "2021-05-17 00:00:00", "2021-05-21 00:00:00");
 
 REPLACE INTO eventsglobalmodifiers VALUES
-(1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20);
+(1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20),
+(2, 2, 25), (2, 3, 25), (2, 6, 25);
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationevents` (
   `idEvent` INT(10) UNSIGNED NOT NULL,
@@ -184,7 +186,9 @@ COLLATE = utf8mb4_unicode_ci;
 
 REPLACE INTO localizationevents VALUES
 (1, "en", "Fight RPG - Anniversary!", "One more year for FightRPG! Ah, how time flies. Let's celebrate together!"),
-(1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Célébrons ça ensemble !");
+(1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Célébrons ça ensemble !"),
+(2, "fr", "A vos marques, prêts, collectez !", "Un bonus à la récolte est nécessaire au vu des changements apportés aux ingrédients nécessaires pour fabriquer les objets."),
+(2, "en", "Update 1.12 - On your marks, set, collect!", "A harvest bonus is required due to changes in the ingredients needed to make items");
 
 ALTER TABLE `discord_bot_rpg`.`itemsbase` 
 ADD COLUMN `isInDefaultLootTable` TINYINT(4) NOT NULL DEFAULT 0 AFTER `idSousType`;
