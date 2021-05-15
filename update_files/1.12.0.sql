@@ -157,7 +157,7 @@ REPLACE INTO eventstypes VALUES
 
 REPLACE INTO events VALUES
 (1, 2, "https://freesvg.org/img/nicubunu_Chocolate_birthday_cake.png", "https://cdn.fight-rpg.com/images/events/anniversary_icon.png", 525600, 10080, "2021-06-11 00:00:00", null),
-(2, 3, "", "", 99999, 7200, "2021-05-17 00:00:00", "2021-05-21 00:00:00");
+(2, 3, "https://tinyurl.com/2h3sesp8", "https://tinyurl.com/2h3sesp8", 99999, 7200, "2021-05-17 00:00:00", "2021-05-21 00:00:00");
 
 REPLACE INTO eventsglobalmodifiers VALUES
 (1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20),
