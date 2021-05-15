@@ -47,28 +47,36 @@ class FightPvP extends Fight {
         let teamsHonor = await this.getTotalHonorTeams();
         let honor = 0;
         let baseHonor = 10;
-        if (this.winnerGroup === 0) {
-            if (teamsHonor[0] === teamsHonor[1]) {
-                honor = baseHonor;
-            } else if (teamsHonor[0] > teamsHonor[1]) {
-                honor = Math.round((teamsHonor[0] - teamsHonor[1]) * .2);
-                honor = baseHonor - honor;
+
+        // In pvp even if you kill your enemy, he wins
+        if (!this.summary.bothLost) {
+            if (this.winnerGroup === 0) {
+                if (teamsHonor[0] === teamsHonor[1]) {
+                    honor = baseHonor;
+                } else if (teamsHonor[0] > teamsHonor[1]) {
+                    honor = Math.round((teamsHonor[0] - teamsHonor[1]) * .2);
+                    honor = baseHonor - honor;
+                } else {
+                    honor = Math.round((teamsHonor[1] - teamsHonor[0]) * .2);
+                    honor += baseHonor;
+                }
             } else {
-                honor = Math.round((teamsHonor[1] - teamsHonor[0]) * .2);
-                honor += baseHonor;
+                if (teamsHonor[1] === teamsHonor[0]) {
+                    honor = baseHonor;
+                } else if (teamsHonor[1] > teamsHonor[0]) {
+                    honor = Math.round((teamsHonor[1] - teamsHonor[0]) * .2);
+                    honor = baseHonor - honor;
+                    honor = honor < 0 ? 0 : honor;
+                } else {
+                    honor = Math.round((teamsHonor[0] - teamsHonor[1]) * .2);
+                    honor += baseHonor;
+                }
             }
         } else {
-            if (teamsHonor[1] === teamsHonor[0]) {
-                honor = baseHonor;
-            } else if (teamsHonor[1] > teamsHonor[0]) {
-                honor = Math.round((teamsHonor[1] - teamsHonor[0]) * .2);
-                honor = baseHonor - honor;
-                honor = honor < 0 ? 0 : honor;
-            } else {
-                honor = Math.round((teamsHonor[0] - teamsHonor[1]) * .2);
-                honor += baseHonor;
-            }
+            honor = 0;
         }
+
+       
 
         honor = honor * this.entities[this.winnerGroup].length;
 

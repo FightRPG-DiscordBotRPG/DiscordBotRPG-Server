@@ -61,6 +61,14 @@ class FightPvE extends Fight {
 
     async endFight() {
         if (this.winnerGroup == 0) {
+            let deadModifier = 1;
+            if (this.summary.bothLost) {
+                deadModifier = 0.5;
+            }
+
+            let xpModifier = 1 * deadModifier;
+            let goldModifier = 1 * deadModifier;
+
             // Need this to know if level up
             let totalXp = 0;
             let totalMoney = 0;
@@ -96,18 +104,29 @@ class FightPvE extends Fight {
                 let diffLevelEnemy = this.calMultDiffLevel(avgLevelEnemies, actualLevel);
 
                 let money = (rawMoney / this.entities[0].length) * (diffLevelEnemy > 1 ? 1 : diffLevelEnemy);
-                money = Math.round(money * (areaBonuses[AreaBonus.identifiers.goldDrop].getPercentageValue() + 1));
+                money = Math.round(
+                    money *
+                    (areaBonuses[AreaBonus.identifiers.goldDrop].getPercentageValue() + 1)
+                    * goldModifier
+                );
                 this.summary.goldGained[entity.name] = money;
                 totalMoney += money;
 
                 promises.push(entity.addMoney(money));
                 PStatistics.incrStat(entity.id, "gold_dropped", money);
 
-
                 if (actualLevel < Globals.maxLevel) {
                     diffLevelEnemy = actualLevel - avgLevelEnemies >= -5 ? (diffLevelEnemy > 1.2 ? 1.2 : diffLevelEnemy) : 0.05;
                     xp = (rawXp / this.entities[0].length) * diffLevelEnemy;
-                    xp = Math.round(xp * (entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel()) + areaBonuses[AreaBonus.identifiers.xpFight].getPercentageValue() + 1));
+                    xp = Math.round(
+                        xp *
+                        (
+                            entity.getStat(Stats.possibleStats.Wisdom) / entity.stats.getMaximumStat(entity.getLevel(), entity.getRebirthLevel())
+                            + areaBonuses[AreaBonus.identifiers.xpFight].getPercentageValue() + 1
+                        )
+                        * xpModifier
+                    );
+
                     totalXp += xp;
                     this.summary.xpGained[entity.name] = xp;
                     promises.push(entity.addExp(xp));
@@ -129,20 +148,24 @@ class FightPvE extends Fight {
                         newLevel: entity.getLevel(),
                     });
                 }
-                // Loot or Not
-                let lootSystem = new LootSystem();
-                let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
-                totalLuck = totalLuck * (1 + areaBonuses[AreaBonus.identifiers.itemDrop].getPercentageValue());
 
-                promises.push((async () => {
-                    let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
-                    if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
-                        this.summary.drops.push({
-                            name: entity.name,
-                            drop: loot,
-                        });
-                    }
-                })());
+                // Only loot if it's a true victory
+                if (!this.summary.bothLost) {
+                    // Loot or Not
+                    let lootSystem = new LootSystem();
+                    let totalLuck = entity.getStat(Stats.possibleStats.Luck) + this.getAvgLuckBonus();
+                    totalLuck = totalLuck * (1 + areaBonuses[AreaBonus.identifiers.itemDrop].getPercentageValue());
+
+                    promises.push((async () => {
+                        let loot = await lootSystem.loot(entity, totalLuck, avgLevelEnemies, avgRebirthLevelEnemies);
+                        if (Object.keys(loot).length !== 0 && loot.constructor === Object) {
+                            this.summary.drops.push({
+                                name: entity.name,
+                                drop: loot,
+                            });
+                        }
+                    })());
+                }
 
                 for (let monster of this.entities[1]) {
                     PStatistics.incrStat(entity.id, monster.type + "_defeated", 1);

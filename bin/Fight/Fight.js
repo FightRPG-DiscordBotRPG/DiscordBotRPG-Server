@@ -54,7 +54,8 @@ class Fight {
             xpGained: {},
             goldGained: {},
             usersIds: [],
-            winner: 0
+            winner: 0,
+            bothLost:false
         };
 
         this.loadUsersIds();
@@ -248,7 +249,7 @@ class Fight {
         }
 
 
-       
+
 
 
         // Update attacker
@@ -260,11 +261,17 @@ class Fight {
         if (isFirstTeamAlive == true && isSecondTeamAlive == true) {
             this.initiativeUpdate();
             await this.update();
+        }
+        else if (isFirstTeamAlive == false && isSecondTeamAlive == false) {
+            this.winnerGroup = 0;
+            this.summary.bothLost = true;
+            done = true;
+        }
+        else if (isSecondTeamAlive == false) {
+            this.winnerGroup = 0;
+            done = true;
         } else if (isFirstTeamAlive == false) {
             this.winnerGroup = 1;
-            done = true;
-        } else if (isSecondTeamAlive == false) {
-            this.winnerGroup = 0;
             done = true;
         }
 
