@@ -155,8 +155,8 @@ class CraftingModule extends GModule {
         // If player is not max level give exp
         if (character.getCraftLevel() < Globals.maxLevel) {
             let collectXP = CraftSystem.getXP(character.getCraftLevel(), character.getCraftLevel(), resourceToCollect.idRarity, true) * numberToCollect;
-            let collectXPBonus = collectBonuses[AreaBonus.identifiers.xpCollect].getPercentageValue() * collectXP;
-            let totalCollectXP = collectXP + collectXPBonus;
+            let collectXPBonus = Math.round(collectBonuses[AreaBonus.identifiers.xpCollect].getPercentageValue() * collectXP);
+            let totalCollectXP = Math.round(collectXP + collectXPBonus);
             let collectCraftUP = await character.addCraftXP(totalCollectXP);
             data.success += Translator.getString(res.locals.lang, "resources", "collect_gain_xp", [totalCollectXP, collectXPBonus]) + "\n";
             if (collectCraftUP > 0) {
@@ -225,7 +225,7 @@ class CraftingModule extends GModule {
             let craftBonus = (await res.locals.currentArea.getAllBonuses())[AreaBonus.identifiers.xpCraft];
             let craftXP = CraftSystem.getXP(Globals.connectedUsers[res.locals.id].character.itemCraftedLevel(toCraft.itemInfo.maxLevel), Globals.connectedUsers[res.locals.id].character.getCraftLevel(), toCraft.itemInfo.idRarity, false);
             let craftXPBonus = Math.round(craftBonus.getPercentageValue() * craftXP);
-            let totalCraftXP = craftXP + craftXPBonus;
+            let totalCraftXP = Math.round(craftXP + craftXPBonus);
 
             let numberOfLevelGained = await Globals.connectedUsers[res.locals.id].character.addCraftXP(totalCraftXP);
 
