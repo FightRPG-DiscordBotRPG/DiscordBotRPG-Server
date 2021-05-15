@@ -57,11 +57,6 @@ class EventsManager {
             event.prepareStart();
         }
 
-        // console.log("Oui");
-    }
-
-    getBonusesValue(name) {
-        return this.currentBonuses[name] != null ? this.currentBonuses[name] : 0;
     }
 
     /**

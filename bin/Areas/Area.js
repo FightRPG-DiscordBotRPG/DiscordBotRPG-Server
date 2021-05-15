@@ -239,7 +239,7 @@ class Area {
         let monsters = [];
         for (let i in this.monsters) {
             let level = this.monsters[i].avglevel > 0 ? this.monsters[i].avglevel : this.minMaxLevelToString();
-            level = this.monsters[i].needToBeMaxLevel() == true ? this.maxLevel : level;
+            level = this.monsters[i].needToBeMaxLevel() ? this.maxLevel : level;
             monsters.push({
                 name: this.monsters[i].getName(lang),
                 type: Translator.getString(lang, "monsters_types", this.monsters[i].type),

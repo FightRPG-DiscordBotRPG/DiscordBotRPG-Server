@@ -36,7 +36,13 @@ class CityArea extends Area {
 
     async toApi(lang) {
         let apiObj = await super.toApi(lang);
+        /**
+         * @type {CraftingBuilding}
+         **/
         let craftingbuilding = this.getService("craftingbuilding");
+        /**
+         * @type {Shop}
+         **/
         let shopbuilding = this.getService("shop");
         let minLevel = 0,
             maxLevel = 0,
@@ -45,7 +51,7 @@ class CityArea extends Area {
         if (craftingbuilding != null) {
             minLevel = craftingbuilding.getMinLevel();
             maxLevel = craftingbuilding.getMaxLevel();
-            isActive = craftingbuilding.isActive == true;
+            isActive = craftingbuilding.isActive;
 
         }
         apiObj.craft = {

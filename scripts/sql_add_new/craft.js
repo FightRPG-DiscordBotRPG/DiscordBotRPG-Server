@@ -79,12 +79,11 @@ async function start() {
                 itemAddNumber = 35;
             }
 
-            //console.log("Level: " + level);
-            let res = await conn.query("SELECT * FROM collectableresources INNER JOIN itemsbase USING(idBaseItem) WHERE minLevel = ?", [level]);
+            let res2 = await conn.query("SELECT * FROM collectableresources INNER JOIN itemsbase USING(idBaseItem) WHERE minLevel = ?", [level]);
             craftItemsToAdd.push(`(${itemAddNumber}, ${maxLevels[level]}, ${level === 1 ? level : level+1}, ${item.idBaseItem}, 0, 0)`);
             let resourcesForThisLevelRange = {};
 
-            for (let resource of res) {
+            for (let resource of res2) {
                 if (!resourcesForThisLevelRange[resource.idRarity]) {
                     resourcesForThisLevelRange[resource.idRarity] = {};
                 }
