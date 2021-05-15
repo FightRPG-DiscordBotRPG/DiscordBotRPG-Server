@@ -441,7 +441,7 @@ REPLACE INTO collectableresources VALUES
 (46, 148, 80, 0, 0),
 (47, 162, 80, 0, 0),
 (48, 176, 80, 0, 0),
-(49, 30, 0, 0, 0);
+(49, 30, 80, 0, 0);
 
 REPLACE INTO areasresources VALUES
 (1, 5),
@@ -723,6 +723,7 @@ REPLACE INTO craftitem VALUES
 (180, 60, 41, 133, 0, 0),
 (181, 80, 61, 133, 0, 0),
 (182, 100, 81, 133, 0, 0);
+
 REPLACE INTO craftitemsneeded
 VALUES (1, 23, 1, 0),
 (2, 135, 1, 0),
