@@ -191,6 +191,10 @@ class Utils {
                 (SELECT idBaseItem, nameItem, descItem FROM localizationitems WHERE lang="en") b
                 ON a.idBaseItem = b.idBaseItem`
     }
+
+    static getLocalizationInnerJoin(lang="en") {
+        return `INNER JOIN (${Utils.getMergedTableSql(lang)}) loc ON loc.idBaseItem = items.idBaseItem`;
+    }
 }
 
 

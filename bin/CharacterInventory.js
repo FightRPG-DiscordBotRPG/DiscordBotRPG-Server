@@ -134,7 +134,7 @@ class CharacterInventory {
                                     INNER JOIN items ON items.idItem = charactersinventory.idItem
                                     INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                     INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
-                                    ${this.getLocalizationInnerJoin(lang)}
+                                    ${Utils.getLocalizationInnerJoin(lang)}
                                     WHERE idCharacter = ? AND favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
         let ids = [];
         for (let i in res) {
@@ -147,7 +147,7 @@ class CharacterInventory {
                           INNER JOIN items ON items.idItem = ci.idItem
                           INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                           INNER JOIN itemspower ON itemspower.idItem = ci.idItem
-                          ${this.getLocalizationInnerJoin(lang)}
+                          ${Utils.getLocalizationInnerJoin(lang)}
                           WHERE idCharacter = ? AND favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
 
         // Delete items
@@ -164,7 +164,7 @@ class CharacterInventory {
                                       INNER JOIN items ON items.idItem = charactersinventory.idItem
                                       INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                       INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
-                                      ${this.getLocalizationInnerJoin(lang)}
+                                      ${Utils.getLocalizationInnerJoin(lang)}
                                       WHERE idCharacter = ? AND items.favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
 
         value = value[0]["value"];
@@ -202,7 +202,7 @@ class CharacterInventory {
                                                 INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
                                                 INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
                                                 INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
-                                                ${this.getLocalizationInnerJoin(lang)}
+                                                ${Utils.getLocalizationInnerJoin(lang)}
                                                 WHERE idCharacter = ?
                                                 ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity
                                             ) character_inventory
@@ -310,7 +310,7 @@ class CharacterInventory {
                                     INNER JOIN items ON items.idItem = charactersinventory.idItem
                                     INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
                                     INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
-                                    ${this.getLocalizationInnerJoin(lang)}
+                                    ${Utils.getLocalizationInnerJoin(lang)}
                                     WHERE idCharacter = ? ${paramsResult.more};`, paramsResult.sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
@@ -496,10 +496,6 @@ class CharacterInventory {
         }
         return null;
 
-    }
-
-    getLocalizationInnerJoin(lang = "en") {
-        return `INNER JOIN (${Utils.getMergedTableSql(lang)}) loc ON loc.idBaseItem = items.idBaseItem`;
     }
 
 }
