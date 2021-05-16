@@ -23,7 +23,15 @@ class CharacterInventory {
 
     async isEquipable(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let isEquipable = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let isEquipable = await conn.query(`SELECT *
+                                            FROM charactersinventory
+                                            INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                            INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                            INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                            INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                            WHERE idCharacter = ?
+                                            ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC
+                                            LIMIT 1 OFFSET ?`, [this.id, idEmplacement - 1]);
 
         if (isEquipable[0]) {
             return isEquipable[0].equipable == 1;
@@ -117,18 +125,30 @@ class CharacterInventory {
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
 
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang], 2);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id], 1);
 
         // Only way to do
         // Multiple queries 1 query = impossible
-        let res = await conn.query("SELECT charactersinventory.idItem FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
+        let res = await conn.query(`SELECT charactersinventory.idItem
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
+                                    ${this.getLocalizationInnerJoin(lang)}
+                                    WHERE idCharacter = ? AND favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
         let ids = [];
         for (let i in res) {
             ids[i] = res[i].idItem;
         }
 
         // Delete from inventory
-        await conn.query("DELETE ci FROM charactersinventory ci INNER JOIN items ON items.idItem = ci.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = ci.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND favorite = 0 AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
+        await conn.query(`DELETE ci FROM
+                          charactersinventory ci
+                          INNER JOIN items ON items.idItem = ci.idItem
+                          INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                          INNER JOIN itemspower ON itemspower.idItem = ci.idItem
+                          ${this.getLocalizationInnerJoin(lang)}
+                          WHERE idCharacter = ? AND favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
 
         // Delete items
         await Item.deleteItems(ids);
@@ -137,9 +157,15 @@ class CharacterInventory {
     async getAllInventoryValue(params, lang = "en") {
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang], 2);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id], 1);
 
-        let value = await conn.query("SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND items.favorite = 0 AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
+        let value = await conn.query(`SELECT COALESCE(SUM((items.level * (1+itemsbase.idRarity) * charactersinventory.number)), 0) as value
+                                      FROM charactersinventory
+                                      INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                      INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                      INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
+                                      ${this.getLocalizationInnerJoin(lang)}
+                                      WHERE idCharacter = ? AND items.favorite = 0 ${paramsResult.more};`, paramsResult.sqlParams);
 
         value = value[0]["value"];
         return { value: value, isFiltered: searchParamsResult.values.length > 0 };
@@ -162,9 +188,25 @@ class CharacterInventory {
 
         let searchParamsResult = Globals.getSearchParams(params);
 
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang, perPage, offset], 2);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, perPage, offset], 1);
 
-        let res = await conn.query(`SELECT * FROM (SELECT *, @rn:=@rn+1 as idEmplacement FROM (select @rn:=0) row_nums, (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, localizationitems.nameItem, items.favorite, items.rebirthLevel FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity) character_inventory) inventory_filtered ${paramsResult.more} LIMIT ? OFFSET ?;`, paramsResult.sqlParams);
+        let res = await conn.query(`SELECT * 
+                                    FROM
+                                    (
+                                        SELECT *, @rn:=@rn+1 as idEmplacement
+                                        FROM (select @rn:=0) row_nums,
+                                            (SELECT items.idItem, itemssoustypes.idSousType, charactersinventory.number, items.level, itemsbase.idRarity, itemsbase.idType, itemspower.power, nameItem, items.favorite, items.rebirthLevel
+                                                FROM charactersinventory
+                                                INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                                INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                                INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                                INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                                INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
+                                                ${this.getLocalizationInnerJoin(lang)}
+                                                WHERE idCharacter = ?
+                                                ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity
+                                            ) character_inventory
+                                    ) inventory_filtered ${paramsResult.more} LIMIT ? OFFSET ?;`, paramsResult.sqlParams);
 
         let promises = [];
 
@@ -263,7 +305,13 @@ class CharacterInventory {
         let searchParamsResult = Globals.getSearchParams(params, false, true);
         let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang], 2);
 
-        let res = await conn.query("SELECT COUNT(*) as cnt FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem INNER JOIN localizationitems ON localizationitems.idBaseItem = items.idBaseItem WHERE idCharacter = ? AND lang = ? " + paramsResult.more + ";", paramsResult.sqlParams);
+        let res = await conn.query(`SELECT COUNT(*) as cnt 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemspower ON itemspower.idItem = charactersinventory.idItem
+                                    ${this.getLocalizationInnerJoin(lang)}
+                                    WHERE idCharacter = ? ${paramsResult.more};`, paramsResult.sqlParams);
         return res[0] != null ? res[0].cnt : 0;
     }
 
@@ -293,7 +341,13 @@ class CharacterInventory {
      * @param {number} idItem 
      */
     async getItemOfThisID(idBaseItem) {
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, this.id]);
+        let res = await conn.query(`SELECT * 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE items.idBaseItem = ? AND charactersinventory.idCharacter = ?;`, [idBaseItem, this.id]);
         if (res[0] != null) {
             let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
@@ -319,13 +373,19 @@ class CharacterInventory {
         return res[0] != null;
     }
 
-    async getIdOfThisIdBase(idBaseItem, level = 1, rebirthLevel=0) {
+    async getIdOfThisIdBase(idBaseItem, level = 1, rebirthLevel = 0) {
         return CharacterInventory.getIdOfThisIdBase(this.id, idBaseItem, level, rebirthLevel);
     }
 
     static async getIdOfThisIdBase(idCharacter, idBaseItem, level = 1, rebirthLevel = 0) {
         level = level >= 1 ? level : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE items.idBaseItem = ? AND items.level = ? AND items.rebirthLevel = ? AND charactersinventory.idCharacter = ?;", [idBaseItem, level, rebirthLevel, idCharacter]);
+        let res = await conn.query(`SELECT * 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE items.idBaseItem = ? AND items.level = ? AND items.rebirthLevel = ? AND charactersinventory.idCharacter = ?;`, [idBaseItem, level, rebirthLevel, idCharacter]);
         if (res[0]) {
             return res[0].idItem;
         }
@@ -342,7 +402,13 @@ class CharacterInventory {
      * @param {Array<number>} listOfWantedItems
      */
     static async getNumbersOfThoseItemsByIDBase(idCharacter, listOfWantedItems) {
-        let res = await conn.query("SELECT items.idBaseItem, number FROM charactersinventory LEFT JOIN items ON items.idItem = charactersinventory.idItem LEFT JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem WHERE items.idBaseItem IN (?) AND charactersinventory.idCharacter = ?;", [listOfWantedItems, idCharacter]);
+        let res = await conn.query(`SELECT items.idBaseItem, number 
+                                    FROM charactersinventory
+                                    LEFT JOIN items 
+                                        ON items.idItem = charactersinventory.idItem
+                                    LEFT JOIN itemsbase
+                                        ON itemsbase.idBaseItem = items.idBaseItem
+                                    WHERE items.idBaseItem IN (?) AND charactersinventory.idCharacter = ?;`, [listOfWantedItems, idCharacter]);
         return res;
     }
 
@@ -358,7 +424,14 @@ class CharacterInventory {
      */
     async getItem(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let res = await conn.query(`SELECT * 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE idCharacter = ?
+                                    ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?`, [this.id, idEmplacement - 1]);
         if (res[0] != null) {
             let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
@@ -371,7 +444,13 @@ class CharacterInventory {
     // Only used by craft -> don't care about level of item take first one
     async getItemByBase(idBase) {
         idBase = idBase > 0 ? idBase : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND items.idBaseItem = ?;", [this.id, idBase]);
+        let res = await conn.query(`SELECT *
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE idCharacter = ? AND items.idBaseItem = ?;`, [this.id, idBase]);
         if (res[0] != null) {
             let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
@@ -387,7 +466,14 @@ class CharacterInventory {
      */
     async getIdItemOfThisEmplacement(idEmplacement) {
         idEmplacement = idEmplacement > 0 ? idEmplacement : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?", [this.id, idEmplacement - 1]);
+        let res = await conn.query(`SELECT * 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE idCharacter = ?
+                                    ORDER BY items.favorite DESC, items.idItem ASC, itemsbase.idRarity DESC LIMIT 1 OFFSET ?`, [this.id, idEmplacement - 1]);
         if (res[0]) {
             return res[0].idItem;
         }
@@ -396,7 +482,13 @@ class CharacterInventory {
 
     async getItemOfThisIDItem(idItem) {
         idItem = idItem > 0 ? idItem : 1;
-        let res = await conn.query("SELECT * FROM charactersinventory INNER JOIN items ON items.idItem = charactersinventory.idItem INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType WHERE idCharacter = ? AND charactersinventory.idItem = ?;", [this.id, idItem]);
+        let res = await conn.query(`SELECT * 
+                                    FROM charactersinventory
+                                    INNER JOIN items ON items.idItem = charactersinventory.idItem
+                                    INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
+                                    INNER JOIN itemssoustypes ON itemssoustypes.idSousType = itemsbase.idSousType
+                                    INNER JOIN itemstypes ON itemstypes.idType = itemsbase.idType
+                                    WHERE idCharacter = ? AND charactersinventory.idItem = ?;`, [this.id, idItem]);
         if (res[0] != null) {
             let item = await Item.newItem(res[0].idItem, res[0].nomSousType);
             item.number = res[0].number;
@@ -404,6 +496,10 @@ class CharacterInventory {
         }
         return null;
 
+    }
+
+    getLocalizationInnerJoin(lang = "en") {
+        return `INNER JOIN (${Utils.getMergedTableSql(lang)}) loc ON loc.idBaseItem = items.idBaseItem`;
     }
 
 }
