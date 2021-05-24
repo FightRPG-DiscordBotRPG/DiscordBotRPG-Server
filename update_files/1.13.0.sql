@@ -73,7 +73,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`characterappearanceparts` (
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearanceparts` (
   `idCharacter` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
   `idAppearanceType` INT UNSIGNED NOT NULL,
@@ -93,7 +93,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`characterappearance` (
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearance` (
   `idCharacter` INT UNSIGNED NOT NULL,
   `hairColor` VARCHAR(9) NOT NULL,
   `bodyColor` VARCHAR(9) NOT NULL,
@@ -326,6 +326,28 @@ REPLACE INTO appearances VALUES
 (157, "https://cdn.fight-rpg.com/images/appearances/base/mouths/11.png", 10, null, 1),
 (158, "https://cdn.fight-rpg.com/images/appearances/base/mouths/12.png", 10, null, 1),
 (159, "https://cdn.fight-rpg.com/images/appearances/base/mouths/13.png", 10, null, 1);
+
+
+REPLACE INTO charactersappearance 
+(
+    SELECT idCharacter, "#241C11" as hairColor, "#CE8E71" as bodyColor, "#634E34" as eyeColor, 1 as idBodyType, 1 as displayHelmet
+    FROM characters
+);
+
+REPLACE INTO charactersappearanceparts
+(
+    SELECT idCharacter, idAppearance, idAppearanceType 
+    FROM characters 
+    JOIN 
+    (
+        SELECT idAppearance, idAppearanceType 
+        FROM appearances 
+        WHERE idAppearanceType IN (1,2,3,4,5,7,8,9,10)
+        GROUP BY idAppearanceType
+    ) ap
+);
+
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
