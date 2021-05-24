@@ -12,6 +12,7 @@ const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
 const Mount = require("./Items/Mounts/Mount");
+const CharacterAppearance = require("./Character/Appearance/CharacterAppearance.js");
 
 class Character extends CharacterEntity {
     constructor(idUser) {
@@ -22,6 +23,7 @@ class Character extends CharacterEntity {
         this.inv = new CharacterInventory();
         this.craftSystem = new PlayerCraft();
         this.achievements = new CharacterAchievement();
+        this.appearance = new CharacterAppearance();
         this.statPoints = 0;
         this.money = 0;
         this.talentPoints = 0;
@@ -72,6 +74,7 @@ class Character extends CharacterEntity {
             this.achievements.load(this.id),
             this.talents.load(this, this.id),
             this.skillBuild.load(this.id),
+            this.appearance.init(this.id),
         ]);
 
         this.idArea = 1;
@@ -99,6 +102,7 @@ class Character extends CharacterEntity {
             this.achievements.load(id),
             this.talents.load(this, id),
             this.skillBuild.load(id),
+            this.appearance.load(id),
         ]);
 
         this.idArea = res["idArea"];
@@ -1091,6 +1095,7 @@ const Area = require("./Areas/Area");
 const Stats = require("./Stats/Stats.js");
 const Craft = require("./CraftSystem/Craft.js");
 const Utils = require("./Utilities/Utils.js");
+
 
 /**
  * @typedef {import("./Trades/Trade")} Trade
