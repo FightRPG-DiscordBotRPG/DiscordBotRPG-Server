@@ -8,7 +8,7 @@
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`bodytype` (
   `idBodyType` INT NOT NULL,
@@ -52,21 +52,39 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`linkedappearances` (
+  `idAppearance` INT UNSIGNED NOT NULL,
+  `idLinkedAppearance` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idAppearance`, `idLinkedAppearance`),
+  INDEX `fk_LinkedAppearances_Appearances2_idx` (`idLinkedAppearance` ASC) VISIBLE,
+  CONSTRAINT `fk_LinkedAppearances_Appearances1`
+    FOREIGN KEY (`idAppearance`)
+    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_LinkedAppearances_Appearances2`
+    FOREIGN KEY (`idLinkedAppearance`)
+    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemsappearances` (
   `idBaseItem` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
-  `idAppearanceType` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`idBaseItem`, `idAppearance`, `idAppearanceType`),
-  INDEX `fk_ItemsAppearances_Appearances1_idx` (`idAppearance` ASC, `idAppearanceType` ASC) VISIBLE,
+  PRIMARY KEY (`idBaseItem`, `idAppearance`),
+  INDEX `fk_ItemsAppearances_Appearances1_idx` (`idAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_ItemsAppearances_ItemsBase1`
     FOREIGN KEY (`idBaseItem`)
     REFERENCES `discord_bot_rpg`.`itemsbase` (`idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemsAppearances_Appearances1`
-    FOREIGN KEY (`idAppearance` , `idAppearanceType`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance` , `idAppearanceType`)
+    FOREIGN KEY (`idAppearance`)
+    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -76,22 +94,22 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearanceparts` (
   `idCharacter` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
-  `idAppearanceType` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`idCharacter`, `idAppearance`, `idAppearanceType`),
-  INDEX `fk_CharacterAppearanceParts_Appearances1_idx` (`idAppearance` ASC, `idAppearanceType` ASC) VISIBLE,
+  PRIMARY KEY (`idCharacter`, `idAppearance`),
+  INDEX `fk_CharactersAppearanceParts_Appearances1_idx` (`idAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_CharacterAppearance_Characters1`
     FOREIGN KEY (`idCharacter`)
     REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_CharacterAppearanceParts_Appearances1`
-    FOREIGN KEY (`idAppearance` , `idAppearanceType`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance` , `idAppearanceType`)
+  CONSTRAINT `fk_CharactersAppearanceParts_Appearances1`
+    FOREIGN KEY (`idAppearance`)
+    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
+
 
 CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearance` (
   `idCharacter` INT UNSIGNED NOT NULL,
@@ -122,6 +140,12 @@ REPLACE INTO bodytype VALUES
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_head_full.png", 
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_left_arm_full.png",
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_right_arm_full.png"
+),
+(2,  
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_body.png", 
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_head_full.png", 
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_left_arm_full.png",
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_right_arm_full.png"
 );
 
 REPLACE INTO appearancestype VALUES
@@ -263,69 +287,75 @@ REPLACE INTO appearances VALUES
 (97, "https://cdn.fight-rpg.com/images/appearances/base/hairs/17.png", 7, null, 1),
 (98, "https://cdn.fight-rpg.com/images/appearances/base/hairs/18.png", 7, null, 1),
 (99, "https://cdn.fight-rpg.com/images/appearances/base/hairs/19.png", 7, null, 1),
-(100, "https://cdn.fight-rpg.com/images/appearances/base/hairs/20.png", 7, null, 1),
-(101, "https://cdn.fight-rpg.com/images/appearances/base/hairs/21.png", 7, null, 1),
-(102, "https://cdn.fight-rpg.com/images/appearances/base/hairs/22.png", 7, null, 1),
-(103, "https://cdn.fight-rpg.com/images/appearances/base/hairs/23.png", 7, null, 1),
-(104, "https://cdn.fight-rpg.com/images/appearances/base/hairs/24.png", 7, null, 1),
-(105, "https://cdn.fight-rpg.com/images/appearances/base/hairs/25.png", 7, null, 1),
+(100,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/20.png", 7, null, 1),
+(101,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/21.png", 7, null, 1),
+(102,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/22.png", 7, null, 1),
+(103,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/23.png", 7, null, 1),
+(104,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/24.png", 7, null, 1),
+(105,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/25.png", 7, null, 1),
 
-(106, "", 8, null, 1),
-(107, "", 8, null, 1),
-(108, "", 8, null, 1),
-(109, "", 8, null, 1),
-(110, "https://cdn.fight-rpg.com/images/appearances/base/hairs/04.png", 8, null, 1),
-(111, "https://cdn.fight-rpg.com/images/appearances/base/hairs/05.png", 8, null, 1),
-(112, "", 8, null, 1),
-(113, "", 8, null, 1),
-(114, "", 8, null, 1),
-(115, "", 8, null, 1),
-(116, "", 8, null, 1),
-(117, "https://cdn.fight-rpg.com/images/appearances/base/hairs/11_back.png", 8, null, 1),
-(118, "", 8, null, 1),
-(119, "https://cdn.fight-rpg.com/images/appearances/base/hairs/13_back.png", 8, null, 1),
-(120, "https://cdn.fight-rpg.com/images/appearances/base/hairs/14_back.png", 8, null, 1),
-(121, "https://cdn.fight-rpg.com/images/appearances/base/hairs/15_back.png", 8, null, 1),
-(122, "https://cdn.fight-rpg.com/images/appearances/base/hairs/16_back.png", 8, null, 1),
-(123, "https://cdn.fight-rpg.com/images/appearances/base/hairs/17_back.png", 8, null, 1),
-(124, "", 8, null, 1),
-(125, "https://cdn.fight-rpg.com/images/appearances/base/hairs/19_back.png", 8, null, 1),
-(126, "https://cdn.fight-rpg.com/images/appearances/base/hairs/20_back.png", 8, null, 1),
-(127, "", 8, null, 1),
-(128, "", 8, null, 1),
-(129, "", 8, null, 1),
-(130, "", 8, null, 1),
-(131, "", 8, null, 1),
+(106,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/04_back.png", 8, null, 1),
+(107,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/05_back.png", 8, null, 1),
+(108,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/11_back.png", 8, null, 1),
+(109,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/13_back.png", 8, null, 1),
+(110,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/14_back.png", 8, null, 1),
+(111,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/15_back.png", 8, null, 1),
+(112,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/16_back.png", 8, null, 1),
+(113,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/17_back.png", 8, null, 1),
+(114,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/19_back.png", 8, null, 1),
+(115,  "https://cdn.fight-rpg.com/images/appearances/base/hairs/20_back.png", 8, null, 1),
 
-(132, "", 9, null, 1),
-(133, "", 9, null, 1),
-(134, "", 9, null, 1),
-(135, "https://cdn.fight-rpg.com/images/appearances/base/mouths/03_back.png", 9, null, 1),
-(136, "", 9, null, 1),
-(137, "", 9, null, 1),
-(138, "https://cdn.fight-rpg.com/images/appearances/base/mouths/06_back.png", 9, null, 1),
-(139, "https://cdn.fight-rpg.com/images/appearances/base/mouths/07_back.png", 9, null, 1),
-(140, "", 9, null, 1),
-(141, "", 9, null, 1),
-(142, "", 9, null, 1),
-(143, "", 9, null, 1),
-(144, "", 9, null, 1),
-(145, "", 9, null, 1),
+(116,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/03_back.png", 9, null, 1),
+(117,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/06_back.png", 9, null, 1),
+(118,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/07_back.png", 9, null, 1),
 
-(146, "https://cdn.fight-rpg.com/images/appearances/base/mouths/00.png", 10, null, 1),
-(147, "https://cdn.fight-rpg.com/images/appearances/base/mouths/01.png", 10, null, 1),
-(148, "https://cdn.fight-rpg.com/images/appearances/base/mouths/02.png", 10, null, 1),
-(149, "https://cdn.fight-rpg.com/images/appearances/base/mouths/03.png", 10, null, 1),
-(150, "https://cdn.fight-rpg.com/images/appearances/base/mouths/04.png", 10, null, 1),
-(151, "https://cdn.fight-rpg.com/images/appearances/base/mouths/05.png", 10, null, 1),
-(152, "https://cdn.fight-rpg.com/images/appearances/base/mouths/06.png", 10, null, 1),
-(153, "https://cdn.fight-rpg.com/images/appearances/base/mouths/07.png", 10, null, 1),
-(154, "https://cdn.fight-rpg.com/images/appearances/base/mouths/08.png", 10, null, 1),
-(155, "https://cdn.fight-rpg.com/images/appearances/base/mouths/09.png", 10, null, 1),
-(156, "https://cdn.fight-rpg.com/images/appearances/base/mouths/10.png", 10, null, 1),
-(157, "https://cdn.fight-rpg.com/images/appearances/base/mouths/11.png", 10, null, 1),
-(158, "https://cdn.fight-rpg.com/images/appearances/base/mouths/12.png", 10, null, 1),
-(159, "https://cdn.fight-rpg.com/images/appearances/base/mouths/13.png", 10, null, 1);
+(119,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/00.png", 10, null, 1),
+(120,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/01.png", 10, null, 1),
+(121,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/02.png", 10, null, 1),
+(122,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/03.png", 10, null, 1),
+(123,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/04.png", 10, null, 1),
+(124,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/05.png", 10, null, 1),
+(125,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/06.png", 10, null, 1),
+(126,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/07.png", 10, null, 1),
+(127,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/08.png", 10, null, 1),
+(128,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/09.png", 10, null, 1),
+(129,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/10.png", 10, null, 1),
+(130,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/11.png", 10, null, 1),
+(131,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/12.png", 10, null, 1),
+(132,  "https://cdn.fight-rpg.com/images/appearances/base/mouths/13.png", 10, null, 1);
+
+REPLACE INTO linkedappearances VALUES 
+(4, 20), 
+(5, 21), 
+(6, 22), 
+(7, 23), 
+(8, 24), 
+(9, 25), 
+(10, 26), 
+(11, 27), 
+(12, 28), 
+(13, 29), 
+(14, 30), 
+(15, 31), 
+(16, 32), 
+(17, 33), 
+(18, 34), 
+(19, 35), 
+
+(84, 106), 
+(85, 107), 
+(91, 108), 
+(93, 109), 
+(94, 110), 
+(95, 111), 
+(96, 112), 
+(97, 113), 
+(99, 114), 
+(100, 115), 
+
+(116, 122), 
+(117, 125), 
+(118, 126);
 
 
 REPLACE INTO charactersappearance 
@@ -336,13 +366,13 @@ REPLACE INTO charactersappearance
 
 REPLACE INTO charactersappearanceparts
 (
-    SELECT idCharacter, idAppearance, idAppearanceType 
+    SELECT idCharacter, idAppearance 
     FROM characters 
     JOIN 
     (
         SELECT idAppearance, idAppearanceType 
         FROM appearances 
-        WHERE idAppearanceType IN (1,2,3,4,5,7,8,9,10)
+        WHERE idAppearanceType IN (1,2,3,4,5,7,9,10)
         GROUP BY idAppearanceType
     ) ap
 );

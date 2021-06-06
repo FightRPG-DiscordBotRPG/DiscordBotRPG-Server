@@ -17,7 +17,7 @@ class CharacterAppearance {
     async init(id) {
         this.id = id;
         await conn.query(`INSERT INTO charactersappearance VALUES (?, "#241C11", "#CE8E71", "#634E34", 1, 1);`, [this.id]);
-        await conn.query(`INSERT INTO charactersappearanceparts VALUES (SELECT ?, idAppearance, idAppearanceType FROM appearances WHERE idAppearanceType IN (1,2,3,4,5,7,8,9,10) GROUP BY idAppearanceType)`, [this.id]);
+        await conn.query(`INSERT INTO charactersappearanceparts VALUES (SELECT ?, idAppearance, idAppearanceType FROM appearances WHERE idAppearanceType IN (1,2,3,4,5,7,9,10) GROUP BY idAppearanceType)`, [this.id]);
         await this.load(id);
     }
 
@@ -34,7 +34,7 @@ class CharacterAppearance {
 
         this.appearances = {};
 
-        for (let item of (await conn.query(`SELECT * FROM charactersappearanceparts INNER JOIN appearancestype USING(idAppearanceType) INNER JOIN appearances USING (idAppearance) WHERE idCharacter = ?;`, [this.id]))) {
+        for (let item of (await conn.query(`SELECT * FROM charactersappearanceparts INNER JOIN appearances USING (idAppearance) INNER JOIN appearancestype USING(idAppearanceType) WHERE idCharacter = ?;`, [this.id]))) {
             let appearance = new Appearance();
             appearance.appearanceType = item.appearanceType;
             appearance.canBeDisplayedOnTop = item.canBeDisplayedOnTop;
