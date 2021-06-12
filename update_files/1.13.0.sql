@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`bodytype` (
   `head` TEXT NOT NULL,
   `left` TEXT NOT NULL,
   `right` TEXT NOT NULL,
+  `left_leg` TEXT NOT NULL,
   PRIMARY KEY (`idBodyType`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -139,13 +140,15 @@ REPLACE INTO bodytype VALUES
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_body.png", 
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_head_full.png", 
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_left_arm_full.png",
-"http://cdn.fight-rpg.com/images/appearances/base/bodies/male_right_arm_full.png"
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/male_right_arm_full.png",
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/male_left_leg_full.png"
 ),
 (2,  
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/female_body.png", 
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/female_head_full.png", 
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/female_left_arm_full.png",
-"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_right_arm_full.png"
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_right_arm_full.png",
+"http://cdn.fight-rpg.com/images/appearances/base/bodies/female_left_leg_full.png"
 );
 
 REPLACE INTO appearancestype VALUES
