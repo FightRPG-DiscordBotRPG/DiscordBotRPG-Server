@@ -5,7 +5,7 @@ const Appearance = require("./Appearance.js");
 class CharacterAppearance {
 
     /**
-     * @type {Object<number, CharacterAppearance>}
+     * @type {Object<number, Appearance>}
      **/
     static appearancesList = {};
 
@@ -13,6 +13,16 @@ class CharacterAppearance {
      * @type {Object<number, number[]>}
      **/
     static linkedAppearances = {};
+
+    static requiredAppearancesTypeForCharacter = [1, 3, 5, 10];
+
+    static selectableBodyTypes = [1, 2];
+
+    static selectableHairColors = ["#AA8866", "DEBE99", "#241C11", "#4F1A00", "#9A3300"];
+
+    static selectableEyeColors = ["#634E34", "#2E536F", "#3D671D", "#131C1B", "#59525A"];
+
+    static selectableBodyColors = ["#553827", " #935934", "#BD804A", "#FEE4D7", "#E6A17D", "#BE7F5E"];
 
     constructor() {
         this.id = null;
@@ -82,7 +92,7 @@ class CharacterAppearance {
 
         for (let item of res) {
             let appearance = new Appearance();
-            appearance.appearanceType = item.appearanceType;
+            appearance.appearanceType = item.idAppearanceType;
             appearance.canBeDisplayedOnTop = item.canBeDisplayedOnTop;
             appearance.id = item.idAppearance;
             appearance.idBodyType = item.idBodyType;
@@ -93,6 +103,23 @@ class CharacterAppearance {
 
             CharacterAppearance.appearancesList[item.idAppearance] = appearance;
         }
+    }
+
+    /**
+     * 
+     * @param {Appearance[]} arrOfAppearances
+     * @param {{ bodyType:number, hairColor:string, bodyColor: string, eyeColor:string}} specificAppearance
+     */
+    async saveNewAppearance(arrOfAppearances, specificAppearance) {
+        let appearanceIds = arrOfAppearances.map(a => `(${this.id},${a.id})`);
+        await conn.query("UPDATE charactersappearance SET hairColor = ?, bodyColor = ?, eyeColor = ?, idBodyType = ? WHERE idCharacter = ?;", [specificAppearance.hairColor, specificAppearance.bodyColor, specificAppearance.eyeColor, specificAppearance.bodyType, this.id]);
+        await conn.query("DELETE FROM charactersappearanceparts WHERE idCharacter = ?;", [this.id]);
+        await conn.query(`REPLACE INTO charactersappearanceparts VALUES ${appearanceIds.join(",")};`);
+        await this.reload();
+    }
+
+    async reload() {
+        await this.load(this.id);
     }
 
 }
