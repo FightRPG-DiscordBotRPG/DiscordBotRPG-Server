@@ -179,7 +179,11 @@ REPLACE INTO appearancestype VALUES
 (28, "boots.lower_left"),
 (29, "boots.lower_right"),
 (30, "boots.foot_left"),
-(31, "boots.foot_right");
+(31, "boots.foot_right"),
+(32, "weapon.main"),
+(33, "weapon.offhand");
+(34, "weapon.shield");
+(35, "weapon.bow");
 
 REPLACE INTO appearances VALUES
 (1, "https://cdn.fight-rpg.com/images/appearances/base/ears/human.png", 1, null, 0),
