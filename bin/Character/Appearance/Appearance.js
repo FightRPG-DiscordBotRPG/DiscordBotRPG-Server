@@ -5,7 +5,12 @@ class Appearance {
         this.appearanceType = 1;
         this.idBodyType = 1;
         this.canBeDisplayedOnTop = true;
+        /**
+         * @type {number[]}
+         **/
+        this.linkedTo = [];
     }
+
 }
 
 module.exports = Appearance;

@@ -124,6 +124,12 @@ class ModuleHandler extends GModule {
                 collectTriesOnce: Globals.collectTriesOnce,
             });
         });
+
+        helpersRouter.get("/characters/appearances", async (req, res, next) => {
+            await next();
+            return res.json({possibleAppearances: await CharacterAppearance.getAllPossibleAppearances() });
+        });
+
         app.use("/helpers", helpersRouter);
     }
 
@@ -349,3 +355,4 @@ class ModuleHandler extends GModule {
 module.exports = ModuleHandler;
 
 const DungeonArea = require("../Areas/DungeonArea");
+const CharacterAppearance = require("../Character/Appearance/CharacterAppearance");
