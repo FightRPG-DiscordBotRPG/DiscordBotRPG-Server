@@ -431,6 +431,20 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/appearance/", async (req, res, next) => {
+            const data = {
+                selectableHairColors: CharacterAppearance.selectableHairColors,
+                selectableBodyColors: CharacterAppearance.selectableBodyColors,
+                selectableEyeColors: CharacterAppearance.selectableEyeColors,
+                selectableBodyTypes: CharacterAppearance.selectableBodyTypes,
+                requiredAppearancesTypeForCharacter: CharacterAppearance.requiredAppearancesTypeForCharacter,
+                currentAppearance: res.locals.character.appearance,
+            };
+            data.currentAppearance.areaImage = res.locals.character.getArea().image;
+            await next();
+            return res.json(data);
+        });
+
     }
 
     /**

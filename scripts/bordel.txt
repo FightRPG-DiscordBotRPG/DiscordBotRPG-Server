@@ -1,5 +1,15 @@
 E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < discord_bot_rpg.sql
 
+
+
+import * as Trade from "D:/discordbotrpg-server/bin/Trades/Trade";
+import * as Group from "D:/discordbotrpg-server/bin/Group";
+import * as Marketplace from "D:/discordbotrpg-server/bin/Marketplace/Marketplace";
+import * as CraftingBuilding from "D:/discordbotrpg-server/bin/CraftSystem/CraftingBuilding";
+import * as Shop from "D:/discordbotrpg-server/bin/Shops/Shop";
+import * as Area from "D:/discordbotrpg-server/bin/Areas/Area";
+import * as LootSystem from "D:/discordbotrpg-server/bin/LootSystem";
+import * as Character from "D:/discordbotrpg-server/bin/Character";
     
     locals: {
         lang: string,
