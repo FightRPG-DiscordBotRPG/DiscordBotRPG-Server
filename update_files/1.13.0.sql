@@ -184,8 +184,8 @@ REPLACE INTO appearancestype VALUES
 (30, "boots.foot_left"),
 (31, "boots.foot_right"),
 (32, "weapon.main"),
-(33, "weapon.offhand");
-(34, "weapon.shield");
+(33, "weapon.offhand"),
+(34, "weapon.shield"),
 (35, "weapon.bow");
 
 REPLACE INTO appearances VALUES
