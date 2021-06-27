@@ -97,6 +97,7 @@ let startUp = async () => {
 
     console.time("All Possible Appearances Load");
     await CharacterAppearance.loadAllPossibleAppearances();
+    await CharacterAppearance.loadAllPossibleBodyTypes();
     console.timeEnd("All Possible Appearances Load");
 
 

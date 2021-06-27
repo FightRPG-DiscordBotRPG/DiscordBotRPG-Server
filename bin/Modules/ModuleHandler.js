@@ -127,7 +127,7 @@ class ModuleHandler extends GModule {
 
         helpersRouter.get("/characters/appearances", async (req, res, next) => {
             await next();
-            return res.json({possibleAppearances: await CharacterAppearance.getAllPossibleAppearances() });
+            return res.json({ possibleAppearances: await CharacterAppearance.getAllPossibleAppearances(), bodyAppearances: await CharacterAppearance.getAllPossibleBodyTypes() });
         });
 
         app.use("/helpers", helpersRouter);

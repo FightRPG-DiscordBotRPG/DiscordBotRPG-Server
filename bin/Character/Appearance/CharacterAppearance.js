@@ -14,6 +14,8 @@ class CharacterAppearance {
      **/
     static linkedAppearances = {};
 
+    static bodyTypesAppearances = {};
+
     static requiredAppearancesTypeForCharacter = [1, 3, 5, 10];
 
     static selectableBodyTypes = [1, 2];
@@ -66,6 +68,21 @@ class CharacterAppearance {
             await CharacterAppearance.loadAllPossibleAppearances();
         }
         return CharacterAppearance.appearancesList;
+    }
+
+    static async getAllPossibleBodyTypes(reload = false) {
+        if (reload) {
+            await CharacterAppearance.loadAllPossibleBodyTypes();
+        }
+        return CharacterAppearance.bodyTypesAppearances;
+    }
+
+    static async loadAllPossibleBodyTypes() {
+        const res = await conn.query(`SELECT * FROM bodytype`);
+        CharacterAppearance.bodyTypesAppearances = {};
+        for (let item of res) {
+            CharacterAppearance.bodyTypesAppearances[item.idBodyType] = item;
+        }
     }
 
     static async loadAllPossibleAppearances() {
