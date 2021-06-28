@@ -20,7 +20,7 @@ class CharacterAppearance {
 
     static selectableBodyTypes = [1, 2];
 
-    static selectableHairColors = ["#AA8866", "DEBE99", "#241C11", "#4F1A00", "#9A3300"];
+    static selectableHairColors = ["#AA8866", "#DEBE99", "#241C11", "#4F1A00", "#9A3300"];
 
     static selectableEyeColors = ["#634E34", "#2E536F", "#3D671D", "#131C1B", "#59525A"];
 
