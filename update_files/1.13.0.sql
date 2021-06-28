@@ -367,7 +367,7 @@ REPLACE INTO linkedappearances VALUES
 
 REPLACE INTO charactersappearance 
 (
-    SELECT idCharacter, "#241C11" as hairColor, "#CE8E71" as bodyColor, "#634E34" as eyeColor, 1 as idBodyType, 1 as displayHelmet
+    SELECT idCharacter, "#241C11" as hairColor, "#BD804A" as bodyColor, "#634E34" as eyeColor, 1 as idBodyType, 1 as displayHelmet
     FROM characters
 );
 

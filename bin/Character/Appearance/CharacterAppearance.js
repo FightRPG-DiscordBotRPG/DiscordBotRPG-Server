@@ -29,7 +29,7 @@ class CharacterAppearance {
     constructor() {
         this.id = null;
         this.hairColor = "#241C11";
-        this.bodyColor = "#CE8E71";
+        this.bodyColor = "#BD804A";
         this.eyeColor = "#634E34";
         this.idBodyType = 1;
         this.displayHelmet = true;
@@ -39,7 +39,7 @@ class CharacterAppearance {
 
     async init(id) {
         this.id = id;
-        await conn.query(`INSERT INTO charactersappearance VALUES (?, "#241C11", "#CE8E71", "#634E34", 1, 1);`, [this.id]);
+        await conn.query(`INSERT INTO charactersappearance VALUES (?, "#241C11", "#BD804A", "#634E34", 1, 1);`, [this.id]);
         await conn.query(`INSERT INTO charactersappearanceparts VALUES (SELECT ?, idAppearance, idAppearanceType FROM appearances WHERE idAppearanceType IN (1,2,3,4,5,7,9,10) GROUP BY idAppearanceType)`, [this.id]);
         await this.load(id);
     }
