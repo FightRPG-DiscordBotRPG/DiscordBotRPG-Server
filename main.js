@@ -14,7 +14,8 @@ const PSTreeNodes = require("./bin/PSTree/PSTreeNodes.js");
 const RebirthManager = require("./bin/Rebirths/RebirthManager.js");
 const axios = require("axios").default;
 const EventsManager = require("./bin/Events/EventsManager.js");
-const CharacterAppearance = require("./bin/Character/Appearance/CharacterAppearance.js");
+const CharacterAppearance = require("./bin/Appearance/CharacterAppearance.js");
+const Appearance = require("./bin/Appearance/Appearance.js");
 const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
@@ -96,8 +97,8 @@ let startUp = async () => {
     console.log("Passives/Skills Tree Nodes loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
 
     console.time("All Possible Appearances Load");
-    await CharacterAppearance.loadAllPossibleAppearances();
-    await CharacterAppearance.loadAllPossibleBodyTypes();
+    await Appearance.loadAllPossibleAppearances();
+    await Appearance.loadAllPossibleBodyTypes();
     console.timeEnd("All Possible Appearances Load");
 
 

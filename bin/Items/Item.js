@@ -25,6 +25,10 @@ class Item {
         this.stackable = false;
         this.stats = new StatsItems(id);
         this.secondaryStats = new SecondaryStatsItems(id);
+        /**
+         * @type {ItemAppearance}
+         **/
+        this.appearance = new ItemAppearance();
         this.power = 0;
         this.number = 1;
         this.isFavorite = false;
@@ -56,7 +60,7 @@ class Item {
         this.isFavorite = res["favorite"];
 
         this.power = res["power"];
-        await Promise.all([this.stats.loadStats(), this.secondaryStats.loadStats()]);
+        await Promise.all([this.stats.loadStats(), this.secondaryStats.loadStats(), this.appearance.load(this.idBaseItem)]);
     }
 
     async deleteItem() {
@@ -546,6 +550,7 @@ class Item {
             * @type {SecondaryStatsItems}
             */
             secondaryStats: {},
+            appearance: this.appearance,
         };
         return toApiObject;
     }
@@ -609,3 +614,4 @@ const EnergyPotion = require("./Potions/EnergyPotion");
 const Stats = require("../Stats/Stats");
 const SecondaryStats = require("../Stats/Secondary/SecondaryStats");
 const Utils = require("../Utilities/Utils.js");
+const ItemAppearance = require("../Appearance/ItemAppearance.js");

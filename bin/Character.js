@@ -12,7 +12,7 @@ const PStatistics = require("./Achievement/PStatistics.js");
 const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
 const Mount = require("./Items/Mounts/Mount");
-const CharacterAppearance = require("./Character/Appearance/CharacterAppearance.js");
+const CharacterAppearance = require("./Appearance/CharacterAppearance.js");
 
 class Character extends CharacterEntity {
     constructor(idUser) {

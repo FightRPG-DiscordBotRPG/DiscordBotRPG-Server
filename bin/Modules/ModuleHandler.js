@@ -127,7 +127,7 @@ class ModuleHandler extends GModule {
 
         helpersRouter.get("/characters/appearances", async (req, res, next) => {
             await next();
-            return res.json({ possibleAppearances: await CharacterAppearance.getAllPossibleAppearances(), bodyAppearances: await CharacterAppearance.getAllPossibleBodyTypes() });
+            return res.json({ possibleAppearances: await Appearance.getAllPossibleAppearances(), bodyAppearances: await Appearance.getAllPossibleBodyTypes() });
         });
 
         app.use("/helpers", helpersRouter);
@@ -355,4 +355,5 @@ class ModuleHandler extends GModule {
 module.exports = ModuleHandler;
 
 const DungeonArea = require("../Areas/DungeonArea");
-const CharacterAppearance = require("../Character/Appearance/CharacterAppearance");
+const CharacterAppearance = require("../Appearance/CharacterAppearance");
+const Appearance = require("../Appearance/Appearance");

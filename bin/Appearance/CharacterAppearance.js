@@ -1,5 +1,5 @@
-const conn = require("../../../conf/mysql.js");
-const Globals = require("../../Globals.js");
+const conn = require("../../conf/mysql.js");
+const Globals = require("../Globals.js");
 const Appearance = require("./Appearance.js");
 
 class CharacterAppearance {
@@ -58,68 +58,9 @@ class CharacterAppearance {
         this.appearances = {};
 
         for (let item of (await conn.query(`SELECT idAppearance, propertyName FROM charactersappearanceparts INNER JOIN appearances USING (idAppearance) INNER JOIN appearancestype USING(idAppearanceType) WHERE idCharacter = ?;`, [this.id]))) {
-            this.appearances[item.propertyName] = CharacterAppearance.appearancesList[item.idAppearance];
+            this.appearances[item.propertyName] = Appearance.appearancesList[item.idAppearance];
         }
 
-    }
-
-    static async getAllPossibleAppearances(reload = false) {
-        if (reload) {
-            await CharacterAppearance.loadAllPossibleAppearances();
-        }
-        return CharacterAppearance.appearancesList;
-    }
-
-    static async getAllPossibleBodyTypes(reload = false) {
-        if (reload) {
-            await CharacterAppearance.loadAllPossibleBodyTypes();
-        }
-        return CharacterAppearance.bodyTypesAppearances;
-    }
-
-    static async loadAllPossibleBodyTypes() {
-        const res = await conn.query(`SELECT * FROM bodytype`);
-        CharacterAppearance.bodyTypesAppearances = {};
-        for (let item of res) {
-            CharacterAppearance.bodyTypesAppearances[item.idBodyType] = item;
-        }
-    }
-
-    static async loadAllPossibleAppearances() {
-        // Take all character related appearance
-        // Maybe use a list next time
-        let res = await conn.query(`SELECT * FROM appearances WHERE idAppearanceType <= 10`);
-        let allLinks = await conn.query(`SELECT * FROM linkedappearances`);
-
-        CharacterAppearance.linkedAppearances = {};
-        CharacterAppearance.appearancesList = {};
-
-        for (let link of allLinks) {
-            if (!CharacterAppearance.linkedAppearances[link.idAppearance]) {
-                CharacterAppearance.linkedAppearances[link.idAppearance] = [];
-            }
-
-            if (!CharacterAppearance.linkedAppearances[link.idLinkedAppearance]) {
-                CharacterAppearance.linkedAppearances[link.idLinkedAppearance] = [];
-            }
-
-            CharacterAppearance.linkedAppearances[link.idAppearance].push(link.idLinkedAppearance);
-            CharacterAppearance.linkedAppearances[link.idLinkedAppearance].push(link.idAppearance);
-        }
-
-        for (let item of res) {
-            let appearance = new Appearance();
-            appearance.appearanceType = item.idAppearanceType;
-            appearance.canBeDisplayedOnTop = item.canBeDisplayedOnTop;
-            appearance.id = item.idAppearance;
-            appearance.idBodyType = item.idBodyType;
-            appearance.link = item.link;
-            if (CharacterAppearance.linkedAppearances[item.idAppearance]) {
-                appearance.linkedTo = CharacterAppearance.linkedAppearances[item.idAppearance];
-            }
-
-            CharacterAppearance.appearancesList[item.idAppearance] = appearance;
-        }
     }
 
     /**
@@ -137,6 +78,20 @@ class CharacterAppearance {
 
     async reload() {
         await this.load(this.id);
+    }
+
+    static async getAllPossibleAppearances() {
+        if (Object.values(CharacterAppearance.appearancesList).length === 0) {
+            // Reload
+            CharacterAppearance.appearancesList = {};
+            for (let i in Appearance.appearancesList) {
+                if (Appearance.appearancesList[i].appearanceType <= 10) {
+                    CharacterAppearance.appearancesList[i] = Appearance.appearancesList[i];
+                }
+            }
+        }
+
+        return CharacterAppearance.appearancesList;
     }
 
 }

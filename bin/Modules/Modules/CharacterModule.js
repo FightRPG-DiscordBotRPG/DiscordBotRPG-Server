@@ -26,8 +26,8 @@ const Skill = require("../../SkillsAndStatus/Skill");
 const Character = require("../../Character");
 const RebirthApiData = require("../../Rebirths/RebirthApiData");
 const State = require("../../SkillsAndStatus/State");
-const CharacterAppearance = require("../../Character/Appearance/CharacterAppearance");
-const Appearance = require("../../Character/Appearance/Appearance");
+const CharacterAppearance = require("../../Appearance/CharacterAppearance");
+const Appearance = require("../../Appearance/Appearance");
 
 
 
