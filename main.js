@@ -16,6 +16,7 @@ const axios = require("axios").default;
 const EventsManager = require("./bin/Events/EventsManager.js");
 const CharacterAppearance = require("./bin/Appearance/CharacterAppearance.js");
 const Appearance = require("./bin/Appearance/Appearance.js");
+const ItemAppearance = require("./bin/Appearance/ItemAppearance.js");
 const options = {
     webhookPort: 5000,
     webhookAuth: conf.webhookkey
@@ -99,6 +100,7 @@ let startUp = async () => {
     console.time("All Possible Appearances Load");
     await Appearance.loadAllPossibleAppearances();
     await Appearance.loadAllPossibleBodyTypes();
+    await ItemAppearance.loadItemsAppearances();
     console.timeEnd("All Possible Appearances Load");
 
 

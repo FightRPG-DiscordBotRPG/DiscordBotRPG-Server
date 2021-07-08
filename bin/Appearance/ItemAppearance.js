@@ -3,6 +3,11 @@ const Appearance = require("./Appearance.js");
 
 class ItemAppearance {
 
+    /**
+     * @type {Object<string, Object<string, Appearance>>}
+     */
+    static appearances = {}
+
     constructor() {
         /** Body Type : Appearance 
          * For all body types key is : all
@@ -11,16 +16,44 @@ class ItemAppearance {
         this.appearances = {};
     }
 
-    async load(id, idBodyType) {
-        this.id = id;
-        let data = await conn.query(`SELECT idAppearance, propertyName FROM itemsappearances INNER JOIN appearances USING (idAppearance) INNER JOIN appearancestype USING(idAppearanceType) WHERE idBaseItem = ?`, [this.id]);
-        for (let item of data) {
-            const bodyType = Appearance.appearancesList[item.idAppearance].idBodyType ?? "all";
-            if (!this.appearances[bodyType]) {
-                this.appearances[bodyType] = {};
+    async load(id) {
+        this.appearances = ItemAppearance.appearances[id];
+    }
+
+    static async loadItemsAppearances() {
+        ItemAppearance.appearances = {};
+
+        let maskColorsData = {};
+        for (let item of await conn.query("SELECT * FROM itemsappearancesmaskcolors")) {
+            if (!maskColorsData[item.idBaseItem]) {
+                maskColorsData[item.idBaseItem] = {};
             }
-            this.appearances[bodyType][item.propertyName] = Appearance.appearancesList[item.idAppearance];
+
+            if (!maskColorsData[item.idBaseItem][item.idAppearance]) {
+                maskColorsData[item.idBaseItem][item.idAppearance] = [];
+            }
+
+            maskColorsData[item.idBaseItem][item.idAppearance].push({ source: item.sourceColor, target: item.targetColor });
         }
+
+        for (let item of await conn.query("SELECT idBaseItem, idAppearance, propertyName FROM itemsappearances INNER JOIN appearances USING (idAppearance) INNER JOIN appearancestype USING(idAppearanceType)")) {
+            const bodyType = Appearance.appearancesList[item.idAppearance].idBodyType ?? "all";
+            if (!ItemAppearance.appearances[item.idBaseItem]) {
+                ItemAppearance.appearances[item.idBaseItem] = {};
+            }
+
+            if (!ItemAppearance.appearances[item.idBaseItem][bodyType]) {
+                ItemAppearance.appearances[item.idBaseItem][bodyType] = {};
+            }
+
+            let maskColors = {};
+            if (maskColorsData[item.idBaseItem] && maskColorsData[item.idBaseItem][item.idAppearance]) {
+                maskColors = maskColorsData[item.idBaseItem][item.idAppearance];
+            }
+
+            ItemAppearance.appearances[item.idBaseItem][bodyType][item.propertyName] = Object.assign({ maskColors: maskColors }, Appearance.appearancesList[item.idAppearance]);
+        }
+
     }
 
 }

@@ -135,6 +135,21 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemsappearancesmaskcolors` (
+  `idBaseItem` INT UNSIGNED NOT NULL,
+  `idAppearance` INT UNSIGNED NOT NULL,
+  `sourceColor` VARCHAR(10) NOT NULL,
+  `targetColor` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`idBaseItem`, `idAppearance`, `sourceColor`),
+  CONSTRAINT `fk_table1_ItemsAppearances1`
+    FOREIGN KEY (`idBaseItem` , `idAppearance`)
+    REFERENCES `discord_bot_rpg`.`itemsappearances` (`idBaseItem` , `idAppearance`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
 REPLACE INTO bodytype VALUES
 (1,  
 "http://cdn.fight-rpg.com/images/appearances/base/bodies/male_body.png", 
