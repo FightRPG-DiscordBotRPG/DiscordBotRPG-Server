@@ -4,7 +4,7 @@ const Appearance = require("./Appearance.js");
 class ItemAppearance {
 
     /**
-     * @type {Object<string, Object<string, Appearance>>}
+     * @type {Object<string, Object<string, Object<string, Appearance>>}
      */
     static appearances = {}
 
@@ -52,6 +52,27 @@ class ItemAppearance {
             }
 
             ItemAppearance.appearances[item.idBaseItem][bodyType][item.propertyName] = Object.assign({ maskColors: maskColors }, Appearance.appearancesList[item.idAppearance]);
+        }
+
+        // Update linked appearances for items
+        for (let idItem in ItemAppearance.appearances) {
+            for (let bodyType in ItemAppearance.appearances[idItem]) {
+                for (let property in ItemAppearance.appearances[idItem][bodyType]) {
+                    const item = ItemAppearance.appearances[idItem][bodyType][property];
+
+                    if (item.linkedTo.length === 0) {
+                        continue;
+                    }
+
+                    for (let link of item.linkedTo) {
+                        const linkedAppearance = Appearance.appearancesList[link];
+                        if (ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] == null) {
+                            ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] = linkedAppearance;
+                        }
+                    }
+
+                }
+            }
         }
 
     }

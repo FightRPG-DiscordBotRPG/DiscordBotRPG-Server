@@ -3,7 +3,7 @@ const conn = require("../../conf/mysql.js");
 class Appearance {
 
     /**
-     * @type {Object<number, Appearance>}
+     * @type {Object<string, Appearance>}
      **/
     static appearancesList = {};
 
@@ -19,6 +19,7 @@ class Appearance {
         this.idBodyType = 1;
         this.canBeDisplayedOnTop = true;
         this.maskLink = null;
+        this.propertyName = "";
         /**
          * @type {number[]}
          **/
@@ -50,7 +51,7 @@ class Appearance {
     static async loadAllPossibleAppearances() {
         // Take all character related appearance
         // Maybe use a list next time
-        let res = await conn.query(`SELECT * FROM appearances`);
+        let res = await conn.query(`SELECT * FROM appearances INNER JOIN appearancestype USING(idAppearanceType)`);
         let allLinks = await conn.query(`SELECT * FROM linkedappearances`);
 
         Appearance.linkedAppearances = {};
@@ -76,6 +77,7 @@ class Appearance {
             appearance.id = item.idAppearance;
             appearance.idBodyType = item.idBodyType;
             appearance.link = item.link;
+            appearance.propertyName = item.propertyName;
             appearance.maskLink = item.maskLink;
             if (Appearance.linkedAppearances[item.idAppearance]) {
                 appearance.linkedTo = Appearance.linkedAppearances[item.idAppearance];
