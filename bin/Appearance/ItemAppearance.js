@@ -67,7 +67,7 @@ class ItemAppearance {
                     for (let link of item.linkedTo) {
                         const linkedAppearance = Appearance.appearancesList[link];
                         if (ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] == null) {
-                            ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] = linkedAppearance;
+                            ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] = Object.assign({maskColors: item.maskColors}, linkedAppearance);
                         }
                     }
 
