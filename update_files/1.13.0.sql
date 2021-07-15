@@ -479,7 +479,179 @@ REPLACE INTO appearances VALUES
 (221, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20mask_back.png"),
 (222, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20mask_front.png"),
 
-(223, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm%20mask_front.png");
+(223, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm%20mask_front.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2002%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2003%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2006%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_neck.png",  18, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2007%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2008%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2009%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2010%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_neck.png",  18, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2001%20Armor%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Female%20Mask_upper_left.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2002%20Armor%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_neck.png",  18, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2003%20Armor%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2004%20Armor%20Male%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Female%20Mask_upper_right.png"),
+
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_body.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_neck.png",  18, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_neck.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_lower_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_lower_right.png",  20, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_lower_right.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_upper_left.png"),
+(224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%20Set%2005%20Armor%20Male%20Mask_upper_right.png");
 
 
 REPLACE INTO itemsappearances VALUES 
