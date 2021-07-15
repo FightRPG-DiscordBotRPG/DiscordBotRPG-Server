@@ -520,12 +520,12 @@ REPLACE INTO appearances VALUES
 (253, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_upper_left.png",  21, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_upper_left.png"),
 (254, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male_upper_right.png",  22, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2004%20Male%20Mask_upper_right.png"),
 
-(255, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_body.png"),
-(256, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_neck.png"),
-(257, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_left.png",  19, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_lower_left.png"),
-(258, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_lower_right.png"),
-(259, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_upper_left.png"),
-(260, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female%20Mask_upper_right.png"),
+(255, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(256, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_neck.png",  18, 2, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(257, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_left.png",  19, 2, 1,  "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(258, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_lower_right.png",  20, 2, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(259, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_left.png",  21, 2, 1,  "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(260, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Female_upper_right.png",  22, 2, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
 (261, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_body.png",  17, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_body.png"),
 (262, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male_lower_left.png",  19, 1, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2005%20Male%20Mask_lower_left.png"),
@@ -753,9 +753,72 @@ REPLACE INTO itemsappearances VALUES
 (131, 194),
 (132, 196),
 (133, 196),
-(134, 196);
+(134, 196),
+
+(6, 230),
+(6, 233),
+
+(7, 272),
+(7, 266),
+
+(8, 272),
+(8, 266),
+
+(9, 272),
+(9, 266),
+
+(10, 272),
+(10, 266),
+
+(46, 277),
+(46, 283),
+
+(99, 230),
+(99, 233),
+
+(100, 244),
+(100, 250),
+
+(101, 244),
+(101, 250),
+
+(102, 244),
+(102, 250),
+
+(103, 244),
+(103, 250),
+
+(104, 334),
+(104, 340),
+
+(105, 289),
+(105, 292),
+
+(106, 289),
+(106, 292),
+
+(107, 289),
+(107, 292),
+
+(108, 289),
+(108, 292),
+
+(109, 289),
+(109, 292),
+
+(110, 346),
+(110, 350);
+
+
 
 REPLACE INTO itemsappearancesmaskcolors VALUES 
+(6, 230,  "#ff0000", "#d2b48c"),
+(6, 230,  "#00ff00", "#624a2e"),
+
+(6, 233,  "#ff0000", "#d2b48c"),
+(6, 233,  "#00ff00", "#d2b48c"),
+(6, 233,  "#0000ff", "#624a2e"),
+
 (7, 179, "#ff0000", "#624a2e"),
 (7, 180, "#ff0000", "#624a2e"),
 (7, 181, "#ff0000", "#624a2e"),
@@ -763,6 +826,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (7, 180, "#00ff00", "#c0c0c0"),
 (7, 182, "#00ff00", "#c0c0c0"),
+
+(7, 266,  "#ff0000", "#624a2e"),
+(7, 266,  "#00ff00", "#c0c0c0"),
+(7, 266,  "#0000ff", "#624a2e"),
+ 
+(7, 272,  "#ff0000", "#624a2e"),
+(7, 272,  "#00ff00", "#c0c0c0"),
+(7, 272,  "#0000ff", "#624a2e"),
 
 (8, 179, "#ff0000", "#624a2e"),
 (8, 180, "#ff0000", "#624a2e"),
@@ -772,6 +843,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (8, 180, "#00ff00", "#a19d94"),
 (8, 182, "#00ff00", "#a19d94"),
 
+(8, 266,  "#ff0000", "#624a2e"),
+(8, 266,  "#00ff00", "#a19d94"),
+(8, 266,  "#0000ff", "#624a2e"),
+ 
+(8, 272,  "#ff0000", "#624a2e"),
+(8, 272,  "#00ff00", "#a19d94"),
+(8, 272,  "#0000ff", "#624a2e"),
+
 (9, 179, "#ff0000", "#624a2e"),
 (9, 180, "#ff0000", "#624a2e"),
 (9, 181, "#ff0000", "#624a2e"),
@@ -779,6 +858,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (9, 180, "#00ff00", "#e7bd42"),
 (9, 182, "#00ff00", "#e7bd42"),
+
+(9, 266,  "#ff0000", "#624a2e"),
+(9, 266,  "#00ff00", "#e7bd42"),
+(9, 266,  "#0000ff", "#624a2e"),
+ 
+(9, 272,  "#ff0000", "#624a2e"),
+(9, 272,  "#00ff00", "#e7bd42"),
+(9, 272,  "#0000ff", "#624a2e"),
 
 (10, 179, "#ff0000", "#624a2e"),
 (10, 180, "#ff0000", "#624a2e"),
@@ -788,10 +875,18 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (10, 180, "#00ff00", "#1773d1"),
 (10, 182, "#00ff00", "#1773d1"),
 
-(46, 163, "#ff0000", "#a068c5"),
-(46, 164, "#ff0000", "#a068c5"),
-(46, 165, "#ff0000", "#a068c5"),
-(46, 166, "#ff0000", "#a068c5"),
+(10, 266,  "#ff0000", "#624a2e"),
+(10, 266,  "#00ff00", "#1773d1"),
+(10, 266,  "#0000ff", "#624a2e"),
+ 
+(10, 272,  "#ff0000", "#624a2e"),
+(10, 272,  "#00ff00", "#1773d1"),
+(10, 272,  "#0000ff", "#624a2e"),
+
+(46, 163, "#ff0000", "#2f0c50"),
+(46, 164, "#ff0000", "#2f0c50"),
+(46, 165, "#ff0000", "#2f0c50"),
+(46, 166, "#ff0000", "#2f0c50"),
 
 (46, 163, "#00ff00", "#5a189a"),
 (46, 164, "#00ff00", "#5a189a"),
@@ -802,6 +897,21 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (46, 164, "#0000ff", "#624a2e"),
 (46, 165, "#0000ff", "#624a2e"),
 (46, 166, "#0000ff", "#624a2e"),
+
+(46, 277, "#ff0000", "#2f0c50"),
+(46, 277, "#00ff00", "#5a189a"),
+(46, 277, "#0000ff", "#624a2e"),
+
+(46, 283, "#ff0000", "#2f0c50"),
+(46, 283, "#00ff00", "#5a189a"),
+(46, 283, "#0000ff", "#624a2e"),
+
+(99, 230,  "#ff0000", "#d2b48c"),
+(99, 230,  "#00ff00", "#624a2e"),
+
+(99, 233,  "#ff0000", "#d2b48c"),
+(99, 233,  "#00ff00", "#d2b48c"),
+(99, 233,  "#0000ff", "#624a2e"),
 
 (100, 145, "#ff0000", "#d2b48c"),
 (100, 145, "#0000ff", "#c0c0c0"),
@@ -816,6 +926,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (100, 148, "#ff0000", "#d2b48c"),
 (100, 148, "#0000ff", "#c0c0c0"),
 
+(100, 244,  "#ff0000", "#d2b48c"),
+(100, 244,  "#00ff00", "#9a9a9a"),
+(100, 244,  "#0000ff", "#c0c0c0"),
+
+(100, 250,  "#ff0000", "#d2b48c"),
+(100, 250,  "#00ff00", "#9a9a9a"),
+(100, 250,  "#0000ff", "#c0c0c0"),
+
 (101, 145, "#ff0000", "#d2b48c"),
 (101, 145, "#0000ff", "#a19d94"),
 
@@ -828,6 +946,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (101, 148, "#ff0000", "#d2b48c"),
 (101, 148, "#0000ff", "#a19d94"),
+
+(101, 244,  "#ff0000", "#d2b48c"),
+(101, 244,  "#00ff00", "#9c9b99"),
+(101, 244,  "#0000ff", "#a19d94"),
+   
+(101, 250,  "#ff0000", "#d2b48c"),
+(101, 250,  "#00ff00", "#9c9b99"),
+(101, 250,  "#0000ff", "#a19d94"),
 
 (102, 145, "#ff0000", "#d2b48c"),
 (102, 145, "#0000ff", "#e7bd42"),
@@ -842,6 +968,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (102, 148, "#ff0000", "#d2b48c"),
 (102, 148, "#0000ff", "#e7bd42"),
 
+(102, 244,  "#ff0000", "#d2b48c"),
+(102, 244,  "#00ff00", "#ffea00"),
+(102, 244,  "#0000ff", "#e7bd42"),
+   
+(102, 250,  "#ff0000", "#d2b48c"),
+(102, 250,  "#00ff00", "#ffea00"),
+(102, 250,  "#0000ff", "#e7bd42"),
+
 (103, 145, "#ff0000", "#d2b48c"),
 (103, 145, "#0000ff", "#1773d1"),
 
@@ -855,9 +989,25 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (103, 148, "#ff0000", "#d2b48c"),
 (103, 148, "#0000ff", "#1773d1"),
 
+(103, 244,  "#ff0000", "#d2b48c"),
+(103, 244,  "#00ff00", "#b0ceed"),
+(103, 244,  "#0000ff", "#1773d1"),
+  
+(103, 250,  "#ff0000", "#d2b48c"),
+(103, 250,  "#00ff00", "#b0ceed"),
+(103, 250,  "#0000ff", "#1773d1"),
+
 (104, 137, "#ff0000", "#5a189a"),
 
 (104, 138, "#ff0000", "#5a189a"),
+
+(104, 334,  "#ff0000", "#5a189a"),
+(104, 334,  "#00ff00", "#2f0c50"),
+(104, 334,  "#0000ff", "#624a2e"),
+  
+(104, 340,  "#ff0000", "#5a189a"),
+(104, 340,  "#00ff00", "#2f0c50"),
+(104, 340,  "#0000ff", "#624a2e"),
 
 (105, 183, "#ff0000", "#624a2e"),
 (105, 183, "#00ff00", "#624a2e"),
@@ -869,6 +1019,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (105, 186, "#ff0000", "#624a2e"),
 
+(105, 289,  "#ff0000", "#d2b48c"),
+(105, 289,  "#00ff00", "#624a2e"),
+(105, 289,  "#0000ff", "#624a2e"),
+ 
+(105, 292,  "#ff0000", "#d2b48c"),
+(105, 292,  "#00ff00", "#624a2e"),
+(105, 292,  "#0000ff", "#624a2e"),
+
 (106, 141, "#ff0000", "#624a2e"),
 (106, 141, "#00ff00", "#c0c0c0"),
 
@@ -878,6 +1036,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (106, 143, "#00ff00", "#c0c0c0"),
 
 (106, 144, "#ff0000", "#624a2e"),
+
+(106, 289,  "#ff0000", "#47632d"),
+(106, 289,  "#00ff00", "#624a2e"),
+(106, 289,  "#0000ff", "#624a2e"),
+   
+(106, 292,  "#ff0000", "#47632d"),
+(106, 292,  "#00ff00", "#624a2e"),
+(106, 292,  "#0000ff", "#624a2e"),
 
 (107, 141, "#ff0000", "#624a2e"),
 (107, 141, "#00ff00", "#a19d94"),
@@ -889,6 +1055,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (107, 144, "#ff0000", "#624a2e"),
 
+(107, 289,  "#ff0000", "#a19d94"),
+(107, 289,  "#00ff00", "#624a2e"),
+(107, 289,  "#0000ff", "#624a2e"),
+   
+(107, 292,  "#ff0000", "#a19d94"),
+(107, 292,  "#00ff00", "#624a2e"),
+(107, 292,  "#0000ff", "#624a2e"),
+
 (108, 141, "#ff0000", "#624a2e"),
 (108, 141, "#00ff00", "#e7bd42"),
 
@@ -898,6 +1072,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (108, 143, "#00ff00", "#e7bd42"),
 
 (108, 144, "#ff0000", "#624a2e"),
+
+(108, 289,  "#ff0000", "#191f22"),
+(108, 289,  "#00ff00", "#e7bd42"),
+(108, 289,  "#0000ff", "#624a2e"),
+   
+(108, 292,  "#ff0000", "#191f22"),
+(108, 292,  "#00ff00", "#e7bd42"),
+(108, 292,  "#0000ff", "#624a2e"),
 
 (109, 141, "#ff0000", "#624a2e"),
 (109, 141, "#00ff00", "#1773d1"),
@@ -909,6 +1091,13 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (109, 144, "#ff0000", "#624a2e"),
 
+(109, 289,  "#ff0000", "#191f22"),
+(109, 289,  "#00ff00", "#1773d1"),
+(109, 289,  "#0000ff", "#624a2e"),
+   
+(109, 292,  "#ff0000", "#191f22"),
+(109, 292,  "#00ff00", "#1773d1"),
+(109, 292,  "#0000ff", "#624a2e"),
 
 (110, 149, "#ff0000", "#624a2e"),
 (110, 149, "#00ff00", "#5a189a"),
@@ -922,6 +1111,14 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (110, 152, "#ff0000", "#624a2e"),
 
+(110, 346,  "#ff0000", "#5a189a"),
+(110, 346,  "#00ff00", "#191f22"),
+(110, 346,  "#0000ff", "#2f0c50"),
+ 
+(110, 350,  "#ff0000", "#5a189a"),
+(110, 350,  "#00ff00", "#191f22"),
+(110, 350,  "#0000ff", "#2f0c50"),
+
 (17, 210, "#ff0000", "#9a9a9a"),
 (17, 210, "#00ff00", "#c0c0c0"),
 
@@ -934,7 +1131,7 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (20, 210, "#ff0000", "#b0ceed"),
 (20, 210, "#00ff00", "#1773d1"),
 
-(48, 212, "#ff0000", "#a068c5"),
+(48, 212, "#ff0000", "#2f0c50"),
 (48, 212, "#00ff00", "#5a189a"),
 
 (123, 192, "#ff0000", "#624a2e"),
@@ -1016,7 +1213,149 @@ REPLACE INTO linkedappearances VALUES
 
 (198, 199),
 (200, 201),
-(202, 203);
+(202, 203),
+
+(224, 225),
+(224, 226),
+
+(227, 228),
+(227, 229),
+
+(230, 231),
+(230, 232),
+
+(233, 234),
+(233, 235),
+
+(236, 237),
+(236, 238),
+
+(239, 240),
+(239, 241),
+(239, 242),
+(239, 243),
+
+(244, 245),
+(244, 246),
+(244, 247),
+(244, 248),
+(244, 249),
+
+(250, 251),
+(250, 252),
+(250, 253),
+(250, 254),
+
+(255, 256),
+(255, 257),
+(255, 258),
+(255, 259),
+(255, 260),
+
+(261, 262),
+(261, 263),
+(261, 264),
+(261, 265),
+
+(266, 267),
+(266, 268),
+(266, 269),
+(266, 270),
+(266, 271),
+
+(272, 273),
+(272, 274),
+(272, 275),
+(272, 276),
+
+(277, 278),
+(277, 279),
+(277, 280),
+(277, 281),
+(277, 282),
+
+(283, 284),
+(283, 285),
+(283, 286),
+(283, 287),
+(283, 288),
+
+(289, 290),
+(289, 291),
+
+(292, 293),
+(292, 294),
+
+(295, 296),
+(295, 297),
+(295, 298),
+(295, 299),
+
+(300, 301),
+(300, 302),
+(300, 303),
+(300, 304),
+
+(305, 306),
+(305, 307),
+(305, 308),
+(305, 309),
+(305, 310),
+
+(311, 312),
+(311, 313),
+(311, 314),
+(311, 315),
+
+(316, 317),
+(316, 318),
+(316, 319),
+(316, 320),
+(316, 321),
+
+(322, 323),
+(316, 324),
+(316, 325),
+(316, 326),
+(316, 327),
+
+(328, 329),
+(328, 330),
+
+(331, 332),
+(331, 333),
+
+(334, 335),
+(334, 336),
+(334, 337),
+(334, 338),
+(334, 339),
+
+(340, 341),
+(340, 342),
+(340, 343),
+(340, 344),
+(340, 345),
+
+(346, 347),
+(346, 348),
+(346, 349),
+
+(350, 351),
+(350, 352),
+(350, 353),
+(350, 354),
+
+(355, 356),
+(355, 357),
+(355, 358),
+(355, 359),
+
+(360, 361),
+(360, 362),
+(360, 363),
+(360, 364),
+(360, 365);
 
 
 REPLACE INTO charactersappearance 
