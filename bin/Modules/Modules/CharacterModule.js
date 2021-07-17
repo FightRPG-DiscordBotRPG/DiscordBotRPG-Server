@@ -531,7 +531,7 @@ class CharacterModule extends GModule {
         }
 
         
-        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), {bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor});
+        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), {bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet});
 
 
         return this.asSuccess(Translator.getString(res.locals.lang, "appearance", "success"));

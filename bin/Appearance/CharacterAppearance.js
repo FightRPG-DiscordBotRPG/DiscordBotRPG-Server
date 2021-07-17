@@ -66,11 +66,13 @@ class CharacterAppearance {
     /**
      * 
      * @param {Appearance[]} arrOfAppearances
-     * @param {{ bodyType:number, hairColor:string, bodyColor: string, eyeColor:string}} specificAppearance
+     * @param {{ bodyType:number, hairColor:string, bodyColor: string, eyeColor:string, shouldDisplayHelmet:boolean}} specificAppearance
      */
     async saveNewAppearance(arrOfAppearances, specificAppearance) {
         let appearanceIds = arrOfAppearances.map(a => `(${this.id},${a.id})`);
-        await conn.query("UPDATE charactersappearance SET hairColor = ?, bodyColor = ?, eyeColor = ?, idBodyType = ? WHERE idCharacter = ?;", [specificAppearance.hairColor, specificAppearance.bodyColor, specificAppearance.eyeColor, specificAppearance.bodyType, this.id]);
+        specificAppearance.shouldDisplayHelmet = specificAppearance.shouldDisplayHelmet == "true" ? 1 : 0;
+
+        await conn.query("UPDATE charactersappearance SET hairColor = ?, bodyColor = ?, eyeColor = ?, idBodyType = ?, displayHelmet = ? WHERE idCharacter = ?;", [specificAppearance.hairColor, specificAppearance.bodyColor, specificAppearance.eyeColor, specificAppearance.bodyType, specificAppearance.shouldDisplayHelmet, this.id]);
         await conn.query("DELETE FROM charactersappearanceparts WHERE idCharacter = ?;", [this.id]);
         await conn.query(`REPLACE INTO charactersappearanceparts VALUES ${appearanceIds.join(",")};`);
         await this.reload();
