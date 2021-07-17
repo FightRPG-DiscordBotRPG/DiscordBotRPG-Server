@@ -395,91 +395,91 @@ REPLACE INTO appearances VALUES
 (169, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%2010_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%2010%20Mask_wrist_right.png"),
 (170, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%2010_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%2010%20Mask_hand_right.png"),
 
-(171, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20mask_wrist_left.png"),
-(172, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20mask_hand_left.png"),
-(173, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20mask_wrist_right.png"),
-(174, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20mask_hand_right.png"),
+(171, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20Mask_wrist_left.png"),
+(172, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20Mask_hand_left.png"),
+(173, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20Mask_wrist_right.png"),
+(174, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2001%20Gloves%20Mask_hand_right.png"),
 
-(175, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20mask_wrist_left.png"),
-(176, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20mask_hand_left.png"),
-(177, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20mask_wrist_right.png"),
-(178, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20mask_hand_right.png"),
+(175, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20Mask_wrist_left.png"),
+(176, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20Mask_hand_left.png"),
+(177, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20Mask_wrist_right.png"),
+(178, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2002%20Gloves%20Mask_hand_right.png"),
 
-(179, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20mask_wrist_left.png"),
-(180, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20mask_hand_left.png"),
-(181, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20mask_wrist_right.png"),
-(182, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20mask_hand_right.png"),
+(179, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20Mask_wrist_left.png"),
+(180, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20Mask_hand_left.png"),
+(181, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20Mask_wrist_right.png"),
+(182, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2003%20Gloves%20Mask_hand_right.png"),
 
-(183, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20mask_wrist_left.png"),
-(184, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20mask_hand_left.png"),
-(185, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20mask_wrist_right.png"),
-(186, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20mask_hand_right.png"),
+(183, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20Mask_wrist_left.png"),
+(184, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20Mask_hand_left.png"),
+(185, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20Mask_wrist_right.png"),
+(186, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2004%20Gloves%20Mask_hand_right.png"),
 
-(187, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20mask_wrist_left.png"),
-(188, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20mask_hand_left.png"),
-(189, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20mask_wrist_right.png"),
-(190, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20mask_hand_right.png"),
+(187, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_wrist_left.png", 11, null, 1,  "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20Mask_wrist_left.png"),
+(188, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_hand_left.png",   12, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20Mask_hand_left.png"),
+(189, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_wrist_right.png", 13, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20Mask_wrist_right.png"),
+(190, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves_hand_right.png",  14, null, 1, "https://cdn.fight-rpg.com/images/appearances/gloves/Fantasy%20Set%2005%20Gloves%20Mask_hand_right.png"),
 
 (191, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2000_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
 (192, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2001_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
-(193, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2002_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2002%20mask_front.png"),
+(193, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2002_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2002%20Mask_front.png"),
 
-(194, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2003_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2003%20mask_front.png"),
+(194, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2003_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2003%20Mask_front.png"),
 
 (195, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2004_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
-(196, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2005_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2005%20mask_front.png"),
+(196, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2005_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2005%20Mask_front.png"),
 
-(197, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2006_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2006%20mask_front.png"),
+(197, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2006_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2006%20Mask_front.png"),
 
 (198, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2007_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 (199, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2007_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
-(200, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008%20mask_back.png"),
-(201, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008%20mask_front.png"),
+(200, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008%20Mask_back.png"),
+(201, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2008%20Mask_front.png"),
 
-(202, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009%20mask_back.png"),
-(203, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009%20mask_front.png"),
+(202, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009%20Mask_back.png"),
+(203, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2009%20Mask_front.png"),
 
 (204, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2010_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
 (205, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2011_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
 
-(206, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2012_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2012%20mask_front.png"),
+(206, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2012_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2012%20Mask_front.png"),
 
-(207, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2013_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2013%20mask_front.png"),
+(207, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2013_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2013%20Mask_front.png"),
 
-(208, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2014_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2014%20mask_front.png"),
+(208, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2014_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2014%20Mask_front.png"),
 
-(209, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2015_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2015%20mask_front.png"),
+(209, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2015_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2015%20Mask_front.png"),
 
-(210, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2016_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2016%20mask_front.png"),
+(210, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2016_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2016%20Mask_front.png"),
 
-(211, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2017_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2017%20mask_front.png"),
+(211, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2017_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2017%20Mask_front.png"),
 
-(212, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2018_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2018%20mask_front.png"),
+(212, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2018_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2018%20Mask_front.png"),
 
-(213, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2019_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2019%20mask_front.png"),
+(213, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2019_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2019%20Mask_front.png"),
 
-(214, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2020_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2020%20mask_front.png"),
+(214, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2020_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2020%20Mask_front.png"),
 
-(215, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2021_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2021%20mask_front.png"),
+(215, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2021_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%2021%20Mask_front.png"),
 
-(216, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2001%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2001%20Helm%20mask_front.png"),
+(216, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2001%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2001%20Helm%20Mask_front.png"),
 
-(217, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Male_front.png  ",  16, 1, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Male%20mask_front.png"),
+(217, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Male_front.png  ",  16, 1, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Male%20Mask_front.png"),
 
-(218, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female_back.png ",   15, 2, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female%20mask_back.png"),
-(219, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female_front.png",  16, 2, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female%20mask_front.png"),
+(218, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female_back.png ",   15, 2, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female%20Mask_back.png"),
+(219, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female_front.png",  16, 2, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2002%20Helm%20Female%20Mask_front.png"),
 
-(220, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2003%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2003%20Helm%20mask_front.png"),
+(220, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2003%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2003%20Helm%20Mask_front.png"),
 
-(221, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20mask_back.png"),
-(222, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20mask_front.png"),
+(221, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_back.png",   15, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20Mask_back.png"),
+(222, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2004%20Hood%20Mask_front.png"),
 
-(223, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm%20mask_front.png"),
+(223, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm_front.png",  16, null, 1, "https://cdn.fight-rpg.com/images/appearances/helmets/Fantasy%20Set%2005%20Helm%20Mask_front.png"),
 
 (224, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female_body.png",  17, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female%20Mask_body.png"),
 (225, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female_upper_left.png",  21, 2, 1, "https://cdn.fight-rpg.com/images/appearances/armors/Fantasy%2001%20Female%20Mask_upper_left.png"),
