@@ -767,11 +767,11 @@ REPLACE INTO appearances VALUES
 (459, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_upper_left.png",  26, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_upper_left.png"),
 (460, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_upper_right.png",  27, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_upper_right.png"),
 
-(461, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_hip.png",  23, null, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_hip.png"),
-(462, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_lower_left.png",  24, null, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_lower_left.png"),
-(463, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_lower_right.png",  25, null, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_lower_right.png"),
-(464, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_upper_left.png",  26, null, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_upper_left.png"),
-(465, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_upper_right.png",  27, null, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_upper_right.png"),
+(461, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_hip.png",  23, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_hip.png"),
+(462, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_lower_left.png",  24, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_lower_left.png"),
+(463, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_lower_right.png",  25, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_lower_right.png"),
+(464, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_upper_left.png",  26, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_upper_left.png"),
+(465, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male_upper_right.png",  27, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Male%20Mask_upper_right.png"),
 
 (466, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2010%20Female_hip.png",  23, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2010%20Female%20Mask_hip.png"),
 (467, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2010%20Female_upper_left.png",  26, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2010%20Female%20Mask_upper_left.png"),
@@ -837,7 +837,88 @@ REPLACE INTO appearances VALUES
 (516, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male_lower_left.png",  24, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male%20Mask_lower_left.png"),
 (517, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male_lower_right.png",  25, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male%20Mask_lower_right.png"),
 (518, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male_upper_left.png",  26, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male%20Mask_upper_left.png"),
-(519, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male_upper_right.png",  27, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male%20Mask_upper_right.png");
+(519, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male_upper_right.png",  27, 1, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%20Set%2005%20Male%20Mask_upper_right.png"),
+
+(520, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2000_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(521, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2000_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+
+(522, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2001_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(523, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2001_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+
+(524, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2002_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2002%20Mask_foot_left.png"),
+(525, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2002_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2002%20Mask_foot_right.png"),
+
+(526, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003%20Mask_lower_left.png"),
+(527, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003%20Mask_lower_right.png"),
+(528, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003%20Mask_foot_left.png"),
+(529, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2003%20Mask_foot_right.png"),
+
+(530, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2004_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(531, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2004_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(532, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2004_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(533, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2004_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+
+(534, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005%20Mask_lower_left.png"),
+(535, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005%20Mask_lower_right.png"),
+(536, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005%20Mask_foot_left.png"),
+(537, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2005%20Mask_foot_right.png"),
+
+(538, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006%20Mask_lower_left.png"),
+(539, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006%20Mask_lower_right.png"),
+(540, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006%20Mask_foot_left.png"),
+(541, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2006%20Mask_foot_right.png"),
+
+(542, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007%20Mask_lower_left.png"),
+(543, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007%20Mask_lower_right.png"),
+(544, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007%20Mask_foot_left.png"),
+(545, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2007%20Mask_foot_right.png"),
+
+(546, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008%20Mask_lower_left.png"),
+(547, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008%20Mask_lower_right.png"),
+(548, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008%20Mask_foot_left.png"),
+(549, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2008%20Mask_foot_right.png"),
+
+(550, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009%20Mask_lower_left.png"),
+(551, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009%20Mask_lower_right.png"),
+(552, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009%20Mask_foot_left.png"),
+(553, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2009%20Mask_foot_right.png"),
+
+(554, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010%20Mask_lower_left.png"),
+(555, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010%20Mask_lower_right.png"),
+(556, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010%20Mask_foot_left.png"),
+(557, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%2010%20Mask_foot_right.png"),
+
+(558, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2001_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2001%20Mask_foot_left.png"),
+(559, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2001_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2001%20Mask_foot_right.png"),
+
+(560, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002%20Mask_lower_left.png"),
+(561, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002%20Mask_lower_right.png"),
+(562, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002%20Mask_foot_left.png"),
+(563, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2002%20Mask_foot_right.png"),
+
+(564, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003%20Mask_lower_left.png"),
+(565, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003%20Mask_lower_right.png"),
+(566, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003%20Mask_foot_left.png"),
+(567, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2003%20Mask_foot_right.png"),
+
+(568, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004%20Mask_lower_left.png"),
+(569, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004%20Mask_lower_right.png"),
+(570, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004%20Mask_foot_left.png"),
+(571, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2004%20Mask_foot_right.png"),
+
+(572, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005_lower_left.png",  28, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005%20Mask_lower_left.png"),
+(573, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005_lower_right.png",  29, null, 1,"https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005%20Mask_lower_right.png"),
+(574, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005_foot_left.png",  30, null, 1,  "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005%20Mask_foot_left.png"),
+(575, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005_foot_right.png",  31, null, 1, "https://cdn.fight-rpg.com/images/appearances/boots/Fantasy%20Set%2005%20Mask_foot_right.png"),
+
+(576, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_hip.png",  23, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_hip.png"),
+(577, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_lower_left.png",  24, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_lower_left.png"),
+(578, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_lower_right.png",  25, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_lower_right.png"),
+(579, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_upper_left.png",  26, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_upper_left.png"),
+(580, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_upper_right.png",  27, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_upper_right.png");
+
+
+
 
 REPLACE INTO itemsappearances VALUES 
 (7, 179),
@@ -996,53 +1077,75 @@ REPLACE INTO itemsappearances VALUES
 
 (11, 366),
 (11, 371),
+(11, 522),
 
-(12, 474),
-(12, 479),
+(12, 446),
+(12, 469),
+(12, 552),
 
-(13, 474),
-(13, 479),
+(13, 446),
+(13, 469),
+(13, 552),
 
-(14, 474),
-(14, 479),
+(14, 446),
+(14, 469),
+(14, 552),
 
-(15, 474),
-(15, 479),
+(15, 446),
+(15, 469),
+(15, 552),
 
-(47, 474),
-(47, 479),
+(47, 446),
+(47, 469),
+(47, 552),
 
 (111, 366),
 (111, 371),
+(111, 522),
 
 (112, 461),
+(112, 576),
+(112, 548),
 
 (113, 461),
+(113, 576),
+(113, 548),
 
 (114, 461),
+(114, 576),
+(114, 548),
 
 (115, 461),
+(115, 576),
+(115, 548),
 
 (116, 386),
 (116, 391),
+(116, 536),
 
 (117, 436),
 (117, 401),
+(117, 536),
 
 (118, 436),
 (118, 401),
+(118, 536),
 
 (119, 436),
 (119, 401),
+(119, 536),
 
 (120, 436),
 (120, 401),
+(120, 536),
 
 (121, 436),
 (121, 401),
+(121, 536),
 
 (122, 500),
-(122, 505);
+(122, 505),
+(122, 536);
 
 
 REPLACE INTO itemsappearancesmaskcolors VALUES 
@@ -1413,65 +1516,112 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 
 (11, 366, "#ff0000", "#624a2e"),
 (11, 371, "#ff0000", "#624a2e"),
+(11, 522, "#ff0000", "#624a2e"),
 
-(12, 474, "#ff0000", "#c0c0c0"),
-(12, 474, "#00ff00", "#c0c0c0"),
-(12, 474, "#0000ff", "#624a2e"),
 
-(12, 479, "#ff0000", "#c0c0c0"),
-(12, 479, "#00ff00", "#c0c0c0"),
-(12, 479, "#0000ff", "#624a2e"),
+(12, 446, "#ff0000", "#624a2e"),
+(12, 446, "#00ff00", "#c0c0c0"),
+(12, 446, "#0000ff", "#c0c0c0"),
 
-(13, 474, "#ff0000", "#a19d94"),
-(13, 474, "#00ff00", "#a19d94"),
-(13, 474, "#0000ff", "#624a2e"),
+(12, 469, "#ff0000", "#624a2e"),
+(12, 469, "#00ff00", "#c0c0c0"),
+(12, 469, "#0000ff", "#c0c0c0"),
 
-(13, 479, "#ff0000", "#a19d94"),
-(13, 479, "#00ff00", "#a19d94"),
-(13, 479, "#0000ff", "#624a2e"),
+(12, 552, "#ff0000", "#c0c0c0"),
+(12, 552, "#00ff00", "#c0c0c0"),
+(12, 552, "#0000ff", "#c0c0c0"),
 
-(14, 474, "#ff0000", "#e7bd42"),
-(14, 474, "#00ff00", "#e7bd42"),
-(14, 474, "#0000ff", "#624a2e"),
+(13, 446, "#ff0000", "#624a2e"),
+(13, 446, "#00ff00", "#a19d94"),
+(13, 446, "#0000ff", "#a19d94"),
 
-(14, 479, "#ff0000", "#e7bd42"),
-(14, 479, "#00ff00", "#e7bd42"),
-(14, 479, "#0000ff", "#624a2e"),
+(13, 469, "#ff0000", "#624a2e"),
+(13, 469, "#00ff00", "#a19d94"),
+(13, 469, "#0000ff", "#a19d94"),
 
-(15, 474, "#ff0000", "#1773d1"),
-(15, 474, "#00ff00", "#1773d1"),
-(15, 474, "#0000ff", "#624a2e"),
+(13, 552, "#ff0000", "#a19d94"),
+(13, 552, "#00ff00", "#a19d94"),
+(13, 552, "#0000ff", "#a19d94"),
 
-(15, 479, "#ff0000", "#1773d1"),
-(15, 479, "#00ff00", "#1773d1"),
-(15, 479, "#0000ff", "#624a2e"),
+(14, 446, "#ff0000", "#624a2e"),
+(14, 446, "#00ff00", "#e7bd42"),
+(14, 446, "#0000ff", "#e7bd42"),
 
-(47, 474, "#ff0000", "#2f0c50"),
-(47, 474, "#00ff00", "#2f0c50"),
-(47, 474, "#0000ff", "#624a2e"),
+(14, 469, "#ff0000", "#624a2e"),
+(14, 469, "#00ff00", "#e7bd42"),
+(14, 469, "#0000ff", "#e7bd42"),
 
-(47, 479, "#ff0000", "#2f0c50"),
-(47, 479, "#00ff00", "#2f0c50"),
-(47, 479, "#0000ff", "#624a2e"),
+(14, 552, "#ff0000", "#e7bd42"),
+(14, 552, "#00ff00", "#e7bd42"),
+(14, 552, "#0000ff", "#e7bd42"),
+
+(15, 446, "#ff0000", "#624a2e"),
+(15, 446, "#00ff00", "#1773d1"),
+(15, 446, "#0000ff", "#1773d1"),
+
+(15, 469, "#ff0000", "#624a2e"),
+(15, 469, "#00ff00", "#1773d1"),
+(15, 469, "#0000ff", "#1773d1"),
+
+(15, 552, "#ff0000", "#1773d1"),
+(15, 552, "#00ff00", "#1773d1"),
+(15, 552, "#0000ff", "#1773d1"),
+
+(47, 446, "#ff0000", "#2f0c50"),
+(47, 446, "#00ff00", "#5a189a"),
+(47, 446, "#0000ff", "#5a189a"),
+
+(47, 469, "#ff0000", "#2f0c50"),
+(47, 469, "#00ff00", "#5a189a"),
+(47, 469, "#0000ff", "#5a189a"),
+
+(47, 552, "#ff0000", "#2f0c50"),
+(47, 552, "#00ff00", "#5a189a"),
+(47, 552, "#0000ff", "#5a189a"),
 
 (111, 366, "#ff0000", "#d2b48c"),
 (111, 371, "#ff0000", "#d2b48c"),
+(111, 522, "#ff0000", "#d2b48c"),
 
 (112, 461, "#ff0000", "#d2b48c"),
 (112, 461, "#00ff00", "#e9ecef"),
 (112, 461, "#0000ff", "#c0c0c0"),
 
+(112, 576, "#ff0000", "#d2b48c"),
+(112, 576, "#00ff00", "#e9ecef"),
+(112, 576, "#0000ff", "#c0c0c0"),
+
+(112, 548, "#ff0000", "#d2b48c"),
+(112, 548, "#00ff00", "#e9ecef"),
+(112, 548, "#0000ff", "#c0c0c0"),
+
 (113, 461, "#ff0000", "#d2b48c"),
 (113, 461, "#00ff00", "#9c9b99"),
 (113, 461, "#0000ff", "#a19d94"),
+
+(113, 576, "#ff0000", "#d2b48c"),
+(113, 576, "#00ff00", "#9c9b99"),
+(113, 576, "#0000ff", "#a19d94"),
+
+(113, 548, "#ff0000", "#d2b48c"),
+(113, 548, "#00ff00", "#9c9b99"),
+(113, 548, "#0000ff", "#a19d94"),
 
 (114, 461, "#ff0000", "#d2b48c"),
 (114, 461, "#00ff00", "#ffea00"),
 (114, 461, "#0000ff", "#e7bd42"),
 
+(114, 576, "#ff0000", "#d2b48c"),
+(114, 576, "#00ff00", "#ffea00"),
+(114, 576, "#0000ff", "#e7bd42"),
+
 (115, 461, "#ff0000", "#d2b48c"),
 (115, 461, "#00ff00", "#b0ceed"),
 (115, 461, "#0000ff", "#1773d1"),
+
+(115, 548, "#ff0000", "#d2b48c"),
+(115, 548, "#00ff00", "#b0ceed"),
+(115, 548, "#0000ff", "#1773d1"),
 
 (116, 386, "#ff0000", "#2f0c50"),
 (116, 386, "#00ff00", "#5a189a"),
@@ -1480,12 +1630,18 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (116, 391, "#00ff00", "#624a2e"),
 (116, 391, "#0000ff", "#a19d94"),
 
+(116, 536, "#ff0000", "#2f0c50"),
+(116, 536, "#00ff00", "#5a189a"),
+
 (117, 436, "#ff0000", "#624a2e"),
 (117, 436, "#00ff00", "#624a2e"),
-(117, 436, "#00ff00", "#624a2e"),
+(117, 436, "#0000ff", "#624a2e"),
 
 (117, 401, "#ff0000", "#624a2e"),
 (117, 401, "#00ff00", "#624a2e"),
+
+(117, 536, "#ff0000", "#624a2e"),
+(117, 536, "#00ff00", "#624a2e"),
 
 (118, 436, "#ff0000", "#624a2e"),
 (118, 436, "#00ff00", "#47632d"),
@@ -1494,12 +1650,18 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (118, 401, "#ff0000", "#624a2e"),
 (118, 401, "#00ff00", "#47632d"),
 
+(118, 536, "#ff0000", "#624a2e"),
+(118, 536, "#00ff00", "#47632d"),
+
 (119, 436, "#ff0000", "#624a2e"),
 (119, 436, "#00ff00", "#a19d94"),
 (119, 436, "#0000ff", "#a19d94"),
 
 (119, 401, "#ff0000", "#624a2e"),
 (119, 401, "#00ff00", "#a19d94"),
+
+(119, 536, "#ff0000", "#624a2e"),
+(119, 536, "#00ff00", "#a19d94"),
 
 (120, 436, "#ff0000", "#624a2e"),
 (120, 436, "#00ff00", "#e7bd42"),
@@ -1508,6 +1670,9 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (120, 401, "#ff0000", "#624a2e"),
 (120, 401, "#00ff00", "#e7bd42"),
 
+(120, 536, "#ff0000", "#624a2e"),
+(120, 536, "#00ff00", "#e7bd42"),
+
 (121, 436, "#ff0000", "#191f22"),
 (121, 436, "#00ff00", "#1773d1"),
 (121, 436, "#0000ff", "#1773d1"),
@@ -1515,13 +1680,19 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (121, 401, "#ff0000", "#191f22"),
 (121, 401, "#00ff00", "#1773d1"),
 
+(121, 536, "#ff0000", "#191f22"),
+(121, 536, "#00ff00", "#1773d1"),
+
 (122, 500, "#ff0000", "#5a189a"),
-(122, 500, "#00ff00", "#191f22"),
+(122, 500, "#00ff00", "#2f0c50"),
 (122, 500, "#0000ff", "#624a2e"),
 
 (122, 505, "#ff0000", "#5a189a"),
-(122, 505, "#00ff00", "#191f22"),
-(122, 505, "#0000ff", "#624a2e");
+(122, 505, "#00ff00", "#2f0c50"),
+(122, 505, "#0000ff", "#624a2e"),
+
+(122, 536, "#ff0000", "#5a189a"),
+(122, 536, "#00ff00", "#2f0c50");
 
 
 REPLACE INTO linkedappearances VALUES 
@@ -1855,7 +2026,68 @@ REPLACE INTO linkedappearances VALUES
 (515, 516),
 (515, 517),
 (515, 518),
-(515, 519);
+(515, 519),
+
+(520, 521),
+
+(522, 523),
+
+(524, 525),
+
+(526, 527),
+(526, 528),
+(526, 529),
+
+(530, 531),
+(530, 532),
+(530, 533),
+
+(534, 535),
+(534, 536),
+(534, 537),
+
+(538, 539),
+(538, 540),
+(538, 541),
+
+(542, 543),
+(542, 544),
+(542, 545),
+
+(546, 547),
+(546, 548),
+(546, 549),
+
+(550, 551),
+(550, 552),
+(550, 553),
+
+(554, 555),
+(554, 556),
+(554, 557),
+
+(558, 559),
+
+(560, 561),
+(560, 562),
+(560, 563),
+
+(564, 565),
+(564, 566),
+(564, 567),
+
+(568, 569),
+(568, 570),
+(568, 571),
+
+(572, 573),
+(572, 574),
+(572, 575),
+
+(576, 577),
+(576, 578),
+(576, 579),
+(576, 580);
 
 
 

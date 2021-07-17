@@ -53,3 +53,7 @@ for(let i=0; i<arr.length - 1; i++) {
 }
 
 console.log(str);
+
+delete from linkedappearances;
+delete from itemsappearancesmaskcolors;
+delete from itemsappearances;
