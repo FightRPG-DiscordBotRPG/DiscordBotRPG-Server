@@ -55,6 +55,14 @@ class ItemAppearance {
         }
 
         // Update linked appearances for items
+        ItemAppearance.updateLinks();
+        // Update Links of Links
+        // TODO : Do this only one time inside the updateLinks
+        ItemAppearance.updateLinks();
+
+    }
+
+    static updateLinks() {
         for (let idItem in ItemAppearance.appearances) {
             for (let bodyType in ItemAppearance.appearances[idItem]) {
                 for (let property in ItemAppearance.appearances[idItem][bodyType]) {
@@ -64,17 +72,17 @@ class ItemAppearance {
                         continue;
                     }
 
+
                     for (let link of item.linkedTo) {
                         const linkedAppearance = Appearance.appearancesList[link];
                         if (ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] == null) {
-                            ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] = Object.assign({maskColors: item.maskColors}, linkedAppearance);
+                            ItemAppearance.appearances[idItem][bodyType][linkedAppearance.propertyName] = Object.assign({ maskColors: item.maskColors }, linkedAppearance);
                         }
                     }
 
                 }
             }
         }
-
     }
 
 }
