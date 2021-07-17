@@ -915,7 +915,42 @@ REPLACE INTO appearances VALUES
 (577, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_lower_left.png",  24, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_lower_left.png"),
 (578, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_lower_right.png",  25, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_lower_right.png"),
 (579, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_upper_left.png",  26, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_upper_left.png"),
-(580, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_upper_right.png",  27, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_upper_right.png");
+(580, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female_real_upper_right.png",  27, 2, 1, "https://cdn.fight-rpg.com/images/appearances/pants/Fantasy%2009%20Female%20Mask_real_upper_right.png"),
+
+(581, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2000%20Mask.png"),
+(582, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2001%20Mask.png"),
+(583, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Axe%2002%20Mask.png"),
+
+(584, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2000%20Mask.png"),
+(585, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2001%20Mask.png"),
+(586, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2002%20Mask.png"),
+(587, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2003.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Dagger%2003%20Mask.png"),
+
+(588, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2000%20Mask.png"),
+(589, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2001%20Mask.png"),
+(590, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2002%20Mask.png"),
+(591, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2003.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Sword%2003%20Mask.png"),
+
+(592, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2000%20Mask.png"),
+(593, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2001%20Mask.png"),
+(594, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2002%20Mask.png"),
+(595, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2003.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2003%20Mask.png"),
+(596, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2004.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/one_handed/Wand%2004%20Mask.png"),
+
+(597, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(598, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2001%20Mask.png"),
+(599, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2002%20Mask.png"),
+(600, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2003.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2003%20Mask.png"),
+(601, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2004.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/Staff%2004%20Mask.png"),
+
+(602, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2000.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2000%20Mask.png"),
+(603, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2001.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2001%20Mask.png"),
+(604, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2002.png",  32, null, 1, "https://cdn.fight-rpg.com/images/appearances/two_handed/War%20Hammer%2002%20Mask.png"),
+
+(605, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2000.png",  35, null, 1, "https://cdn.fight-rpg.com/images/appearances/misc/all_mask.png"),
+(606, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2001.png",  35, null, 1, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2001%20Mask.png"),
+(607, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2002.png",  35, null, 1, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2002%20Mask.png"),
+(608, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2003.png",  35, null, 1, "https://cdn.fight-rpg.com/images/appearances/bows/Bow%2003%20Mask.png");
 
 
 
@@ -1145,10 +1180,165 @@ REPLACE INTO itemsappearances VALUES
 
 (122, 500),
 (122, 505),
-(122, 536);
+(122, 536),
+
+(1, 588),
+(2, 588),
+(3, 588),
+(4, 588),
+(5, 588),
+(45, 589),
+
+(75, 605),
+(76, 606),
+(77, 606),
+(78, 606),
+(79, 606),
+(80,  608),
+
+(81,  584),
+(82,  584),
+(83,  584),
+(84,  584),
+(85,  584),
+(86,  587),
+
+(87, 592),
+(88, 592),
+(89, 592),
+(90, 592),
+(91, 592),
+(92, 596),
+
+(93, 597),
+(94, 600),
+(95, 600),
+(96, 600),
+(97, 600),
+(98, 601);
 
 
 REPLACE INTO itemsappearancesmaskcolors VALUES 
+
+(1, 588, "#ff0000", "#985717"),
+(1, 588, "#00ff00", "#985717"),
+(1, 588, "#0000ff", "#624a2e"),
+
+(2, 588, "#ff0000", "#e9ecef"),
+(2, 588, "#00ff00", "#c0c0c0"),
+(2, 588, "#0000ff", "#624a2e"),
+
+(3, 588, "#ff0000", "#9c9b99"),
+(3, 588, "#00ff00", "#a19d94"),
+(3, 588, "#0000ff", "#624a2e"),
+
+(4, 588, "#ff0000", "#ffea00"),
+(4, 588, "#00ff00", "#e7bd42"),
+(4, 588, "#0000ff", "#624a2e"),
+
+(5, 588, "#ff0000", "#b0ceed"),
+(5, 588, "#00ff00", "#1773d1"),
+(5, 588, "#0000ff", "#624a2e"),
+
+(45, 589, "#ff0000", "#5a189a"),
+(45, 589, "#00ff00", "#2f0c50"),
+(45, 589, "#0000ff", "#624a2e"),
+
+(75, 605, "#ff0000", "#8b5a2b"),
+
+(76, 606, "#ff0000", "#8b5a2b"),
+(76, 606, "#00ff00", "#624a2e"),
+(76, 606, "#0000ff", "#c0c0c0"),
+
+(77, 606, "#ff0000", "#8b5a2b"),
+(77, 606, "#00ff00", "#624a2e"),
+(77, 606, "#0000ff", "#a19d94"),
+
+(78, 606, "#ff0000", "#8b5a2b"),
+(78, 606, "#00ff00", "#624a2e"),
+(78, 606, "#0000ff", "#e7bd42"),
+
+(79, 606, "#ff0000", "#8b5a2b"),
+(79, 606, "#00ff00", "#624a2e"),
+(79, 606, "#0000ff", "#1773d1"),
+
+(80, 608, "#ff0000", "#5a189a"),
+(80, 608, "#00ff00", "#2f0c50"),
+
+
+(81, 584, "#ff0000", "#985717"),
+(81, 584, "#00ff00", "#985717"),
+(81, 584, "#0000ff", "#624a2e"),
+    
+(82, 584, "#ff0000", "#e9ecef"),
+(82, 584, "#00ff00", "#c0c0c0"),
+(82, 584, "#0000ff", "#624a2e"),
+  
+(83, 584, "#ff0000", "#9c9b99"),
+(83, 584, "#00ff00", "#a19d94"),
+(83, 584, "#0000ff", "#624a2e"),
+    
+(84, 584, "#ff0000", "#ffea00"),
+(84, 584, "#00ff00", "#e7bd42"),
+(84, 584, "#0000ff", "#624a2e"),
+    
+(85, 584, "#ff0000", "#b0ceed"),
+(85, 584, "#00ff00", "#1773d1"),
+(85, 584, "#0000ff", "#624a2e"),
+
+(86, 587, "#ff0000", "#5a189a"),
+(86, 587, "#00ff00", "#2f0c50"),
+
+(87, 592, "#ff0000", "#8b5a2b"),
+(87, 592, "#00ff00", "#624a2e"),
+(87, 592, "#0000ff", "#c0c0c0"),
+
+(88, 592, "#ff0000", "#8b5a2b"),
+(88, 592, "#00ff00", "#624a2e"),
+(88, 592, "#0000ff", "#c0c0c0"),
+
+(89, 592, "#ff0000", "#8b5a2b"),
+(89, 592, "#00ff00", "#624a2e"),
+(89, 592, "#0000ff", "#a19d94"),
+
+(90, 592, "#ff0000", "#8b5a2b"),
+(90, 592, "#00ff00", "#624a2e"),
+(90, 592, "#0000ff", "#e7bd42"),
+
+(91, 592, "#ff0000", "#8b5a2b"),
+(91, 592, "#00ff00", "#624a2e"),
+(91, 592, "#0000ff", "#1773d1"),
+
+(92, 596, "#ff0000", "#5a189a"),
+(92, 596, "#00ff00", "#2f0c50"),
+(92, 596, "#0000ff", "#2f0c50"),
+
+
+(93, 597, "#ff0000", "#8b5a2b"),
+(93, 597, "#00ff00", "#624a2e"),
+(93, 597, "#0000ff", "#c0c0c0"),
+
+(94, 600, "#ff0000", "#8b5a2b"),
+(94, 600, "#00ff00", "#624a2e"),
+(94, 600, "#0000ff", "#c0c0c0"),
+
+(95, 600, "#ff0000", "#8b5a2b"),
+(95, 600, "#00ff00", "#624a2e"),
+(95, 600, "#0000ff", "#a19d94"),
+
+(96, 600, "#ff0000", "#8b5a2b"),
+(96, 600, "#00ff00", "#624a2e"),
+(96, 600, "#0000ff", "#e7bd42"),
+
+(97, 600, "#ff0000", "#8b5a2b"),
+(97, 600, "#00ff00", "#624a2e"),
+(97, 600, "#0000ff", "#1773d1"),
+  
+(98, 601, "#ff0000", "#5a189a"),
+(98, 601, "#00ff00", "#2f0c50"),
+(98, 601, "#0000ff", "#2f0c50"),
+
+
 (6, 230,  "#ff0000", "#d2b48c"),
 (6, 230,  "#00ff00", "#624a2e"),
 
@@ -1456,16 +1646,16 @@ REPLACE INTO itemsappearancesmaskcolors VALUES
 (110, 350,  "#00ff00", "#191f22"),
 (110, 350,  "#0000ff", "#2f0c50"),
 
-(17, 210, "#ff0000", "#9a9a9a"),
+(17, 210, "#ff0000", "#c0c0c0"),
 (17, 210, "#00ff00", "#c0c0c0"),
 
-(18, 210, "#ff0000", "#9c9b99"),
+(18, 210, "#ff0000", "#a19d94"),
 (18, 210, "#00ff00", "#a19d94"),
 
-(19, 210, "#ff0000", "#ffea00"),
+(19, 210, "#ff0000", "#e7bd42"),
 (19, 210, "#00ff00", "#e7bd42"),
 
-(20, 210, "#ff0000", "#b0ceed"),
+(20, 210, "#ff0000", "#1773d1"),
 (20, 210, "#00ff00", "#1773d1"),
 
 (48, 212, "#ff0000", "#2f0c50"),
