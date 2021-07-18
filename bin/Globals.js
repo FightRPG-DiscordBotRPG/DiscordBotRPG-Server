@@ -114,6 +114,7 @@ var Globals = {
     * @type {EventsManager}
     */
     eventsManager: null,
+    bodiesLinks: {},
     randomInclusive: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
@@ -241,6 +242,12 @@ var Globals = {
             equipableCorresponds[r.nomType] = r.idType;
         }
         Globals.equipableCorresponds = equipableCorresponds;
+
+        Globals.bodiesLinks = {};
+        res = await conn.query("SELECT * FROM bodytype");
+        for (let r of res) {
+            Globals.bodiesLinks[r.idBodyType] = r;
+        }
     },
     getSearchParams: (params, withWhere = true, withAndBefore = false, includeList = null) => {
         let values = [];
