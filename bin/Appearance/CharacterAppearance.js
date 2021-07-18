@@ -40,7 +40,7 @@ class CharacterAppearance {
     async init(id) {
         this.id = id;
         await conn.query(`INSERT INTO charactersappearance VALUES (?, "#241C11", "#BD804A", "#634E34", 1, 1);`, [this.id]);
-        await conn.query(`INSERT INTO charactersappearanceparts VALUES (SELECT ${this.id}, idAppearance, idAppearanceType FROM appearances WHERE idAppearanceType IN (1,2,3,4,5,7,9,10) GROUP BY idAppearanceType)`);
+        await conn.query(`INSERT INTO charactersappearanceparts SELECT ${this.id}, idAppearance FROM appearances WHERE idAppearanceType IN (1,2,3,4,5,7,9,10) GROUP BY idAppearanceType`);
         await this.load(id);
     }
 
