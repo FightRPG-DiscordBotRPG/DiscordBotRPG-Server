@@ -31,7 +31,7 @@ async function Start() {
     await nodesObject.load();
     await Globals.loadGlobals();
     app.get("/nodes", async (req, res) => {
-        res.json(await nodesObject.toApi());
+        res.json(nodesObject.toApi());
     });
 
     app.get("/nodes/visuals", async (req, res) => {

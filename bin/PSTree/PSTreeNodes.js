@@ -82,11 +82,11 @@ class PSTreeNodes {
 
     }
 
-    async toApi(lang = "en") {
+    toApi(lang = "en") {
         let nodes = [];
 
         for (let id in this.allNodes) {
-            nodes.push(await this.allNodes[id].toApi(lang));
+            nodes.push(this.allNodes[id].toApi(lang));
         }
 
         return {

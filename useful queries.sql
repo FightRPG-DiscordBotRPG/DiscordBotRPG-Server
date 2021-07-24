@@ -104,6 +104,8 @@ INNER JOIN
 	WHERE itemsbase.idRarity = 6 AND idCharacter GROUP BY idCharacter) test ON test.idCharacter = characters.idCharacter
 ORDER BY `charactershonor`.`Honor`  DESC
 
+-- Get all loots for each areas that are not default loots
+SELECT idArea, idBaseItem, nameArea, nameItem, idRarity, itemstypes.nomType, percentage FROM areasitems INNER JOIN itemsbase USING(idBaseItem) INNER JOIN areas USING(idArea) INNER JOIN localizationitems USING(idBaseItem) INNER JOIN localizationareas USING(idArea) INNER JOIN itemstypes USING(idType) WHERE itemsbase.isInDefaultLootTable = false AND localizationitems.lang = "fr" AND localizationareas.lang = "fr" and areas.idAreaType = 3
 
 
 

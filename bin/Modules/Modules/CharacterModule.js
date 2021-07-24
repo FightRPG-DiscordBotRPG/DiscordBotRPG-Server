@@ -326,7 +326,7 @@ class CharacterModule extends GModule {
             if (idNodeToSee != null) {
                 let node = Globals.pstreenodes.getNode(idNodeToSee);
                 if (node != null) {
-                    data.node = await node.toApi(res.locals.lang);
+                    data.node = node.toApi(res.locals.lang);
                     data.isAquired = Globals.connectedUsers[res.locals.id].character.talents.talents[idNodeToSee] != null;
                     if (data.isAquired) {
                         data.unlockable = false;
@@ -659,7 +659,7 @@ class CharacterModule extends GModule {
         }
 
         return {
-            node: await node.toApi(lang),
+            node: node.toApi(lang),
             pointsLeft: await character.getTalentPoints(),
         };
     }
