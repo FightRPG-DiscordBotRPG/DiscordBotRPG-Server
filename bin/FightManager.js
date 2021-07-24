@@ -81,7 +81,6 @@ class FightManager {
             rebirthLevel = area.getMaxRebirthLevel();
         }
 
-        // TODO Rebirth
         /**
          * @type {Monstre[]}
          **/
