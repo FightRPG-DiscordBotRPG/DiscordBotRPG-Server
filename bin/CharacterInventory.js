@@ -402,14 +402,13 @@ class CharacterInventory {
      * @param {Array<number>} listOfWantedItems
      */
     static async getNumbersOfThoseItemsByIDBase(idCharacter, listOfWantedItems) {
-        let res = await conn.query(`SELECT items.idBaseItem, number 
+        return await conn.query(`SELECT items.idBaseItem, number 
                                     FROM charactersinventory
                                     LEFT JOIN items 
                                         ON items.idItem = charactersinventory.idItem
                                     LEFT JOIN itemsbase
                                         ON itemsbase.idBaseItem = items.idBaseItem
                                     WHERE items.idBaseItem IN (?) AND charactersinventory.idCharacter = ?;`, [listOfWantedItems, idCharacter]);
-        return res;
     }
 
 
