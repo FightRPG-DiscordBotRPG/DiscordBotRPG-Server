@@ -183,6 +183,18 @@ class Utils {
         }
         return { more: more, sqlParams: sqlParams };
     }
+
+    static getMergedTableSql(lang="en") {
+        return `SELECT COALESCE(a.idBaseItem, b.idBaseItem) as idBaseItem, COALESCE(a.nameItem, b.nameItem) as nameItem, COALESCE(a.descItem, b.descItem) as descItem FROM 
+                (SELECT idBaseItem, nameItem, descItem FROM localizationitems WHERE lang="${lang}") a
+                RIGHT JOIN
+                (SELECT idBaseItem, nameItem, descItem FROM localizationitems WHERE lang="en") b
+                ON a.idBaseItem = b.idBaseItem`
+    }
+
+    static getLocalizationInnerJoin(lang="en") {
+        return `INNER JOIN (${Utils.getMergedTableSql(lang)}) loc ON loc.idBaseItem = items.idBaseItem`;
+    }
 }
 
 

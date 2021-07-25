@@ -26,6 +26,8 @@ const Skill = require("../../SkillsAndStatus/Skill");
 const Character = require("../../Character");
 const RebirthApiData = require("../../Rebirths/RebirthApiData");
 const State = require("../../SkillsAndStatus/State");
+const CharacterAppearance = require("../../Appearance/CharacterAppearance");
+const Appearance = require("../../Appearance/Appearance");
 
 
 
@@ -324,7 +326,7 @@ class CharacterModule extends GModule {
             if (idNodeToSee != null) {
                 let node = Globals.pstreenodes.getNode(idNodeToSee);
                 if (node != null) {
-                    data.node = await node.toApi(res.locals.lang);
+                    data.node = node.toApi(res.locals.lang);
                     data.isAquired = Globals.connectedUsers[res.locals.id].character.talents.talents[idNodeToSee] != null;
                     if (data.isAquired) {
                         data.unlockable = false;
@@ -345,8 +347,9 @@ class CharacterModule extends GModule {
         });
 
         this.router.post("/talents/up", async (req, res, next) => {
+            const data = await this.tryUnlockTalent(res.locals.character, parseInt(req.body.idNode), res.locals.lang);
             await next();
-            return res.json(await this.tryUnlockTalent(res.locals.character, parseInt(req.body.idNode), res.locals.lang));
+            return res.json(data);
         });
 
         this.router.get("/skills/show/:idSkill", async (req, res, next) => {
@@ -421,6 +424,117 @@ class CharacterModule extends GModule {
             await next();
             return res.json(await this.tryClearBuild(res));
         });
+
+        this.router.post("/appearance/", async (req, res, next) => {
+            const data = await this.updateCharacterAppearance(req, res);
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/appearance/", async (req, res, next) => {
+            const data = {
+                selectableHairColors: CharacterAppearance.selectableHairColors,
+                selectableBodyColors: CharacterAppearance.selectableBodyColors,
+                selectableEyeColors: CharacterAppearance.selectableEyeColors,
+                selectableBodyTypes: CharacterAppearance.selectableBodyTypes,
+                requiredAppearancesTypeForCharacter: CharacterAppearance.requiredAppearancesTypeForCharacter,
+                currentAppearance: res.locals.character.appearance,
+            };
+            data.currentAppearance.areaImage = res.locals.character.getArea().image;
+            await next();
+            return res.json(data);
+        });
+
+    }
+
+    /**
+     * 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     */
+    async updateCharacterAppearance(req, res) {
+
+        // Test colors
+        // Colors && Body Type
+        if (!CharacterAppearance.selectableBodyColors.includes(req.body.bodyColor)) {
+            return this.asError("Invalid body color");
+        }
+
+        if (!CharacterAppearance.selectableHairColors.includes(req.body.hairColor)) {
+            return this.asError("Invalid hair color");
+        }
+
+        if (!CharacterAppearance.selectableEyeColors.includes(req.body.eyeColor)) {
+            return this.asError("Invalid eye color");
+        }
+
+        let selectedBodyType = parseInt(req.body.bodyType);
+        if (!CharacterAppearance.selectableBodyTypes.includes(selectedBodyType)) {
+            return this.asError("Invalid body type");
+        }
+
+
+        if (!req.body.selectedAppearances) {
+            return this.asError("Missing appearances list");
+        }
+
+        const appearancesToAdd = req.body.selectedAppearances.split(",");
+
+
+        if (!Array.isArray(appearancesToAdd)) {
+            return this.asError("Should be an array");
+        }
+
+        let possibleAppearances = await CharacterAppearance.getAllPossibleAppearances();
+
+
+        /**
+         * @type {Object<string, Appearance>}
+         **/
+        let newAppearances = {};
+        let newTypes = [];
+
+        for (let item of appearancesToAdd) {
+
+            const appearanceItem = possibleAppearances[item];
+
+            if (!appearanceItem) {
+                return this.asError("Item: " + item + ", is invalid");
+            }
+
+            if (appearanceItem.idBodyType !== null && appearanceItem.idBodyType !== selectedBodyType) {
+                return this.asError("Item: " + item + ", is invalid for this body type");
+            }
+
+            newAppearances[appearanceItem.appearanceType] = appearanceItem;
+            newTypes.push(appearanceItem.appearanceType);
+
+            for (let link of appearanceItem.linkedTo) {
+                const linkedAppearance = possibleAppearances[link];
+
+                if (!linkedAppearance) {
+                    console.log("Weird Bug here /!\\ 1");
+                    continue;
+                }
+
+                if (newAppearances[linkedAppearance.appearanceType] && newAppearances[linkedAppearance.appearanceType].id !== linkedAppearance.id) {
+                    return this.asError("Item: " + item + ", is already defined");
+                }
+
+                newAppearances[linkedAppearance.appearanceType] = linkedAppearance;
+                newTypes.push(linkedAppearance.appearanceType);
+            }
+        }
+
+        if (!CharacterAppearance.requiredAppearancesTypeForCharacter.every(item => newTypes.includes(item))) {
+            return this.asError("Require type missing");
+        }
+
+        
+        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), {bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet});
+
+
+        return this.asSuccess(Translator.getString(res.locals.lang, "appearance", "success"));
 
     }
 
@@ -545,7 +659,7 @@ class CharacterModule extends GModule {
         }
 
         return {
-            node: await node.toApi(lang),
+            node: node.toApi(lang),
             pointsLeft: await character.getTalentPoints(),
         };
     }

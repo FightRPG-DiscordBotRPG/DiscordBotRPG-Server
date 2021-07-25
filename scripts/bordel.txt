@@ -1,5 +1,15 @@
 E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < discord_bot_rpg.sql
 
+
+
+import * as Trade from "D:/discordbotrpg-server/bin/Trades/Trade";
+import * as Group from "D:/discordbotrpg-server/bin/Group";
+import * as Marketplace from "D:/discordbotrpg-server/bin/Marketplace/Marketplace";
+import * as CraftingBuilding from "D:/discordbotrpg-server/bin/CraftSystem/CraftingBuilding";
+import * as Shop from "D:/discordbotrpg-server/bin/Shops/Shop";
+import * as Area from "D:/discordbotrpg-server/bin/Areas/Area";
+import * as LootSystem from "D:/discordbotrpg-server/bin/LootSystem";
+import * as Character from "D:/discordbotrpg-server/bin/Character";
     
     locals: {
         lang: string,
@@ -29,3 +39,21 @@ E:\wamp64\bin\mysql\mysql8.0.18\bin\mysql.exe -u root -p discord_bot_rpg < disco
     console.log("stats value: " + anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate));
     console.log((100 - anthelme.getSecondaryStat(SecondaryStats.possibleStats.EvadeRate)) / 100);
     console.log(anthelme.tempStatsModifiers[SecondaryStats.possibleStats.EvadeRate]);
+
+
+    // FOR DB Links items
+var arr = [366,371,376,381,386,391,396,401,406,411,416,421,426,431,436,441,446,451,456,461,466,469,474,479,484,487,490,495,500,505,510,515,520];
+
+let str = "";
+for(let i=0; i<arr.length - 1; i++) {
+	for(let j = arr[i] + 1; j<arr[i+1];j++) {
+  	str+= "("+ arr[i] +", "+j+"),\n";
+  }
+  str+="\n";
+}
+
+console.log(str);
+
+delete from linkedappearances;
+delete from itemsappearancesmaskcolors;
+delete from itemsappearances;

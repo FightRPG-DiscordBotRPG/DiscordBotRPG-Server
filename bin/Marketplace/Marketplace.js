@@ -33,13 +33,13 @@ class Marketplace {
         let maxPage = Math.ceil((await this.getCharacterNumberOfOrders(idCharacter, params, lang)) / perPage);
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [lang, this.id, idCharacter, perPage, (page - 1) * perPage], 3);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, idCharacter, perPage, (page - 1) * perPage], 2);
 
         page = maxPage > 0 && maxPage < page ? maxPage : page;
         let res = await conn.query(`SELECT idMarketplace, marketplacesorders.idItem, marketplacesorders.idCharacter, marketplacesorders.number, marketplacesorders.price FROM marketplacesorders 
                                     INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                     INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                    INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                    ${Utils.getLocalizationInnerJoin(lang)}
                                     INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                     WHERE idMarketplace = ? AND idCharacter = ? ${paramsResult.more} ORDER BY price DESC LIMIT ? OFFSET ?`, paramsResult.sqlParams);
 
@@ -54,12 +54,12 @@ class Marketplace {
     async getCharacterNumberOfOrders(idCharacter, params, lang) {
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [lang, this.id, idCharacter], 3);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [lang, this.id, idCharacter], 2);
 
         let res = await conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                     INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                     INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                    INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                    ${Utils.getLocalizationInnerJoin(lang)}
                                     INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                     WHERE idMarketplace = ? AND idCharacter = ? ${paramsResult.more};`, paramsResult.sqlParams);
 
@@ -69,12 +69,12 @@ class Marketplace {
     async getNumberOfOrders(params, lang) {
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [lang, this.id], 3);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id], 2);
 
         let res = await conn.query(`SELECT COUNT(*) FROM marketplacesorders
                                     INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                     INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                    INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                    ${Utils.getLocalizationInnerJoin(lang)}
                                     INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                     WHERE idMarketplace = ? ${paramsResult.more};`, paramsResult.sqlParams);
 
@@ -90,12 +90,12 @@ class Marketplace {
         page = maxPage > 0 && maxPage < page ? maxPage : page;
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [lang, this.id, perPage, (page - 1) * perPage], 2);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, perPage, (page - 1) * perPage], 1);
 
         let res = await conn.query(`SELECT idMarketplace, marketplacesorders.idItem, marketplacesorders.idCharacter, marketplacesorders.number, marketplacesorders.price FROM marketplacesorders
                                 INNER JOIN items ON items.idItem = marketplacesorders.idItem
                                 INNER JOIN itemsbase ON itemsbase.idBaseItem = items.idBaseItem
-                                INNER JOIN localizationitems ON localizationitems.idBaseItem = itemsbase.idBaseItem AND localizationitems.lang = ?
+                                ${Utils.getLocalizationInnerJoin(lang)}
                                 INNER JOIN itemspower ON itemspower.idItem = items.idItem
                                 WHERE marketplacesorders.idMarketplace = ? ${paramsResult.more} ORDER BY marketplacesorders.price ASC LIMIT ? OFFSET ?`,
             paramsResult.sqlParams);
@@ -185,9 +185,6 @@ class Marketplace {
         }
         return r;
     }
-
-
-
 
 }
 

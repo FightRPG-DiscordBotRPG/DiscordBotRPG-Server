@@ -65,7 +65,6 @@ class PSTreeNode {
          **/
         this.connectedNodes = [];
         this.localizedNodesNames = {};
-
     }
 
 	/**
@@ -115,9 +114,9 @@ class PSTreeNode {
 
     }
 
-    async toApi(lang = "en") {
+    toApi(lang = "en", withLinkedNodes = true) {
         let skillsIds = Object.keys(this.skillsUnlockedIds);
-        return {
+        let apiObject = {
             id: this.id,
             visuals: this.visuals ? this.visuals.toApi(lang) : null,
             stats: this.stats.toApi(),
@@ -134,6 +133,12 @@ class PSTreeNode {
             linkedNodes: this.localizedNodesNames[lang],
             linkedNodesIds: this.linkedNodesIds,
         }
+
+        if (withLinkedNodes) {
+            apiObject.linkedNodesItems = this.connectedNodes.map(e => e.toApi(lang, false));
+        }
+
+        return apiObject;
     }
 
     getRealCost() {
