@@ -23,7 +23,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`appearancesType` (
+CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`appearancestype` (
   `idAppearanceType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `propertyName` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idAppearanceType`),
