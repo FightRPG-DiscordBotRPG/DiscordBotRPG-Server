@@ -43,7 +43,17 @@ class StatsPlayer extends Stats {
     // New Stat if not exist
     async init(id) {
         for (let i = 1; i <= Globals.maxStatsId; ++i) {
-            await conn.query("INSERT INTO statscharacters VALUES (" + id + ", " + i + ", 0)");
+            let val;
+
+            if (i === 1) {
+                val = 2;
+            } else if (i === 3) {
+                val = 3;
+            } else {
+                val = 0;
+            }
+
+            await conn.query("INSERT INTO statscharacters VALUES (" + id + ", " + i + ", " +  val +")");
         }
         await this.loadStat(id);
     }

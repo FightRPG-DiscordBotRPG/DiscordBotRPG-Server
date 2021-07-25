@@ -60,7 +60,7 @@ class Character extends CharacterEntity {
 
     async init() {
 
-        var res = await conn.query("INSERT INTO characters VALUES (NULL, 5, 100, 1, 1);");
+        var res = await conn.query("INSERT INTO characters VALUES (NULL, 0, 100, 1, 1);");
         this.id = res["insertId"];
         this.uuid = this.id.toString();
         //Init level system
