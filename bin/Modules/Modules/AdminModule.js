@@ -342,39 +342,6 @@ class AdminModule extends GModule {
         await next();
         return res.json({ success: "done" });
     }
-
-    async debugCreateUser(authorIdentifier) {
-        if (!Globals.connectedUsers[authorIdentifier]) {
-            // Load User
-            Globals.connectedUsers[authorIdentifier] = new User(authorIdentifier, [...Array(10)].map(i => (~~(Math.random() * 36)).toString(36)).join(''), "");
-            await Globals.connectedUsers[authorIdentifier].loadUser();
-
-            if (Globals.connectedUsers[authorIdentifier].isNew) {
-                await Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
-            } else {
-                // Making user moving out of dungeon when connecting
-                let area = Globals.areasManager.getArea(Globals.connectedUsers[authorIdentifier].character.idArea);
-                if (area.areaType == "dungeon") {
-                    area = await area.getEntrance();
-                }
-                await Globals.connectedUsers[authorIdentifier].character.setArea(area);
-            }
-
-
-            // Load Guild
-            if (await Globals.connectedUsers[authorIdentifier].character.isInGuild()) {
-                let idGuild = await Globals.connectedUsers[authorIdentifier].character.getIDGuild();
-                if (!Globals.connectedGuilds[idGuild]) {
-                    Globals.connectedGuilds[idGuild] = new Guild();
-                    await Globals.connectedGuilds[idGuild].loadGuild(idGuild);
-                }
-            }
-            Globals.connectedUsers[authorIdentifier].isLoaded = true;
-        }
-        if (Globals.connectedUsers[authorIdentifier].isNew) {
-            Globals.connectedUsers[authorIdentifier].isNew = false;
-        }
-    }
 }
 
 module.exports = AdminModule;

@@ -30,7 +30,6 @@ class Character extends CharacterEntity {
         this.canFightAt = 0;
         this.canArenaAt = 0;
         this.idArea = 1;
-        this.area = new Area();
         this.idGuild = 0;
 
         // Party mechanics
