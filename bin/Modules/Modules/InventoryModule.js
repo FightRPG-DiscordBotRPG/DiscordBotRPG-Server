@@ -124,7 +124,7 @@ class InventoryModule extends GModule {
             let numberOfItemsToSell = parseInt(req.body.number, 10);
             numberOfItemsToSell = Number.isInteger(numberOfItemsToSell) ? numberOfItemsToSell : 1;
 
-            if (Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+            if (Globals.areasManager.canISellToThisArea(res.locals.currentArea.getID())) {
                 if (sellIdItem != null && Number.isInteger(sellIdItem)) {
                     if (isRealID == null || isRealID == false) {
                         if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(sellIdItem)) {
@@ -281,7 +281,7 @@ class InventoryModule extends GModule {
         } else {
             let idItemFav = parseInt(req.body.idItem, 10);
             let isRealID = req.body.isRealID;
-            
+
             if (idItemFav != null && Number.isInteger(idItemFav)) {
                 if (isRealID == null || isRealID == false) {
                     if (await Globals.connectedUsers[res.locals.id].character.haveThisObject(idItemFav)) {
@@ -317,11 +317,16 @@ class InventoryModule extends GModule {
         return data;
     }
 
+    /**
+     * 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     */
     async commonSellChecks(req, res) {
         let data = {};
         data.lang = res.locals.lang;
 
-        if (!Globals.areasManager.canISellToThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+        if (!Globals.areasManager.canISellToThisArea(res.locals.currentArea.getID())) {
             data.error = Translator.getString(res.locals.lang, "errors", "economic_have_to_be_in_town");
         } else {
             data.params = this.getSearchParams(req);

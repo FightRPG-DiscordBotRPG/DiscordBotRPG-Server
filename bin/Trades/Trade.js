@@ -164,7 +164,7 @@ class Trade {
     async validate(user) {
         let error, success = "";
         if (this.isTradeOpen()) {
-            if (this.playerOne.character.getIdArea() === this.playerTwo.character.getIdArea()) {
+            if (await this.playerOne.character.getIdArea() === await this.playerTwo.character.getIdArea()) {
                 let userToNotifyWhoHaventValidateYet;
                 if (user == this.playerOne) {
                     userToNotifyWhoHaventValidateYet = this.playerTwo;

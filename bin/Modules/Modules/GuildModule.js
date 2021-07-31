@@ -453,8 +453,8 @@ class GuildModule extends GModule {
             let idChar = Globals.connectedUsers[res.locals.id].character.id;
             if (tGuildId > 0 && await Globals.connectedGuilds[tGuildId].getRankCharacter(idChar) >= 2) {
                 if (!(await Globals.connectedGuilds[tGuildId].isRegisterToAnTournament())) {
-                    if (!(await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea()))) {
-                        await Globals.connectedGuilds[tGuildId].enroll(Globals.connectedUsers[res.locals.id].character.getIdArea());
+                    if (!(await AreaTournament.haveStartedByIdArea(res.locals.currentArea.getID()))) {
+                        await Globals.connectedGuilds[tGuildId].enroll(res.locals.currentArea.getID());
                         data.success = Translator.getString(res.locals.lang, "guild", "enroll");
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");

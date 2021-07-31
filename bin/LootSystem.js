@@ -20,7 +20,7 @@ class LootSystem {
      * @param {number} rebirthLevel
      */
     async loot(character, totalLuck = 0, level = 1, rebirthLevel = 0) {
-        let possibleLoots = character.getArea().getPossibleLoots();
+        let possibleLoots = (await character.getArea()).getPossibleLoots();
 
         let luckModifier = Math.min(totalLuck / character.stats.getMaximumStat(level, rebirthLevel) + 1, 3);
         let jsonLoot = {};

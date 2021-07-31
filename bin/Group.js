@@ -26,9 +26,9 @@ class Group {
         this.doingSomething = false;
     }
 
-    allInSameArea() {
+    async allInSameArea() {
         for (let i in this.players) {
-            if (this.players[i].character.getArea() != this.leader.character.getArea()) {
+            if (await this.players[i].character.getArea() != await this.leader.character.getArea()) {
                 return false;
             }
         }

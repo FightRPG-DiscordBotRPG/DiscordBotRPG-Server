@@ -40,7 +40,7 @@ class ConquestModule extends GModule {
             let tGuildId = await Globals.connectedUsers[res.locals.id].character.getIDGuild();
             if (await res.locals.currentArea.getOwnerID() === tGuildId) {
                 if (await Globals.connectedUsers[res.locals.id].character.isInGuild() && (await Globals.connectedGuilds[tGuildId].getRankCharacter(Globals.connectedUsers[res.locals.id].character.id)) === 3) {
-                    if (!await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+                    if (!await AreaTournament.haveStartedByIdArea(res.locals.currentArea.getID())) {
                         if (!await res.locals.currentArea.isMaxLevel()) {
                             let toLevelUpArea = await res.locals.currentArea.getPriceNextLevel();
                             if (await Globals.connectedGuilds[tGuildId].haveThisMoney(toLevelUpArea)) {
@@ -155,7 +155,7 @@ class ConquestModule extends GModule {
             return Translator.getString(res.locals.lang, "errors", "generic_cant_do_that");
         } 
 
-        if (await AreaTournament.haveStartedByIdArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+        if (await AreaTournament.haveStartedByIdArea(res.locals.currentArea.getID())) {
             return Translator.getString(res.locals.lang, "errors", "guild_tournament_started_generic");
         }
 

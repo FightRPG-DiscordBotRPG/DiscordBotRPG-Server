@@ -440,7 +440,7 @@ class CharacterModule extends GModule {
                 requiredAppearancesTypeForCharacter: CharacterAppearance.requiredAppearancesTypeForCharacter,
                 currentAppearance: res.locals.character.appearance,
             };
-            data.currentAppearance.areaImage = res.locals.character.getArea().image;
+            data.currentAppearance.areaImage = (await res.locals.character.getArea()).image;
             await next();
             return res.json(data);
         });

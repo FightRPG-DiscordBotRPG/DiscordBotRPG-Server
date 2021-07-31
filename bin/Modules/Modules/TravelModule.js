@@ -104,7 +104,7 @@ class TravelModule extends GModule {
         this.router.get("/players/:page?", async (req, res, next) => {
             let data = {}
             req.params.page = parseInt(req.params.page, 10);
-            data = await Globals.areasManager.getPlayersOf(Globals.connectedUsers[res.locals.id].character.getIdArea(), req.params.page, res.locals.lang);
+            data = await Globals.areasManager.getPlayersOf(res.locals.currentArea.getID(), req.params.page, res.locals.lang);
             data.lang = res.locals.lang;
             await next();
             return res.json(data);
@@ -115,7 +115,7 @@ class TravelModule extends GModule {
     /**
      * 
      * @param {any} req
-     * @param {any} res
+     * @param {express.Response} res
      * @param {boolean} isForRegion
      */
     async sharedAreaTests(req, res, isForRegion) {
@@ -124,13 +124,14 @@ class TravelModule extends GModule {
         wantedAreaToTravel = isNaN(wantedAreaToTravel) ? parseInt(req.body.idArea, 10) : wantedAreaToTravel;
         let isRealId = req.query.isRealId ? req.query.isRealId : req.body.isRealId;
         let doesAreaExist = false;
+        const userArea = res.locals.area
         if (isRealId) {
             doesAreaExist = Globals.areasManager.exist(wantedAreaToTravel);
         } else {
             if (isForRegion) {
-                doesAreaExist = Globals.areasManager.isConnectedToRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                doesAreaExist = Globals.areasManager.isConnectedToRegion(res.locals.currentArea.idRegion, wantedAreaToTravel);
             } else {
-                doesAreaExist = Globals.areasManager.existInRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                doesAreaExist = Globals.areasManager.existInRegion(res.locals.currentArea.idRegion, wantedAreaToTravel);
             }
         }
 
@@ -144,17 +145,17 @@ class TravelModule extends GModule {
                     areaObjectTravel = Globals.areasManager.getArea(wantedAreaToTravel);
                 } else {
                     if (isForRegion) {
-                        areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                        areaObjectTravel = Globals.areasManager.getConnectedAreaForThisRegion(res.locals.currentArea.idRegion, wantedAreaToTravel);
                     } else {
-                        areaObjectTravel = Globals.areasManager.getAreaForThisRegion(Globals.connectedUsers[res.locals.id].character.getIDRegion(), wantedAreaToTravel);
+                        areaObjectTravel = Globals.areasManager.getAreaForThisRegion(res.locals.currentArea.idRegion, wantedAreaToTravel);
                     }
                 }
 
-                if (areaObjectTravel.getID() == Globals.connectedUsers[res.locals.id].character.getIdArea()) {
+                if (areaObjectTravel.getID() == res.locals.currentArea.getID()) {
                     data.error = Translator.getString(res.locals.lang, "errors", "travel_already_here");
                 } else {
                     if (await areaObjectTravel.canTravelTo()) {
-                        let costs = await Globals.areasManager.getPathCosts(Globals.connectedUsers[res.locals.id].character.getIdArea(), areaObjectTravel.getID());
+                        let costs = await Globals.areasManager.getPathCosts(res.locals.currentArea.getID(), areaObjectTravel.getID());
 
                         let requiredAchievements = costs.neededAchievements;
                         let missingAchievements = [];
@@ -187,10 +188,17 @@ class TravelModule extends GModule {
         return data;
     }
 
+    /**
+     * 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {any} costs
+     * @param {any} areaObjectTravel
+     */
     async getDataTravelCosts(req, res, costs, areaObjectTravel) {
         let realWaitTime = await Globals.connectedUsers[res.locals.id].character.getWaitTimeTravel(costs);
         return {
-            from_name: Globals.connectedUsers[res.locals.id].character.getArea().getName(res.locals.lang),
+            from_name: res.locals.currentArea.getName(res.locals.lang),
             to_name: areaObjectTravel.getName(res.locals.lang),
             realWaitTime: realWaitTime,
             costs: costs,

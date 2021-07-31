@@ -64,7 +64,7 @@ class FightModule extends GModule {
 
             if (mId != -1 && await User.exist(mId)) {
                 if (res.locals.id !== mId) {
-                    if (await Globals.connectedUsers[res.locals.id].character.getArea().isFirstFloor()) {
+                    if (await res.locals.currentArea.isFirstFloor()) {
                         if (Globals.connectedUsers[res.locals.id].character.canDoPvp()) {
                             let userToAttack = new User(mId);
                             await userToAttack.lightLoad();

@@ -283,7 +283,7 @@ class GroupModule extends GModule {
             if (group != null) {
                 if (group.leader === Globals.connectedUsers[res.locals.id]) {
                     if (!group.doingSomething) {
-                        if (group.allInSameArea()) {
+                        if (await group.allInSameArea()) {
                             data = await this.FightPvERoute(req, res, 1);
                         } else {
                             data.error = Translator.getString(res.locals.lang, "errors", "group_not_same_area");

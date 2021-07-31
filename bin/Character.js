@@ -139,9 +139,6 @@ class Character extends CharacterEntity {
         this.recoverAll();
     }
 
-    async saveArea() {
-        await conn.query("UPDATE characters SET idArea = ? WHERE idCharacter = ?;", [this.getIdArea(), this.id]);
-    }
 
     /**
      * Time to wait as seconds
@@ -164,14 +161,13 @@ class Character extends CharacterEntity {
      * @param {Area} area
      **/
     async travel(area) {
-        this.area = area;
-        await this.saveArea();
+        await this.setArea(area);
         PStatistics.incrStat(this.id, "travels", 1);
         this.healIfAreaIsSafe();
     }
 
     async healIfAreaIsSafe() {
-        if (await this.area.isFirstFloor()) {
+        if (await (await this.getArea()).isFirstFloor()) {
             this.recoverAll();
         } else {
             // Still need to reset energy
@@ -183,8 +179,8 @@ class Character extends CharacterEntity {
      * 
      * @param {Area} area
      */
-    setArea(area) {
-        this.area = area;
+    async setArea(area) {
+        await conn.query("UPDATE characters SET idArea = ? WHERE idCharacter = ?;", [area.getID(), this.id]);
     }
 
     /**
@@ -228,19 +224,12 @@ class Character extends CharacterEntity {
         return this.canFightAt;
     }
 
-    getIdArea() {
-        return this.area.id;
+    async getIdArea() {
+        return (await this.getArea()).id;
     }
 
-    /**
-     * @returns {Area}
-     */
-    getArea() {
-        return this.area;
-    }
-
-    getIDRegion() {
-        return this.area.getIDRegion();
+    async getArea() {
+        return Globals.areasManager.getArea((await conn.query("SELECT idArea FROM characters WHERE idCharacter = ?;", [this.id]))[0].idArea);
     }
 
     getEquipement() {
@@ -631,14 +620,14 @@ class Character extends CharacterEntity {
         return craft.itemInfo.minLevel <= this.getCraftLevel() && craft.itemInfo.minRebirthLevel <= this.getCraftRebirthLevel();
     }
 
-    itemCraftedLevel(maxLevelItem) {
-        let craftingBuilding = this.getArea().getService("craftingbuilding");
+    async itemCraftedLevel(maxLevelItem) {
+        let craftingBuilding = await (this.getArea()).getService("craftingbuilding");
         maxLevelItem = craftingBuilding.getMaxLevel() < maxLevelItem ? craftingBuilding.getMaxLevel() : maxLevelItem;
         return this.getCraftLevel() <= maxLevelItem ? this.getCraftLevel() : maxLevelItem;
     }
 
-    itemCraftRebirthLevel(maxRebirthLevelItem) {
-        let craftingBuilding = this.getArea().getService("craftingbuilding");
+    async itemCraftRebirthLevel(maxRebirthLevelItem) {
+        let craftingBuilding = await (this.getArea()).getService("craftingbuilding");
         maxRebirthLevelItem = craftingBuilding.getMaxRebirthLevel() < maxRebirthLevelItem ? craftingBuilding.getMaxRebirthLevel() : maxRebirthLevelItem;
         return this.getCraftRebirthLevel() <= maxRebirthLevelItem ? this.getCraftRebirthLevel() : maxRebirthLevelItem;
     }
@@ -689,10 +678,10 @@ class Character extends CharacterEntity {
                 await Promise.all(promises);
 
                 let ls = new LootSystem();
-                let maxLevel = this.itemCraftedLevel(craft.itemInfo.maxLevel);
+                let maxLevel = await this.itemCraftedLevel(craft.itemInfo.maxLevel);
                 let levelItem = level != null && level > 0 && level <= maxLevel ? level : maxLevel;
 
-                let maxRebirthLevel = this.itemCraftRebirthLevel(craft.itemInfo);
+                let maxRebirthLevel = await this.itemCraftRebirthLevel(craft.itemInfo);
                 let rebirthLevelItem = rebirthLevel != null && rebirthLevel > 0 && rebirthLevel <= maxRebirthLevel ? rebirthLevel : maxRebirthLevel;
 
                 await ls.giveToPlayer(this, craft.itemInfo.idBase, levelItem, 1, true, rebirthLevelItem);
@@ -830,8 +819,8 @@ class Character extends CharacterEntity {
         return waitTime;
     }
 
-    waitForNextResource(rarity = 1, number = Globals.collectTriesOnce) {
-        let baseTimeToWait = this.getWaitTimeResource(rarity, number);
+    async waitForNextResource(rarity = 1, number = Globals.collectTriesOnce) {
+        let baseTimeToWait = await this.getWaitTimeResource(rarity, number);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
         this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
@@ -848,9 +837,9 @@ class Character extends CharacterEntity {
         return (Globals.basicWaitTimeCraft - Math.floor(this.getCraftLevel() / Globals.maxLevel * Globals.basicWaitTimeCraft / 2)) * 1000 * rarity;
     }
 
-    getWaitTimeResource(rarity = 1, number = Globals.collectTriesOnce) {
+    async getWaitTimeResource(rarity = 1, number = Globals.collectTriesOnce) {
         let waitTime = number * Globals.basicWaitTimeCollectTravel;
-        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / this.getArea().areaClimate.currentWeather.collectSpeed;
+        return (waitTime - Math.floor(this.getCraftLevel() / Globals.maxLevel * waitTime / 2)) * 1000 * (rarity / 2) / (await this.getArea()).areaClimate.currentWeather.collectSpeed;
     }
 
     getWaitTimeFight(more = 0) {
@@ -1051,6 +1040,7 @@ class Character extends CharacterEntity {
      * @param {string} lang
      */
     async toApiSimple(lang = "en") {
+        const myArea = (await this.getArea());
         return {
             name: this.getName(),
             level: this.getLevel(),
@@ -1061,8 +1051,8 @@ class Character extends CharacterEntity {
             maxMP: this.maxMP,
             actualEnergy: this.actualEnergy,
             maxEnergy: this.maxEnergy,
-            idArea: this.getIdArea(),
-            areaName: this.getArea().getName(lang)
+            idArea: myArea.getID(),
+            areaName: myArea.getName(lang)
         }
     }
 
@@ -1095,7 +1085,6 @@ const Area = require("./Areas/Area");
 const Stats = require("./Stats/Stats.js");
 const Craft = require("./CraftSystem/Craft.js");
 const Utils = require("./Utilities/Utils.js");
-
 
 /**
  * @typedef {import("./Trades/Trade")} Trade

@@ -125,7 +125,7 @@ class GModule {
     }
 
     loadNeededVariables() {
-        this.router.use((req, res, next) => {
+        this.router.use(async (req, res, next) => {
             if (Globals.connectedUsers[res.locals.id].isLoaded == true) {
                 for (let i in req.body) {
                     try {
@@ -145,22 +145,25 @@ class GModule {
                     }
                 }
 
-                let user = Globals.connectedUsers[res.locals.id];
-                let character = user.character;
-
+                const user = Globals.connectedUsers[res.locals.id];
+                const character = user.character;
 
                 res.locals.trade = character.trade;
                 res.locals.group = character.group;
                 res.locals.lang = user.getLang();
                 res.locals.pending = character.pendingPartyInvite;
                 res.locals.pendingTrade = character.pendingTradeInvite;
-                res.locals.marketplace = Globals.areasManager.getService(character.getIdArea(), "marketplace");
-                res.locals.craftingbuilding = Globals.areasManager.getService(character.getIdArea(), "craftingbuilding");
-                res.locals.shop = Globals.areasManager.getService(character.getIdArea(), "shop");
-                res.locals.currentArea = character.getArea();
                 res.locals.tLootSystem = new LootSystem();
                 res.locals.user = user;
                 res.locals.character = character;
+
+
+                const area = await character.getArea();
+                res.locals.currentArea = area;
+                res.locals.marketplace = Globals.areasManager.getService(area.getID(), "marketplace");
+                res.locals.craftingbuilding = Globals.areasManager.getService(area.getID(), "craftingbuilding");
+                res.locals.shop = Globals.areasManager.getService(area.getID(), "shop");
+
                 next();
             } else {
                 res.json({
@@ -239,7 +242,7 @@ class GModule {
         let data = {}
         let idEnemyGroup = parseInt(req.body.idMonster, 10);
 
-        if (Globals.areasManager.canIFightInThisArea(Globals.connectedUsers[res.locals.id].character.getIdArea())) {
+        if (Globals.areasManager.canIFightInThisArea(res.locals.currentArea.getID())) {
             if (idEnemyGroup != null && Number.isInteger(idEnemyGroup)) {
                 if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
                     let canIFightTheMonster = false;
@@ -255,20 +258,20 @@ class GModule {
                     let grpUsers = [];
 
                     if (fightType === 0) {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Perception));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(res.locals.currentArea.getID(), idEnemyGroup, Globals.connectedUsers[res.locals.id].character.getStat(Stats.possibleStats.Perception));
                         grpCharacters = [Globals.connectedUsers[res.locals.id].character];
                         grpUsers = [Globals.connectedUsers[res.locals.id]];
                     } else {
-                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup, group.getAverageTotalStat(Stats.possibleStats.Perception));
+                        canIFightTheMonster = Globals.areasManager.canIFightThisMonster(res.locals.currentArea.getID(), idEnemyGroup, group.getAverageTotalStat(Stats.possibleStats.Perception));
                         grpCharacters = group.getArrayOfCharacters();
                         grpUsers = group.getArrayOfPlayers();
                     }
 
 
                     if (!canIFightTheMonster) {
-                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                        grpEnemies = Globals.areasManager.selectRandomMonsterIn(res.locals.currentArea.getID(), idEnemyGroup);
                     } else {
-                        grpEnemies = Globals.areasManager.getMonsterIdIn(Globals.connectedUsers[res.locals.id].character.getIdArea(), idEnemyGroup);
+                        grpEnemies = Globals.areasManager.getMonsterIdIn(res.locals.currentArea.getID(), idEnemyGroup);
                     }
 
                     // Specific to dungeon
@@ -458,7 +461,7 @@ class AchievementUnlocker {
         if (this.userByName[username] != null) {
             this.listOfPlayerAndRelatedAchievements[this.userByName[username].id].achievements.push(idAchievement);
         }
-        
+
     }
 
     /**
@@ -487,7 +490,7 @@ class AchievementUnlockStructure {
      * @param {User} user
      */
     constructor(user) {
-        this.user = user; 
+        this.user = user;
 
         /**
          * @type {Array<Number>}

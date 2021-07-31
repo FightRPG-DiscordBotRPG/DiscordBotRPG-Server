@@ -80,7 +80,7 @@ class EquipmentModule extends GModule {
             data.lang = res.locals.lang;
             data.items = await Globals.connectedUsers[res.locals.id].character.equipement.toApi(res.locals.lang);
             data.appearance = Globals.connectedUsers[res.locals.id].character.appearance;
-            data.appearance.areaImage = Globals.connectedUsers[res.locals.id].character.getArea().image;
+            data.appearance.areaImage = res.locals.currentArea.image;
             await next();
             return res.json(data);
         });
