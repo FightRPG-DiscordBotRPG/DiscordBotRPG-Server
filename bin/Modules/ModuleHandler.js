@@ -10,17 +10,21 @@ const path = require('path');
 const conf = require("../../conf/conf");
 const versions = require("../../conf/versions");
 const TournamentViewer = require("../Helper/TournamentViewer");
+const cluster = require("cluster");
 const express = require("express"),
-    app = express(),
-    port = conf.port,
     url = require('url'),
     compression = require('compression');
 require('express-async-errors');
-app.listen(port, () => console.log("Starting RESTful api server on: " + port));
+
+/**
+ * @type express.Application
+ **/
+var app;
 
 class ModuleHandler extends GModule {
-    constructor() {
+    constructor(pApp) {
         super();
+        app = pApp;
         this.isReloadable = false;
         this.devMode = false;
         this.isActive = false;
@@ -44,7 +48,8 @@ class ModuleHandler extends GModule {
         }));
         app.use(express.json());
         app.use(compression());
-        app.use("/game", async (req, res, next) => {
+        app.use("/game", async (req, res, next) => {            
+            console.log("Request Cluster ID = " + cluster.worker.id);
             let urlParam1 = req.url.split("/");
             urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;
             if (Globals.activated || urlParam1) {
@@ -89,6 +94,7 @@ class ModuleHandler extends GModule {
     loadHelper() {
         let helpersRouter = express.Router();
         helpersRouter.get("/areas/resources", async (req, res) => {
+            console.log("Request Cluster ID = " + cluster.worker.id);
             let urlParts = url.parse(req.url, true);
             let parameters = urlParts.query;
             let lang = "en";

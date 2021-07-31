@@ -17,109 +17,99 @@ const EventsManager = require("./bin/Events/EventsManager.js");
 const CharacterAppearance = require("./bin/Appearance/CharacterAppearance.js");
 const Appearance = require("./bin/Appearance/Appearance.js");
 const ItemAppearance = require("./bin/Appearance/ItemAppearance.js");
-const options = {
-    webhookPort: 5000,
-    webhookAuth: conf.webhookkey
-};
-const dbl = new DBL(conf.discordbotskey, options);
-dbl.webhook.on('ready', hook => {
-    console.log(`Webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
-});
+const cluster = require("cluster");
+const totalCPUs = require("os").cpus().length;
+const mainCluster = require("./mainClustered");
 
-if (conf.env === "prod") {
 
-    dbl.webhook.on('vote', async (vote) => {
-        let idAndLang = await User.getIdAndLang(vote.user);
-        if (idAndLang != null) {
-            let ls = new LootSystem();
-            await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true, 0);
-            let lang = idAndLang.lang;
-            let msg = Translator.getString(lang, "vote_daily", "you_voted");
-            if (vote.isWeekend) {
-                msg += Translator.getString(lang, "vote_daily", "vote_week_end");
-            } else {
-                msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
-            }
-            User.tell(vote.user, msg);
-        }
 
+
+//process.on('unhandledRejection', up => {
+//    throw up;
+//});
+
+function loadDbl() {
+    const options = {
+        webhookPort: 5000,
+        webhookAuth: conf.webhookkey
+    };
+    const dbl = new DBL(conf.discordbotskey, options);
+    dbl.webhook.on('ready', hook => {
+        console.log(`Webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
     });
+
+    if (conf.env === "prod") {
+
+        dbl.webhook.on('vote', async (vote) => {
+            let idAndLang = await User.getIdAndLang(vote.user);
+            if (idAndLang != null) {
+                let ls = new LootSystem();
+                await ls.giveToPlayerDatabase(idAndLang.idCharacter, 41, 1, vote.isWeekend ? 2 : 1, true, 0);
+                let lang = idAndLang.lang;
+                let msg = Translator.getString(lang, "vote_daily", "you_voted");
+                if (vote.isWeekend) {
+                    msg += Translator.getString(lang, "vote_daily", "vote_week_end");
+                } else {
+                    msg += Translator.getString(lang, "vote_daily", "vote_no_week_end");
+                }
+                User.tell(vote.user, msg);
+            }
+
+        });
+    }
 }
-
-
-process.on('unhandledRejection', up => {
-    throw up;
-});
-
-
 
 //console.log(Globals);
 
 //let moduleHandler = new ModuleHandler();
 
 let startUp = async () => {
-    await Globals.loadGlobals();
 
-    await Translator.load();
+    if (cluster.isMaster) {
 
-    let syncStartWith = Date.now();
-    let totalGameStartTime = Date.now();
+        console.log(`Number of CPUs is ${totalCPUs}`);
+        console.log(`Master ${process.pid} is running`);
+        cluster.schedulingPolicy = cluster.SCHED_RR;
 
-    console.log("Initializing Database ...");
-    await DatabaseInitializer.initialize();
-    console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+        // Fork workers.
+        for (let i = 0; i < totalCPUs; i++) {
+            cluster.fork();
+        }
 
-    syncStartWith = Date.now();
-    console.log("Loading Rebirth Manager ...");
-    Globals.rebirthManager = new RebirthManager();
-    await Globals.rebirthManager.load();
-    console.log("Rebirth Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
-    syncStartWith = Date.now();
-    console.log("Loading Areas...");
-    Globals.areasManager = new AreasManager();
-    await Globals.areasManager.loadAreasManager();
-    console.log("Areas loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
-    syncStartWith = Date.now();
-    console.log("Loading Events Manager ...");
-    Globals.eventsManager = new EventsManager();
-    await Globals.eventsManager.load();
-    console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
-    syncStartWith = Date.now();
-    console.log("Loading Fight Manager...");
-    Globals.fightManager = new FightManager();
-    console.log("Fight Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
-    syncStartWith = Date.now();
-    Globals.pstreenodes = new PSTreeNodes();
-    await Globals.pstreenodes.load();
-    console.log("Passives/Skills Tree Nodes loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
-
-    console.time("All Possible Appearances Load");
-    await Appearance.loadAllPossibleAppearances();
-    await Appearance.loadAllPossibleBodyTypes();
-    await ItemAppearance.loadItemsAppearances();
-    console.timeEnd("All Possible Appearances Load");
+        cluster.on('exit', (worker, code, signal) => {
+            console.log(`worker ${worker.process.pid} died`);
+            console.log("Let's fork another worker!");
+            
+            cluster.fork();
+        });
 
 
-    let wbs = new WorldBossSpawner();
-    await wbs.load();
-    await wbs.startUp();
 
 
-    var connectedUsers = {};
-    var connectedGuilds = {};
+        let syncStartWith = Date.now();
 
-    Globals.connectedUsers = connectedUsers;
-    Globals.connectedGuilds = connectedGuilds;
+        console.log("Initializing Database ...");
+        await DatabaseInitializer.initialize();
+        console.log("Database initialized, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+        //syncStartWith = Date.now();
+        //console.log("Loading Events Manager ...");
+        //Globals.eventsManager = new EventsManager();
+        //await Globals.eventsManager.load();
+        //console.log("Events Manager loaded, took : " + ((Date.now() - syncStartWith) / 1000) + " seconds");
+
+        // Tag mémoire ou quelque chose comme ça pour savoir si une shard est déjà entrain de calculer les dégats?
+        let wbs = new WorldBossSpawner();
+        await wbs.startUp();
 
 
-    console.log("Game World loaded, took : " + ((Date.now() - totalGameStartTime) / 1000) + " seconds");
-
-    // Load api after all 
-    const mHandler = new ModuleHandler();
+        loadDbl();
+    } else {
+        const express = require("express");
+        const app = express();
+        app.listen(conf.port, () => console.log("Starting RESTful api server on: " + conf.port));
+        mainCluster(app);
+    }
 };
 
 startUp();
