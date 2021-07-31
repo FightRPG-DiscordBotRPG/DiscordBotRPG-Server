@@ -20,6 +20,7 @@ const ItemAppearance = require("./bin/Appearance/ItemAppearance.js");
 const cluster = require("cluster");
 const totalCPUs = require("os").cpus().length;
 const mainCluster = require("./mainClustered");
+const AreasClusterManager = require("./bin/ClusteringManagers/AreasClusterManager");
 
 
 
@@ -67,12 +68,20 @@ let startUp = async () => {
 
     if (cluster.isMaster) {
 
+
         console.log(`Number of CPUs is ${totalCPUs}`);
         console.log(`Master ${process.pid} is running`);
         cluster.schedulingPolicy = cluster.SCHED_RR;
 
+
+        console.time("Loading Clustering Manager for areas");
+        await AreasClusterManager.load();
+        console.timeEnd("Loading Clustering Manager for areas");
+
+
+
         // Fork workers.
-        for (let i = 0; i < totalCPUs; i++) {
+        for (let i = 0; i < 2; i++) {
             cluster.fork();
         }
 

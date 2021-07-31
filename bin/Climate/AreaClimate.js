@@ -2,6 +2,8 @@ const conn = require("../../conf/mysql");
 const Weather = require("./Weather");
 const Climate = require("./Climate");
 const Globals = require("../Globals");
+const moment = require("moment");
+const cluster = require("cluster");
 
 class AreaClimate {
     constructor(id) {
@@ -15,7 +17,7 @@ class AreaClimate {
         */
         this.currentWeather = null;
         this.intensity = 1;
-        this.dateNextWeatherChange = new Date();
+        this.dateNextWeatherChange = moment();
     }
 
     async load() {
@@ -23,23 +25,28 @@ class AreaClimate {
         this.climate = new Climate(res.idClimate);
         this.currentWeather = new Weather(res.currentWeather);
         this.intensity = res.intensity / 100;
-
+        this.dateNextWeatherChange = moment(res.nextWeatherChange);
+            
         await Promise.all([this.climate.load(), this.currentWeather.load()]);
-        this.scheduleNextWeatherChange();
+        if (cluster.isMaster) {
+            // On master (if activated) calculate next next weather
+            this.changeWeather();
+        } else {
+            // On non master load time idff
+            setTimeout(() => this.load(), this.dateNextWeatherChange.diff(moment()) + 10000);
+        }
     }
 
-    changeWeather() {
+    async changeWeather() {
         this.currentWeather = this.climate.getRandomWeather();
-        conn.query("UPDATE areasclimates SET currentWeather = ? WHERE idArea = ?;", [this.currentWeather.id, this.id]);
-        this.scheduleNextWeatherChange();
-        //if (this.weather.shorthand != "sunny") {
-        //    console.log(this.weather.shorthand);
-        //}
+        await conn.query("UPDATE areasclimates SET currentWeather = ? WHERE idArea = ?;", [this.currentWeather.id, this.id]);
+        await this.scheduleNextWeatherChange();
     }
 
-    scheduleNextWeatherChange() {
+    async scheduleNextWeatherChange() {
         let delay = (Math.random() * (Globals.weather.maxBeforeChange - Globals.weather.minBeforeChange) + Globals.weather.minBeforeChange) * 60000;
-        this.dateNextWeatherChange = new Date(Date.now() + delay);
+        this.dateNextWeatherChange = moment().add(delay, "millisecond");
+        await conn.query("UPDATE areasclimates SET nextWeatherChange = ? WHERE idArea = ?;", [this.dateNextWeatherChange.format('YYYY/MM/DD HH:mm:ss'), this.id]);
         setTimeout(() => this.changeWeather(), delay);
     }
 
