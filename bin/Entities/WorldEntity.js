@@ -890,9 +890,17 @@ class WorldEntity {
         return this.getLevel() / 2 + this.getSecondaryStat(SecondaryStats.possibleStats.Initiative);
     }
 
+    /**
+     * @returns {Promise<Area>}
+     * */
+    async getArea() {
+        return "Not Implemented";
+    }
+
 }
 
 module.exports = WorldEntity;
 
 const Globals = require("../Globals");
 const SkillBuild = require("../EntitiesBuilds/SkillBuild");
+const Area = require("../Areas/Area");

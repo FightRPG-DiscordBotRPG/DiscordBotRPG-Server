@@ -79,7 +79,7 @@ class FightPvE extends Fight {
             /**
              * @type {Area}
              */
-            let area = this.entities[0][0].getArea();
+            let area = await this.entities[0][0].getArea();
             let areaBonuses = await area.getAllBonuses();
             let promises = [];
             for (let i in this.entities[0]) {
@@ -176,7 +176,7 @@ class FightPvE extends Fight {
 
             // Don't need to await this
             (async () => {
-                let ownerid = await this.entities[0][0].getArea().getOwnerID();
+                let ownerid = await (await this.entities[0][0].getArea()).getOwnerID();
                 if (ownerid != null) {
                     await Guild.addMoney(ownerid, Math.round(totalMoney * 0.05));
                 }
