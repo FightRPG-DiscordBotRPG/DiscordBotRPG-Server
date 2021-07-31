@@ -49,7 +49,7 @@ class ModuleHandler extends GModule {
         app.use(express.json());
         app.use(compression());
         app.use("/game", async (req, res, next) => {            
-            console.log("Request Cluster ID = " + cluster.worker.id);
+            console.log("Request Cluster ID = " + cluster?.worker?.id);
             let urlParam1 = req.url.split("/");
             urlParam1 = urlParam1 != null ? urlParam1[1] == "admin" : false;
             if (Globals.activated || urlParam1) {
@@ -94,7 +94,6 @@ class ModuleHandler extends GModule {
     loadHelper() {
         let helpersRouter = express.Router();
         helpersRouter.get("/areas/resources", async (req, res) => {
-            console.log("Request Cluster ID = " + cluster.worker.id);
             let urlParts = url.parse(req.url, true);
             let parameters = urlParts.query;
             let lang = "en";

@@ -109,8 +109,8 @@ class CraftingModule extends GModule {
 
         let character = Globals.connectedUsers[res.locals.id].character;
 
-        if (!character.canDoAction()) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "collect_tired_wait_x_seconds", [character.getExhaust()]));
+        if (!await character.canDoAction()) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "collect_tired_wait_x_seconds", [await character.getExhaust()]));
         }
 
         if (!(idToCollect && Number.isInteger(idToCollect))) {
@@ -178,8 +178,8 @@ class CraftingModule extends GModule {
             return this.asError(Translator.getString(res.locals.lang, "errors", "craft_no_building"));
         }
 
-        if (!Globals.connectedUsers[res.locals.id].character.canDoAction()) {
-            return this.asError(Translator.getString(res.locals.lang, "errors", "craft_tired_wait_x_seconds", [Globals.connectedUsers[res.locals.id].character.getExhaust()]));
+        if (!await Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+            return this.asError(Translator.getString(res.locals.lang, "errors", "craft_tired_wait_x_seconds", [await Globals.connectedUsers[res.locals.id].character.getExhaust()]));
         }
 
         /* ToCraft = Craft type
@@ -216,7 +216,7 @@ class CraftingModule extends GModule {
 
         let data = this.asSuccess(Translator.getString(res.locals.lang, "craft", "craft_done", [Translator.getString(res.locals.lang, "itemsNames", toCraft.itemInfo.idBase)]) + "\n")
 
-        Globals.connectedUsers[res.locals.id].character.waitForNextCraft(toCraft.itemInfo.idRarity);
+        await Globals.connectedUsers[res.locals.id].character.waitForNextCraft(toCraft.itemInfo.idRarity);
 
         PStatistics.incrStat(Globals.connectedUsers[res.locals.id].character.id, "items_" + toCraft.getRarity() + "_craft", 1);
 

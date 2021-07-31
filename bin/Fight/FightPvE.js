@@ -90,7 +90,7 @@ class FightPvE extends Fight {
 
                 entity.healIfAreaIsSafe();
 
-                entity.waitForNextFight(this.summary.rounds.length * 2500);
+                await entity.waitForNextFight(this.summary.rounds.length * 2500);
 
                 // Stat for statistics system 
                 PStatistics.incrStat(entity.id, "pvefights_victories", 1);
@@ -190,7 +190,7 @@ class FightPvE extends Fight {
             let entity;
             for (entity of this.entities[0]) {
                 // 2.5 Seconds per round * 1000 => ms
-                entity.waitForNextFight(this.summary.rounds.length * 2500);
+                await entity.waitForNextFight(this.summary.rounds.length * 2500);
                 PStatistics.incrStat(entity.id, "pvefights_defeats", 1);
             }
         }

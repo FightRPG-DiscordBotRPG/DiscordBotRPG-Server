@@ -140,7 +140,7 @@ class AdminModule extends GModule {
                 }
 
                 if (Globals.connectedUsers[req.body.idUser]) {
-                    Globals.connectedUsers[req.body.idUser].character.waitForNextFight(muteTime * 1000);
+                    await Globals.connectedUsers[req.body.idUser].character.waitForNextFight(muteTime * 1000);
                     data.success = "User muted for " + muteTime + " seconds";
                 } else {
                     data.error = "User is not connected!";
@@ -216,8 +216,7 @@ class AdminModule extends GModule {
         this.router.post("/resetfight", async (req, res, next) => {
             let data = {};
 
-            Globals.connectedUsers[res.locals.id].character.canFightAt = 0;
-            Globals.connectedUsers[res.locals.id].character.canArenaAt = 0;
+            await Promise.all([Globals.connectedUsers[res.locals.id].character.setWaitTime(0), Globals.connectedUsers[res.locals.id].character.setWaitTimePvP(0)]);
             data.success = "Reset Done";
 
             data.lang = res.locals.lang;
@@ -261,7 +260,7 @@ class AdminModule extends GModule {
         });
 
         this.router.get("/debug/", async (req, res, next) => {
-            
+
             //console.log(await Globals.connectedUsers[res.locals.id].character.achievements.hasEveryAchievements([1,4,5]));
             //let s = new Skill();
             //await s.loadWithID(6);
@@ -320,7 +319,7 @@ class AdminModule extends GModule {
             }
             console.log(data);
             await next();
-            return res.json({ succes: "done" } );
+            return res.json({ succes: "done" });
         });
     }
 

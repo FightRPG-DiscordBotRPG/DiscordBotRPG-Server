@@ -87,7 +87,7 @@ class FightPvP extends Fight {
         this.summary.honor = honor;
 
         for (let entity of this.entities[0]) {
-            entity.waitForNextPvPFight(this.summary.rounds.length * 2500);
+            await entity.waitForNextPvPFight(this.summary.rounds.length * 2500);
         }
     }
 

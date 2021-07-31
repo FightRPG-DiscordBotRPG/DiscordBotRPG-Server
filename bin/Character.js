@@ -13,6 +13,7 @@ const conf = require("../conf/conf");
 const CharacterAchievement = require("./Achievement/CharacterAchievements");
 const Mount = require("./Items/Mounts/Mount");
 const CharacterAppearance = require("./Appearance/CharacterAppearance.js");
+const moment = require("moment");
 
 class Character extends CharacterEntity {
     constructor(idUser) {
@@ -27,8 +28,6 @@ class Character extends CharacterEntity {
         this.statPoints = 0;
         this.money = 0;
         this.talentPoints = 0;
-        this.canFightAt = 0;
-        this.canArenaAt = 0;
         this.idArea = 1;
         this.idGuild = 0;
 
@@ -76,8 +75,6 @@ class Character extends CharacterEntity {
             this.appearance.init(this.id),
         ]);
 
-        this.idArea = 1;
-
         this.updateStats();
 
         // [Health]
@@ -103,8 +100,6 @@ class Character extends CharacterEntity {
             this.skillBuild.load(id),
             this.appearance.load(id),
         ]);
-
-        this.idArea = res["idArea"];
 
         res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [id]);
         if (res.length > 0) {
@@ -151,8 +146,7 @@ class Character extends CharacterEntity {
         }
 
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + (baseTimeToWait * 1000));
-        await this.travel(area);
+        await Promise.all([this.setWaitTime(Date.now() + (baseTimeToWait * 1000)), await this.travel(area)]);
     }
 
     /***
@@ -185,42 +179,44 @@ class Character extends CharacterEntity {
     /**
      * /!\ Resets all wait time (pvp && pve)
      **/
-    resetWaitTime() {
-        this.setWaitTime(0);
-        this.setWaitTimePvP(0);
+    async resetWaitTime() {
+        await Promise.all[this.setWaitTime(0), await this.setWaitTimePvP(0)];
     }
 
     /**
      * /!\ Reduces all wait time (pvp && pve)
      * @param {Number} percentage 
      */
-    reduceWaitTime(percentage = 0) {
-        this.reduceWaitTimePvP(percentage);
-        this.reduceWaitTimePvE(percentage);
+    async reduceWaitTime(percentage = 0) {
+        await Promise.all([this.reduceWaitTimePvP(percentage), await this.reduceWaitTimePvE(percentage)]);
     }
 
-    reduceWaitTimePvP(percentage = 0) {
+    async reduceWaitTimePvP(percentage = 0) {
         percentage = percentage >= 0 && percentage <= 1 ? percentage : 0;
-        let reducePvP = this.getExhaustMillisPvp() * percentage;
-        this.setWaitTimePvP(reducePvP)
+        let reducePvP = await this.getExhaustMillisPvp() * percentage;
+        await this.setWaitTimePvP(reducePvP)
     }
 
-    reduceWaitTimePvE(percentage = 0) {
+    async reduceWaitTimePvE(percentage = 0) {
         percentage = percentage >= 0 && percentage <= 1 ? percentage : 0;
-        let reducePvE = this.getExhaustMillis() * percentage;
-        this.setWaitTime(this.getWaitTime() - reducePvE);
+        let reducePvE = await this.getExhaustMillis() * percentage;
+        await this.setWaitTime(await this.getWaitTime() - reducePvE);
     }
 
-    setWaitTime(time) {
-        this.canFightAt = time;
+    async setWaitTime(time) {
+        await conn.query("UPDATE characters SET nextPvEAction = ? WHERE idCharacter = ?", [moment(time).format('YYYY/MM/DD HH:mm:ss'), this.id]);
     }
 
-    setWaitTimePvP(time) {
-        this.canArenaAt = time;
+    async setWaitTimePvP(time) {
+        await conn.query("UPDATE characters SET nextPvPAction = ? WHERE idCharacter = ?", [moment(time).format('YYYY/MM/DD HH:mm:ss'), this.id]);
     }
 
-    getWaitTime() {
-        return this.canFightAt;
+    async getWaitTime() {
+        return moment((await conn.query("SELECT nextPvEAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvEAction).unix() * 1000;
+    }
+
+    async getWaitTimePvP() {
+        return moment((await conn.query("SELECT nextPvPAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvPAction).unix() * 1000;
     }
 
     async getIdArea() {
@@ -292,28 +288,28 @@ class Character extends CharacterEntity {
      * Exhaust time in seconds
      * @returns {number} Exhuast time in seconds
      */
-    getExhaust() {
-        return Math.ceil((this.getWaitTime() - Date.now()) / 1000);
+    async getExhaust() {
+        return Math.ceil((await this.getWaitTime() - Date.now()) / 1000);
     }
 
-    getExhaustPvp() {
-        return Math.ceil((this.canArenaAt - Date.now()) / 1000); 
+    async getExhaustPvp() {
+        return Math.ceil((await this.getWaitTimePvP() - Date.now()) / 1000);
     }
 
-    getExhaustMillis() {
-        return this.getWaitTime() - Date.now();
+    async getExhaustMillis() {
+        return await this.getWaitTime() - Date.now();
     }
 
-    getExhaustMillisPvp() {
-        return this.canArenaAt - Date.now();
+    async getExhaustMillisPvp() {
+        return await this.getWaitTimePvP() - Date.now();
     }
 
-    canDoAction() {
-        return conf.env == "dev" ? true : (this.getWaitTime() <= Date.now());
+    async canDoAction() {
+        return conf.env == "dev" ? true : (await this.getWaitTime() <= Date.now());
     }
 
-    canDoPvp() {
-        return conf.env == "dev" ? true : (this.canArenaAt <= Date.now());
+    async canDoPvp() {
+        return conf.env == "dev" ? true : (await this.getWaitTimePvP() <= Date.now());
     }
 
     // Group System
@@ -798,37 +794,37 @@ class Character extends CharacterEntity {
     }
 
     // More = time in ms
-    waitForNextFight(more = 0) {
+    async waitForNextFight(more = 0) {
         let waitTime = this.getWaitTimeFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + waitTime);
+        await this.setWaitTime(Date.now() + waitTime);
         return waitTime;
     }
 
-    waitForNextPvPFight(more = 0) {
+    async waitForNextPvPFight(more = 0) {
         let waitTime = this.getWaitTimePvPFight(more);
         //console.log("User : " + this.id + " have to wait " + (baseTimeToWait + more) / 1000 + " seconds to wait before next fight");
-        this.setWaitTimePvP(Date.now() + waitTime);
+        await this.setWaitTimePvP(Date.now() + waitTime);
         return waitTime;
     }
 
-    waitForNextWorldBoss() {
+    async waitForNextWorldBoss() {
         let waitTime = this.getWaitTimePvPFight(0);
-        this.setWaitTime(Date.now() + waitTime);
+        await this.setWaitTime(Date.now() + waitTime);
         return waitTime;
     }
 
     async waitForNextResource(rarity = 1, number = Globals.collectTriesOnce) {
         let baseTimeToWait = await this.getWaitTimeResource(rarity, number);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + baseTimeToWait);
+        await this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
     }
 
-    waitForNextCraft(rarity = 1) {
+    async waitForNextCraft(rarity = 1) {
         let baseTimeToWait = this.getWaitTimeCraft(rarity);
         //console.log("User : " + this.id + " have to wait " + baseTimeToWait / 1000 + " seconds to wait before next fight");
-        this.setWaitTime(Date.now() + baseTimeToWait);
+        await this.setWaitTime(Date.now() + baseTimeToWait);
         return baseTimeToWait;
     }
 
@@ -1039,7 +1035,7 @@ class Character extends CharacterEntity {
      * @param {string} lang
      */
     async toApiSimple(lang = "en") {
-        const myArea = (await this.getArea());
+        const myArea = await this.getArea();
         return {
             name: this.getName(),
             level: this.getLevel(),

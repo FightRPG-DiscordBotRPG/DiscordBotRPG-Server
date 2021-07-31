@@ -14,7 +14,7 @@ class EnergyPotion extends Potion {
      */
     async use(character, numberOfUse=1) {
         this.numberOfUse += numberOfUse;
-        character.reduceWaitTime(this.getReductionPercentageWithNumberOfUse(numberOfUse));
+        await character.reduceWaitTime(this.getReductionPercentageWithNumberOfUse(numberOfUse));
     }
 
     getReductionPercentageWithNumberOfUse(numberOfUse = 1) {

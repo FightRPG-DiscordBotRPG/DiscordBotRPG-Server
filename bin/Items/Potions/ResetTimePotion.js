@@ -12,7 +12,7 @@ class ResetTimePotion extends Potion {
      */
     async use(character) {
         this.numberOfUse++;
-        character.resetWaitTime();
+        await character.resetWaitTime();
     }
 
     resultToString(lang) {

@@ -29,10 +29,10 @@ class FightManager {
      * 
      * @param {Array<Character>} users
      */
-    timeToFight(users) {
+    async timeToFight(users) {
         for (let i in users) {
-            if (!users[i].canDoAction()) {
-                return users[i].getExhaustMillis();
+            if (!await users[i].canDoAction()) {
+                return await users[i].getExhaustMillis();
             }
         }
         return -1;
@@ -43,10 +43,10 @@ class FightManager {
      * 
      * @param {Array<Character>} users
      */
-    timeToFightPvp(users) {
+    async timeToFightPvp(users) {
         for (let i in users) {
-            if (!users[i].canDoPvp()) {
-                return users[i].getExhaustMillisPvp();
+            if (!await users[i].canDoPvp()) {
+                return await users[i].getExhaustMillisPvp();
             }
         }
         return -1;
@@ -139,9 +139,9 @@ class FightManager {
             summary: new FightPvE([], [], lang).summary,
             beingAttacked: !canIFightTheMonster
         }
-        let alreadyInBattle = characters.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
-        let timeToFight = this.timeToFight(characters);
-        if (timeToFight < 0 && !alreadyInBattle) {
+        //let alreadyInBattle = characters.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
+        let timeToFight = await this.timeToFight(characters);
+        if (timeToFight < 0) {
             let enemies = await this.loadMonsters(monsters, characters);
 
             if (toApi.beingAttacked) {
@@ -153,6 +153,7 @@ class FightManager {
 
             await fight.init(resetFightStats);
 
+            // TODO: stop using this for characters groups
             this.fights[userid] = fight;
 
             // For each people in the group
@@ -172,9 +173,7 @@ class FightManager {
             toApi.summary = this.fights[userid].summary;
         } else {
             // erreur
-            if (alreadyInBattle) {
-                toApi.error = Translator.getString(lang, "errors", "fight_already_in");
-            } else if (timeToFight >= 0) {
+            if (timeToFight >= 0) {
                 toApi.error = Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)]);
             }
 
@@ -210,15 +209,16 @@ class FightManager {
             summary: new FightPvP([], []).summary
         }
 
-        let alreadyInBattle = attackers.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
+        //let alreadyInBattle = attackers.length > 1 ? this.fightAlreadyInBattle(userid) : this.fights[userid] !== undefined;
 
-        let timeToFight = this.timeToFightPvp(attackers);
+        let timeToFight = await this.timeToFightPvp(attackers);
 
-        if (timeToFight < 0 && !alreadyInBattle) {
+        if (timeToFight < 0) {
 
             let pvpFight = new FightPvP(attackers, defenders);
             await pvpFight.init(true);
             toApi.summary = pvpFight.summary;
+            // TODO: stop using this for characters groups
             this.fights[userid] = pvpFight;
             if (attackers.length > 1 && Globals.connectedUsers[userid] != null && Globals.connectedUsers[userid].character.group != null) {
                 Globals.connectedUsers[userid].character.group.doingSomething = true;
@@ -234,11 +234,8 @@ class FightManager {
 
         } else {
             // erreur
-            if (alreadyInBattle) {
+            if (timeToFight >= 0) {
                 //console.log("Can't Initialize Fight : Already in battle");
-                toApi.error = Translator.getString(lang, "errors", "fight_already_in");
-            } else if (timeToFight >= 0) {
-                //console.log("Can't Initialize Fight : Have To Wait");
                 toApi.error = Translator.getString(lang, "errors", "generic_tired", [Math.ceil(timeToFight / 1000)]);
             }
 

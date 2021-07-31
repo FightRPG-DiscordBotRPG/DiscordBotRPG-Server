@@ -903,4 +903,6 @@ module.exports = WorldEntity;
 
 const Globals = require("../Globals");
 const SkillBuild = require("../EntitiesBuilds/SkillBuild");
-const Area = require("../Areas/Area");
+/**
+ * @typedef {import("../Areas/Area")} Area
+ */

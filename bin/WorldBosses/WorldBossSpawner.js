@@ -467,11 +467,11 @@ class WorldBossSpawner {
             await wbs.startUp();
             WorldBossSpawner.instance.announceNextBoss(wb.id);
         }
-        character.waitForNextWorldBoss();
+        await character.waitForNextWorldBoss();
         return {
             damage: damage,
             isCriticalHit: isCriticalHit,
-            waitTime: character.getExhaust(),
+            waitTime: await character.getExhaust(),
             skillUsed: higestEvaluation.skillName
         };
     }

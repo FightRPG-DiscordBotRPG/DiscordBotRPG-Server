@@ -135,7 +135,7 @@ class TravelModule extends GModule {
             }
         }
 
-        if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+        if (await Globals.connectedUsers[res.locals.id].character.canDoAction()) {
             if (doesAreaExist) {
                 /**
                  * @type {Area}
@@ -183,7 +183,7 @@ class TravelModule extends GModule {
                 data.error = Translator.getString(res.locals.lang, "errors", "travel_area_dont_exist");
             }
         } else {
-            data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            data.error = Translator.getString(res.locals.lang, "errors", "travel_tired_wait_x", [await Globals.connectedUsers[res.locals.id].character.getExhaust()]);
         }
         return data;
     }
@@ -223,7 +223,7 @@ class TravelModule extends GModule {
             ]);
 
             // add success
-            data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+            data.success = Translator.getString(res.locals.lang, "travel", "travel_to_area", [wantedAreaToTravel.getName(res.locals.lang)]) + "\n" + Translator.getString(res.locals.lang, "travel", "travel_to_area_exhaust", [await Globals.connectedUsers[res.locals.id].character.getExhaust()]);
         } else {
             data.error = Translator.getString(res.locals.lang, "errors", "economic_dont_have_enough_money");
         }

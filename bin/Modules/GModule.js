@@ -159,12 +159,13 @@ class GModule {
 
 
                 const area = await character.getArea();
+
                 res.locals.currentArea = area;
                 res.locals.marketplace = Globals.areasManager.getService(area.getID(), "marketplace");
                 res.locals.craftingbuilding = Globals.areasManager.getService(area.getID(), "craftingbuilding");
                 res.locals.shop = Globals.areasManager.getService(area.getID(), "shop");
-
                 next();
+
             } else {
                 res.json({
                     error: "Your character is loading, you must wait a little."
@@ -241,7 +242,6 @@ class GModule {
         let group = res.locals.group;
         let data = {}
         let idEnemyGroup = parseInt(req.body.idMonster, 10);
-
         if (Globals.areasManager.canIFightInThisArea(res.locals.currentArea.getID())) {
             if (idEnemyGroup != null && Number.isInteger(idEnemyGroup)) {
                 if (res.locals.currentArea.getMonsterId(idEnemyGroup) != null) {
@@ -299,7 +299,7 @@ class GModule {
 
                             for (let character of grpCharacters) {
                                 // Not wating this since players can't move because of exhaust
-                                character.changeArea(areaToTravel, character.getExhaust());
+                                character.changeArea(areaToTravel, await character.getExhaust());
                             }
 
                             data.playersMovedTo = areaToTravel.getName(res.locals.lang);

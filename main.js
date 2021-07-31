@@ -88,7 +88,7 @@ let startUp = async () => {
         cluster.on('exit', (worker, code, signal) => {
             console.log(`worker ${worker.process.pid} died`);
             console.log("Let's fork another worker!");
-            
+
             cluster.fork();
         });
 
@@ -119,6 +119,13 @@ let startUp = async () => {
         app.listen(conf.port, () => console.log("Starting RESTful api server on: " + conf.port));
         mainCluster(app);
     }
+
+
+    //const express = require("express");
+    //const app = express();
+    //app.listen(conf.port, () => console.log("Starting RESTful api server on: " + conf.port));
+    //mainCluster(app);
+
 };
 
 startUp();

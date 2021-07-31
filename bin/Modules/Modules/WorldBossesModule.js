@@ -67,14 +67,14 @@ class WorldBosses extends GModule {
             let data = {};
 
             let wb = await res.locals.currentArea.getWorldBoss(res.locals.lang);
-            if (Globals.connectedUsers[res.locals.id].character.canDoAction()) {
+            if (await Globals.connectedUsers[res.locals.id].character.canDoAction()) {
                 if (wb != null) {
                     data = await WorldBossSpawner.instance.userAttack(res.locals.character, wb, Globals.connectedUsers[res.locals.id].getLang());
                 } else {
                     data.error = Translator.getString(res.locals.lang, "world_bosses", "no_world_boss");
                 }
             } else {
-                data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [Globals.connectedUsers[res.locals.id].character.getExhaust()]);
+                data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [await Globals.connectedUsers[res.locals.id].character.getExhaust()]);
             }
 
             data.lang = res.locals.lang;
