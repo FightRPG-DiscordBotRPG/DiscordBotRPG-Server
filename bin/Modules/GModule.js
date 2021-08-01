@@ -148,6 +148,9 @@ class GModule {
                 const user = Globals.connectedUsers[res.locals.id];
                 const character = user.character;
 
+                await character.loadCharacter(character.id);
+                const area = await character.getArea();
+
                 res.locals.trade = character.trade;
                 res.locals.group = character.group;
                 res.locals.lang = user.getLang();
@@ -158,7 +161,6 @@ class GModule {
                 res.locals.character = character;
 
 
-                const area = await character.getArea();
 
                 res.locals.currentArea = area;
                 res.locals.marketplace = Globals.areasManager.getService(area.getID(), "marketplace");
