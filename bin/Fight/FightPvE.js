@@ -87,10 +87,7 @@ class FightPvE extends Fight {
                  * @type {Character}
                  */
                 let entity = this.entities[0][i];
-
-                entity.healIfAreaIsSafe();
-
-                await entity.waitForNextFight(this.summary.rounds.length * 2500);
+                await Promise.all([ entity.waitForNextFight(this.summary.rounds.length * 2500), entity.saveHealthAndMana()]);
 
                 // Stat for statistics system 
                 PStatistics.incrStat(entity.id, "pvefights_victories", 1);

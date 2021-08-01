@@ -87,7 +87,7 @@ class Character extends CharacterEntity {
 
     async loadCharacter(id) {
         // load from database
-        let res = (await conn.query("SELECT * FROM characters INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter WHERE characters.idCharacter = ?", [id]))[0];
+        const res = (await conn.query("SELECT * FROM characters INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter WHERE characters.idCharacter = ?", [id]))[0];
         this.id = id;
         this.uuid = this.id.toString();
         this.area = Globals.areasManager.getArea(res["idArea"]);
@@ -103,15 +103,23 @@ class Character extends CharacterEntity {
             this.appearance.load(id),
         ]);
 
-        res = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [id]);
-        if (res.length > 0) {
-            this.idGuild = res[0]["idGuild"];
+        const resGuilds = await conn.query("SELECT idGuild FROM guildsmembers WHERE idCharacter = ?;", [id]);
+        if (resGuilds.length > 0) {
+            this.idGuild = resGuilds[0]["idGuild"];
         }
 
         this.updateStats();
+        this.recoverAll();
+        
+        if (!await this.area.isFirstFloor()) {
+            this.actualHP = res.health;
+            this.actualMP = res.mana;
+        }
+    }
 
-        this.recoverAll()
-
+    async saveHealthAndMana() {
+        console.log(this.actualHP + " & " + this.actualMP);
+        await conn.query("UPDATE characters SET health = ?, mana = ? WHERE idCharacter = ?;", [this.actualHP, this.actualMP, this.id]);
     }
 
     /**    
@@ -158,7 +166,7 @@ class Character extends CharacterEntity {
     async travel(area) {
         await this.setArea(area);
         PStatistics.incrStat(this.id, "travels", 1);
-        this.healIfAreaIsSafe();
+        await this.healIfAreaIsSafe();
     }
 
     async healIfAreaIsSafe() {
@@ -387,7 +395,7 @@ class Character extends CharacterEntity {
             ]);
 
             this.updateStats();
-            this.healIfAreaIsSafe();
+            await this.healIfAreaIsSafe();
             return true;
         }
 
@@ -441,7 +449,7 @@ class Character extends CharacterEntity {
 
     async updateStatsAndHeal() {
         this.updateMaxStats();
-        await this.healIfAreaIsSafe();
+        await await this.healIfAreaIsSafe();
     }
 
     getResetStatsValue() {

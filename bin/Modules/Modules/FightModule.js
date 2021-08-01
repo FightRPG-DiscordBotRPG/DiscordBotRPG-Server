@@ -78,7 +78,7 @@ class FightModule extends GModule {
                                 data.error = response.error;
                             } else {
                                 data = response;
-                                userWhoAttack.character.healIfAreaIsSafe();
+                                await userWhoAttack.character.healIfAreaIsSafe();
                             }
                         } else {
                             data.error = Translator.getString(res.locals.lang, "errors", "generic_tired", [await Globals.connectedUsers[res.locals.id].character.getExhaustPvp()]);
