@@ -326,7 +326,7 @@ class ModuleHandler extends GModule {
 
             if (Globals.connectedUsers[authorIdentifier].isNew) {
                 await Globals.connectedUsers[authorIdentifier].character.setArea(Globals.areasManager.getArea(1));
-            } else {
+            } else if (!Globals.connectedUsers[authorIdentifier].isConnected) {
                 // Making user moving out of dungeon when connecting
                 let area = await Globals.connectedUsers[authorIdentifier].character.getArea();
                 if (area.constructor === DungeonArea) {

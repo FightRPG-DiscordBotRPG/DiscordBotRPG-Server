@@ -18,6 +18,7 @@ class User {
         this.username = username; //username.replace(/[\u0800-\uFFFF]/g, '');
         this.isNew = false;
         this.lastCommandTime = Date.now();
+        this.isConnected = false;
 
         this.preferences = {
             lang: "en",
@@ -62,6 +63,7 @@ class User {
         } else {
             // Sinon on le load
             await this.character.loadCharacter(res[0]["idCharacter"]);
+            this.isConnected = res[0]["isConnected"];
             if (this.username != null && this.username != res[0]["userName"]) {
                 await conn.query("UPDATE users SET userName = ? WHERE idUser = ?", [this.username, this.id]);
             } else {
