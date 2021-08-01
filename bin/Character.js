@@ -28,8 +28,11 @@ class Character extends CharacterEntity {
         this.statPoints = 0;
         this.money = 0;
         this.talentPoints = 0;
-        this.idArea = 1;
         this.idGuild = 0;
+        /**
+         * @type {Area}
+         **/
+        this.area = null;
 
         // Party mechanics
         /**
@@ -58,9 +61,10 @@ class Character extends CharacterEntity {
 
     async init() {
 
-        var res = await conn.query("INSERT INTO characters VALUES (NULL, 0, 100, 1, 1);");
+        var res = await conn.query("INSERT INTO characters VALUES (NULL, 0, 100, 1, 1, null, null, null, null);");
         this.id = res["insertId"];
         this.uuid = this.id.toString();
+        this.area = Globals.areasManager.getArea(1);
         //Init level system
         await Promise.all([
             this.levelSystem.init(this.id, this.idUser),
@@ -83,12 +87,10 @@ class Character extends CharacterEntity {
 
     async loadCharacter(id) {
         // load from database
-        let res = (await conn.query("SELECT statPoints, money, idArea, talentPoints " +
-            "FROM characters " +
-            "INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter " +
-            "WHERE characters.idCharacter = ?", [id]))[0];
+        let res = (await conn.query("SELECT * FROM characters INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter WHERE characters.idCharacter = ?", [id]))[0];
         this.id = id;
         this.uuid = this.id.toString();
+        this.area = Globals.areasManager.getArea(res["idArea"]);
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.load(id, this.idUser),
@@ -174,6 +176,7 @@ class Character extends CharacterEntity {
      */
     async setArea(area) {
         await conn.query("UPDATE characters SET idArea = ? WHERE idCharacter = ?;", [area.getID(), this.id]);
+        this.area = area;
     }
 
     /**
@@ -224,7 +227,7 @@ class Character extends CharacterEntity {
     }
 
     async getArea() {
-        return Globals.areasManager.getArea((await conn.query("SELECT idArea FROM characters WHERE idCharacter = ?;", [this.id]))[0].idArea);
+        return this.area;
     }
 
     getEquipement() {
