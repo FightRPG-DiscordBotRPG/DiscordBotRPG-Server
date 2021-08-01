@@ -157,6 +157,8 @@ class GModule {
                 res.locals.pendingTrade = character.pendingTradeInvite;
                 res.locals.tLootSystem = new LootSystem();
                 res.locals.user = user;
+
+                await character.loadCharacter(character.id);
                 res.locals.character = character;
 
 
