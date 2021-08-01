@@ -152,19 +152,19 @@ class GModule {
                 const user = Globals.connectedUsers[res.locals.id];
                 const character = user.character;
 
-                await character.loadCharacter(character.id);
-                const area = await character.getArea();
-
                 res.locals.trade = character.trade;
-                res.locals.group = character.group;
                 res.locals.lang = user.getLang();
-                res.locals.pending = character.pendingPartyInvite;
                 res.locals.pendingTrade = character.pendingTradeInvite;
                 res.locals.tLootSystem = new LootSystem();
                 res.locals.user = user;
                 res.locals.character = character;
 
 
+                const area = await user.character.getArea();
+
+                await user.loadGroup();
+                res.locals.group = character.group;
+                res.locals.pending = character.pendingPartyInvite;
 
                 res.locals.currentArea = area;
                 res.locals.marketplace = Globals.areasManager.getService(area.getID(), "marketplace");

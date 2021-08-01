@@ -338,7 +338,7 @@ class AdminModule extends GModule {
             user = await User.getIDByIDCharacter(user);
             await this.debugCreateUser(user);
             await Globals.connectedUsers[user].character.changeArea(Globals.areasManager.getArea(dungeonToTest));
-            Globals.connectedUsers[res.locals.id].character.group.addPlayer(Globals.connectedUsers[user]);
+            await Globals.connectedUsers[res.locals.id].character.group.addPlayer(Globals.connectedUsers[user]);
         }
 
         await next();

@@ -61,15 +61,15 @@ class GroupModule extends GModule {
             let data = {}
             let group = res.locals.group;
             if (req.body.username) {
-                if (group != null) {
+                if (group != null && group.exists) {
                     if (!group.doingSomething) {
                         if (group.leader == Globals.connectedUsers[res.locals.id]) {
                             let grptokick = req.body.username;
                             if (grptokick != Globals.connectedUsers[res.locals.id].getUsername()) {
-                                if (group.kick(grptokick, null)) {
+                                if (await group.kick(grptokick, null)) {
                                     data.success = Translator.getString(res.locals.lang, "group", "user_kicked", [grptokick]);
                                 } else {
-                                    if (group.cancelInvite(grptokick)) {
+                                    if (await group.cancelInvite(grptokick)) {
                                         data.success = Translator.getString(res.locals.lang, "group", "invite_cancel", [grptokick]);
                                     } else {
                                         data.error = Translator.getString(res.locals.lang, "errors", "group_user_not_in_your_group", [grptokick]);
@@ -100,12 +100,12 @@ class GroupModule extends GModule {
             let data = {}
             let group = res.locals.group;
             if (req.body.username) {
-                if (group != null) {
+                if (group != null && group.exists) {
                     if (!group.doingSomething) {
                         if (group.leader == Globals.connectedUsers[res.locals.id]) {
                             let grptoswap = req.body.username;
                             if (grptoswap != Globals.connectedUsers[res.locals.id].getUsername()) {
-                                if (group.swap(grptoswap, null)) {
+                                if (await group.swap(grptoswap, null)) {
                                     data.success = Translator.getString(res.locals.lang, "group", "user_swaped", [grptoswap]);
                                 } else {
                                     data.error = Translator.getString(res.locals.lang, "errors", "group_user_not_in_your_group", [grptoswap]);
@@ -134,9 +134,9 @@ class GroupModule extends GModule {
         this.router.post("/leave", async (req, res, next) => {
             let data = {}
             let group = res.locals.group;
-            if (group != null) {
+            if (group != null && group.exists) {
                 if (!group.doingSomething) {
-                    group.playerLeave(Globals.connectedUsers[res.locals.id], null);
+                    await group.playerLeave(Globals.connectedUsers[res.locals.id], null);
                     data.success = Translator.getString(res.locals.lang, "group", "you_left");
                 } else {
                     data.error = Translator.getString(res.locals.lang, "errors", "group_occupied");
@@ -154,23 +154,23 @@ class GroupModule extends GModule {
             let data = {}
             let group = res.locals.group;
 
-
-            // Si pas dans un groupe le créer
-            if (group == null) {
-                Globals.connectedUsers[res.locals.id].character.group = new Group(Globals.connectedUsers[res.locals.id]);
+            if (!group.exists) {
+                await group.create(res.locals.id);
+                await group.load(res.locals.id);
             }
-            group = Globals.connectedUsers[res.locals.id].character.group;
 
             if (group.leader === Globals.connectedUsers[res.locals.id]) {
                 if (!group.doingSomething) {
                     if (group.nbOfInvitedPlayers() < 5) {
                         if (req.body.mention) {
                             if (req.body.mention != res.locals.id) {
-                                if (Globals.connectedUsers[req.body.mention]) {
-                                    if (Globals.connectedUsers[req.body.mention].character.group === null) {
-                                        if (Globals.connectedUsers[req.body.mention].character.pendingPartyInvite == null) {
-                                            group.invite(Globals.connectedUsers[req.body.mention]);
-                                            Globals.connectedUsers[req.body.mention].groupTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[res.locals.id].username, "::grpaccept", "::grpdecline"]));
+                                if (await User.exist(req.body.mention)) {
+                                    const userToInvite = new User(req.body.mention);
+                                    await userToInvite.loadUser();
+                                    if (!userToInvite.character.group?.exists) {
+                                        if (!userToInvite.character.pendingPartyInvite?.exists) {
+                                            await group.invite(userToInvite);
+                                            userToInvite.groupTell(Translator.getString(userToInvite.getLang(), "group", "someone_invited_you", [Globals.connectedUsers[res.locals.id].username, "::grpaccept", "::grpdecline"]));
                                             data.success = Translator.getString(res.locals.lang, "group", "invitation_sent");
                                         } else {
                                             data.error = Translator.getString(res.locals.lang, "errors", "group_invite_waiting");
@@ -212,11 +212,11 @@ class GroupModule extends GModule {
             let pending = res.locals.pending;
 
 
-            if (group == null) {
-                if (pending != null) {
+            if (!group?.exists) {
+                if (pending?.exists) {
                     if (!pending.doingSomething) {
                         if (!pending.isFull()) {
-                            pending.addPlayer(Globals.connectedUsers[res.locals.id], null);
+                            await pending.addPlayer(Globals.connectedUsers[res.locals.id], null);
                             data.success = Translator.getString(res.locals.lang, "group", "you_joined");
                         } else {
                             data.error = Translator.getString(res.locals.lang, "errors", "group_full_join");
@@ -244,8 +244,8 @@ class GroupModule extends GModule {
             let pending = res.locals.pending;
 
 
-            if (group == null) {
-                if (pending != null) {
+            if (!group?.exists) {
+                if (pending?.exists) {
                     pending.playerDeclinedBroadcast(Globals.connectedUsers[res.locals.id], null);
                     Globals.connectedUsers[res.locals.id].character.pendingPartyInvite = null;
                     data.success = Translator.getString(res.locals.lang, "group", "you_declined");
@@ -265,7 +265,7 @@ class GroupModule extends GModule {
             let data = {}
             let group = res.locals.group;
 
-            if (group != null) {
+            if (group != null && group.exists) {
                 data = await group.toApi(res.locals.lang);
             } else {
                 data.error = Translator.getString(res.locals.lang, "errors", "group_not_in_group");
@@ -280,7 +280,7 @@ class GroupModule extends GModule {
             let data = {}
             let group = res.locals.group;
 
-            if (group != null) {
+            if (group != null && group.exists) {
                 if (group.leader === Globals.connectedUsers[res.locals.id]) {
                     if (!group.doingSomething) {
                         if (await group.allInSameArea()) {

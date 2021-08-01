@@ -1,16 +1,12 @@
 'use strict';
+const User = require("./User");
 const Globals = require("./Globals.js");
 const Translator = require("./Translator/Translator");
-const User = require("./User");
-
-var nextID = 0;
+const conn = require("../conf/mysql");
 
 class Group {
 
-    constructor(leader) {
-        leader.pendingPartyInvite = null;
-        this.id = nextID;
-        nextID++;
+    constructor() {
         /**
          * @type {Object<string, User>}
          */
@@ -22,8 +18,79 @@ class Group {
         /**
          * @type {User}
          */
-        this.leader = leader;
+        this.leader = null;
         this.doingSomething = false;
+        this.exists = false;
+    }
+
+    /**
+     * 
+     * @param {string} idUser
+     */
+    async load(idUser, asPending=false) {
+
+        const idUserLeader = await Group.getIdGroupLeader(idUser, asPending);
+        if (idUserLeader === null) {
+            return;
+        }
+
+        const res = await conn.query("SELECT * FROM groupsdata WHERE idUserLeader = ?;", [idUserLeader]);
+
+        this.doingSomething = res[0].isDoingSomething;
+        this.exists = true;
+
+        if (idUserLeader == idUser) {
+            this.leader = Globals.connectedUsers[idUser];
+        } else {
+            this.leader = new User(idUserLeader);
+            this.leader.loadUser();
+        }
+
+        await Promise.all([this.loadMembers(), this.loadPending()]);
+
+    }
+
+    async loadMembers() {
+        this.players = await Group.getPlayers(await conn.query("SELECT idUser FROM groupsplayers WHERE idUserLeader = ?;", [this.leader.id]));
+    }
+
+    async loadPending() {
+        this.pendingPlayers = await Group.getPlayers(await conn.query("SELECT idUser FROM groupspendingplayers WHERE idUserLeader = ?;", [this.leader.id]));
+    }
+
+    async create(idUser) {
+        await conn.query("REPLACE INTO groupsdata VALUES (?, false)", [idUser]);
+    }
+
+    static async getPlayers(arr) {
+        const promises = [];
+        const users = {};
+        for (let item of arr) {
+            let user = new User(item.idUser);
+            users[user.id] = user;
+            promises.push(user.loadUser());
+        }
+
+        await Promise.all(promises);
+        return users;
+    }
+
+
+    static async getIdGroupLeader(idUser, asPending = false) {
+
+        if (!asPending) {
+            const res = await conn.query("SELECT * FROM groupsdata WHERE idUserLeader = ?;", [idUser]);
+            if (res[0]) {
+                return idUser;
+            }
+        }
+
+        const resAsMember = asPending ? await conn.query("SELECT idUserLeader FROM groupspendingplayers WHERE idUser = ?;", [idUser]) : await conn.query("SELECT idUserLeader FROM groupsplayers WHERE idUser = ?;", [idUser]);
+        if (resAsMember[0]) {
+            return resAsMember[0].idUserLeader;
+        }
+
+        return null;
     }
 
     async allInSameArea() {
@@ -35,7 +102,7 @@ class Group {
         return true;
     }
 
-    getTotalStat(statName="strength") {
+    getTotalStat(statName = "strength") {
         return this.getArrayOfCharacters().reduce((acc, char) => {
             return acc + char.getStat(statName);
         }, 0);
@@ -71,8 +138,8 @@ class Group {
         return arr;
     }
 
-    invite(player) {
-        player.character.pendingPartyInvite = this;
+    async invite(player) {
+        await conn.query("REPLACE INTO groupspendingplayers VALUES (?,?);", [this.leader.id, player.id])
         this.pendingPlayers[player.id] = player;
     }
 
@@ -128,75 +195,83 @@ class Group {
         return Math.round(avgPower / this.nbOfPlayers());
     }
 
-    exist() {
-        if (this.players == null || this.leader == null) {
-            return false;
-        }
-        return true;
-    }
-
-    addPlayer(player) {
+    /**
+     * 
+     * @param {User} player
+     */
+    async addPlayer(player) {
         this.playerJoinedBroadcast(player);
         player.character.pendingPartyInvite = null;
-        delete this.pendingPlayers[player.id];
+
+        await Promise.all([
+            conn.query("DELETE FROM groupspendingplayers WHERE idUser = ?;", [player.id]),
+            conn.query("REPLACE INTO groupsplayers VALUES (?, ?);", [this.leader.id, player.id])
+        ]);
+
         this.players[player.id] = player;
-        player.character.group = this;
     }
 
-    kick(playername) {
-        for (let user in this.players) {
-            user = this.players[user];
+
+    async kick(playername) {
+        for (let idUser in this.players) {
+            const user = this.players[idUser];
             if (user.username == playername) {
                 // Make sure it leaves the group
-                user.character.leaveGroup();
                 this.playerKickedBroadcast(user);
-                delete this.players[user.id];
+                await conn.query("DELETE FROM groupsplayers WHERE idUser = ?;", [user.id]);
                 return true;
             }
         }
         return false;
     }
 
-    cancelInvite(playername) {
-        for (let user in this.pendingPlayers) {
-            user = this.pendingPlayers[user];
+    async cancelInvite(playername) {
+        for (let idUser in this.pendingPlayers) {
+            const user = this.pendingPlayers[idUser];
             if (user.username == playername) {
-                user.character.pendingPartyInvite = null;
-                delete this.pendingPlayers[user.id];
+                await conn.query("DELETE FROM groupspendingplayers WHERE idUser = ?;", [user.id]);
                 return true;
             }
         }
         return false;
     }
 
-
-
-    disband() {
-        this.leader.character.leaveGroup();
-        for (let user in this.players) {
-            this.players[user].character.leaveGroup();
-        }
-        for (let user2 in this.pendingPlayers) {
-            this.pendingPlayers[user2].character.pendingPartyInvite = null;
-        }
-        this.pendingPlayers = null;
-        this.players = null;
-        this.leader = null;
-        //console.log(this);
+    async disband() {
+        await conn.query("DELETE FROM groupsplayers WHERE idUserLeader = ?;DELETE FROM groupspendingplayers WHERE idUserLeader = ?;DELETE FROM groupsdata WHERE idUserLeader = ?;", [this.leader.id, this.leader.id, this.leader.id]);
     }
 
-    swap(playername) {
+    async swap(playername) {
         if (playername != this.leader.getUsername()) {
             for (let user in this.players) {
                 if (playername == this.players[user].getUsername()) {
-                    let oldLeader = this.leader;
-                    this.leader = this.players[user];
-                    delete this.players[user];
-                    this.players[oldLeader.getUserId()] = oldLeader;
+
+                    const newLeader = this.players[user];
+                    const oldLeader = this.leader;
+
+                    await conn.query(`
+                        REPLACE INTO groupsdata VALUES (?, ?);
+                        UPDATE groupsplayers SET idUserLeader = ? WHERE idUserLeader = ?;
+                        UPDATE groupspendingplayers SET idUserLeader = ? WHERE idUserLeader = ?;
+                        DELETE FROM groupsplayers WHERE idUser = ?;
+                        DELETE FROM groupsdata WHERE idUserLeader = ?;
+                        REPLACE INTO groupsplayers VALUES (?, ?);
+                        `,
+                        [
+                            newLeader.id, false,
+                            newLeader.id, oldLeader.id,
+                            newLeader.id, oldLeader.id,
+                            newLeader.id,
+                            oldLeader.id,
+                            newLeader.id, oldLeader.id,
+                        ]
+                    );
                     return true;
                 }
             }
         }
+
+
+
         return false;
     }
 
@@ -204,24 +279,30 @@ class Group {
      * 
      * @param {User} player 
      */
-    playerLeave(player) {
+    async playerLeave(player) {
         if (this.nbOfPlayers() > 1) {
             // Make character leave group
             //console.log(this.players);
-            player.character.leaveGroup();
             if (player === this.leader) {
                 // Set new leader and remvoe from list of players
-                let newLeader = Object.keys(this.players)[0];
-                this.leader = this.players[newLeader];
+
+                const newLeader = this.players[Object.keys(this.players)[0]];
+                // Delete for broadcast and add
                 delete this.players[newLeader];
+
+                await this.swap(newLeader.username);
+
+                this.leader = newLeader;
+
             } else {
                 // Delete from list of players
-                delete this.players[player.id];
             }
+            await conn.query("DELETE FROM groupsplayers WHERE idUser = ?;", [player.id]);
+
+
             this.playerLeaveBroadcast(player);
-            //console.log(this);
         } else {
-            this.disband();
+            await this.disband();
         }
 
     }
@@ -249,6 +330,10 @@ class Group {
         this.leader.groupTell(Translator.getString(this.leader.getLang(), "group", "someone_declined_invitation", [player.username]));
     }
 
+    /**
+     * 
+     * @param {User} player
+     */
     playerKickedBroadcast(player) {
         for (let user in this.players) {
             user = this.players[user];
@@ -264,7 +349,7 @@ class Group {
      * 
      * @param {string} lang
      */
-    async toApi(lang="en") {
+    async toApi(lang = "en") {
         let members = [];
         for (let user in this.players) {
             members.push(await this.players[user].character.toApiSimple(lang));
@@ -402,3 +487,5 @@ class Group {
 }
 
 module.exports = Group;
+
+

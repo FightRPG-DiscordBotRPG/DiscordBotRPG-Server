@@ -222,11 +222,11 @@ class Character extends CharacterEntity {
     }
 
     async getWaitTime() {
-        return moment((await conn.query("SELECT nextPvEAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvEAction).unix() * 1000;
+        return moment((await conn.query("SELECT nextPvEAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvEAction).unix() * 1000 || 0;
     }
 
     async getWaitTimePvP() {
-        return moment((await conn.query("SELECT nextPvPAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvPAction).unix() * 1000;
+        return moment((await conn.query("SELECT nextPvPAction FROM characters WHERE idCharacter = ?;", [this.id]))[0].nextPvPAction).unix() * 1000 || 0;
     }
 
     async getIdArea() {

@@ -121,6 +121,16 @@ class User {
         }
     }
 
+    async loadGroup() {
+        this.character.group = new Group();
+        this.character.pendingPartyInvite = new Group();
+
+        await Promise.all([
+            this.character.group.load(this.id, false),
+            this.character.pendingPartyInvite.load(this.id, true),
+        ]);
+    }
+
     static async getUserId(token) {
         let res = await conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
         if (res[0]) {
@@ -397,3 +407,5 @@ class User {
 }
 
 module.exports = User;
+
+const Group = require("./Group.js");
