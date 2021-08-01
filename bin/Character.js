@@ -118,7 +118,6 @@ class Character extends CharacterEntity {
     }
 
     async saveHealthAndMana() {
-        console.log(this.actualHP + " & " + this.actualMP);
         await conn.query("UPDATE characters SET health = ?, mana = ? WHERE idCharacter = ?;", [this.actualHP, this.actualMP, this.id]);
     }
 

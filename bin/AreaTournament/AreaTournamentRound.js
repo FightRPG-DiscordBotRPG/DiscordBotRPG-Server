@@ -46,7 +46,6 @@ class AreaTournamentRound {
         //console.log("Round : " + this.round)
         //console.log(this.guildsPlacements);
         const Guild = require("../Guild");
-        console.log(Guild);
         for (let guildsIndex in this.guildsPlacements) {
             let guilds = this.guildsPlacements[guildsIndex]
             if (guilds[1] != 0) {

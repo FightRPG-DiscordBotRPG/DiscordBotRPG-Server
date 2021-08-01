@@ -83,6 +83,7 @@ class User {
 
             res = await conn.query("SELECT * FROM userspreferences WHERE idUser = ?", [this.id]);
 
+            // TODO verify if load from db or not when asking for it
             this.preferences.lang = res[0]["lang"];
             this.preferences.groupmute = res[0]["groupmute"];
             this.preferences.marketplacemute = res[0]["marketplacemute"];
@@ -367,11 +368,30 @@ class User {
         return data;
     }
 
-
-
     canBeUnstuck() {
         return Date.now() - this.lastCommandTime >= 5000;
     }
+
+    async lockUser() {
+        await this.setLockState(true);
+    }
+
+    async unlockUser() {
+        await this.setLockState(false);
+    }
+
+    async setLockState(bool=false) {
+        await conn.query("UPDATE users SET isDoingSomething = ? WHERE idUser = ?;", [bool, this.id]);
+    }
+
+    async isDoingSomething() {
+        const res = await conn.query("SELECT isDoingSomething FROM users WHERE idUser = ?;", [this.id]);
+        if (res[0]) {
+            return res[0].isDoingSomething;
+        }
+        return false;
+    }
+
 
 
 }

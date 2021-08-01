@@ -45,7 +45,7 @@ class DatabaseInitializer {
     }
 
     static async disconnectUsers() {
-        await conn.query("UPDATE users SET isConnected = false");
+        await conn.query("UPDATE users SET isConnected = false, isDoingSomething = false");
     }
 }
 
