@@ -129,6 +129,10 @@ class Character extends CharacterEntity {
     async lightLoad(id) {
         this.id = id;
         this.uuid = this.id.toString();
+
+        const res = (await conn.query("SELECT * FROM characters INNER JOIN charactershonor ON charactershonor.idCharacter = characters.idCharacter WHERE characters.idCharacter = ?", [id]))[0];
+        this.area = Globals.areasManager.getArea(res["idArea"]);
+
         await Promise.all([
             this.stats.loadStat(id),
             this.levelSystem.load(id, this.idUser),

@@ -158,6 +158,7 @@ class GModule {
                 res.locals.tLootSystem = new LootSystem();
                 res.locals.user = user;
 
+                console.time("Time");
                 await character.loadCharacter(character.id);
                 res.locals.character = character;
 
@@ -165,6 +166,7 @@ class GModule {
                 const area = await user.character.getArea();
 
                 await user.loadGroup();
+                console.timeEnd("Time");
                 res.locals.group = character.group;
                 res.locals.pending = character.pendingPartyInvite;
 
