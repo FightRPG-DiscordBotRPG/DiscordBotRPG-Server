@@ -30,6 +30,8 @@ class CharacterTalents {
         if (id !== null) {
             this.id = id;
         }
+
+        this.talents = {};
         this.character = character;
         let res = await conn.query("SELECT * FROM characterstalents WHERE idCharacter = ?;", [this.id]);
 
@@ -124,7 +126,7 @@ class CharacterTalents {
             unlockedSkills: Object.keys(this.unlockedSkillsIds).map(e => Translator.getString(lang, "skillNames", e) + ` (${e})`),
             stats: this.stats.toApi(),
             secondaryStats: this.secondaryStats.toApi(),
-            initialTalents: Globals.pstreenodes.initialTalents,
+            initialTalents: Globals.pstreenodes.initialTalents.map(e => Globals.pstreenodes.allNodes[e].toApi(lang, true)),
             talentPoints: await this.character.getTalentPoints(),
         }
     }
