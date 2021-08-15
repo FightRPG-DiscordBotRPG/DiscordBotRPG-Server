@@ -1,5 +1,5 @@
 'use strict';
-var MySql = require('mysql');
+var MySql = require('mysql2');
 const util = require("util");
 const conf = require("./conf.js");
 
