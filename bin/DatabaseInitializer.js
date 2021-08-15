@@ -1,5 +1,4 @@
 const conn = require("../conf/mysql");
-const mysql = require("mysql");
 
 class DatabaseInitializer {
     static async initialize() {
