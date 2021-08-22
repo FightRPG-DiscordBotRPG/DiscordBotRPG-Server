@@ -15,12 +15,12 @@ class SecondaryStatsPSTreeNode extends SecondaryStats {
         // load from database
         let res = await conn.query("SELECT DISTINCT value, name FROM pstreenodessecondarystatsdata INNER JOIN secondarystats ON pstreenodessecondarystatsdata.idSecondaryStat = secondarystats.idSecondaryStat WHERE idNode = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].name] = res[stat].value;
+            this[res[stat].name] = Number.parseInt(res[stat].value);
         }
 
         res = await conn.query("SELECT DISTINCT shorthand, value FROM pstreenodessecondarystatselementalresistsdata INNER JOIN elementstypes ON pstreenodessecondarystatselementalresistsdata.idElementType = elementstypes.idElementType WHERE idNode = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].shorthand + "Resist"] = res[stat].value;
+            this[res[stat].shorthand + "Resist"] = Number.parseInt(res[stat].value);
         }
     }
 

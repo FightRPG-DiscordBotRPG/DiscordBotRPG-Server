@@ -14,12 +14,12 @@ class SecondaryStatsItems extends SecondaryStats {
         // load from database
         let res = await conn.query("SELECT DISTINCT value, name FROM itemssecondarystats INNER JOIN secondarystats ON itemssecondarystats.idSecondaryStat = secondarystats.idSecondaryStat WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].name] = res[stat].value;
+            this[res[stat].name] = Number.parseInt(res[stat].value);
         }
 
         res = await conn.query("SELECT DISTINCT shorthand, value FROM itemssecondarystatselementalresists INNER JOIN elementstypes ON itemssecondarystatselementalresists.idElementType = elementstypes.idElementType WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].shorthand + "Resist"] = res[stat].value;
+            this[res[stat].shorthand + "Resist"] = Number.parseInt(res[stat].value);
         }
     }
 
