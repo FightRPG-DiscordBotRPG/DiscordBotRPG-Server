@@ -16,7 +16,7 @@ class StatsPSTreeNode extends Stats {
         // load from database
         let res = await conn.query("SELECT DISTINCT value, nom FROM pstreenodesstatsdata INNER JOIN stats ON pstreenodesstatsdata.idStat = stats.idStat WHERE idNode = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].nom] = res[stat].value;
+            this[res[stat].nom] = Number.parseInt(res[stat].value);
         }
     }
 

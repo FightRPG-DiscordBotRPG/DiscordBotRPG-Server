@@ -16,7 +16,7 @@ class StatsItems extends Stats {
         // load from database
         let res = await conn.query("SELECT DISTINCT value, nom FROM itemsstats INNER JOIN stats ON itemsstats.idStat = stats.idStat WHERE idItem = ?;", [this.id]);
         for (let stat in res) {
-            this[res[stat].nom] = res[stat].value;
+            this[res[stat].nom] = Number.parseInt(res[stat].value);
         }
     }
 
