@@ -4,6 +4,7 @@ const axios = require("axios").default;
 const Translator = require("../Translator/Translator");
 const PStatistics = require("../Achievement/PStatistics");
 const express = require("express");
+const conn = require("../../conf/mysql");
 
 
 class GModule {
@@ -158,15 +159,16 @@ class GModule {
                 res.locals.tLootSystem = new LootSystem();
                 res.locals.user = user;
 
+                conn.test = 0;
                 console.time("Time");
                 await character.loadCharacter(character.id);
                 res.locals.character = character;
-
-
                 const area = await user.character.getArea();
-
                 await user.loadGroup();
+
+                //await user.loadTrade();
                 console.timeEnd("Time");
+                console.log(conn.test);
                 res.locals.group = character.group;
                 res.locals.pending = character.pendingPartyInvite;
 

@@ -131,6 +131,17 @@ class User {
         ]);
     }
 
+
+    async loadTrade() {
+        this.character.trade = new Trade();
+        this.character.pendingTradeInvite = new Trade();
+
+        await Promise.all([
+            this.character.trade.load(this.id, false),
+            this.character.pendingTradeInvite.load(this.id, true),
+        ]);
+    }
+
     static async getUserId(token) {
         let res = await conn.query("SELECT idUser FROM users WHERE token = ?;", [token]);
         if (res[0]) {
@@ -409,3 +420,4 @@ class User {
 module.exports = User;
 
 const Group = require("./Group.js");
+const Trade = require("./Trades/Trade.js");

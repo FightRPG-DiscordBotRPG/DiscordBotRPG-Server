@@ -81,7 +81,7 @@ let startUp = async () => {
 
 
         // Fork workers.
-        for (let i = 0; i < totalCPUs; i++) {
+        for (let i = 0; i < 2; i++) {
             cluster.fork();
         }
 

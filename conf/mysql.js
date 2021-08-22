@@ -8,10 +8,12 @@ var query = util.promisify(connection.query).bind(connection);
 let connMaker = {
     isForeignKeyCheckDisabled: false,
     connection: connection,
+    test: 0,
     /**
      * @returns {Promise<any[]>}
      **/
     query: async (sql, arr = []) => {
+        connMaker.test++;
         if (connMaker.isForeignKeyCheckDisabled) {
             sql = `SET FOREIGN_KEY_CHECKS = 0;${sql}${sql.slice(-1) === ";" ? "" : ";"}SET FOREIGN_KEY_CHECKS = 1;`;
         }
