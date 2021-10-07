@@ -36,7 +36,7 @@ class SkillBuild {
     }
 
     isPriorityEmtpy(priority) {
-        return this.skillsIds[priority] == null;
+        return this.skillsIds.length < priority;
     }
 
     async loadSkills() {

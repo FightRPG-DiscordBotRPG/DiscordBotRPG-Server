@@ -28,7 +28,7 @@ class SkillBuildCharacter extends SkillBuild {
         await this.loadSkills();
     }
 
-    canAddMore() { 
+    canAddMore() {
         return this.skillsIds.length < Globals.maximumSkillsPerBuild;
     }
 
@@ -79,7 +79,7 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {number} priority
      */
     async swapSkill(id, priority) {
-        return await this.returnSuccessAndSave(Utils.swapArrayItemToIndex(this.skillsIds, id, priority));
+        return await this.returnSuccessAndSave(Utils.swapArrayItemToIndex(this.skillsIds, id, priority + 1));
     }
 
     /**
