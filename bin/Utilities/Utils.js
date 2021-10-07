@@ -122,6 +122,7 @@ class Utils {
      * @param {any[]} arr
      * @param {any} itemToSwap
      * @param {number} indexMoveTo
+     * TODO: Due to hotfix 1.13.4 the behaviour have changed, check and update /!\
      * Returns if successful
      */
     static swapArrayItemToIndex(arr, itemToSwap, indexMoveTo) {
