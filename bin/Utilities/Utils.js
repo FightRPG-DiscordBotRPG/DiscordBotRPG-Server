@@ -127,7 +127,7 @@ class Utils {
     static swapArrayItemToIndex(arr, itemToSwap, indexMoveTo) {
         let indexOfSwap = arr.indexOf(itemToSwap);
 
-        if (indexOfSwap > -1) {
+        if (indexOfSwap > -1 && indexMoveTo <= arr.length) {
             if (indexMoveTo >= arr.length && indexMoveTo >= 0) {
                 indexMoveTo -= 1;
             } else if (indexMoveTo < 0) {
