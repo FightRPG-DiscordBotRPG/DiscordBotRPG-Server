@@ -583,7 +583,7 @@ class CharacterModule extends GModule {
             return this.asError(Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist"));
         }
 
-        if (isNaN(priority) || priority < 0 || priority >= Globals.maximumSkillsPerBuild) {
+        if (isNaN(priority) || priority < 0 || priority >= Globals.maximumSkillsPerBuild && !character.skillBuild.isPriorityEmtpy(priority)) {
             return this.asError(Translator.getString(res.locals.lang, "errors", "skill_build_incorrect_priority"));
         }
 
