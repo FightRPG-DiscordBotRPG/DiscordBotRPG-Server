@@ -28,7 +28,7 @@ class SkillBuildCharacter extends SkillBuild {
         await this.loadSkills();
     }
 
-    canAddMore() { 
+    canAddMore() {
         return this.skillsIds.length < Globals.maximumSkillsPerBuild;
     }
 
@@ -79,7 +79,7 @@ class SkillBuildCharacter extends SkillBuild {
      * @param {number} priority
      */
     async swapSkill(id, priority) {
-        return await this.returnSuccessAndSave(Utils.swapArrayItemToIndex(this.skillsIds, id, priority));
+        return await this.returnSuccessAndSave(Utils.swapArrayItemToIndex(this.skillsIds, id, priority + 1));
     }
 
     /**
@@ -107,7 +107,7 @@ class SkillBuildCharacter extends SkillBuild {
         if (isSuccess) {
             await conn.query("DELETE FROM charactersbuilds WHERE idCharacter = ?;", [this.id]);
             if (this.skillsIds.length > 0) {
-                await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => `(${this.id},${e},${i})`).join(",") + ";");
+                await conn.query("INSERT INTO charactersbuilds VALUES " + this.skillsIds.map((e, i) => e != null ? `(${this.id},${e},${i})` : null).filter(n => n).join(",") + ";");
             }
             await this.reload();
         }

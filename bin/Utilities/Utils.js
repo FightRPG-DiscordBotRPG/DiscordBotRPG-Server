@@ -122,12 +122,13 @@ class Utils {
      * @param {any[]} arr
      * @param {any} itemToSwap
      * @param {number} indexMoveTo
+     * TODO: Due to hotfix 1.13.4 the behaviour have changed, check and update /!\
      * Returns if successful
      */
     static swapArrayItemToIndex(arr, itemToSwap, indexMoveTo) {
         let indexOfSwap = arr.indexOf(itemToSwap);
 
-        if (indexOfSwap > -1) {
+        if (indexOfSwap > -1 && indexMoveTo <= arr.length) {
             if (indexMoveTo >= arr.length && indexMoveTo >= 0) {
                 indexMoveTo -= 1;
             } else if (indexMoveTo < 0) {
