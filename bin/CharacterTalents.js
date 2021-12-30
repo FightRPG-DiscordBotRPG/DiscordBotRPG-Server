@@ -134,7 +134,7 @@ class CharacterTalents {
     async simpleVisibleTalentsToApi(lang = "en") {
         return {
             talents: await this.getTalentsToApi(lang, true),
-            initialTalents: Globals.pstreenodes.initialTalents.map(e => Globals.pstreenodes.allNodes[e].toApi(lang, true)),
+            initialTalents: Globals.pstreenodes.initialTalents.map(e => Globals.pstreenodes.allNodes[e].toApiSimple(lang, true)),
             talentPoints: await this.character.getTalentPoints(),
         }
     }

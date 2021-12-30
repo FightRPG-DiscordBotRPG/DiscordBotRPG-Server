@@ -145,6 +145,7 @@ class PSTreeNode {
         let apiObject = {
             id: this.id,
             realCost: this.getRealCost(),
+            visuals: this.visuals ? this.visuals.toApi(lang) : null,
             linkedNodes: this.localizedNodesNames[lang],
             linkedNodesIds: this.linkedNodesIds,
         }
