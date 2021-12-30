@@ -698,6 +698,10 @@ class Area {
         }
     }
 
+    async resourcesToApi(lang) {
+        return this.getResourcesApiLight(lang);
+    }
+
     async getConquest(lang) {
         let temp = await this.apiGetStatsAndLevel();
         return {

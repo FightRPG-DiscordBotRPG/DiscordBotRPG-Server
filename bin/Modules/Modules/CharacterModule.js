@@ -264,6 +264,23 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/talents/visible", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].character.talents.simpleVisibleTalentsToApi(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/skills/unlocked", async (req, res, next) => {
+            let data = {
+                unlockedSkills: await Globals.connectedUsers[res.locals.id].character.talents.unlockedSkillsToApi(res.locals.lang)
+            };
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+        
+
         this.router.get("/talents/export", async (req, res, next) => {
             let data = Globals.connectedUsers[res.locals.id].character.talents.toExport();
             data.lang = res.locals.lang;
@@ -403,6 +420,11 @@ class CharacterModule extends GModule {
         this.router.get("/build/show", async (req, res, next) => {
             await next();
             return res.json(res.locals.character.skillBuild.toApi(res.locals.lang));
+        });
+
+        this.router.get("/build/show/simple", async (req, res, next) => {
+            await next();
+            return res.json(res.locals.character.skillBuild.equippedSkillsToApi(res.locals.lang));
         });
 
         this.router.post("/build/add", async (req, res, next) => {

@@ -495,7 +495,7 @@ class CharacterInventory {
         }
         return null;
 
-    }
+    }    
 
 }
 

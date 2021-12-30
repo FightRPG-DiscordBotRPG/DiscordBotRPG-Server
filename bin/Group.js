@@ -260,6 +260,18 @@ class Group {
         }
     }
 
+    // Function that checks if everyone is in the same map and make them travel to the same area if they are not
+    //travelToGroupLeaderPosiiton() {
+    //    let leader = this.leader;
+    //    for (let id in this.players) {
+    //        let user = this.players[id];
+    //        if (user.character.getArea() != leader.character.getArea()) {
+    //            user.character.travel(leader.character.getArea().id);
+    //        }
+    //    }
+    //        //this.players[i].character.getArea() != this.leader.character.getArea()
+    //}
+
     /**
      * 
      * @param {string} lang

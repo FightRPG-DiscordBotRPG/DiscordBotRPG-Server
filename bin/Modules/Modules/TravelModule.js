@@ -45,6 +45,22 @@ class TravelModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/area/resources", async (req, res, next) => {
+            let data = {}
+            data.resources = await res.locals.currentArea.resourcesToApi(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/area/monsters", async (req, res, next) => {
+            let data = {}
+            data.monsters = await res.locals.currentArea.getMonstersToApiLight(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
         this.router.get("/region", async (req, res, next) => {
             let data = {}
             data.region = await Globals.areasManager.thisRegionToApi(res.locals.currentArea, res.locals.lang);

@@ -124,6 +124,10 @@ class SkillBuildCharacter extends SkillBuild {
             maximumSkills: Globals.maximumSkillsPerBuild,
         }
     }
+
+    equippedSkillsToApi(lang = "en") {
+        return { build: this.skillsObjects.map((e) => e.toApiSimple(lang)) };
+    }
 }
 
 

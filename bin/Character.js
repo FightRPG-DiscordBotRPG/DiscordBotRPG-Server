@@ -516,7 +516,7 @@ class Character extends CharacterEntity {
 
     async doIHaveEnoughMoney(money) {
         return (await this.getMoney() >= money);
-    }
+    }    
 
     /**
      * 
