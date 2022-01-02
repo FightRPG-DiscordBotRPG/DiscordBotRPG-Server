@@ -165,6 +165,21 @@ class EventsManager {
     getOngoingEventsList() {
         return Object.values(this.ongoingEvents);
     }
+
+    async getIncomingEventsToApi(months, lang = "en") {
+        let events = [];
+        let incomingMaxDateStart = moment();
+        incomingMaxDateStart.add(months > 12 || months < 1 ? 12 : months, "months");
+
+        for (let e in this.allEvents) {
+            let event = this.allEvents[e];
+            if (event.isComingBefore(incomingMaxDateStart)) {
+                events.push(await event.toApi(lang));
+            }
+        }
+
+        return events;
+    }
 }
 
 module.exports = EventsManager;

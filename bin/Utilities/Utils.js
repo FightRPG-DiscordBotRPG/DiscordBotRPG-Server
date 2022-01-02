@@ -14,6 +14,15 @@ class Utils {
         return Math.random() * (max - min) + min;
     }
 
+    static stringToNumberOrDefault(value, defaultValue) {
+        let number = Number.parseFloat(value);
+        if (Number.isNaN(number)) {
+            return defaultValue;
+        }
+
+        return number;
+    }
+
     /**
     * 
     * @param {Array} pool
@@ -47,11 +56,11 @@ class Utils {
         }
     }
 
-	/**
-	 * 
-	 * @param {Array} arr
-	 * @param {number} n
-	 */
+    /**
+     * 
+     * @param {Array} arr
+     * @param {number} n
+     */
     static getRandomItemsInArray(arr, n) {
         return this.sample(arr, Utils.getProtectedNValue(arr, n), false);
     }
@@ -185,7 +194,7 @@ class Utils {
         return { more: more, sqlParams: sqlParams };
     }
 
-    static getMergedTableSql(lang="en") {
+    static getMergedTableSql(lang = "en") {
         return `SELECT COALESCE(a.idBaseItem, b.idBaseItem) as idBaseItem, COALESCE(a.nameItem, b.nameItem) as nameItem, COALESCE(a.descItem, b.descItem) as descItem FROM 
                 (SELECT idBaseItem, nameItem, descItem FROM localizationitems WHERE lang="${lang}") a
                 RIGHT JOIN
@@ -193,7 +202,7 @@ class Utils {
                 ON a.idBaseItem = b.idBaseItem`
     }
 
-    static getLocalizationInnerJoin(lang="en") {
+    static getLocalizationInnerJoin(lang = "en") {
         return `INNER JOIN (${Utils.getMergedTableSql(lang)}) loc ON loc.idBaseItem = items.idBaseItem`;
     }
 }
