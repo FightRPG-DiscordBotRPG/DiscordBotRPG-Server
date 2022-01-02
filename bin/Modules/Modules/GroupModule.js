@@ -170,7 +170,7 @@ class GroupModule extends GModule {
                                     if (Globals.connectedUsers[req.body.mention].character.group === null) {
                                         if (Globals.connectedUsers[req.body.mention].character.pendingPartyInvite == null) {
                                             group.invite(Globals.connectedUsers[req.body.mention]);
-                                            Globals.connectedUsers[req.body.mention].groupTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[res.locals.id].username, "::grpaccept", "::grpdecline"]));
+                                            Globals.connectedUsers[req.body.mention].groupTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "group", "someone_invited_you", [Globals.connectedUsers[res.locals.id].username, "/group accept", "/group decline"]));
                                             data.success = Translator.getString(res.locals.lang, "group", "invitation_sent");
                                         } else {
                                             data.error = Translator.getString(res.locals.lang, "errors", "group_invite_waiting");
@@ -186,7 +186,7 @@ class GroupModule extends GModule {
                             }
                         } else {
                             // error
-                            data.error = "Use the command like this \"::grpinvite @someone\"";
+                            data.error = "Use the command like this \"/group invite @someone\"";
                         }
                     } else {
                         data.error = Translator.getString(res.locals.lang, "errors", "group_cant_invite_more_than", [5]);

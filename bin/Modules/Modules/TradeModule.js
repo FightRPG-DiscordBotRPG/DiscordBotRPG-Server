@@ -95,7 +95,7 @@ class TradeModule extends GModule {
                                 if (trade.pendingProposal == null && trade.playerTwo == null) {
                                     trade.propose(Globals.connectedUsers[req.body.mention]);
 
-                                    Globals.connectedUsers[req.body.mention].tradeTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "trade", "someone_proposed_you", [Globals.connectedUsers[res.locals.id].username, "::tradeaccept", "::tradedecline"]));
+                                    Globals.connectedUsers[req.body.mention].tradeTell(Translator.getString(Globals.connectedUsers[req.body.mention].getLang(), "trade", "someone_proposed_you", [Globals.connectedUsers[res.locals.id].username, "/trade accept", "/trade decline"]));
                                     data.success = Translator.getString(res.locals.lang, "trade", "proposal_sent");
                                 } else {
                                     data.error = Translator.getString(res.locals.lang, "errors", "trade_cant_propose_more");
@@ -115,7 +115,7 @@ class TradeModule extends GModule {
                 }
             } else {
                 // error
-                data.error = "Use the command like this \"::tpropose @someone\"";
+                data.error = "Use the command like this \"/trade propose @someone\"";
             }
 
 
