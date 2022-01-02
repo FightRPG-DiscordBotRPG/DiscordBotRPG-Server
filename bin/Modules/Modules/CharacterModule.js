@@ -279,7 +279,7 @@ class CharacterModule extends GModule {
             await next();
             return res.json(data);
         });
-        
+
 
         this.router.get("/talents/export", async (req, res, next) => {
             let data = Globals.connectedUsers[res.locals.id].character.talents.toExport();
@@ -552,8 +552,8 @@ class CharacterModule extends GModule {
             return this.asError("Require type missing");
         }
 
-        
-        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), {bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet});
+
+        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), { bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet });
 
 
         return this.asSuccess(Translator.getString(res.locals.lang, "appearance", "success"));
@@ -586,7 +586,7 @@ class CharacterModule extends GModule {
 
 
         if (await character.skillBuild.removeSkill(idSkill)) {
-            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "remove_success", [Skill.getName(idSkill)]));
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "remove_success", [Skill.getName(idSkill, res.locals.lang)]));
         } else {
             return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
         }
@@ -640,7 +640,7 @@ class CharacterModule extends GModule {
         }
 
         if (await character.skillBuild.pushSkill(idSkill)) {
-            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "add_success", [Skill.getName(idSkill)]));
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "add_success", [Skill.getName(idSkill, res.locals.lang)]));
         } else {
             return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
         }
