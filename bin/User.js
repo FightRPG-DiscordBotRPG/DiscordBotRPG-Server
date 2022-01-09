@@ -390,7 +390,7 @@ class User {
     }
 
     canBeUnstuck() {
-        return Date.now() - this.lastCommandTime >= 5000;
+        return Date.now() - this.lastCommandTime >= 20000;
     }
 
     async lockUser() {

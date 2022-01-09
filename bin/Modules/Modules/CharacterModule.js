@@ -264,6 +264,23 @@ class CharacterModule extends GModule {
             return res.json(data);
         });
 
+        this.router.get("/talents/visible", async (req, res, next) => {
+            let data = await Globals.connectedUsers[res.locals.id].character.talents.simpleVisibleTalentsToApi(res.locals.lang);
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+        this.router.get("/skills/unlocked", async (req, res, next) => {
+            let data = {
+                unlockedSkills: await Globals.connectedUsers[res.locals.id].character.talents.unlockedSkillsToApi(res.locals.lang)
+            };
+            data.lang = res.locals.lang;
+            await next();
+            return res.json(data);
+        });
+
+
         this.router.get("/talents/export", async (req, res, next) => {
             let data = Globals.connectedUsers[res.locals.id].character.talents.toExport();
             data.lang = res.locals.lang;
@@ -405,6 +422,11 @@ class CharacterModule extends GModule {
             return res.json(res.locals.character.skillBuild.toApi(res.locals.lang));
         });
 
+        this.router.get("/build/show/simple", async (req, res, next) => {
+            await next();
+            return res.json(res.locals.character.skillBuild.equippedSkillsToApi(res.locals.lang));
+        });
+
         this.router.post("/build/add", async (req, res, next) => {
             await next();
             return res.json(await this.tryAddSkillToBuild(req, res));
@@ -530,8 +552,8 @@ class CharacterModule extends GModule {
             return this.asError("Require type missing");
         }
 
-        
-        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), {bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet});
+
+        await res.locals.character.appearance.saveNewAppearance(Object.values(newAppearances), { bodyType: selectedBodyType, hairColor: req.body.hairColor, bodyColor: req.body.bodyColor, eyeColor: req.body.eyeColor, shouldDisplayHelmet: req.body.shouldDisplayHelmet });
 
 
         return this.asSuccess(Translator.getString(res.locals.lang, "appearance", "success"));
@@ -564,7 +586,7 @@ class CharacterModule extends GModule {
 
 
         if (await character.skillBuild.removeSkill(idSkill)) {
-            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "remove_success", [Skill.getName(idSkill)]));
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "remove_success", [Skill.getName(idSkill, res.locals.lang)]));
         } else {
             return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
         }
@@ -583,7 +605,7 @@ class CharacterModule extends GModule {
             return this.asError(Translator.getString(res.locals.lang, "errors", "skill_show_dont_exist"));
         }
 
-        if (isNaN(priority) || priority < 0 || priority >= Globals.maximumSkillsPerBuild) {
+        if (isNaN(priority) || priority < 0 || priority >= Globals.maximumSkillsPerBuild && !character.skillBuild.isPriorityEmtpy(priority)) {
             return this.asError(Translator.getString(res.locals.lang, "errors", "skill_build_incorrect_priority"));
         }
 
@@ -618,7 +640,7 @@ class CharacterModule extends GModule {
         }
 
         if (await character.skillBuild.pushSkill(idSkill)) {
-            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "add_success", [Skill.getName(idSkill)]));
+            return this.asSuccess(Translator.getString(res.locals.lang, "skills_builds", "add_success", [Skill.getName(idSkill, res.locals.lang)]));
         } else {
             return this.asError(Translator.getString(res.locals.lang, "errors", "generic"));
         }

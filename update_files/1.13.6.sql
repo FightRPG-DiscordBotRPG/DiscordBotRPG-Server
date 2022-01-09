@@ -1,0 +1,1 @@
+UPDATE pstreepossiblesnodesvisuals SET icon = CONCAT("https://cdn.fight-rpg.com/images/pstree/", SUBSTRING_INDEX(SUBSTRING_INDEX(icon, "/", -1), "?", 1))

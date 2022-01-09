@@ -200,7 +200,7 @@ class GameEvent {
 
             if (nextExecution.isLeapYear && moment(nextExecution.year() + '-02-29') <= nextExecution) {
                 nextExecution.add(1, "days");
-            } 
+            }
 
         }
 
@@ -295,6 +295,14 @@ class GameEvent {
             }
         }
         return diff;
+    }
+
+    /**
+     * 
+     * @param {moment.Moment} date 
+     */
+    isComingBefore(date) {
+        return this.nextStartTimeout?.timestamp < date.valueOf();
     }
 }
 

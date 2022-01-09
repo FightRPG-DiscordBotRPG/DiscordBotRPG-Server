@@ -18,7 +18,7 @@ class StatsEquipement extends Stats {
 
         // update
         for (let stat in res) {
-            this[res[stat].nom] = res[stat].value;
+            this[res[stat].nom] = Number.parseInt(res[stat].value);
         }
     }
 

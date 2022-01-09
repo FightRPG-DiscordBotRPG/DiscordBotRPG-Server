@@ -35,6 +35,10 @@ class SkillBuild {
         return this.skills[idSkill] != null;
     }
 
+    isPriorityEmtpy(priority) {
+        return this.skillsIds.length < priority;
+    }
+
     async loadSkills() {
         let promises = [];
         this.skillsObjects = [];

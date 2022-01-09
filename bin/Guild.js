@@ -141,7 +141,7 @@ class Guild {
 
         return err;
     }
-    
+
     async updateMember(idAsk, idOther, rank, lang) {
         let err = [];
         if (await this.isMember(idOther)) {
@@ -162,7 +162,7 @@ class Guild {
         let err = [];
         if (await this.isMember(idOther)) {
             let meRank = await this.getRankCharacter(idAsk);
-            if (meRank == 3) {
+            if (meRank == 3 && idOther != idAsk) {
                 await conn.query("UPDATE guildsmembers SET idGuildRank = 3 WHERE idCharacter = ?;", [idOther]);
                 await conn.query("UPDATE guildsmembers SET idGuildRank = 1 WHERE idCharacter = ?;", [idAsk]);
             } else {
@@ -287,7 +287,7 @@ class Guild {
             if (territories[territory.nameRegion] == null) {
                 territories[territory.nameRegion] = [];
             }
-            territories[territory.nameRegion].push({ idArea: territory.idArea, name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints});
+            territories[territory.nameRegion].push({ idArea: territory.idArea, name: territory.nameArea, type_shorthand: territory.NomAreaType, statPoints: territory.statPoints });
 
             actualIndex++
         }

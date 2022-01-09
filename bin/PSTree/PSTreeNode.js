@@ -141,6 +141,22 @@ class PSTreeNode {
         return apiObject;
     }
 
+    toApiSimple(lang = "en", withLinkedNodes = true) {
+        let apiObject = {
+            id: this.id,
+            realCost: this.getRealCost(),
+            visuals: this.visuals ? this.visuals.toApi(lang) : null,
+            linkedNodes: this.localizedNodesNames[lang],
+            linkedNodesIds: this.linkedNodesIds,
+        }
+
+        if (withLinkedNodes) {
+            apiObject.linkedNodesItems = this.connectedNodes.map(e => e.toApiSimple(lang, false));
+        }
+
+        return apiObject;
+    }
+
     getRealCost() {
         return this.cost * Globals.baseTalentPointCost;
     }

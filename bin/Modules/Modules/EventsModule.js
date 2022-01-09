@@ -17,6 +17,7 @@ const Item = require("../../Items/Item");
 const Emojis = require("../../Emojis");
 const express = require("express");
 const { identifiers } = require("../../Areas/AreaBonus");
+const Utils = require("../../Utilities/Utils");
 
 class EventsModule extends GModule {
     constructor() {
@@ -46,13 +47,21 @@ class EventsModule extends GModule {
             await next();
             return res.json(data);
         });
+
+        this.router.get("/incoming/:months?", async (req, res, next) => {
+            let data = {
+                events: await Globals.eventsManager.getIncomingEventsToApi(req.params.months, res.locals.lang)
+            };
+            await next();
+            return res.json(data);
+        });
     }
 
-    async getShowEvent(idEvent, lang="en") {
+    async getShowEvent(idEvent, lang = "en") {
         if (Globals.eventsManager.allEvents[idEvent] == null) {
             return this.asError(Translator.getString(lang, "errors", "events_dont_exist"));
         }
-        return {event: await Globals.eventsManager.allEvents[idEvent].toApi(lang)};
+        return { event: await Globals.eventsManager.allEvents[idEvent].toApi(lang) };
     }
 }
 

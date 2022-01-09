@@ -131,6 +131,18 @@ class CharacterTalents {
         }
     }
 
+    async simpleVisibleTalentsToApi(lang = "en") {
+        return {
+            talents: await this.getTalentsToApi(lang, true),
+            initialTalents: Globals.pstreenodes.initialTalents.map(e => Globals.pstreenodes.allNodes[e].toApiSimple(lang, true)),
+            talentPoints: await this.character.getTalentPoints(),
+        }
+    }
+
+    async unlockedSkillsToApi(lang = "en") {
+        return Object.keys(this.unlockedSkillsIds).map(e => { return { name: Translator.getString(lang, "skillNames", e) + ` (${e})`, id: e, isEquipped: this.character.skillBuild.isSkillEquipped(e) } })
+    }
+
     toExport() {
         return {
             talents: Object.values(this.talents).map(e => e.id).join(",")
@@ -141,11 +153,11 @@ class CharacterTalents {
 
     }
 
-    async getTalentsToApi(lang = "en") {
+    async getTalentsToApi(lang = "en", simple = false) {
         let allPromises = [];
         let toReturn = [];
         for (let talent of Object.values(this.talents)) {
-            allPromises.push(talent.toApi(lang));
+            allPromises.push(simple ? talent.toApiSimple(lang) : talent.toApi(lang));
         }
 
         await Promise.all(allPromises);

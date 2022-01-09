@@ -189,7 +189,7 @@ class CharacterInventory {
         let searchParamsResult = Globals.getSearchParams(params);
 
         let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, perPage, offset], 1);
-
+    
         let res = await conn.query(`SELECT * 
                                     FROM
                                     (
@@ -303,7 +303,7 @@ class CharacterInventory {
     async getNumberOfItem(params, lang = "en") {
 
         let searchParamsResult = Globals.getSearchParams(params, false, true);
-        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id, lang], 2);
+        let paramsResult = Utils.getParamsAndSqlMore(searchParamsResult, [this.id], 1);
 
         let res = await conn.query(`SELECT COUNT(*) as cnt 
                                     FROM charactersinventory
@@ -495,7 +495,7 @@ class CharacterInventory {
         }
         return null;
 
-    }
+    }    
 
 }
 
