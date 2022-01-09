@@ -110,7 +110,7 @@ class Character extends CharacterEntity {
 
         this.updateStats();
         this.recoverAll();
-        
+
         if (!await this.area.isFirstFloor()) {
             this.actualHP = res.health;
             this.actualMP = res.mana;
@@ -514,7 +514,7 @@ class Character extends CharacterEntity {
 
     async doIHaveEnoughMoney(money) {
         return (await this.getMoney() >= money);
-    }    
+    }
 
     /**
      * 
@@ -1022,7 +1022,7 @@ class Character extends CharacterEntity {
         return {
             level: this.getCraftLevel(),
             rebirthLevel: this.getCraftRebirthLevel(),
-            curentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this, lang),
+            currentRebirthsLevelsModifiers: await currentRebirthCraft.toApi(this, lang),
             nextRebirthsLevelsModifiers: await nexRebirthCraft?.toApi(this, lang),
             maxLevel: Globals.maxLevel,
         };
@@ -1037,7 +1037,7 @@ class Character extends CharacterEntity {
             rebirthLevel: this.getRebirthLevel(),
             maxLevel: Globals.maxLevel,
             maxRebirthLevel: Globals.rebirthManager.maxRebirthLevel,
-            curentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this, lang),
+            currentRebirthsLevelsModifiers: await currentRebirthLevel.toApi(this, lang),
             nextRebirthsLevelsModifiers: await nextRebirthLevel?.toApi(this, lang)
         };
 

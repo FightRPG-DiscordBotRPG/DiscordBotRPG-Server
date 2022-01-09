@@ -9,7 +9,7 @@ class RebirthApiData {
         /**
          * @type {RebirthData}
          */
-        this.curentRebirthsLevelsModifiers = null;
+        this.currentRebirthsLevelsModifiers = null;
         /**
          * @type {RebirthData}
          */
