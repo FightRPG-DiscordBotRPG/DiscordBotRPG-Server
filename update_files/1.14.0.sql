@@ -62,10 +62,10 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `playersequipmentsets` (
-  `idSet` BIGINT(19) UNSIGNED NOT NULL,
+  `idSet` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(50) NOT NULL DEFAULT 'Nouveau Set',
-  `isFavorite` TINYINT(4) NOT NULL DEFAULT 0,
-  `creator` INT(10) UNSIGNED NOT NULL,
+  `isFavorite` TINYINT NOT NULL DEFAULT 0,
+  `creator` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idSet`),
   INDEX `fk_PlayersEquipmentSets_Characters1_idx` (`creator` ASC) VISIBLE,
   CONSTRAINT `fk_PlayersEquipmentSets_Characters1`
@@ -78,8 +78,8 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `playersequipmentsetsitems` (
-  `idSet` BIGINT(19) UNSIGNED NOT NULL,
-  `idItem` BIGINT(19) UNSIGNED NOT NULL,
+  `idSet` BIGINT UNSIGNED NOT NULL,
+  `idItem` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`idSet`, `idItem`),
   INDEX `fk_PlayersEquipmentSetsItems_Items1_idx` (`idItem` ASC) VISIBLE,
   CONSTRAINT `fk_PlayersEquipmentSetsItems_PlayersEquipmentSets1`
@@ -118,8 +118,8 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `tradeongoingdata` (
   `idUser` VARCHAR(20) NOT NULL,
   `idUserTradeWith` VARCHAR(20) NOT NULL,
-  `money` BIGINT(19) UNSIGNED NOT NULL DEFAULT 0,
-  `isValidated` TINYINT(4) NOT NULL DEFAULT 0,
+  `money` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `isValidated` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`idUser`),
   INDEX `fk_TradeOnGoingData_Users2_idx` (`idUserTradeWith` ASC) VISIBLE,
   CONSTRAINT `fk_TradeOnGoingData_Users1`
@@ -138,8 +138,8 @@ COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `tradeitems` (
   `idUser` VARCHAR(20) NOT NULL,
-  `idItem` BIGINT(19) UNSIGNED NOT NULL,
-  `number` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `idItem` BIGINT UNSIGNED NOT NULL,
+  `number` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`idUser`, `idItem`),
   INDEX `fk_TradeItems_Items1_idx` (`idItem` ASC) VISIBLE,
   CONSTRAINT `fk_TradeItems_TradeOnGoingData1`
