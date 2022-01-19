@@ -10,7 +10,7 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`bodytype` (
+CREATE TABLE IF NOT EXISTS `bodytype` (
   `idBodyType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `body` TEXT NOT NULL,
   `head` TEXT NOT NULL,
@@ -23,14 +23,14 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`appearancestype` (
+CREATE TABLE IF NOT EXISTS `appearancestype` (
   `idAppearanceType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `propertyName` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`idAppearanceType`),
   UNIQUE INDEX `idAppearanceType_UNIQUE` (`idAppearanceType` ASC) VISIBLE)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`appearances` (
+CREATE TABLE IF NOT EXISTS `appearances` (
   `idAppearance` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `link` TEXT NOT NULL,
   `idAppearanceType` INT UNSIGNED NOT NULL,
@@ -43,29 +43,29 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`appearances` (
   UNIQUE INDEX `idAppearance_UNIQUE` (`idAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_Appearances_BodyType1`
     FOREIGN KEY (`idBodyType`)
-    REFERENCES `discord_bot_rpg`.`bodytype` (`idBodyType`)
+    REFERENCES `bodytype` (`idBodyType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Appearances_AppearancesType1`
     FOREIGN KEY (`idAppearanceType`)
-    REFERENCES `discord_bot_rpg`.`appearancestype` (`idAppearanceType`)
+    REFERENCES `appearancestype` (`idAppearanceType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`linkedappearances` (
+CREATE TABLE IF NOT EXISTS `linkedappearances` (
   `idAppearance` INT UNSIGNED NOT NULL,
   `idLinkedAppearance` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idAppearance`, `idLinkedAppearance`),
   INDEX `fk_LinkedAppearances_Appearances2_idx` (`idLinkedAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_LinkedAppearances_Appearances1`
     FOREIGN KEY (`idAppearance`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    REFERENCES `appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_LinkedAppearances_Appearances2`
     FOREIGN KEY (`idLinkedAppearance`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    REFERENCES `appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -73,38 +73,38 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemsappearances` (
+CREATE TABLE IF NOT EXISTS `itemsappearances` (
   `idBaseItem` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idBaseItem`, `idAppearance`),
   INDEX `fk_ItemsAppearances_Appearances1_idx` (`idAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_ItemsAppearances_ItemsBase1`
     FOREIGN KEY (`idBaseItem`)
-    REFERENCES `discord_bot_rpg`.`itemsbase` (`idBaseItem`)
+    REFERENCES `itemsbase` (`idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ItemsAppearances_Appearances1`
     FOREIGN KEY (`idAppearance`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    REFERENCES `appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearanceparts` (
+CREATE TABLE IF NOT EXISTS `charactersappearanceparts` (
   `idCharacter` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`idCharacter`, `idAppearance`),
   INDEX `fk_CharactersAppearanceParts_Appearances1_idx` (`idAppearance` ASC) VISIBLE,
   CONSTRAINT `fk_CharacterAppearance_Characters1`
     FOREIGN KEY (`idCharacter`)
-    REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+    REFERENCES `characters` (`idCharacter`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CharactersAppearanceParts_Appearances1`
     FOREIGN KEY (`idAppearance`)
-    REFERENCES `discord_bot_rpg`.`appearances` (`idAppearance`)
+    REFERENCES `appearances` (`idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -112,7 +112,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearance` (
+CREATE TABLE IF NOT EXISTS `charactersappearance` (
   `idCharacter` INT UNSIGNED NOT NULL,
   `hairColor` VARCHAR(9) NOT NULL,
   `bodyColor` VARCHAR(9) NOT NULL,
@@ -123,19 +123,19 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`charactersappearance` (
   INDEX `fk_CharacterAppearance_BodyType1_idx` (`idBodyType` ASC) VISIBLE,
   CONSTRAINT `fk_CharacterAppearance_Characters2`
     FOREIGN KEY (`idCharacter`)
-    REFERENCES `discord_bot_rpg`.`characters` (`idCharacter`)
+    REFERENCES `characters` (`idCharacter`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CharacterAppearance_BodyType1`
     FOREIGN KEY (`idBodyType`)
-    REFERENCES `discord_bot_rpg`.`bodytype` (`idBodyType`)
+    REFERENCES `bodytype` (`idBodyType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemsappearancesmaskcolors` (
+CREATE TABLE IF NOT EXISTS `itemsappearancesmaskcolors` (
   `idBaseItem` INT UNSIGNED NOT NULL,
   `idAppearance` INT UNSIGNED NOT NULL,
   `sourceColor` VARCHAR(10) NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`itemsappearancesmaskcolors` (
   PRIMARY KEY (`idBaseItem`, `idAppearance`, `sourceColor`),
   CONSTRAINT `fk_table1_ItemsAppearances1`
     FOREIGN KEY (`idBaseItem` , `idAppearance`)
-    REFERENCES `discord_bot_rpg`.`itemsappearances` (`idBaseItem` , `idAppearance`)
+    REFERENCES `itemsappearances` (`idBaseItem` , `idAppearance`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
