@@ -2,10 +2,10 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-ALTER TABLE `discord_bot_rpg`.`statsrepartition` 
+ALTER TABLE `statsrepartition` 
 CHANGE COLUMN `percentage` `percentage` INT UNSIGNED NOT NULL DEFAULT 0 ;
 
-create table if not exists `discord_bot_rpg`.`climates` (
+create table if not exists `climates` (
   `idClimate` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(45) NOT NULL DEFAULT 'none',
   PRIMARY KEY (`idClimate`),
@@ -14,7 +14,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`weathers` (
+CREATE TABLE IF NOT EXISTS `weathers` (
   `idWeather` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shorthand` VARCHAR(45) NOT NULL DEFAULT 'none',
   `travelSpeed` INT UNSIGNED NOT NULL DEFAULT 100,
@@ -26,7 +26,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`climatesweathers` (
+CREATE TABLE IF NOT EXISTS `climatesweathers` (
   `idClimate` INT UNSIGNED NOT NULL,
   `idWeather` INT UNSIGNED NOT NULL,
   `probability` INT UNSIGNED NOT NULL DEFAULT 1,
@@ -34,19 +34,19 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`climatesweathers` (
   INDEX `fk_ClimatesWeathers_Weathers1_idx` (`idWeather` ASC) VISIBLE,
   CONSTRAINT `fk_ClimatesWeathers_Climates1`
     FOREIGN KEY (`idClimate`)
-    REFERENCES `discord_bot_rpg`.`climates` (`idClimate`)
+    REFERENCES `climates` (`idClimate`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_ClimatesWeathers_Weathers1`
     FOREIGN KEY (`idWeather`)
-    REFERENCES `discord_bot_rpg`.`weathers` (`idWeather`)
+    REFERENCES `weathers` (`idWeather`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`areasclimates` (
+CREATE TABLE IF NOT EXISTS `areasclimates` (
   `idArea` INT UNSIGNED NOT NULL,
   `idClimate` INT UNSIGNED NOT NULL,
   `currentWeather` INT UNSIGNED NOT NULL DEFAULT 1,
@@ -57,24 +57,24 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`areasclimates` (
   INDEX `fk_AreasClimates_Weathers1_idx` (`currentWeather` ASC) VISIBLE,
   CONSTRAINT `fk_AreasClimates_Areas1`
     FOREIGN KEY (`idArea`)
-    REFERENCES `discord_bot_rpg`.`areas` (`idArea`)
+    REFERENCES `areas` (`idArea`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AreasClimates_Climates1`
     FOREIGN KEY (`idClimate`)
-    REFERENCES `discord_bot_rpg`.`climates` (`idClimate`)
+    REFERENCES `climates` (`idClimate`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AreasClimates_Weathers1`
     FOREIGN KEY (`currentWeather`)
-    REFERENCES `discord_bot_rpg`.`weathers` (`idWeather`)
+    REFERENCES `weathers` (`idWeather`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-REPLACE INTO `discord_bot_rpg`.`climates` VALUES
+REPLACE INTO `climates` VALUES
 (1, "temperate_oceanic"),
 (2, "volcanic_hell"),
 (3, "hot_desert"),
@@ -82,7 +82,7 @@ REPLACE INTO `discord_bot_rpg`.`climates` VALUES
 (5, "interior");
 
 -- Travel Speed | Collect Speed | Collect Chances
-REPLACE INTO `discord_bot_rpg`.`weathers` VALUES
+REPLACE INTO `weathers` VALUES
 (1, "sunny", 100, 100, 100),
 (2, "cloudy", 100, 90, 100),
 (3, "foggy", 75, 75, 75),
@@ -94,14 +94,14 @@ REPLACE INTO `discord_bot_rpg`.`weathers` VALUES
 (9, "snowstorm", 30, 70, 25);
 
 
-REPLACE INTO `discord_bot_rpg`.`climatesweathers` VALUES
+REPLACE INTO `climatesweathers` VALUES
 (1, 1, 60),(1, 2, 25),(1, 3, 8),(1, 4, 5),(1, 5, 2),
 (2, 1, 50),(2, 2, 30),(2, 3, 5),(2, 7, 15),
 (3, 1, 80),(3, 2, 15),(3, 8, 5),
 (4, 1, 60),(4, 2, 20),(4, 3, 15),(4, 9, 5),
 (5, 1, 100);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (1, 1, 1, 100), (2, 1, 1, 100), (3, 1, 1, 100), (4, 1, 1, 100), (5, 1, 1, 100), (6, 1, 1, 100), (7, 5, 1, 100),
 (8, 1, 1, 100), (9, 1, 1, 100), (10, 1, 1, 100), (11, 5, 1, 100), (12, 1, 1, 100), (13, 1, 1, 100), (14, 1, 1, 100),
 (15, 3, 1, 100),(16, 3, 1, 100),(17, 3, 1, 100),(18, 3, 1, 100),(19, 3, 1, 100),(20, 3, 1, 100),(21, 5, 1, 100),
@@ -113,7 +113,7 @@ REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
 DROP TABLE areasmonsters;
 DROP TABLE monstresgroupes;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`monstresgroupes` (
+CREATE TABLE IF NOT EXISTS `monstresgroupes` (
   `idMonstresGroupe` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `shrothand` VARCHAR(255) NULL,
   PRIMARY KEY (`idMonstresGroupe`),
@@ -122,26 +122,26 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`areasmonsters` (
+CREATE TABLE IF NOT EXISTS `areasmonsters` (
   `idArea` INT(10) UNSIGNED NOT NULL,
   `idMonstresGroupe` INT(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`idArea`, `idMonstresGroupe`),
   INDEX `fk_AreasMonsters_MonstresGroupes1_idx` (`idMonstresGroupe` ASC) VISIBLE,
   CONSTRAINT `fk_table1_Areas1`
     FOREIGN KEY (`idArea`)
-    REFERENCES `discord_bot_rpg`.`areas` (`idArea`)
+    REFERENCES `areas` (`idArea`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_AreasMonsters_MonstresGroupes1`
     FOREIGN KEY (`idMonstresGroupe`)
-    REFERENCES `discord_bot_rpg`.`monstresgroupes` (`idMonstresGroupe`)
+    REFERENCES `monstresgroupes` (`idMonstresGroupe`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`monstresgroupesassoc` (
+CREATE TABLE IF NOT EXISTS `monstresgroupesassoc` (
   `idMonstresGroupe` INT(10) UNSIGNED NOT NULL,
   `idMonstre` INT(10) UNSIGNED NOT NULL,
   `number` INT(10) UNSIGNED NOT NULL DEFAULT 1,
@@ -150,12 +150,12 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`monstresgroupesassoc` (
   INDEX `fk_MonstresGroupesAssoc_MonstresGroupes1_idx` (`idMonstresGroupe` ASC) VISIBLE,
   CONSTRAINT `fk_MonstresGroupes_Monstres1`
     FOREIGN KEY (`idMonstre`)
-    REFERENCES `discord_bot_rpg`.`monstres` (`idMonstre`)
+    REFERENCES `monstres` (`idMonstre`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_MonstresGroupesAssoc_MonstresGroupes1`
     FOREIGN KEY (`idMonstresGroupe`)
-    REFERENCES `discord_bot_rpg`.`monstresgroupes` (`idMonstresGroupe`)
+    REFERENCES `monstresgroupes` (`idMonstresGroupe`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -216,7 +216,7 @@ INSERT INTO areas
 VALUES
 (35, "https://i.ytimg.com/vi/qTJ8skYIpJc/maxresdefault.jpg", 3, 1, 5);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (35, 2, 1, 100);
 
 
@@ -264,7 +264,7 @@ INSERT INTO areas
 VALUES
 (36, "https://image.freepik.com/free-vector/cave-with-entrance_1308-17047.jpg", 3, 1, 5);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (36, 5, 1, 100);
 
 
@@ -312,7 +312,7 @@ INSERT INTO areas
 VALUES
 (37, "https://cdn.fight-rpg.com/images/areas/TombEntrance.jpg", 3, 1, 5);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (37, 5, 1, 100);
 
 
@@ -360,7 +360,7 @@ INSERT INTO areas
 VALUES
 (38, "https://pbs.twimg.com/media/ES7MkdgXsAARRjR.jpg", 3, 1, 5);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (38, 2, 1, 100);
 
 
@@ -408,7 +408,7 @@ INSERT INTO areas
 VALUES
 (39, "https://cdn.clipart.email/694fdbe27e5c77d81560e5bb593d73fd_ice-cave-doodles-4-4-by-lastkrystaldragon-on-deviantart_1024-682.png", 3, 1, 5);
 
-REPLACE INTO `discord_bot_rpg`.`areasclimates` VALUES
+REPLACE INTO `areasclimates` VALUES
 (39, 4, 1, 100);
 
 
