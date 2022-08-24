@@ -540,7 +540,7 @@ class WorldEntity {
      * @param {number} idState
      */
     isStateResist(idState) {
-        return this.getStateResists().includes(idState);
+        return this.getStateResists(idState).includes(idState);
     }
 
     /**
