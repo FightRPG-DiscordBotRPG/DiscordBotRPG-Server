@@ -354,7 +354,7 @@ class WorldEntity {
     async addState(idState) {
         let state = null;
         if (this.isStateAddable(idState)) {
-            if (!this.isAffectedByState()) {
+            if (!this.isAffectedByState(idState)) {
                 await this.addNewState(idState);
             }
 
@@ -733,6 +733,7 @@ class WorldEntity {
      **/
     getAllTraits() {
         return this.getStatesArray().reduce((r, obj) => {
+            console.log(r);
             return r.concat(obj.traits);
         }, []);
     }
