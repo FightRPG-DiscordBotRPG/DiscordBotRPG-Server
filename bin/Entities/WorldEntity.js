@@ -560,7 +560,7 @@ class WorldEntity {
     removeStatesByDamage() {
         let removedStates = [];
         this.getStatesArray().forEach((state) => {
-            if (state.afterDamage && Math.random() < state.damageProbability) {
+            if (state.afterDamage && Math.random() < state.damageProbability / 100) {
                 removedStates.push(state);
                 this.removeState(state.id);
             }
