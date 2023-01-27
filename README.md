@@ -14,7 +14,7 @@
 
 > Install
 - npm
-- Node.js (recommended 14.15.4 LTS)
+- Node.js (recommended 16.15.0 LTS)
 - Mysql Database 8.0.X
 
 ### Clone

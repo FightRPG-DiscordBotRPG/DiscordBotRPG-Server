@@ -7,11 +7,11 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`EventsTypes`
+-- Table `EventsTypes`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`eventstypes` ;
+DROP TABLE IF EXISTS `eventstypes` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventstypes` (
+CREATE TABLE IF NOT EXISTS `eventstypes` (
   `idEventType` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idEventType`),
@@ -20,11 +20,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`Events`
+-- Table `Events`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`events` ;
+DROP TABLE IF EXISTS `events` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`events` (
+CREATE TABLE IF NOT EXISTS `events` (
   `idEvent` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `idEventType` INT UNSIGNED NOT NULL,
   `backgroundImage` TEXT NOT NULL,
@@ -37,18 +37,18 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`events` (
   INDEX `fk_Events_EventsTypes1_idx` (`idEventType` ASC) VISIBLE,
   CONSTRAINT `fk_Events_EventsTypes1`
     FOREIGN KEY (`idEventType`)
-    REFERENCES `discord_bot_rpg`.`eventstypes` (`idEventType`)
+    REFERENCES `eventstypes` (`idEventType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`EventsGlobalModifiers`
+-- Table `EventsGlobalModifiers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`eventsglobalmodifiers` ;
+DROP TABLE IF EXISTS `eventsglobalmodifiers` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsglobalmodifiers` (
+CREATE TABLE IF NOT EXISTS `eventsglobalmodifiers` (
   `idEvent` INT UNSIGNED NOT NULL,
   `idBonusTypes` INT UNSIGNED NOT NULL,
   `value` INT NOT NULL,
@@ -56,23 +56,23 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsglobalmodifiers` (
   INDEX `fk_EventsBonuses_BonusTypes1_idx` (`idBonusTypes` ASC) VISIBLE,
   CONSTRAINT `fk_EventsBonuses_Events1`
     FOREIGN KEY (`idEvent`)
-    REFERENCES `discord_bot_rpg`.`events` (`idEvent`)
+    REFERENCES `events` (`idEvent`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventsBonuses_BonusTypes1`
     FOREIGN KEY (`idBonusTypes`)
-    REFERENCES `discord_bot_rpg`.`bonustypes` (`idBonusTypes`)
+    REFERENCES `bonustypes` (`idBonusTypes`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`EventSpecificDrops`
+-- Table `EventSpecificDrops`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`eventspecificdrops` ;
+DROP TABLE IF EXISTS `eventspecificdrops` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventspecificdrops` (
+CREATE TABLE IF NOT EXISTS `eventspecificdrops` (
   `idEvent` INT UNSIGNED NOT NULL,
   `idBaseItem` INT UNSIGNED NOT NULL,
   `percentage` FLOAT UNSIGNED NOT NULL,
@@ -82,23 +82,23 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventspecificdrops` (
   INDEX `fk_EventSpecificDrops_ItemsBase1_idx` (`idBaseItem` ASC) VISIBLE,
   CONSTRAINT `fk_EventSpecificDrops_Events1`
     FOREIGN KEY (`idEvent`)
-    REFERENCES `discord_bot_rpg`.`events` (`idEvent`)
+    REFERENCES `events` (`idEvent`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventSpecificDrops_ItemsBase1`
     FOREIGN KEY (`idBaseItem`)
-    REFERENCES `discord_bot_rpg`.`itemsbase` (`idBaseItem`)
+    REFERENCES `itemsbase` (`idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`EventsAreasTypesDrops`
+-- Table `EventsAreasTypesDrops`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`eventsareastypesdrops` ;
+DROP TABLE IF EXISTS `eventsareastypesdrops` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsareastypesdrops` (
+CREATE TABLE IF NOT EXISTS `eventsareastypesdrops` (
   `idAreaType` INT UNSIGNED NOT NULL,
   `idEvent` INT UNSIGNED NOT NULL,
   `idBaseItem` INT UNSIGNED NOT NULL,
@@ -106,23 +106,23 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsareastypesdrops` (
   INDEX `fk_EventsAreasTypesDrops_EventSpecificDrops1_idx` (`idEvent` ASC, `idBaseItem` ASC) VISIBLE,
   CONSTRAINT `fk_EventsAreasTypesDrops_AreasTypes1`
     FOREIGN KEY (`idAreaType`)
-    REFERENCES `discord_bot_rpg`.`areastypes` (`idAreaType`)
+    REFERENCES `areastypes` (`idAreaType`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventsAreasTypesDrops_EventSpecificDrops1`
     FOREIGN KEY (`idEvent` , `idBaseItem`)
-    REFERENCES `discord_bot_rpg`.`eventspecificdrops` (`idEvent` , `idBaseItem`)
+    REFERENCES `eventspecificdrops` (`idEvent` , `idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `discord_bot_rpg`.`EventsAreasDrops`
+-- Table `EventsAreasDrops`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `discord_bot_rpg`.`eventsareasdrops` ;
+DROP TABLE IF EXISTS `eventsareasdrops` ;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsareasdrops` (
+CREATE TABLE IF NOT EXISTS `eventsareasdrops` (
   `idArea` INT UNSIGNED NOT NULL,
   `idEvent` INT UNSIGNED NOT NULL,
   `idBaseItem` INT UNSIGNED NOT NULL,
@@ -130,12 +130,12 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`eventsareasdrops` (
   INDEX `fk_EventsAreasDrops_EventSpecificDrops1_idx` (`idEvent` ASC, `idBaseItem` ASC) VISIBLE,
   CONSTRAINT `fk_EventsAreasDrops_Areas1`
     FOREIGN KEY (`idArea`)
-    REFERENCES `discord_bot_rpg`.`areas` (`idArea`)
+    REFERENCES `areas` (`idArea`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventsAreasDrops_EventSpecificDrops1`
     FOREIGN KEY (`idEvent` , `idBaseItem`)
-    REFERENCES `discord_bot_rpg`.`eventspecificdrops` (`idEvent` , `idBaseItem`)
+    REFERENCES `eventspecificdrops` (`idEvent` , `idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -153,7 +153,7 @@ REPLACE INTO eventsglobalmodifiers VALUES
 (1, 1, 20), (1, 2, 20), (1, 3, 20), (1, 4, 20), (1, 5, 20), (1, 6, 20),
 (2, 2, 25), (2, 3, 25), (2, 6, 25);
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationevents` (
+CREATE TABLE IF NOT EXISTS `localizationevents` (
   `idEvent` INT(10) UNSIGNED NOT NULL,
   `lang` VARCHAR(5) NOT NULL,
   `title` VARCHAR(255) NOT NULL,
@@ -162,12 +162,12 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`localizationevents` (
   INDEX `fk_LocalizationEvents_Events1_idx` (`idEvent` ASC) VISIBLE,
   CONSTRAINT `fk_LocalizationEvents_Languages1`
     FOREIGN KEY (`lang`)
-    REFERENCES `discord_bot_rpg`.`languages` (`lang`)
+    REFERENCES `languages` (`lang`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_LocalizationEvents_Events1`
     FOREIGN KEY (`idEvent`)
-    REFERENCES `discord_bot_rpg`.`events` (`idEvent`)
+    REFERENCES `events` (`idEvent`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -176,11 +176,11 @@ COLLATE = utf8mb4_unicode_ci;
 
 REPLACE INTO localizationevents VALUES
 (1, "en", "Fight RPG - Anniversary!", "One more year for FightRPG! Ah, how time flies. Let's celebrate together!"),
-(1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Célébrons ça ensemble !"),
-(2, "fr", "A vos marques, prêts, collectez !", "Un bonus à la récolte est nécessaire au vu des changements apportés aux ingrédients nécessaires pour fabriquer les objets."),
+(1, "fr", "Fight RPG - Anniversaire !", "Un an de plus pour FightRPG ! Ah, que le temps passe vite. Cï¿½lï¿½brons ï¿½a ensemble !"),
+(2, "fr", "A vos marques, prï¿½ts, collectez !", "Un bonus ï¿½ la rï¿½colte est nï¿½cessaire au vu des changements apportï¿½s aux ingrï¿½dients nï¿½cessaires pour fabriquer les objets."),
 (2, "en", "Update 1.12 - On your marks, set, collect!", "A harvest bonus is required due to changes in the ingredients needed to make items");
 
-ALTER TABLE `discord_bot_rpg`.`itemsbase` 
+ALTER TABLE `itemsbase` 
 ADD COLUMN `isInDefaultLootTable` TINYINT(4) NOT NULL DEFAULT 0 AFTER `idSousType`;
 
 UPDATE itemsbase SET isInDefaultLootTable = 1 WHERE idType IN (1,2,3,4) AND idRarity <= 5;
@@ -190,11 +190,11 @@ UPDATE itemsbase SET isInDefaultLootTable = 1 WHERE idType IN (1,2,3,4) AND idRa
 
 DELETE FROM `areasresources`;
 
-ALTER TABLE `discord_bot_rpg`.`areasresources` 
+ALTER TABLE `areasresources` 
 DROP FOREIGN KEY `fk_AreasResources_Areas1`,
 DROP FOREIGN KEY `fk_AreasResources_ItemsBase1`;
 
-ALTER TABLE `discord_bot_rpg`.`areasresources` 
+ALTER TABLE `areasresources` 
 DROP COLUMN `idBaseItem`,
 ADD COLUMN `idCollectableResource` INT NOT NULL AFTER `idArea`,
 DROP PRIMARY KEY,
@@ -202,7 +202,7 @@ ADD PRIMARY KEY (`idArea`, `idCollectableResource`),
 ADD INDEX `fk_AreasResources_CollectableResources1_idx` (`idCollectableResource` ASC) VISIBLE,
 DROP INDEX `fk_AreasResources_ItemsBase1_idx`;
 
-CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`collectableresources` (
+CREATE TABLE IF NOT EXISTS `collectableresources` (
   `idCollectableResource` INT NOT NULL,
   `idBaseItem` INT UNSIGNED NOT NULL,
   `minLevel` INT UNSIGNED NOT NULL,
@@ -214,32 +214,32 @@ CREATE TABLE IF NOT EXISTS `discord_bot_rpg`.`collectableresources` (
   INDEX `fk_CollectableResources_RebirthsPossibles1_idx` (`minRebirthLevel` ASC) VISIBLE,
   CONSTRAINT `fk_CollectableResources_ItemsBase1`
     FOREIGN KEY (`idBaseItem`)
-    REFERENCES `discord_bot_rpg`.`itemsbase` (`idBaseItem`)
+    REFERENCES `itemsbase` (`idBaseItem`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CollectableResources_LevelsRequire1`
     FOREIGN KEY (`minLevel`)
-    REFERENCES `discord_bot_rpg`.`levelsrequire` (`level`)
+    REFERENCES `levelsrequire` (`level`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_CollectableResources_RebirthsPossibles1`
     FOREIGN KEY (`minRebirthLevel`)
-    REFERENCES `discord_bot_rpg`.`rebirthspossibles` (`rebirthLevel`)
+    REFERENCES `rebirthspossibles` (`rebirthLevel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
-ALTER TABLE `discord_bot_rpg`.`areasresources` 
+ALTER TABLE `areasresources` 
 ADD CONSTRAINT `fk_AreasResources_Areas1`
   FOREIGN KEY (`idArea`)
-  REFERENCES `discord_bot_rpg`.`areas` (`idArea`)
+  REFERENCES `areas` (`idArea`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `fk_AreasResources_CollectableResources1`
   FOREIGN KEY (`idCollectableResource`)
-  REFERENCES `discord_bot_rpg`.`collectableresources` (`idCollectableResource`)
+  REFERENCES `collectableresources` (`idCollectableResource`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
@@ -292,37 +292,37 @@ REPLACE INTO itemsbase VALUES
 (177, 5, 3, 'unknown', 19, 0);
 
 REPLACE INTO localizationitems VALUES
-(135, "fr", "Fer Ensablé", ""),
-(136, "fr", "Fer Brûlant", ""),
+(135, "fr", "Fer Ensablï¿½", ""),
+(136, "fr", "Fer Brï¿½lant", ""),
 (137, "fr", "Fer Glacial", ""),
 (138, "fr", "Lin", ""),
 (139, "fr", "Lin Jaune", ""),
 (140, "fr", "Lin Rouge", ""),
-(141, "fr", "Lin Crystalisé", ""),
-(142, "fr", "Bois de Chêne", ""),
-(143, "fr", "Bois Brulé", ""),
+(141, "fr", "Lin Crystalisï¿½", ""),
+(142, "fr", "Bois de Chï¿½ne", ""),
+(143, "fr", "Bois Brulï¿½", ""),
 (144, "fr", "Bois Glacial", ""),
 (145, "fr", "Cuir Simple", ""),
-(146, "fr", "Cuir Ensablé", ""),
-(147, "fr", "Cuir Allumé", ""),
+(146, "fr", "Cuir Ensablï¿½", ""),
+(147, "fr", "Cuir Allumï¿½", ""),
 (148, "fr", "Cuir Glacial", ""),
 (149, "fr", "Or Sablonneux", ""),
 (150, "fr", "Or en fusion", ""),
-(151, "fr", "Or Gelé", ""),
+(151, "fr", "Or Gelï¿½", ""),
 (152, "fr", "Coton", ""),
 (153, "fr", "Coton Aride", ""),
-(154, "fr", "Coton Brûlant", ""),
-(155, "fr", "Coton Glacé", ""),
-(156, "fr", "Cactus à Branches", ""),
-(157, "fr", "Bois Vitrifié", ""),
+(154, "fr", "Coton Brï¿½lant", ""),
+(155, "fr", "Coton Glacï¿½", ""),
+(156, "fr", "Cactus ï¿½ Branches", ""),
+(157, "fr", "Bois Vitrifiï¿½", ""),
 (158, "fr", "Branche de Glace", ""),
 (159, "fr", "Cuir Resistant", ""),
-(160, "fr", "Cuir à Rayures", ""),
-(161, "fr", "Cuir à Ecailles Rouges", ""),
+(160, "fr", "Cuir ï¿½ Rayures", ""),
+(161, "fr", "Cuir ï¿½ Ecailles Rouges", ""),
 (162, "fr", "Glace Flexible", ""),
-(163, "fr", "Mithril Abimé", ""),
-(164, "fr", "Mithril Ensablé", ""),
-(165, "fr", "Mithril Déformé par la Chaleur", ""),
+(163, "fr", "Mithril Abimï¿½", ""),
+(164, "fr", "Mithril Ensablï¿½", ""),
+(165, "fr", "Mithril Dï¿½formï¿½ par la Chaleur", ""),
 (166, "fr", "Laine Magnifique", ""),
 (167, "fr", "Laine Aride", ""),
 (168, "fr", "Laine Chaude", ""),
@@ -330,11 +330,11 @@ REPLACE INTO localizationitems VALUES
 (170, "fr", "Bois Noble", ""),
 (171, "fr", "Cactus Royal", ""),
 (172, "fr", "Bois de Neige", ""),
-(173, "fr", "Cuir de Loup Géant", ""),
-(174, "fr", "Cuir de Chameau à Dents de Sabre", ""),
-(175, "fr", "Cuir Cuirassé", ""),
-(176, "fr", "Cuir de Yéti", ""),
-(177, "fr", "Fil à Coudre", ""),
+(173, "fr", "Cuir de Loup Gï¿½ant", ""),
+(174, "fr", "Cuir de Chameau ï¿½ Dents de Sabre", ""),
+(175, "fr", "Cuir Cuirassï¿½", ""),
+(176, "fr", "Cuir de Yï¿½ti", ""),
+(177, "fr", "Fil ï¿½ Coudre", ""),
 (135, "en", "Sandy Iron"                                ,""),
 (136, "en", "Burning Iron"                              ,""),
 (137, "en", "Freezing Iron"                             ,""),

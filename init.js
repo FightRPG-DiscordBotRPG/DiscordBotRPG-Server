@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const util = require('util');
 const { spawn } = require('child_process');
-const conf = { env: "dev", discordbotskey: "", webhookkey: "", registerkey: "DEFAULT_KEY", database: { host: "localhost", user: "root", password: "", database: "empty_database", charset: "utf8mb4_unicode_ci", multipleStatements: true }, tournamentFilesPath: "" };
+const conf = require("./conf/conf.example.js");
 const fs = require("fs");
 
 const readline = require('readline');
